@@ -1,0 +1,7 @@
+{
+  "name"       : "job",
+  "description": "SimpleNode does not have a field notexist",
+  "process"    : [
+    { "type":"SimpleNode", "notexist": true }
+  ]
+}

@@ -1,0 +1,5 @@
+this
+is a log
+\;
+
+multiple lines

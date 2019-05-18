@@ -1,0 +1,34 @@
+apply plugin: 'application'
+
+// Main API
+dependencies {
+    implementation project(':scraper-core')
+}
+
+dependencies {
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'
+    
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+mainClassName = 'scraper.app.Scraper'
+
+task bundle(dependsOn: [':scraper-core:jar', ':scraper-api:jar', ":scraper-annotations:jar", ":scraper-utils:jar"], type: Jar) {
+    manifest {
+            attributes 'Implementation-Version': version, 'Main-Class': mainClassName
+    }
+    baseName = 'scraper'
+
+    from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+
+    destinationDir = file("$rootDir/build/libs")
+
+    // exclude files which cause problems with signed jars (jgit)
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+}
+
+task getDeps(type: Copy) {
+    from configurations.runtime
+    into 'runtime/'
+}

@@ -1,0 +1,8 @@
+{
+  "name"       : "job",
+  "description": "",
+  "process"    : [
+    { "type":"GotoNode" },
+    { "type":"SimpleFunctionalNode" }
+  ]
+}

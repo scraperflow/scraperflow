@@ -1,0 +1,20 @@
+plugins { id 'java-library' }
+
+dependencies {
+    // util dependency
+    implementation project(":scraper-utils")
+}
+
+dependencies {
+    // used for super type-tokens, runtime type safety
+    api group: 'com.google.guava', name: 'guava', version: '25.1-jre'
+    
+    // small plugin framework
+    api group: 'org.springframework.plugin', name: 'spring-plugin-core', version: '1.2.0.RELEASE'
+    api group: 'org.springframework.plugin', name: 'spring-plugin-metadata', version: '1.2.0.RELEASE'
+}
+
+// test dependencies
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}

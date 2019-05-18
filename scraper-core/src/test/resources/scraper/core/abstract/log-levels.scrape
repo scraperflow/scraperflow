@@ -1,0 +1,11 @@
+{
+  "name"       : "job",
+  "description": "all log levels",
+  "process"    : [
+    { "type":"SimpleNode", "logLevel": "TRACE", "log": "ok"},
+    { "type":"SimpleNode", "logLevel": "DEBUG", "log": "ok"},
+    { "type":"SimpleNode", "logLevel": "INFO", "log": "ok"},
+    { "type":"SimpleNode", "logLevel": "WARN", "log": "ok"},
+    { "type":"SimpleNode", "logLevel": "ERROR", "log": "ok"}
+  ]
+}

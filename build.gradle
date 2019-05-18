@@ -1,0 +1,29 @@
+allprojects {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    apply plugin: "java"
+    sourceCompatibility = 1.11
+    clean.doLast {
+        // clean-up idea build directory 
+        file(new File(projectDir, "/out")).deleteDir()
+    }
+}
+
+apply from: 'gradle/jacoco-all.gradle'
+
+configure(subprojects.findAll {!it.name.contains('scraper-nodes') && !it.name.contains('scraper-plugins')}) {
+    // core is versioned separately from nodes and plugins
+    version = '1.0.0'
+
+    // fixes
+    apply from: '../gradle/gradle-module-fix.gradle'
+    apply from: '../gradle/idea-fix.gradle'
+    apply from: '../gradle/gradle-test-resources-fix.gradle'
+
+    task api(type: Jar) {
+        destinationDir = file("$rootDir/build/api")
+    }
+}

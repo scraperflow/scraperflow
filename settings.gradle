@@ -1,0 +1,17 @@
+rootProject.name = 'scraper'
+
+include 'scraper-app'
+include 'scraper-annotations'
+include 'scraper-api'
+include 'scraper-core'
+include 'scraper-utils'
+
+// include nodes in the project, if any
+if(file('scraper-nodes').exists()) {
+    file('scraper-nodes').eachDir { dir -> if(dir.name.contains('scraper-nodes')) include 'scraper-nodes:'+dir.name }
+}
+
+// include plugins in the project, if any
+if(file('scraper-plugins').exists()) {
+    file('scraper-plugins').eachDir { dir -> if(dir.name.contains('scraper-plugins')) include 'scraper-plugins:'+dir.name }
+}

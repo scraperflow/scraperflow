@@ -1,0 +1,25 @@
+### gradle
+**/.gradle
+!gradle/wrapper/gradle-wrapper.jar
+
+/**/build/
+/**/builds/
+/**/classes/
+
+### intellij
+.idea
+*.iml
+/**/out/
+
+### vim
+**/*.swp
+
+### junit error logs and normal logs
+**/errors.log
+**/*.log
+
+### generated editor html file
+**/resources/**/scraper-editor.html
+### generated class model file
+**/*class-model.json
+**/class-model.js

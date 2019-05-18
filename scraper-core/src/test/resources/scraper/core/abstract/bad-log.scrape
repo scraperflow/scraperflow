@@ -1,0 +1,7 @@
+{
+  "name"       : "job",
+  "description": "",
+  "process"    : [
+    { "type":"SimpleNode", "log": "{missing-template}" }
+  ]
+}

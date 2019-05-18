@@ -1,0 +1,30 @@
+apply plugin: 'java-library'
+
+dependencies {
+    // core api + transitive dependencies
+    api project(':scraper-annotations')
+
+    api project(':scraper-utils')
+}
+
+dependencies {
+    // reflection framework
+    api 'io.github.classgraph:classgraph:4.4.12'
+
+    // logger framework
+    api group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta1'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'
+
+    api 'com.google.guava:guava:25.1-jre'
+
+    // json + yml library
+    api group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.+'
+    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.+'
+    api 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.2'
+}
+
+// test dependencies
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+

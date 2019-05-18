@@ -1,0 +1,11 @@
+jobs:
+  somejob1:
+    scrape-file: job1.scrape
+    arguments:
+      - job1.args
+  somejob2:
+    scrape-file: job2.scrape
+    arguments:
+      - notimportant.args
+      - job1.args
+      - important.args

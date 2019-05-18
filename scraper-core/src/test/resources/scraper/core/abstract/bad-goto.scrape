@@ -1,0 +1,8 @@
+{
+  "name"       : "job",
+  "description": "",
+  "process"    : [
+    { "type":"SimpleFunctionalNode", "goTo": "ok" },
+    { "type":"SimpleFunctionalNode", "label": "ok", "goTo": "no" }
+  ]
+}

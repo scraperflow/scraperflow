@@ -1,0 +1,9 @@
+{
+  "name"       : "job1",
+  "description": "minimal",
+  "process"    : [
+    { "type":"SimpleNode"},
+    { "type":"ComplexFlowNode" },
+    { "type":"SimpleNode", "label": "target", "log":"Finished!" }
+  ]
+}

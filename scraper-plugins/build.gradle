@@ -1,0 +1,31 @@
+subprojects.each {
+    def plugin = it.name
+    project(':scraper-app') {
+        dependencies {
+            // for runtime
+            runtimeOnly project(":scraper-plugins:${plugin}")
+        }
+    }
+}
+
+subprojects {
+    apply plugin: 'java-library'
+
+    apply from: '../gradle/gradle-module-fix.gradle'
+    apply from: '../../gradle/gradle-test-resources-fix.gradle'
+
+    tasks.withType(Jar) {
+        destinationDir = file("$rootDir/build/artifacts/plugins")
+    }
+
+    configurations {
+        provided
+        implementation.extendsFrom provided
+    }
+
+
+    dependencies {
+        // core api + transitive dependencies
+        implementation project(':scraper-core')
+    }
+}
