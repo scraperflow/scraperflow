@@ -5,8 +5,8 @@ Scraper - A Composable Workflow Framework
 ![language](https://img.shields.io/badge/language-java11-blue.svg)
 ![build](https://img.shields.io/badge/build-gradle-yellowgreen.svg)
 
-[![pipeline status](https://git.server1.link/scraper/scraper/badges/master/pipeline.svg)](https://git.server1.link/scraper/scraper/commits/master)
-[![coverage report](https://git.server1.link/scraper/scraper/badges/master/coverage.svg)](https://git.server1.link/scraper/scraper/commits/master)
+[![pipeline status](https://git.server1.link/scraper/scraper/badges/develop/pipeline.svg)](https://git.server1.link/scraper/scraper/commits/develop)
+[![coverage report](https://git.server1.link/scraper/scraper/badges/develop/coverage.svg)](https://git.server1.link/scraper/scraper/commits/develop)
 
 Scraper is a framework which enables flow-based programming in a declarative way. 
 It is based on two main components: 
