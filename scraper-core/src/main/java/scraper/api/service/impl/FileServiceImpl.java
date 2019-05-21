@@ -33,6 +33,8 @@ public class FileServiceImpl implements FileService {
         synchronized (knownFiles.get(output)) {
             File outputFile = knownFiles.get(output);
 
+            if(outputFile.exists() && outputFile.isDirectory())
+                throw new IOException("File is a directory "+ outputFile.getPath());
             if(!outputFile.exists()) {
                 // create parent dir structure (if any parent can be found)
                 // ignore result and check afterwards for existence

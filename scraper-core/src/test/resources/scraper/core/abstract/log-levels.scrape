@@ -2,10 +2,10 @@
   "name"       : "job",
   "description": "all log levels",
   "process"    : [
-    { "type":"SimpleNode", "logLevel": "TRACE", "log": "ok"},
-    { "type":"SimpleNode", "logLevel": "DEBUG", "log": "ok"},
-    { "type":"SimpleNode", "logLevel": "INFO", "log": "ok"},
-    { "type":"SimpleNode", "logLevel": "WARN", "log": "ok"},
-    { "type":"SimpleNode", "logLevel": "ERROR", "log": "ok"}
+    { "type":"SimpleLogNode", "logLevel": "TRACE", "log": "ok"},
+    { "type":"SimpleLogNode", "logLevel": "DEBUG", "log": "ok"},
+    { "type":"SimpleLogNode", "logLevel": "INFO", "log": "ok"},
+    { "type":"SimpleLogNode", "logLevel": "WARN", "log": "ok"},
+    { "type":"SimpleLogNode", "logLevel": "ERROR", "log": "ok"}
   ]
 }

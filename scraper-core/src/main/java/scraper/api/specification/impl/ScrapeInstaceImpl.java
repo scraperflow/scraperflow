@@ -63,7 +63,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         }
 
         log.error("Argument is neither an index nor a label: {}", target);
-        throw new RuntimeException("Argument is neither an index nor a label! "+target);
+        throw new IllegalArgumentException("Argument is neither an index nor a label! "+target);
     }
 
     @JsonIgnore
@@ -81,7 +81,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         }
 
         log.error("Argument is neither an index nor a label: {}", target);
-        throw new RuntimeException("Argument is neither an index nor a label! "+target);
+        throw new IllegalArgumentException("Argument is neither an index nor a label! "+target);
     }
 
     /**

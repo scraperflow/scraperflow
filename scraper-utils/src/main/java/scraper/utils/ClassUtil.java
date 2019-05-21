@@ -41,4 +41,9 @@ public final class ClassUtil {
 
         return plugin.substring(index+6, Math.min(index2, plugin.length()));
     }
+
+    @SuppressWarnings("unchecked") // sneaky
+    public static <E extends Throwable> void sneakyThrow(Throwable e) throws E {
+        throw (E) e;
+    }
 }

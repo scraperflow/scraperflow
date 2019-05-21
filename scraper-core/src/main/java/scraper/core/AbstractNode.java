@@ -258,7 +258,6 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         try {
             for (Field ensureFileField : ensureFileFields.keySet()) {
                 ensureFileField.setAccessible(true);
-                if(ensureFileField.get(this) == null) continue;
 
                 String path;
                 if(Template.class.isAssignableFrom(ensureFileField.getType())) {
@@ -384,9 +383,6 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     }
 
     public static void log(Logger log, NodeLogLevel threshold, NodeLogLevel level, String msg, Object... args) {
-        // ignore if no log given
-        if (log == null) return;
-
         switch (level){
             case TRACE:
                 // only l if trace
@@ -423,9 +419,10 @@ public abstract class AbstractNode implements Node, NodeInitializable {
                 else if (getStageIndex() != getJobPojo().getJobProcess().size() - 1) {
                     node = getJobPojo().getProcessNode(String.valueOf(getStageIndex() + 1));
                 }
-            } catch (IllegalArgumentException|IndexOutOfBoundsException e){
+            } catch (Exception e){
                 getL().error("No node to forward to, goto: '{}', index: {} of {}: {}",
                         getGoTo(), getStageIndex(), getJobPojo().getJobProcess().size()-1, e.toString());
+                throw e;
             }
         }
 
