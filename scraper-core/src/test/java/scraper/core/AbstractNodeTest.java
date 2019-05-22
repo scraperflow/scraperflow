@@ -443,4 +443,14 @@ public class AbstractNodeTest {
         FlowMap o = FlowMapImpl.of(Map.of());
         node.accept(o);
     }
+
+    @Test(expected = ValidationException.class)
+    public void badNodeTest() throws IOException, ValidationException {
+        URL base = getClass().getResource("abstract");
+        ScrapeSpecificationImpl.JobDefinitionBuilder specification = new ScrapeSpecificationImpl.JobDefinitionBuilder();
+        specification.basePath(base.getPath());
+        specification.scrapeFile("bad-node-2.scrape");
+        JobFactory factory = deps.get(JobFactory.class);
+        factory.convertScrapeJob(specification.build());
+    }
 }
