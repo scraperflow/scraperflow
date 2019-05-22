@@ -60,10 +60,11 @@ public class TemplateTest {
     @Test
     public void doubleStringTemplate() throws NodeException, ValidationException {
         Template<String> str = new Template<>(){};
-        str.setTemplate(convert(str.type, "{hello}{hello}"));
+        str.setTemplate(convert(str.type, "{hello}{hello}hello"));
         o.put("hello", "eval-value");
         String eval = str.eval(o);
-        Assert.assertEquals("eval-valueeval-value", eval);
+        Assert.assertEquals("eval-valueeval-valuehello", eval);
+        Assert.assertNotNull(str.toString());
     }
 
     @Test
