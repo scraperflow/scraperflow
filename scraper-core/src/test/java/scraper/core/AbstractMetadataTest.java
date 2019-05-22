@@ -7,6 +7,9 @@ import scraper.api.node.Node;
 public class AbstractMetadataTest {
     @Test
     public void simpleData() {
+        AbstractMetadata datam = new AbstractMetadata("node", "1.0.1", "nodecat") {
+            @Override public Node getNode() { return null; }
+        };
         AbstractMetadata data = new AbstractMetadata("node", "1.0.2", "nodecat") {
             @Override public Node getNode() { return null; }
         };
@@ -26,6 +29,9 @@ public class AbstractMetadataTest {
 
         Assert.assertFalse(data.backwardsCompatible(dataa));
         Assert.assertTrue(dataa.backwardsCompatible(data));
+
+        Assert.assertTrue(data.backwardsCompatible(datam));
+        Assert.assertFalse(datam.backwardsCompatible(data));
     }
 
 }
