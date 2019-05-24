@@ -24,7 +24,10 @@ import scraper.utils.StringUtil;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static scraper.util.DependencyInjectionUtil.getDIContainer;
@@ -34,8 +37,6 @@ import static scraper.util.NodeUtil.flowOf;
 public class Scraper {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(Scraper.class);
-
-    static { printBanner(); }
 
     // dependencies
     private final JobFactory jobFactory;
@@ -69,7 +70,9 @@ public class Scraper {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        printBanner();
+
         String helpArgs = StringUtil.getArgument(args, "help");
         if(helpArgs == null) log.info("To see available command-line arguments, provide the 'help' argument when starting Scraper");
         else {
@@ -84,12 +87,7 @@ public class Scraper {
         Scraper main = pico.get(Scraper.class);
         main.pico = pico;
 
-        try {
-            main.run(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+        main.run(args);
     }
 
 
@@ -151,7 +149,7 @@ public class Scraper {
         try (InputStream is = Scraper.class.getResourceAsStream("/banner.txt")) {
             new BufferedReader(new InputStreamReader(is)).lines().forEachOrdered(System.out::println);
         } catch (Exception e) {
-            log.warn("Could not print banner: {}", e);
+            log.warn("Could not print banner", e);
         }
     }
 

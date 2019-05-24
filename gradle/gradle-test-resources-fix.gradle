@@ -13,3 +13,9 @@ task testResourcesFix(type: Copy) {
     exclude "module-info.*"
 }
 test.dependsOn testResourcesFix
+task testResourcesFix2(type: Copy) {
+    from "${buildDir}/resources/main"
+    into "${buildDir}/classes/java/test"
+    exclude "module-info.*"
+}
+test.dependsOn testResourcesFix2
