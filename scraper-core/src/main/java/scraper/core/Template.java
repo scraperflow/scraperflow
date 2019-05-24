@@ -2,7 +2,7 @@ package scraper.core;
 
 import com.google.common.reflect.TypeToken;
 import org.slf4j.Logger;
-import scraper.api.exceptions.NodeException;
+import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
 
 import java.util.*;
@@ -13,21 +13,23 @@ public abstract class Template<T> {
     public final TypeToken<T> type = new TypeToken<>(getClass()){};
 
     // parsed JSON object
-    private Object template;
+    private Object parsedJson;
 
 
-    public T eval(final FlowMap o) throws NodeException {
-        Object templ = template;
-
-        return eval(templ, type, o);
+    public T eval(final FlowMap o) {
+        return eval(parsedJson, type, o);
     }
 
-    protected <C> C eval(Object currentObject, TypeToken<C> currentType, FlowMap o) throws NodeException {
-        // if java null, return null regardless of currentType
-        if(currentObject == null) return null;
+    protected <C> C eval(Object jsonObject, TypeToken<C> currentType, FlowMap o) {
+        // if json null, return null regardless of currentType
+        if(jsonObject == null) return null;
 
-        // if JSON list, currentType is also a List<?>
-        if (List.class.isAssignableFrom(currentObject.getClass())) {
+        // jsonObject can be: List<C>, Map<String, C>, String, Number, true, false
+
+
+        // if JSON list, currentType is also a List<C>
+        // descend and evaluate list elements with type C
+        if (List.class.isAssignableFrom(jsonObject.getClass())) {
             // resolve ? type from List<?>
             TypeToken<?> elementType = currentType.resolveType(List.class.getTypeParameters()[0]);
 
@@ -35,7 +37,7 @@ public abstract class Template<T> {
             List<Object> rawList = new ArrayList<>();
 
             // populate with target element type
-            for (Object element : ((List) currentObject)) {
+            for (Object element : ((List) jsonObject)) {
                 Object retElement = eval(element, elementType, o);
                 rawList.add(retElement);
             }
@@ -44,7 +46,7 @@ public abstract class Template<T> {
             C castList =  (C) rawList;
             return castList;
         } // if JSON map, currentType is also a Map<String, ?>
-        else if(Map.class.isAssignableFrom(currentObject.getClass())) {
+        else if(Map.class.isAssignableFrom(jsonObject.getClass())) {
             // resolve ? type from Map<String, ?>
             TypeToken<?> elementType = currentType.resolveType(Map.class.getTypeParameters()[1]);
 
@@ -52,8 +54,8 @@ public abstract class Template<T> {
             Map<Object, Object> rawMap = new LinkedHashMap<>();
 
             // populate with target element type
-            for (Object key : ((Map) currentObject).keySet()) {
-                Object retElement = eval(((Map) currentObject).get(key), elementType, o);
+            for (Object key : ((Map) jsonObject).keySet()) {
+                Object retElement = eval(((Map) jsonObject).get(key), elementType, o);
                 rawMap.put(key, retElement);
             }
 
@@ -62,44 +64,36 @@ public abstract class Template<T> {
             return castMap;
         } // JSON primitive
         else {
+            System.out.println(jsonObject);
+            System.out.println(currentType);
             // case 1: current object is the same type as the current JSON object, use JSON object
-            if (currentType.getRawType().isAssignableFrom(currentObject.getClass())) {
-                Object val = currentObject;
+            if (currentType.getRawType().isAssignableFrom(jsonObject.getClass())) {
+                Object val = jsonObject;
 
                 // case 1.2: If object type is unknown (i.e. type object), try to evaluate rawJson object, if present
-                if(currentType.getRawType().equals(Object.class) && currentObject instanceof TemplateString)
-                    val = ((TemplateString<?>) currentObject).eval(o);
+                if(currentType.getRawType().equals(Object.class) && jsonObject instanceof TemplateString)
+                    val = ((TemplateString<?>) jsonObject).eval(o);
 
                 @SuppressWarnings("unchecked") // Checked with currentType argument
                 C castVal = (C) val;
                 return castVal;
             } // case 2: current object is a rawJson class
-            else if (currentObject instanceof TemplateString) {
-                TemplateString<?> t = (TemplateString<?>) currentObject;
+            else if (jsonObject instanceof TemplateString) {
+                TemplateString<?> t = (TemplateString<?>) jsonObject;
                 Object evalObj = t.eval(o);
-                if(evalObj == null) {
-                    log.error("Could not evaluate rawJson: {}", t);
-                    throw new NodeException("Template evaluated to null: '"+t+"'. Check reflection implementation");
-                }
-                if(currentType.getRawType().isAssignableFrom(evalObj.getClass())) {
-                    @SuppressWarnings("unchecked") // Checked with currentType argument
-                    C castVal = (C) evalObj;
-                    return castVal;
-                } else {
-                    log.error("Argument evaluated to wrong target type. Expected '{}', got '{}'", currentType, evalObj.getClass());
-                    throw new NodeException("Argument evaluated to wrong target type. Expected '"
-                            +currentType+"', got '"+evalObj.getClass()+"'. Check reflection implementation");
-                }
+                @SuppressWarnings("unchecked") // throws exception if type is not correct in eval step
+                C castVal = (C) evalObj;
+                return castVal;
             } // case 3: current object has unknown class. this can be the case if new rawJson classes are implemented
             else {
-                log.error("Unknown rawJson object type found, missing Implementation? {}", currentObject.getClass());
-                throw new NodeException("Unknown rawJson object: "+currentObject.getClass()+ ". Fix reflection implementation");
+                log.error("Unknown rawJson object type found, missing Implementation? {}", jsonObject.getClass());
+                throw new TemplateException("Unknown rawJson object: "+jsonObject.getClass()+ " ");
             }
         }
     }
 
-    public void setTemplate(Object convertedTemplateObject) {
-        this.template = convertedTemplateObject;
+    public void setParsedJson(Object convertedTemplateObject) {
+        this.parsedJson = convertedTemplateObject;
     }
 
     private Collection<String> getKeysDescend(Object toDescend) {
@@ -116,12 +110,12 @@ public abstract class Template<T> {
     }
 
     public Collection<String> getKeysInTemplate() {
-        return getKeysDescend(template);
+        return getKeysDescend(parsedJson);
     }
 
     @Override
     public String toString() {
-        return template.toString();
+        return parsedJson.toString();
     }
 
 }

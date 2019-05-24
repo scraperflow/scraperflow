@@ -5,7 +5,6 @@ import com.google.common.reflect.TypeToken;
 import org.slf4j.Logger;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.converter.StringToClassConverter;
-import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.FlowState;
@@ -61,50 +60,6 @@ public final class NodeUtil {
     }
 
 
-    /** Converts a String with templates marked by {} groups to a more efficient Template representation */
-    public static <C> TemplateString<C> stringToTemplate(String value, Class<C> type) {
-        return stringToTemplate(value, type, "{","}");
-    }
-
-    /** Converts a String with templates to a more efficient Template representation */
-    @SuppressWarnings("WeakerAccess") // util function
-    public static <C> TemplateString<C> stringToTemplate(String value, Class<C> type, String delimLeft, String delimRight) {
-        TemplateString.TemplateStringBuilder<C> builder = TemplateString.builder();
-
-        if(!(value.contains(delimLeft) && value.contains(delimRight)
-                && value.indexOf(delimLeft) < value.indexOf(delimRight)))
-            return builder
-                    .simpleString(0, value)
-                    .targetType(type)
-                    .build();
-
-        Integer index = 0;
-
-        do {
-            // split into regions delimited by the defined delimiters
-            String left = value.substring(0,value.indexOf(delimLeft));
-            String afterLeftDelim = value.substring(value.indexOf(delimLeft) + delimLeft.length());
-            String template = delimLeft + afterLeftDelim.substring(0, value.indexOf(delimRight) - delimRight.length() - left.length()) + delimRight;
-            String afterRightDelim = afterLeftDelim.substring(afterLeftDelim.indexOf(delimRight) + delimRight.length());
-
-            if(!left.isEmpty()) {
-                builder.simpleString(index, left);
-                index++;
-            }
-
-            builder.templateString(index, template);
-            index++;
-
-            value = afterRightDelim;
-
-            // until there is no more group 'delimLeft'.*'delimRight' do
-        } while(value.contains(delimLeft) && value.contains(delimRight)
-                && value.indexOf(delimLeft) < value.indexOf(delimRight));
-
-        if(!value.isEmpty()) builder.simpleString(index, value);
-
-        return builder.targetType(type).build();
-    }
 
     /**
      * Parses a node spec and initializes a node
@@ -219,7 +174,7 @@ public final class NodeUtil {
             // check if template
             if (Template.class.isAssignableFrom(fieldType)) {
                 Template<?> template = (Template<?>) fieldValue;
-                template.setTemplate(convert(template.type, value));
+                template.setParsedJson(convert(template.type, value));
                 return null;
             } // if enum: try convert
             else if (Enum.class.isAssignableFrom(fieldType)) {
@@ -308,7 +263,7 @@ public final class NodeUtil {
                 return value;
             } else if (String.class.isAssignableFrom(value.getClass())) {
                 // string template found
-                return NodeUtil.stringToTemplate((String) value, templ.getRawType());
+                return TemplateString.stringToTemplate((String) value, templ.getRawType());
             } else {
                 throw new ValidationException("Argument type mismatch! Expected String or "+templ+", but found "+ value.getClass());
             }

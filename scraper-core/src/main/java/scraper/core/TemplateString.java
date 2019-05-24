@@ -2,7 +2,6 @@ package scraper.core;
 
 import org.slf4j.Logger;
 import scraper.api.converter.StringToClassConverter;
-import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
 
@@ -25,11 +24,7 @@ public class TemplateString<T> {
         this.targetType = targetType;
     }
 
-    public static <T> TemplateStringBuilder<T> builder() {
-        return new TemplateStringBuilder<T>();
-    }
-
-    public T eval(FlowMap args) throws NodeException {
+    public T eval(final FlowMap args) {
         try{
 
             StringBuilder eval = new StringBuilder();
@@ -57,7 +52,6 @@ public class TemplateString<T> {
             }
 
             // TODO enable dynamic change of converter
-            // TODO bad class of Exception, avoid ValidationException
             return targetType.cast(StringToClassConverter.convert(eval.toString(), targetType));
         } catch (Exception e) {
             log.error("Could not evaluate String Template '{}': {}", toString(), e.getMessage());
@@ -91,150 +85,92 @@ public class TemplateString<T> {
 
     Collection<String> getKeysInTemplate() {
         Collection<String> keys = new HashSet<>();
-        templateStrings.forEach((i, key) -> {
-            keys.add(key.substring(1, key.length()-1));
-        });
+        templateStrings.forEach((i, key) -> keys.add(key.substring(1, key.length()-1)));
         return keys;
     }
 
-//    public Map<Integer, String> getSimpleStrings() {
-//        return this.simpleStrings;
-//    }
-//
-//    public Map<Integer, String> getTemplateStrings() {
-//        return this.templateStrings;
-//    }
-//
-//    public Class<T> getTargetType() {
-//        return this.targetType;
-//    }
+    /** Converts a String with templates marked by {} groups to a more efficient Template representation */
+    public static <C> TemplateString<C> stringToTemplate(String value, Class<C> type) {
+        return stringToTemplate(value, type, "{","}");
+    }
 
-//    public void setSimpleStrings(Map<Integer, String> simpleStrings) {
-//        this.simpleStrings = simpleStrings;
-//    }
-//
-//    public void setTemplateStrings(Map<Integer, String> templateStrings) {
-//        this.templateStrings = templateStrings;
-//    }
-//
-//    public void setTargetType(Class<T> targetType) {
-//        this.targetType = targetType;
-//    }
-//
-//    public boolean equals(Object o) {
-//        if (o == this) return true;
-//        if (!(o instanceof TemplateString)) return false;
-//        final TemplateString other = (TemplateString) o;
-//        if (!other.canEqual((Object) this)) return false;
-//        final Object this$simpleStrings = this.getSimpleStrings();
-//        final Object other$simpleStrings = other.getSimpleStrings();
-//        if (this$simpleStrings == null ? other$simpleStrings != null : !this$simpleStrings.equals(other$simpleStrings))
-//            return false;
-//        final Object this$templateStrings = this.getTemplateStrings();
-//        final Object other$templateStrings = other.getTemplateStrings();
-//        if (this$templateStrings == null ? other$templateStrings != null : !this$templateStrings.equals(other$templateStrings))
-//            return false;
-//        final Object this$targetType = this.getTargetType();
-//        final Object other$targetType = other.getTargetType();
-//        if (this$targetType == null ? other$targetType != null : !this$targetType.equals(other$targetType))
-//            return false;
-//        return true;
-//    }
-//
-//    public int hashCode() {
-//        final int PRIME = 59;
-//        int result = 1;
-//        final Object $simpleStrings = this.getSimpleStrings();
-//        result = result * PRIME + ($simpleStrings == null ? 43 : $simpleStrings.hashCode());
-//        final Object $templateStrings = this.getTemplateStrings();
-//        result = result * PRIME + ($templateStrings == null ? 43 : $templateStrings.hashCode());
-//        final Object $targetType = this.getTargetType();
-//        result = result * PRIME + ($targetType == null ? 43 : $targetType.hashCode());
-//        return result;
-//    }
-//
-//    protected boolean canEqual(Object other) {
-//        return other instanceof TemplateString;
-//    }
+    /** Converts a String with templates to a more efficient Template representation */
+    @SuppressWarnings("SameParameterValue") // for now: delimiter defined as {}
+    private static <C> TemplateString<C> stringToTemplate(String value, Class<C> type, String delimLeft, String delimRight) {
+        TemplateString.TemplateStringBuilder<C> builder = new TemplateStringBuilder<>();
 
-    public static class TemplateStringBuilder<T> {
+        if(!(value.contains(delimLeft) && value.contains(delimRight)
+                && value.indexOf(delimLeft) < value.indexOf(delimRight)))
+            return builder
+                    .simpleString(0, value)
+                    .targetType(type)
+                    .build();
+
+        Integer index = 0;
+
+        do {
+            // split into regions delimited by the defined delimiters
+            String left = value.substring(0,value.indexOf(delimLeft));
+            String afterLeftDelim = value.substring(value.indexOf(delimLeft) + delimLeft.length());
+            String template = delimLeft + afterLeftDelim.substring(0, value.indexOf(delimRight) - delimRight.length() - left.length()) + delimRight;
+            String afterRightDelim = afterLeftDelim.substring(afterLeftDelim.indexOf(delimRight) + delimRight.length());
+
+            if(!left.isEmpty()) {
+                builder.simpleString(index, left);
+                index++;
+            }
+
+            builder.templateString(index, template);
+            index++;
+
+            value = afterRightDelim;
+
+            // until there is no more group 'delimLeft'.*'delimRight' do
+        } while(value.contains(delimLeft) && value.contains(delimRight)
+                && value.indexOf(delimLeft) < value.indexOf(delimRight));
+
+        if(!value.isEmpty()) builder.simpleString(index, value);
+
+        return builder.targetType(type).build();
+    }
+
+    // generated lombok
+    @SuppressWarnings("UnusedReturnValue") // builder returns
+    private static class TemplateStringBuilder<T> {
         private ArrayList<Integer> simpleStrings$key;
         private ArrayList<String> simpleStrings$value;
         private ArrayList<Integer> templateStrings$key;
         private ArrayList<String> templateStrings$value;
         private Class<T> targetType;
 
-        TemplateStringBuilder() {
-        }
+        TemplateStringBuilder() {}
 
-        public TemplateString.TemplateStringBuilder<T> simpleString(Integer simpleStringKey, String simpleStringValue) {
+        private TemplateString.TemplateStringBuilder<T> simpleString(Integer simpleStringKey, String simpleStringValue) {
             if (this.simpleStrings$key == null) {
-                this.simpleStrings$key = new ArrayList<Integer>();
-                this.simpleStrings$value = new ArrayList<String>();
+                this.simpleStrings$key = new ArrayList<>();
+                this.simpleStrings$value = new ArrayList<>();
             }
             this.simpleStrings$key.add(simpleStringKey);
             this.simpleStrings$value.add(simpleStringValue);
             return this;
         }
 
-//        public TemplateString.TemplateStringBuilder<T> simpleStrings(Map<? extends Integer, ? extends String> simpleStrings) {
-//            if (this.simpleStrings$key == null) {
-//                this.simpleStrings$key = new ArrayList<Integer>();
-//                this.simpleStrings$value = new ArrayList<String>();
-//            }
-//            for (final Map.Entry<? extends Integer, ? extends String> $lombokEntry : simpleStrings.entrySet()) {
-//                this.simpleStrings$key.add($lombokEntry.getKey());
-//                this.simpleStrings$value.add($lombokEntry.getValue());
-//            }
-//            return this;
-//        }
-//
-//        public TemplateString.TemplateStringBuilder<T> clearSimpleStrings() {
-//            if (this.simpleStrings$key != null) {
-//                this.simpleStrings$key.clear();
-//                this.simpleStrings$value.clear();
-//            }
-//
-//            return this;
-//        }
-
-        public TemplateString.TemplateStringBuilder<T> templateString(Integer templateStringKey, String templateStringValue) {
+        private TemplateString.TemplateStringBuilder<T> templateString(Integer templateStringKey, String templateStringValue) {
             if (this.templateStrings$key == null) {
-                this.templateStrings$key = new ArrayList<Integer>();
-                this.templateStrings$value = new ArrayList<String>();
+                this.templateStrings$key = new ArrayList<>();
+                this.templateStrings$value = new ArrayList<>();
             }
             this.templateStrings$key.add(templateStringKey);
             this.templateStrings$value.add(templateStringValue);
             return this;
         }
 
-//        public TemplateString.TemplateStringBuilder<T> templateStrings(Map<? extends Integer, ? extends String> templateStrings) {
-//            if (this.templateStrings$key == null) {
-//                this.templateStrings$key = new ArrayList<Integer>();
-//                this.templateStrings$value = new ArrayList<String>();
-//            }
-//            for (final Map.Entry<? extends Integer, ? extends String> $lombokEntry : templateStrings.entrySet()) {
-//                this.templateStrings$key.add($lombokEntry.getKey());
-//                this.templateStrings$value.add($lombokEntry.getValue());
-//            }
-//            return this;
-//        }
-
-//        public TemplateString.TemplateStringBuilder<T> clearTemplateStrings() {
-//            if (this.templateStrings$key != null) {
-//                this.templateStrings$key.clear();
-//                this.templateStrings$value.clear();
-//            }
-//
-//            return this;
-//        }
-
-        public TemplateString.TemplateStringBuilder<T> targetType(Class<T> targetType) {
+        private TemplateString.TemplateStringBuilder<T> targetType(Class<T> targetType) {
             this.targetType = targetType;
             return this;
         }
 
-        public TemplateString<T> build() {
+        private TemplateString<T> build() {
             Map<Integer, String> simpleStrings;
             switch (this.simpleStrings$key == null ? 0 : this.simpleStrings$key.size()) {
                 case 0:
@@ -244,7 +180,7 @@ public class TemplateString<T> {
                     simpleStrings = java.util.Collections.singletonMap(this.simpleStrings$key.get(0), this.simpleStrings$value.get(0));
                     break;
                 default:
-                    simpleStrings = new java.util.LinkedHashMap<>(this.simpleStrings$key.size() < 1073741824 ? 1 + this.simpleStrings$key.size() + (this.simpleStrings$key.size() - 3) / 3 : Integer.MAX_VALUE);
+                    simpleStrings = new java.util.LinkedHashMap<>();
                     for (int $i = 0; $i < this.simpleStrings$key.size(); $i++)
                         simpleStrings.put(this.simpleStrings$key.get($i), this.simpleStrings$value.get($i));
                     simpleStrings = java.util.Collections.unmodifiableMap(simpleStrings);
@@ -258,17 +194,14 @@ public class TemplateString<T> {
                     templateStrings = java.util.Collections.singletonMap(this.templateStrings$key.get(0), this.templateStrings$value.get(0));
                     break;
                 default:
-                    templateStrings = new java.util.LinkedHashMap<>(this.templateStrings$key.size() < 1073741824 ? 1 + this.templateStrings$key.size() + (this.templateStrings$key.size() - 3) / 3 : Integer.MAX_VALUE);
+                    templateStrings = new java.util.LinkedHashMap<>();
                     for (int $i = 0; $i < this.templateStrings$key.size(); $i++)
                         templateStrings.put(this.templateStrings$key.get($i), this.templateStrings$value.get($i));
                     templateStrings = java.util.Collections.unmodifiableMap(templateStrings);
             }
 
-            return new TemplateString<T>(simpleStrings, templateStrings, targetType);
+            return new TemplateString<>(simpleStrings, templateStrings, targetType);
         }
 
-//        public String toString() {
-//            return "TemplateString.TemplateStringBuilder(simpleStrings$key=" + this.simpleStrings$key + ", simpleStrings$value=" + this.simpleStrings$value + ", templateStrings$key=" + this.templateStrings$key + ", templateStrings$value=" + this.templateStrings$value + ", targetType=" + this.targetType + ")";
-//        }
     }
 }
