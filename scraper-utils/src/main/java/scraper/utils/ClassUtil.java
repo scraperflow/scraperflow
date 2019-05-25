@@ -40,4 +40,12 @@ public final class ClassUtil {
     public static <E extends Throwable> void sneakyThrow(@NotNull final Throwable e) throws E {
         throw (E) e;
     }
+
+    public static void sleep(int timems) {
+        try {
+            Thread.sleep(timems);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

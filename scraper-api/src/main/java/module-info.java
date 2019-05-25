@@ -1,4 +1,6 @@
 open module scraper.api {
+    requires scraper.annotations;
+
     requires spring.plugin.metadata;
     requires com.google.common;
     requires java.net.http;
@@ -12,4 +14,5 @@ open module scraper.api {
     exports scraper.api.service;
     exports scraper.api.flow;
     exports scraper.api.di;
+    exports scraper.api.service.proxy;
 }

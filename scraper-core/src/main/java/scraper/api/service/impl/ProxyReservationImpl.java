@@ -1,14 +1,21 @@
 package scraper.api.service.impl;
 
 import org.slf4j.Logger;
+import scraper.annotations.NotNull;
+import scraper.annotations.Nullable;
 import scraper.api.service.ProxyReservation;
+import scraper.api.service.impl.proxy.GroupInfoImpl;
+import scraper.api.service.impl.proxy.ProxyInfoImpl;
+import scraper.api.service.impl.proxy.ReservationTokenImpl;
+import scraper.api.service.proxy.GroupInfo;
+import scraper.api.service.proxy.ProxyMode;
+import scraper.api.service.proxy.ReservationToken;
 import scraper.utils.StringUtil;
 
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,12 +31,12 @@ public class ProxyReservationImpl implements ProxyReservation {
 
 
 
-    private ConcurrentHashMap<String, GroupInfo> allProxies = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, GroupInfoImpl> allProxies = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, LocalChannelInfo> allLocalChannels = new ConcurrentHashMap<>();
 
 
     @Override
-    public void addProxies(String proxyPath, String proxyGroup) {
+    public void addProxies(@NotNull String proxyPath, @NotNull String proxyGroup) {
         try {
             StringUtil.readBody(new File(proxyPath), line -> proxyLineConsumer.accept(line, Collections.singleton(proxyGroup)));
         } catch (Exception e) {
@@ -38,14 +45,14 @@ public class ProxyReservationImpl implements ProxyReservation {
     }
 
     @Override
-    public void addProxies(Set<String> proxyPath, String proxyGroup) {
+    public void addProxies(@NotNull Set<String> proxyPath, @NotNull String proxyGroup) {
         log.info("Adding proxies {}", proxyPath);
         proxyPath.forEach(line -> proxyLineConsumer.accept(line, Collections.singleton(proxyGroup)));
     }
 
 
     @Override
-    public ReservationToken reserveToken(String proxyGroup, ProxyMode proxyMode) throws InterruptedException {
+    public ReservationToken reserveToken(@NotNull String proxyGroup, @NotNull ProxyMode proxyMode) throws InterruptedException {
         ReservationToken token = null;
         while(token == null) {
             try {
@@ -59,7 +66,7 @@ public class ProxyReservationImpl implements ProxyReservation {
     }
 
     @Override
-    public ReservationToken reserveToken(String proxyGroup, ProxyMode proxyMode, int timeout, int holdOnReservation) throws InterruptedException, TimeoutException {
+    public ReservationToken reserveToken(@NotNull String proxyGroup, @NotNull ProxyMode proxyMode, int timeout, int holdOnReservation) throws InterruptedException, TimeoutException {
         // warn user that waiting with prefer mode does not make sense
         if(timeout == 0 && (proxyMode.equals(ProxyMode.BOTH_PREFER_PROXY) || proxyMode.equals(ProxyMode.BOTH_PREFER_LOCAL))) {
             log.warn("Infinite waiting for prefer mode, using default timeout of 60s!");
@@ -89,15 +96,21 @@ public class ProxyReservationImpl implements ProxyReservation {
         }
     }
 
+    @Nullable
+    @Override
+    public GroupInfo getInfoForGroup(@NotNull String group) {
+        return allProxies.get(group);
+    }
 
-    private ProxyInfo reserveProxy(String proxyGroup, int timeout, int holdOnReservation) throws InterruptedException, TimeoutException {
-        GroupInfo o = allProxies.get(proxyGroup);
+
+    private ProxyInfoImpl reserveProxy(String proxyGroup, int timeout, int holdOnReservation) throws InterruptedException, TimeoutException {
+        GroupInfoImpl o = allProxies.get(proxyGroup);
         if(o == null) {
             log.warn("No proxies loaded for group {}", proxyGroup);
             throw new TimeoutException("No proxies found");
         }
 
-        ProxyInfo reserved = o.freeProxies.poll(timeout, TimeUnit.MILLISECONDS);
+        ProxyInfoImpl reserved = o.freeProxies.poll(timeout, TimeUnit.MILLISECONDS);
 
         if(reserved != null) {
             reserved.lastUsed = new Date();
@@ -115,7 +128,7 @@ public class ProxyReservationImpl implements ProxyReservation {
         return reserved;
     }
 
-    private void releaseProxy(ProxyInfo info) {
+    private void releaseProxy(ProxyInfoImpl info) {
         try {
             Thread.sleep(info.hold);
         } catch (InterruptedException e) {
@@ -124,7 +137,7 @@ public class ProxyReservationImpl implements ProxyReservation {
         }
 
         synchronized (allProxies.get(info.group)) {
-            GroupInfo group = allProxies.get(info.group);
+            GroupInfoImpl group = allProxies.get(info.group);
             if (!group.usedProxies.remove(info)) log.error("Released proxy which was not in use: {}", info);
 
             if(info.score < 2L) log.warn("Proxy too low score: {}", info);
@@ -132,9 +145,9 @@ public class ProxyReservationImpl implements ProxyReservation {
         }
     }
 
-    private ReservationToken proxyToken(ProxyInfo reserved) {
+    private ReservationTokenImpl proxyToken(ProxyInfoImpl reserved) {
         if(reserved == null) return null;
-        return new ReservationToken(reserved.id, reserved.score, reserved.timesUsed, reserved.address, () -> releaseProxy(reserved), () -> {
+        return new ReservationTokenImpl(reserved.id, reserved.score, reserved.timesUsed, reserved.address, () -> releaseProxy(reserved), () -> {
             System.out.println(reserved.address+ " :: "+reserved.score +" -> "+reserved.score/2);
             reserved.score = reserved.score/2;
         });
@@ -158,12 +171,12 @@ public class ProxyReservationImpl implements ProxyReservation {
             InetSocketAddress address = new InetSocketAddress(getByName(hostname), port);
 
             groups.forEach(group -> {
-                if(!allProxies.keySet().contains(group)) allProxies.put(group, new GroupInfo());
+                if(!allProxies.keySet().contains(group)) allProxies.put(group, new GroupInfoImpl());
 
                 synchronized (allProxies.get(group)) {
-                    GroupInfo info = allProxies.get(group);
+                    GroupInfoImpl info = allProxies.get(group);
 
-                    ProxyInfo proxy = ProxyInfo.of(address, group);
+                    ProxyInfoImpl proxy = ProxyInfoImpl.of(address, group);
                     info.knownProxies.add(proxy);
                     info.freeProxies.add(proxy);
                 }
@@ -173,84 +186,11 @@ public class ProxyReservationImpl implements ProxyReservation {
         }
     };
 
-    // ========================
-    // Classes
-    // ========================
-
-    static class ProxyInfo implements Comparable<ProxyInfo> {
-        final InetSocketAddress address;
-        final String group;
-        Long timesUsed = 0L;
-        int hold = DEFAULT_HOLD_ON_RESERVATION;
-
-        UUID id = UUID.randomUUID();
-        Long score = (long) random.nextInt(5)+100L;
-        Date lastUsed;
-
-        ProxyInfo(InetSocketAddress address, String group) {
-            this.address = address;
-            this.group = group;
-        }
-
-        public static ProxyInfo of(InetSocketAddress address, String group) {
-            return new ProxyInfo(address, group);
-        }
-
-
-        void resetScore() {
-            score = (long) random.nextInt(100)+100L;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true; if (o == null || getClass() != o.getClass()) return false;
-            ProxyInfo proxyInfo = (ProxyInfo) o;
-            return Objects.equals(id, proxyInfo.id);
-        }
-
-        @Override
-        public int hashCode() { return Objects.hash(id); }
-
-        @Override
-        public int compareTo(ProxyInfo o) {
-//            return score.compareTo(o.score);
-            return o.score.compareTo(score);
-        }
-
-        @Override
-        public String toString() {
-            return "ProxyInfo{" +
-                    "address=" + address +
-                    ", group='" + group + '\'' +
-                    ", score=" + score +
-                    '}';
-        }
-    }
-
-    static class GroupInfo {
-        UUID id = UUID.randomUUID();
-        Set<ProxyInfo> knownProxies = new HashSet<>();
-        Set<ProxyInfo> usedProxies = new HashSet<>();
-        PriorityBlockingQueue<ProxyInfo> freeProxies = new PriorityBlockingQueue<>(100);
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true; if (o == null || getClass() != o.getClass()) return false;
-            GroupInfo groupInfo = (GroupInfo) o;
-            return Objects.equals(id, groupInfo.id);
-        }
-
-        @Override
-        public int hashCode() { return Objects.hash(id); }
-    }
-
-
-
     // ===========================
     // LOCAL TRANSPORT RESERVATION
     // ===========================
 
-    private ReservationToken reserveLocal(String proxyGroup, int timeout, int holdOnReservation) throws InterruptedException, TimeoutException {
+    private ReservationTokenImpl reserveLocal(String proxyGroup, int timeout, int holdOnReservation) throws InterruptedException, TimeoutException {
         ensureLocalGroup(proxyGroup);
 
         synchronized (allLocalChannels.get(proxyGroup)) {
@@ -269,8 +209,8 @@ public class ProxyReservationImpl implements ProxyReservation {
         }
     }
 
-    private ReservationToken createLocalToken(String proxyGroup, int holdOnReservation, LocalChannelInfo info) {
-        return new ReservationToken(info.id, 0L, 0L, null,
+    private ReservationTokenImpl createLocalToken(String proxyGroup, int holdOnReservation, LocalChannelInfo info) {
+        return new ReservationTokenImpl(info.id, 0L, 0L, null,
                 () -> {
                     try { Thread.sleep(holdOnReservation); } catch (InterruptedException e) { throw new RuntimeException(e); }
                     info.inUse.set(false);
@@ -302,7 +242,7 @@ public class ProxyReservationImpl implements ProxyReservation {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true; if (o == null || getClass() != o.getClass()) return false;
-            GroupInfo groupInfo = (GroupInfo) o;
+            GroupInfoImpl groupInfo = (GroupInfoImpl) o;
             return Objects.equals(id, groupInfo.id);
         }
 

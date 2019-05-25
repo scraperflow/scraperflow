@@ -1,17 +1,18 @@
 package scraper.api.service;
 
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import scraper.api.service.proxy.ReservationToken;
 
 import java.io.IOException;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Provides communication over HTTP. Needs a {@link scraper.api.service.ProxyReservation.ReservationToken} from the {@link ProxyReservation} service.
+ * Provides communication over HTTP. Needs a {@link ReservationToken} from the {@link ProxyReservation} service.
  *
  * @see ProxyReservation
- * @see scraper.api.service.ProxyReservation.ReservationToken
+ * @see ReservationToken
  * @since 1.0.0
  */
 public interface HttpService {
@@ -35,7 +36,7 @@ public interface HttpService {
      * @see java.net.http.HttpResponse.BodyHandler
      * @see HttpResponse
      */
-    HttpResponse<?> send(HttpRequest request, HttpResponse.BodyHandler<?> handler, ProxyReservation.ReservationToken token) throws IOException, InterruptedException, TimeoutException, ExecutionException;
+    HttpResponse<?> send(HttpRequest request, HttpResponse.BodyHandler<?> handler, ReservationToken token) throws IOException, InterruptedException, TimeoutException, ExecutionException;
 
     class RedirectToNode {
         public final String target;

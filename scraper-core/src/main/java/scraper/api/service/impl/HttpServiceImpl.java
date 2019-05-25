@@ -1,15 +1,15 @@
 package scraper.api.service.impl;
 
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import org.slf4j.Logger;
 import scraper.api.service.HttpService;
-import scraper.api.service.ProxyReservation;
+import scraper.api.service.proxy.ReservationToken;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ProxySelector;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +32,7 @@ public class HttpServiceImpl implements HttpService {
     ConcurrentHashMap<InetSocketAddress, HttpClient> clients = new ConcurrentHashMap<>();
 
     @Override
-    public HttpResponse<?> send(HttpRequest request, HttpResponse.BodyHandler<?> handler, ProxyReservation.ReservationToken token) throws IOException, InterruptedException, TimeoutException, ExecutionException {
+    public HttpResponse<?> send(HttpRequest request, HttpResponse.BodyHandler<?> handler, ReservationToken token) throws IOException, InterruptedException, TimeoutException, ExecutionException {
         InetSocketAddress address = token.get();
         HttpClient client;
         if(address == null) {
