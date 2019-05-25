@@ -39,7 +39,7 @@ public class FileUtilTest {
         Assert.assertTrue(notified.get());
     }
 
-    @Test(expected = IOException.class, timeout = 50)
+    @Test(expected = IOException.class, timeout = 500)
     public void badWatchFileTest() throws IOException, InterruptedException {
         File tmp = new File("local");
         AtomicBoolean notified = new AtomicBoolean(false);
