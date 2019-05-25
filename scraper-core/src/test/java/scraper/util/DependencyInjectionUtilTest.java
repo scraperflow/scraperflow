@@ -122,6 +122,7 @@ public class DependencyInjectionUtilTest {
     private static class NonPublicClass {}
 
     public static class B {
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         boolean ok() {return true;}
     }
     public static class ADependsOnB {

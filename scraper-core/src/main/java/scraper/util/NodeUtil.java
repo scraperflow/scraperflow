@@ -182,10 +182,7 @@ public final class NodeUtil {
                 return null;
             } // if enum: try convert
             else if (Enum.class.isAssignableFrom(fieldType)) {
-                @SuppressWarnings("unchecked") // TODO think about this a bit more
-                        Enum<?> convertedValueB = Enum.valueOf(fieldType.asSubclass(Enum.class),
-                        String.valueOf(value));
-                value = convertedValueB;
+                value = Enum.valueOf(fieldType.asSubclass(Enum.class), String.valueOf(value));
             } // type match
             else //noinspection StatementWithEmptyBody readability
                 if (fieldType.isAssignableFrom(value.getClass())) {

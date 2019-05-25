@@ -72,10 +72,11 @@ public class FlowMapImpl implements FlowMap {
     }
 
     public boolean containsElements(FlowMap expectedOutput) {
-        Map<String, Object> currentMap = getMap();
-        Map<String, Object> otherMap = expectedOutput.getMap();
+        for (String key : expectedOutput.keySet()) {
+            if(!compareElement(get(key), expectedOutput.get(key))) return false;
+        }
 
-        return descendMap(currentMap, otherMap);
+        return true;
     }
 
     @Override
@@ -107,15 +108,14 @@ public class FlowMapImpl implements FlowMap {
         if(thisElement == null || otherElement == null) return false;
 
         if(Map.class.isAssignableFrom(thisElement.getClass()) && Map.class.isAssignableFrom(otherElement.getClass())) {
-            if(!descendMap((Map<?,?>) thisElement, (Map<?,?>) otherElement)) return false;
+            return descendMap((Map<?, ?>) thisElement, (Map<?, ?>) otherElement);
         } else
         if(Collection.class.isAssignableFrom(thisElement.getClass()) && Collection.class.isAssignableFrom(otherElement.getClass())) {
-            if(!descendCollection((Collection<?>) thisElement, (Collection<?>) otherElement)) return false;
+            return descendCollection((Collection<?>) thisElement, (Collection<?>) otherElement);
         } else {
-            if (!thisElement.equals(otherElement)) return false;
+            return thisElement.equals(otherElement);
         }
 
-        return true;
     }
 
     private boolean descendCollection(Collection<?> currentCollection, Collection<?> otherCollection) {

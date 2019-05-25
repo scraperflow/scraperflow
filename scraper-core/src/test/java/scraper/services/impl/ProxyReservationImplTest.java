@@ -34,7 +34,7 @@ public class ProxyReservationImplTest {
                     Assert.assertNotNull(proxy);
                     result.set(true);
                 } catch (Exception e) {
-                    System.err.println(e);
+                    System.err.println(e.toString());
                     result.set(false);
                 }
             });

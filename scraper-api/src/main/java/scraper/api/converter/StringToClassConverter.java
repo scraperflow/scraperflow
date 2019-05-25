@@ -59,8 +59,8 @@ public final class StringToClassConverter {
             }
 
         if(Boolean.class.isAssignableFrom(target)) {
-            if(String.valueOf(s).equalsIgnoreCase("false")) return false;
-            else if(String.valueOf(s).equalsIgnoreCase("true")) return true;
+            if(s.equalsIgnoreCase("false")) return false;
+            else if(s.equalsIgnoreCase("true")) return true;
         }
 
         if (Enum.class.isAssignableFrom(target)) {
@@ -69,7 +69,7 @@ public final class StringToClassConverter {
             // class cast should be thrown before, if enum cant be converted. TODO think about this a bit more
             try {
                 @SuppressWarnings("unchecked")
-                Enum<?> t = Enum.valueOf(e, String.valueOf(s));
+                Enum<?> t = Enum.valueOf(e, s);
                 return t;
             } catch (IllegalArgumentException | NullPointerException ex) {
                 throw new ValidationException("Could not convert string to Enum", ex);
