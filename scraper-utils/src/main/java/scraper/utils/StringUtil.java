@@ -62,17 +62,9 @@ public final class StringUtil {
     /** Returns the first argument starting with given parameter and delimiter ':', or null if none found */
     @Nullable
     public static String getArgument(@NotNull final String[] args, @NotNull final String param){
-        for (String argument: args) {
-            if(argument.startsWith(param)){
-                String arg =  argument.substring(param.length());
-                if (arg.equalsIgnoreCase("null"))
-                    return null;
-
-                return arg;
-            }
-        }
-
-        return null;
+        List<String> all = getAllArguments(args, param);
+        if(all.isEmpty()) return null;
+        return all.get(0);
     }
 
     /** Returns all arguments starting with given parameter and delimiter ':' */
@@ -82,7 +74,7 @@ public final class StringUtil {
 
         for (String argument: args) {
             if(argument.startsWith(param)){
-                arg.add(argument.substring(param.length()));
+                arg.add(argument.substring(Math.min(argument.length(), param.length()+1)));
             } else if(argument.endsWith(param)) {
                 arg.add(argument);
             }
