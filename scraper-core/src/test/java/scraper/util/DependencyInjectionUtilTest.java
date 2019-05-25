@@ -15,6 +15,7 @@ import scraper.hooks.TestPreHook;
 import scraper.hooks.PluginHook;
 
 import java.io.File;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
@@ -62,6 +63,10 @@ public class DependencyInjectionUtilTest {
         Assert.assertTrue(ndep.exists());
         ndep.deleteOnExit();
         temp.deleteOnExit();
+        Assert.assertTrue(ndep.delete());
+        container.get(NodeDependencyGeneratorHook.class).execute(container, new String[]{"ndep"}, Map.of(spec, instance));
+        URL impliedLocation = getClass().getResource("yml/job1.ndep");
+        Assert.assertNotNull(impliedLocation);
     }
 
     @Test(expected = IllegalArgumentException.class)

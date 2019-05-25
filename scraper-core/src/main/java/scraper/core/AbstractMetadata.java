@@ -5,8 +5,6 @@ import org.springframework.plugin.metadata.PluginMetadata;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.Node;
 
-import java.lang.reflect.InvocationTargetException;
-
 /**
  * This class holds the metadata needed for node instantiation and node versioning.
  * During initialization, AbstractMetadata is generated for each node found in the class/module path.
@@ -30,10 +28,6 @@ public abstract class AbstractMetadata extends AbstractMetadataBasedPlugin {
         this.category = category;
     }
 
-    /** Creates a new non-deprecated instance of {@code AbstractMetadata} */
-    protected AbstractMetadata(final String name, final String version, final String category) {
-        this(name, version, category, false);
-    }
 
     /** Implements basic semantic versioning of metadata */
     @Override

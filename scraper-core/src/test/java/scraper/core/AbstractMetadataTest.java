@@ -7,18 +7,18 @@ import scraper.api.node.Node;
 public class AbstractMetadataTest {
     @Test
     public void simpleData() {
-        AbstractMetadata datam = new AbstractMetadata("node", "1.0.1", "nodecat") {
+        AbstractMetadata datam = new AbstractMetadata("node", "1.0.1", "nodecat", true) {
             @Override public Node getNode() { return null; }
         };
-        AbstractMetadata data = new AbstractMetadata("node", "1.0.2", "nodecat") {
-            @Override public Node getNode() { return null; }
-        };
-
-        AbstractMetadata dataa = new AbstractMetadata("node", "1.2.2", "nodecat") {
+        AbstractMetadata data = new AbstractMetadata("node", "1.0.2", "nodecat", true) {
             @Override public Node getNode() { return null; }
         };
 
-        AbstractMetadata data2 = new AbstractMetadata("node", "2.0.2", "nodecat") {
+        AbstractMetadata dataa = new AbstractMetadata("node", "1.2.2", "nodecat", true) {
+            @Override public Node getNode() { return null; }
+        };
+
+        AbstractMetadata data2 = new AbstractMetadata("node", "2.0.2", "nodecat", false) {
             @Override public Node getNode() { return null; }
         };
 

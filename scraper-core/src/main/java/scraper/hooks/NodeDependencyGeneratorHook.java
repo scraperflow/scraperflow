@@ -41,9 +41,6 @@ public class NodeDependencyGeneratorHook implements Hook {
         // ==
         String createNodeDependencies = StringUtil.getArgument(args, "ndep");
         if(createNodeDependencies != null) {
-            if(createNodeDependencies.startsWith(":"))
-                createNodeDependencies = createNodeDependencies.substring(1);
-
             log.info("Generating node dependencies");
 
             for (ScrapeSpecification job : jobs.keySet()) {
@@ -64,7 +61,8 @@ public class NodeDependencyGeneratorHook implements Hook {
 
         try(PrintWriter pw = new PrintWriter(new FileOutputStream(f))) {
             for (Object plugin : jobFactory.getPlugins()) {
-                if(((AbstractMetadata) plugin).isDeprecated()) continue;
+                if(((AbstractMetadata) plugin).isDeprecated())
+                    continue;
                 pw.println(
                         ((AbstractMetadata) plugin).getMetadata().getName()+":"+((AbstractMetadata) plugin).getMetadata().getVersion()
                 );

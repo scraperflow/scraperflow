@@ -36,10 +36,11 @@ public class PluginBean {
 
                 String metadataName = routeClassInfo.getSimpleName();
                 String metadataVersion = (String) routeAnnotationInfo.getParameterValues().get("value");
+                Boolean metadataDeprecated = (Boolean) routeAnnotationInfo.getParameterValues().get("deprecated");
                 String metadataCategory = ClassUtil.extractCategoryOfNode(routeClassInfo.getName());
                 String className = routeClassInfo.getName();
 
-                AbstractMetadata metadata = new AbstractMetadata(metadataName, metadataVersion, metadataCategory) {
+                AbstractMetadata metadata = new AbstractMetadata(metadataName, metadataVersion, metadataCategory, metadataDeprecated) {
                     @Override
                     public Node getNode() throws ValidationException {
                         try {
