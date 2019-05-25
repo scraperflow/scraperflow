@@ -113,18 +113,6 @@ public class ProxyReservationImplTest {
             System.out.println("y");
             token.bad();
         }
-
-
-
-
-//        r.addProxies(Set.of("1.1.1.1:1", "2.2.2.2:2","3.3.3.3:3"), "t1");
-//
-//        // get token and release, check score
-//        for (int i = 1; i < 10; i++) {
-//            try (ProxyReservation.ReservationTokenImpl token = r.reserveToken("t1", ProxyReservation.ProxyMode.PROXY, 100, 10)) {
-//                Assert.assertTrue(""+token.score(), token.score() <= 201 && token.score() >= 100);
-//            }
-//        }
     }
 
     @Test
@@ -150,6 +138,25 @@ public class ProxyReservationImplTest {
         assertTrue(l.contains("1.1.1.1:1"));
         assertTrue(l.contains("1.2.1.2:1"));
         assertTrue(l.contains("1.2.1.2:3"));
+    }
 
+    @Test(timeout = 1000)
+    public void reserveTokenTest() throws Exception {
+        ProxyReservation r = new ProxyReservationImpl();
+
+        // wait for other thread
+        Thread t = new Thread(() -> {
+            try (ReservationToken token = r.reserveToken("t1", ProxyMode.LOCAL, 10, 10)) {
+                Thread.sleep(10);
+                System.out.println("Finished");
+            } catch (InterruptedException | TimeoutException e) { e.printStackTrace(); }
+        });
+
+        t.start();
+        Thread.sleep(20);
+
+        try (ReservationToken token = r.reserveToken("t1", ProxyMode.LOCAL)) {
+            System.out.println("y");
+        }
     }
 }

@@ -27,7 +27,6 @@ import static java.net.InetAddress.getByName;
 public class ProxyReservationImpl implements ProxyReservation {
     private final static Random random = new Random();
     private static final Logger log = org.slf4j.LoggerFactory.getLogger("TokenReservation");
-    private static int DEFAULT_HOLD_ON_RESERVATION = 40000;
 
 
 
@@ -56,7 +55,7 @@ public class ProxyReservationImpl implements ProxyReservation {
         ReservationToken token = null;
         while(token == null) {
             try {
-                token = reserveToken(proxyGroup, proxyMode, 0, DEFAULT_HOLD_ON_RESERVATION);
+                token = reserveToken(proxyGroup, proxyMode, 0, 0);
             } catch (TimeoutException e) {
                 log.error("Timeout with infinite waiting happened");
                 throw new RuntimeException("Timeout without timeout should not happen", e);
@@ -129,6 +128,7 @@ public class ProxyReservationImpl implements ProxyReservation {
     }
 
     private void releaseProxy(ProxyInfoImpl info) {
+        System.err.println("RELEASING");
         try {
             Thread.sleep(info.hold);
         } catch (InterruptedException e) {
