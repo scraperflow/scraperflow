@@ -11,4 +11,13 @@ public class ClassUtilTest {
         Assert.assertEquals("testing", ClassUtil.extractCategoryOfNode("nodes.testing.testNode"));
     }
 
+    @Test
+    public void badNodeCategoryButNoExceptionTest() {
+        ClassUtil.extractCategoryOfNode("abc");
+        Assert.assertEquals("unknown", ClassUtil.extractCategoryOfNode("nodes."));
+        Assert.assertEquals("unknown", ClassUtil.extractCategoryOfNode(".nodes"));
+        Assert.assertEquals("", ClassUtil.extractCategoryOfNode(".nodes.."));
+        Assert.assertEquals("unknown", ClassUtil.extractCategoryOfNode(".nodes."));
+    }
+
 }
