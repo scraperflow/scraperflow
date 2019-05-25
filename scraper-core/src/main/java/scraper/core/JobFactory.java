@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.springframework.plugin.metadata.PluginMetadata;
 import org.springframework.plugin.metadata.SimplePluginMetadata;
+import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.Node;
 import scraper.api.service.ExecutorsService;
@@ -167,15 +168,8 @@ public class JobFactory {
             PluginMetadata metadata = new SimplePluginMetadata(nodeType, vers);
 
             List<? extends AbstractMetadata> processPlugins = plugins.getPlugins().getPluginsFor(metadata);
-            if(processPlugins.isEmpty()){
-                String msg = "No plugin for "+job.getProcessKey(index,"type")+" (v"+vers+") found! Provide an implementation with qualifying version number.";
-                log.error(msg);
-                throw new IllegalArgumentException(msg);
-            }
-            else {
-                Node n = getHighestMatchingPlugin(processPlugins, metadata);
-                job.addProcessNode(n);
-            }
+            Node n = getHighestMatchingPlugin(processPlugins, metadata);
+            job.addProcessNode(n);
         }
 
         job.init();
@@ -283,9 +277,9 @@ public class JobFactory {
     private static class FragmentDefinitionList extends ArrayList<FragmentDefinition> {}
     private static class FragmentDefinition extends LinkedHashMap<String, Object> {}
 
-    private Node getHighestMatchingPlugin(List<? extends AbstractMetadata> processPlugins, PluginMetadata metadata) throws ValidationException {
-        if(processPlugins == null || processPlugins.isEmpty()) return null;
-
+    @NotNull
+    private Node getHighestMatchingPlugin(@NotNull final List<? extends AbstractMetadata> processPlugins,
+                                          @NotNull final PluginMetadata metadata) throws ValidationException {
         AbstractMetadata curr = null;
 
         for (AbstractMetadata processPlugin : processPlugins) {
@@ -296,11 +290,12 @@ public class JobFactory {
             }
         }
 
-        try {
-            return curr.getNode();
-        } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
-            throw new ValidationException("Could not instantiate plugin: "+e.getMessage());
+        if(curr == null) {
+            String msg = "No plugin for "+metadata.getName()+" (v"+metadata.getVersion()+") found! " +
+                    "Provide an implementation with qualifying version number.";
+            throw new ValidationException(msg);
         }
+        return curr.getNode();
     }
 
     private File locateScrapeFile(ScrapeSpecification def) throws FileNotFoundException {

@@ -53,7 +53,7 @@ public abstract class AbstractMetadata extends AbstractMetadataBasedPlugin {
     }
 
     /** Each actual implementation for a node should be able to instantiate the node implementation */
-    public abstract Node getNode() throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException, ValidationException;
+    public abstract Node getNode() throws ValidationException;
 
     /**
      * Checks if this node is backwards compatible with another node
