@@ -12,6 +12,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.function.Consumer;
 
+import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
+
 public final class FileUtil {
     private FileUtil(){}
 
@@ -36,7 +39,8 @@ public final class FileUtil {
         // try classloader
         for (String path : candidates) {
             URL url = FileUtil.class.getClassLoader().getResource(Paths.get(path, name).toString());
-            if(url != null && new File(url.getFile()).exists()) return new File(url.getFile());
+            if(url != null && new File(url.getFile()).exists())
+                return new File(url.getFile());
         }
 
         throw new FileNotFoundException("'"+name+"'"+ " not found among candidate paths: " +candidates);
@@ -50,13 +54,14 @@ public final class FileUtil {
 
     /** Monitors given file for changes. If file has changed, executes given function */
     public static void watchFile(@NotNull final String file, @NotNull final OnFileChange actionOnChange) throws IOException, InterruptedException {
-        if(new File(file).getParentFile() == null) throw new IOException("Watched file '"+ file+"' has to have its own directory!");
+        if(new File(file).getParentFile() == null)
+            throw new IOException("Watched file '"+ file+"' has to have its own directory!");
 
         final Path path = FileSystems.getDefault().getPath(new File(file).getParentFile().getPath());
         try (final WatchService watchService = FileSystems.getDefault().newWatchService()) {
-            path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+            path.register(watchService, ENTRY_MODIFY, ENTRY_DELETE);
 
-            while (!Thread.currentThread().isInterrupted()) {
+            while (true) {
                 final WatchKey wk = watchService.take();
                 for (WatchEvent<?> event : wk.pollEvents()) {
                     //we only register "ENTRY_MODIFY" so the context is always a Path.
@@ -66,6 +71,10 @@ public final class FileUtil {
                     }
                 }
 
+                if(!new File(file).exists()) {
+                    wk.cancel();
+                }
+
                 // reset the key
                 boolean valid = wk.reset();
                 if (!valid) {
@@ -73,13 +82,16 @@ public final class FileUtil {
                 }
             }
         }
+
+        throw new IOException("File does not exist anymore or watch canceled");
     }
 
     /** Get the parent of a path. Returns default, if there is no parent */
     @NotNull
     public static Path getParentPath(@NotNull final String path, @NotNull final String defaultPath) {
         Path p = Paths.get(path).getParent();
-        if(p == null) return Paths.get(defaultPath);
+        if(p == null)
+            return Paths.get(defaultPath);
 
         return p;
     }
