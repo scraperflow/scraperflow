@@ -17,6 +17,7 @@ import scraper.api.exceptions.ValidationException;
  * @since 1.0.0
  */
 public final class StringToClassConverter {
+    private StringToClassConverter(){}
     /**
      * Converts a json string to a target class
      *

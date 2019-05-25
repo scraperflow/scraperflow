@@ -138,7 +138,11 @@ public final class NodeUtil {
             if (isArgument && value != null) {
 
                 // get template converter
-                Method convert = getConverter(argumentConverter);
+                Method convert;
+                if(argumentConverter == null || argumentConverter.equals(void.class))
+                    convert = getConverter(StringToClassConverter.class);
+                else
+                    convert = getConverter(argumentConverter);
 
                 // --- JSON string or some parsed value
                 // if parsed value is a String (or value is JSON) replace arguments
@@ -183,7 +187,8 @@ public final class NodeUtil {
                         String.valueOf(value));
                 value = convertedValueB;
             } // type match
-            else if (fieldType.isAssignableFrom(value.getClass())) {
+            else //noinspection StatementWithEmptyBody readability
+                if (fieldType.isAssignableFrom(value.getClass())) {
                 // value is correct
             } // if map & field is MapKey
             else if (String.class.isAssignableFrom(value.getClass()) && MapKey.class.isAssignableFrom(fieldType)) {

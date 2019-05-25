@@ -63,7 +63,8 @@ public class FileUtilTest {
 
         Thread.sleep(100);
 
-        FileUtil.getFirstExisting("t1.txt", d.toString());
+        File get = FileUtil.getFirstExisting("t1.txt", d.toString());
+        Assert.assertNotNull(get);
 
         AtomicInteger matched = new AtomicInteger();
         FileUtil.match("glob:**/*.txt", d.toString(), path -> matched.getAndIncrement());
@@ -82,6 +83,12 @@ public class FileUtilTest {
 
         Assert.assertEquals(5, StringUtil.readBodyToList(f).size());
         Assert.assertEquals("this\nis a log\n\\;\n\nmultiple lines\n", StringUtil.readBody(f));
+    }
+
+    @Test
+    public void replaceExtensionTest() {
+        String t = FileUtil.replaceFileExtension("a.scrape","args");
+        Assert.assertEquals("a.args", t);
     }
 
 }

@@ -39,6 +39,7 @@ public class FileServiceImpl implements FileService {
                 // create parent dir structure (if any parent can be found)
                 // ignore result and check afterwards for existence
                 if(outputFile.getParentFile() != null)
+                    //noinspection ResultOfMethodCallIgnored meaningless, throws IOException if structure is not correct
                     outputFile.getParentFile().mkdirs();
                 new FileOutputStream(outputFile).close();
                 if(!outputFile.exists()) {

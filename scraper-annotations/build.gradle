@@ -1,7 +1,4 @@
 apply plugin: 'java-library'
 
-dependencies {
-    // transitive api dependency
-    api project(":scraper-api")
-}
+dependencies {}
 

@@ -1,23 +1,17 @@
 package scraper.utils;
 
+import scraper.annotations.NotNull;
+
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
 public final class ClassUtil {
-//    /** Concatenates all simple object names of given list */
-//    public static String getSimpleNames(final List objectList) {
-//        StringBuilder arrayString = new StringBuilder("[");
-//        for (Object o : objectList) {
-//            arrayString.append(o.getClass().getSimpleName()).append(", ");
-//        }
-//
-//        if(arrayString.length() == 1) return "[]";
-//
-//        return arrayString.substring(0, arrayString.length() -2)+"]";
-//    }
+    private ClassUtil(){}
 
-    public static List<Field> getAllFields(List<Field> fields, Class<?> type) {
+    /** Returns all fields of a given class, including the fields of all super classes */
+    @NotNull
+    public static List<Field> getAllFields(@NotNull final List<Field> fields, @NotNull final Class<?> type) {
         fields.addAll(Arrays.asList(type.getDeclaredFields()));
 
         if (type.getSuperclass() != null) {
@@ -27,23 +21,23 @@ public final class ClassUtil {
         return fields;
     }
 
-    /** Extracts the plugin category, defined as the first package name after the 'nodes' package */
-//    public static String extractCategoryOfNode(Class<?> plugin) {
-//        return extractCategoryOfNode(plugin.getName());
-//    }
-
-
-    public static String extractCategoryOfNode(String plugin) {
-        int index = plugin.indexOf("nodes");
+    /** Tries to extract the category of a fully qualified node name */
+    @NotNull
+    public static String extractCategoryOfNode(@NotNull final String fullyQualifiedNodeClassName) {
+        int index = fullyQualifiedNodeClassName.indexOf("nodes");
         if(index == -1) return "NotANode";
 
-        int index2 = plugin.indexOf(".", index+6);
-
-        return plugin.substring(index+6, Math.min(index2, plugin.length()));
+        int index2 = fullyQualifiedNodeClassName.indexOf(".", index+6);
+        try {
+            return fullyQualifiedNodeClassName.substring(index+6, Math.min(index2, fullyQualifiedNodeClassName.length()));
+        } catch (IndexOutOfBoundsException e) {
+            return "unknown";
+        }
     }
 
+    /** Throws any exception unchecked */
     @SuppressWarnings("unchecked") // sneaky
-    public static <E extends Throwable> void sneakyThrow(Throwable e) throws E {
+    public static <E extends Throwable> void sneakyThrow(@NotNull final Throwable e) throws E {
         throw (E) e;
     }
 }

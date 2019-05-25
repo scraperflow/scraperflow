@@ -1,19 +1,17 @@
 package scraper.core;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.springframework.plugin.metadata.PluginMetadata;
 import org.springframework.plugin.metadata.SimplePluginMetadata;
 import scraper.api.exceptions.ValidationException;
-import scraper.api.specification.impl.ScrapeInstaceImpl;
 import scraper.api.node.Node;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
 import scraper.api.service.ProxyReservation;
-import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
+import scraper.api.specification.impl.ScrapeInstaceImpl;
 import scraper.utils.FileUtil;
 import scraper.utils.StringUtil;
 
@@ -24,6 +22,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
+
+import static scraper.utils.CollectionUtil.newAppend;
 
 public class JobFactory {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(JobFactory.class);
@@ -93,10 +93,11 @@ public class JobFactory {
         return convertJob(jobDefinition, null);
     }
 
-    public ScrapeInstaceImpl convertTestJob(final ScrapeSpecification jobDefinition,
-                                            final Function<String, Map<String, Object>> copySupplier) throws IOException, ValidationException {
-        return convertJob(jobDefinition, copySupplier);
-    }
+    // stest not implemented yet
+//    public ScrapeInstaceImpl convertTestJob(final ScrapeSpecification jobDefinition,
+//                                            final Function<String, Map<String, Object>> copySupplier) throws IOException, ValidationException {
+//        return convertJob(jobDefinition, copySupplier);
+//    }
 
     private ScrapeInstaceImpl convertJob(final ScrapeSpecification jobDefinition,
                                          Function<String, Map<String, Object>> nodeSupplier) throws IOException, ValidationException {
@@ -273,10 +274,11 @@ public class JobFactory {
         return plugins.getPlugins().getPlugins();
     }
 
-    public void writePojo(String path, ScrapeInstance job) throws IOException {
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-        objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(path), job);
-    }
+    // export currently not used
+//    public void writePojo(String path, ScrapeInstance job) throws IOException {
+//        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+//        objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(path), job);
+//    }
 
     private static class FragmentDefinitionList extends ArrayList<FragmentDefinition> {}
     private static class FragmentDefinition extends LinkedHashMap<String, Object> {}
@@ -302,26 +304,22 @@ public class JobFactory {
     }
 
     private File locateScrapeFile(ScrapeSpecification def) throws FileNotFoundException {
-        return FileUtil.getFirstExisting(def.getScrapeFile(), def.getPaths(), def.getBasePath());
+        return FileUtil.getFirstExisting(def.getScrapeFile(), newAppend(def.getPaths(), def.getBasePath()));
     }
 
     private File findArgsFile(String args, ScrapeSpecification job) throws FileNotFoundException {
-        return FileUtil.getFirstExisting(args, job.getPaths(), job.getBasePath());
+        return FileUtil.getFirstExisting(args, newAppend(job.getPaths(), job.getBasePath()));
     }
 
     private File findNdepFile(ScrapeSpecification job) throws FileNotFoundException {
         String ndepLocation = StringUtil.removeExtension(job.getScrapeFile()).concat(".ndep");
-        return FileUtil.getFirstExisting(ndepLocation, job.getPaths(), job.getBasePath());
+        return FileUtil.getFirstExisting(ndepLocation, newAppend(job.getPaths(), job.getBasePath()));
     }
 
     private File findFragment(String location, ScrapeSpecification jobDefinition) throws FileNotFoundException {
         Collection<String> paths = StringUtil.pathProduct(jobDefinition.getPaths(), jobDefinition.getFragmentFolders());
-
-        return FileUtil.getFirstExisting(
-                location,
-                paths,
-                jobDefinition.getBasePath(),
-                FileUtil.getParentPath(jobDefinition.getScrapeFile()).toString()
-        );
+        String parent = FileUtil.getParentPath(jobDefinition.getScrapeFile(), "").toString();
+        List<String> candidates = newAppend((List<String>) new LinkedList<>(paths), new String[]{jobDefinition.getBasePath(), parent});
+        return FileUtil.getFirstExisting(location, candidates);
     }
 }

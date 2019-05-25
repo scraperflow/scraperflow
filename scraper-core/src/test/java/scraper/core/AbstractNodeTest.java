@@ -1,9 +1,7 @@
 package scraper.core;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import scraper.annotations.node.EnsureFile;
 import scraper.api.di.DIContainer;
 import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
@@ -12,9 +10,6 @@ import scraper.api.flow.ControlFlowEdge;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.Node;
-import scraper.api.node.NodeInitializable;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.specification.ScrapeSpecification;
 import scraper.api.specification.impl.ScrapeInstaceImpl;
 import scraper.api.specification.impl.ScrapeSpecificationImpl;
 import scraper.util.DependencyInjectionUtil;
@@ -22,18 +17,11 @@ import scraper.util.NodeUtil;
 import scraper.utils.ClassUtil;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.ReflectPermission;
 import java.net.URL;
 import java.security.Permission;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
 
 import static org.junit.Assert.*;
 

@@ -3,13 +3,9 @@ package scraper.app;
 import org.junit.Assert;
 import org.junit.Test;
 import scraper.utils.ClassUtil;
-import scraper.utils.StringUtil;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.Permission;
 

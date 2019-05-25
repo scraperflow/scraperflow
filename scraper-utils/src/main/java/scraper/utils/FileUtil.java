@@ -1,6 +1,7 @@
 package scraper.utils;
 
 import org.apache.commons.io.FilenameUtils;
+import scraper.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,47 +9,47 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 import java.util.function.Consumer;
 
 public final class FileUtil {
+    private FileUtil(){}
 
-    public static File getFirstExisting(String name, String... candidatePaths) throws FileNotFoundException {
-        return getFirstExisting(name, Collections.emptyList(), candidatePaths);
+    /** Searches for files with the candidate paths in both file system and class loader resources */
+    @NotNull
+    public static File getFirstExisting(@NotNull final String name, @NotNull final String... candidatePaths) throws FileNotFoundException {
+        return getFirstExisting(name, List.of(candidatePaths));
     }
 
-    public static File getFirstExisting(String name, Collection<String> base, String... otherBaseCandidates) throws FileNotFoundException {
+    /** Searches for files with the candidate paths in both file system and class loader resources */
+    @NotNull
+    public static File getFirstExisting(@NotNull final String name, @NotNull final Collection<String> candidates) throws FileNotFoundException {
         // base case
         if(new File(name).exists()) return new File(name);
 
-        base = new ArrayList<>(base);
-        base.addAll(Arrays.asList(otherBaseCandidates));
-
         // try base
-        for (String path : base) {
+        for (String path : candidates) {
             File f = new File(Paths.get(path, name).toString());
             if(f.exists()) return f;
         }
 
         // try classloader
-        for (String path : base) {
+        for (String path : candidates) {
             URL url = FileUtil.class.getClassLoader().getResource(Paths.get(path, name).toString());
             if(url != null && new File(url.getFile()).exists()) return new File(url.getFile());
         }
 
-        throw new FileNotFoundException("'"+name+"'"+ " not found among candidate paths: " +base);
+        throw new FileNotFoundException("'"+name+"'"+ " not found among candidate paths: " +candidates);
     }
 
+    /** Function to apply when a file has changed */
     @FunctionalInterface
     public interface OnFileChange {
-        void accept(String filepath);
+        void accept(@NotNull final String filepath);
     }
 
     /** Monitors given file for changes. If file has changed, executes given function */
-    public static void watchFile(String file, OnFileChange actionOnChange) throws IOException, InterruptedException {
+    public static void watchFile(@NotNull final String file, @NotNull final OnFileChange actionOnChange) throws IOException, InterruptedException {
         if(new File(file).getParentFile() == null) throw new IOException("Watched file '"+ file+"' has to have its own directory!");
 
         final Path path = FileSystems.getDefault().getPath(new File(file).getParentFile().getPath());
@@ -74,69 +75,34 @@ public final class FileUtil {
         }
     }
 
-
-//    private void pollFolder(String folder, Consumer<File> scrapeFile, boolean rootPoller, String jobPojo) {
-//        l.info("[{}] Polling folder {}", jobPojo, folder);
-//
-//        try{
-//            do {
-//                List<Callable<Object>> polls = new ArrayList<>();
-//
-//                // current content
-//                File presentFiles = new File(folder);
-//                for (File file : presentFiles.listFiles()) {
-//                    if(file.isDirectory()) {
-//                        Runnable watch = () -> pollFolder(file.getPath(), scrapeFile, false, jobPojo);
-//                        if(rootPoller) {
-//                            polls.add(Executors.callable(watch));
-//                        } else {
-//                            watch.run();
-//                        }
-//                    } else {
-//                        scrapeFile.accept(file);
-//                    }
-//                }
-//
-//                if(rootPoller) {
-////                    executors.getService(jobPojo, "poll", true).invokeAll(polls);
-//                    l.info("Finished batch! Waiting 20 minutes for next poll", jobPojo);
-//                    Thread.sleep(1200000);
-//                }
-//            } while (rootPoller);
-//        } catch (Exception e) {
-//            l.error("Could not poll folder: {}", jobPojo, e.getMessage());
-//        }
-//
-//
-//    }
-
-    public static Path getParentPath(String path) {
+    /** Get the parent of a path. Returns default, if there is no parent */
+    @NotNull
+    public static Path getParentPath(@NotNull final String path, @NotNull final String defaultPath) {
         Path p = Paths.get(path).getParent();
-        if(p == null) return Paths.get("");
+        if(p == null) return Paths.get(defaultPath);
 
         return p;
     }
 
-    public static String replaceFileExtension(String scrapePath, String extension) {
-        String path = scrapePath;
-        path = path.substring(0,path.length() - FilenameUtils.getExtension(path).length())+extension;
-        return path;
+    /** Replace the extension of a file, if any */
+    @NotNull
+    public static String replaceFileExtension(@NotNull final String scrapePath, @NotNull final String extension) {
+        return FilenameUtils.removeExtension(scrapePath) + "." +extension;
     }
 
-//        Collection<String> paths = StringUtil.pathProduct(jobDefinition.getPaths(), jobDefinition.getFragmentFolders());
-//        File fragment = FileUtil.getFirstExisting(
-//                (String) job.getProcessKey(i, "required"),
-//                paths,
-//                jobDefinition.getBasePath(),
-//                FileUtil.getParentPath(jobDefinition.getScrapeFile()).toString()
-//        );
-
-    public static void match(String glob, String location, Consumer<Path> consumer) throws IOException {
-
+    /**
+     * Get all files for a glob pattern and apply an action on them.
+     *
+     * @param glob glob pattern for file matching
+     * @param location location to apply the glob against
+     * @param consumer what to execute for each match
+     * @throws IOException I/O error by visitor method
+     * @see FileSystem#getPathMatcher(String) how to specify the glob
+     */
+    public static void match(@NotNull final String glob, @NotNull final String location, @NotNull final Consumer<Path> consumer) throws IOException {
         final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher(glob);
 
         Files.walkFileTree(Paths.get(location), new SimpleFileVisitor<>() {
-
             @Override
             public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) {
                 if (pathMatcher.matches(path)) {

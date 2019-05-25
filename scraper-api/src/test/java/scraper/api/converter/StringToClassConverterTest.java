@@ -4,8 +4,13 @@ import org.junit.Assert;
 import org.junit.Test;
 import scraper.api.exceptions.ValidationException;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.util.Random;
+
+import static junit.framework.TestCase.assertTrue;
 
 /**
  * Tests the default StringToClassConverter
@@ -124,5 +129,13 @@ public class StringToClassConverterTest {
                 StringToClassConverter.convert(generatedString, targetClass);
             } catch (ValidationException ignored) {}
         }
+    }
+
+    @Test
+    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        Constructor<StringToClassConverter> constructor = StringToClassConverter.class.getDeclaredConstructor();
+        assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+        constructor.setAccessible(true);
+        constructor.newInstance();
     }
 }
