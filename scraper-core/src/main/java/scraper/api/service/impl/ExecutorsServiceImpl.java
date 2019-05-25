@@ -48,7 +48,8 @@ public class ExecutorsServiceImpl implements ExecutorsService {
     private synchronized ExecutorService createExecutorService(int count, String group, boolean show) {
         BlockingQueue<Runnable> arrayBlockingQueue = new ArrayBlockingQueue<>(count);
         ThreadPoolExecutor executorService =
-                new ThreadPoolExecutor(0, count, 1, TimeUnit.SECONDS, arrayBlockingQueue, new DefaultThreadFactory(group, show));
+                new ThreadPoolExecutor(count, count, 1, TimeUnit.SECONDS, arrayBlockingQueue, new DefaultThreadFactory(group, show));
+        executorService.allowCoreThreadTimeOut(true);
 
         // when the blocking queue is full, this tries to put into the queue which blocks
         executorService.setRejectedExecutionHandler((r, executor) -> {

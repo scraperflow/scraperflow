@@ -128,7 +128,6 @@ public class ProxyReservationImpl implements ProxyReservation {
     }
 
     private void releaseProxy(ProxyInfoImpl info) {
-        System.err.println("RELEASING");
         try {
             Thread.sleep(info.hold);
         } catch (InterruptedException e) {

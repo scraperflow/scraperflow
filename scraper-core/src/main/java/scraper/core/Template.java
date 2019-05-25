@@ -64,8 +64,6 @@ public abstract class Template<T> {
             return castMap;
         } // JSON primitive
         else {
-            System.out.println(jsonObject);
-            System.out.println(currentType);
             // case 1: current object is the same type as the current JSON object, use JSON object
             if (currentType.getRawType().isAssignableFrom(jsonObject.getClass())) {
                 Object val = jsonObject;
