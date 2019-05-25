@@ -86,8 +86,7 @@ public abstract class Template<T> {
                 return castVal;
             } // case 3: current object has unknown class. this can be the case if new rawJson classes are implemented
             else {
-                log.error("Unknown rawJson object type found, missing Implementation? {}", jsonObject.getClass());
-                throw new TemplateException("Unknown rawJson object: "+jsonObject.getClass()+ " ");
+                throw new TemplateException("Unknown rawJson object: "+jsonObject.getClass()+ "; missing implementation? ");
             }
         }
     }

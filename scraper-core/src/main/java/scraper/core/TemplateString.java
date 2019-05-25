@@ -36,7 +36,8 @@ public class TemplateString<T> {
                     template = template.substring(1, template.length()-1);
                     Object replaced = args.get(template);
                     if(replaced == null) {
-                        throw new TemplateException(args, "Missing template in current argument map: '"+template+"'. Check scrape definition or input arguments");
+                        throw new TemplateException("Missing template in current argument map: '"
+                                +template+"'. Check scrape definition or input arguments");
                     }
 
                     // special case: if evaluated object should be treated as an object instead of an string
@@ -54,8 +55,7 @@ public class TemplateString<T> {
             // TODO enable dynamic change of converter
             return targetType.cast(StringToClassConverter.convert(eval.toString(), targetType));
         } catch (Exception e) {
-            log.error("Could not evaluate String Template '{}': {}", toString(), e.getMessage());
-            throw new TemplateException(args, "Could not evaluate template string '"+toString()+"'. "+ e.toString());
+            throw new TemplateException("Could not evaluate template string '"+toString()+"'. "+ e.toString());
         }
     }
 
