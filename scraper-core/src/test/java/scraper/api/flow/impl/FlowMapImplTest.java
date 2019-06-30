@@ -138,8 +138,7 @@ public class FlowMapImplTest {
 
         assertNotEquals(o1.getFlowState(), o2.getFlowState());
 
-        Assert.assertNull(o1.getFlowState().getLabel());
-        Assert.assertEquals(0, o1.getFlowState().getStageIndex());
+        Assert.assertNull(o1.getFlowState().getAddress().getLabel());
         Assert.assertEquals("utilJob", o1.getFlowState().getJobName());
     }
 

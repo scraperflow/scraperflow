@@ -4,7 +4,10 @@ import scraper.api.exceptions.NodeException;
 import scraper.api.flow.ControlFlow;
 import scraper.api.flow.FlowMap;
 
+import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 /**
  * The main component in a Scraper workflow specification.
@@ -37,47 +40,39 @@ public interface Node extends NodeConsumer, ControlFlow {
     /** Returns the complete node definition */
     Map<String, Object> getNodeJsonSpec();
 
-    /** Rewrites the complete node definition. Update is still needed */
-    void setDefinition(Map<String, Object> newDefinition);
 
-    // TODO #20 implement runtime updates
-    /** Processes the current node definition. It it is not a valid one, reverts to the last working one and logging the error */
-    void updateDefinition();
-
-    /** Sets one key value of the node. Update is still needed */
-    void setArgument(String key, Object value);
+    /** Job-Unique node address used for control flow */
+    NodeAddress getAddress();
 
 
-    // ============
-    // Getter
-    // ============
-
-    /** Index in the process list */
-    int getStageIndex();
-
-    // TODO #21 legacy addressing
-    /** Unique node label used for control flow */
-    String getLabel();
-
-    /** Can be either an parsable stage index or a stage label. Parsable stage index is tried first. */
-    String getGoTo();
-
-    // FIXME #21 new addressing
-//    /** Returns own node address */
-//    NodeAddress getAddress();
-//
-//    /** Returns the target node address. Default is 'next node' */
-//    NodeAddress getTargetAddress();
+    /** Job-Unique target node address */
+    NodeAddress getTarget();
 
     // ============
     // Control Flow
     // ============
 
-    /** Forwards the flow map to another node. Either next node, or the node specified by a target address */
-    void forward(FlowMap o) throws NodeException;
+    /**
+     * Forwards the flow map to another node.
+     * Either next node, or the node specified by a target address at key 'goTo'
+     * If dependent is false, then this function returns immediately if the queue allows for creation of more flows
+     * and returns null as the result
+     */
 
-    /** Forwards map to the specified target. Target can either be a stage index or a node label. */
-    void goTo(final FlowMap o, String target) throws NodeException;
-    /** Forwards map to the implied target. */
-    void goTo(final FlowMap o) throws NodeException;
+
+    /**
+     * Forwards the flow map to another node.
+     * Either next node, or the node specified by a target address given
+     * If dependent is false, then this function returns immediately if the queue allows for creation of more flows
+     * and returns null as the result
+     *
+     */
+    FlowMap forward(FlowMap o, NodeAddress target) throws NodeException;
+    default FlowMap forward(FlowMap o) throws NodeException { return forward(o, getTarget()); }
+
+    CompletableFuture<FlowMap> forkDepend(FlowMap o, NodeAddress target);
+    default CompletableFuture<FlowMap> forkDepend(FlowMap o) { return forkDepend(o, getTarget()); }
+
+    void forkDispatch(FlowMap o, NodeAddress target);
+    default void forkDispatch(FlowMap o) { forkDispatch(o, getTarget()); }
 }

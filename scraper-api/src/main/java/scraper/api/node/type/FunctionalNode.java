@@ -14,8 +14,8 @@ public interface FunctionalNode extends Node {
     void modify(FlowMap o) throws NodeException;
 
     /** Default accept method should only modify and forward the modified map */
-    default void accept(final FlowMap o) throws NodeException {
+    default FlowMap process(final FlowMap o) throws NodeException {
         modify(o);
-        forward(o);
+        return forward(o);
     }
 }

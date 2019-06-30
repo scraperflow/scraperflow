@@ -3,6 +3,7 @@ package scraper.core;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scraper.annotations.NotNull;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.EnsureFile;
 import scraper.annotations.node.FlowKey;
@@ -14,6 +15,8 @@ import scraper.api.flow.FlowMap;
 import scraper.api.flow.FlowState;
 import scraper.api.flow.impl.ControlFlowEdgeImpl;
 import scraper.api.node.Node;
+import scraper.api.node.NodeAddress;
+import scraper.api.node.NodeHook;
 import scraper.api.node.NodeInitializable;
 import scraper.api.specification.ScrapeInstance;
 import scraper.util.NodeUtil;
@@ -24,7 +27,11 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.function.Supplier;
 
 import static scraper.core.NodeLogLevel.*;
 import static scraper.util.NodeUtil.infoOf;
@@ -68,10 +75,10 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     /** Label of a node which can be used as a goto reference */
     @FlowKey
     protected String label;
-    /** Indicates if {@link #forward(FlowMap)} has any effect or not. */
+    /** Indicates if forward has any effect or not. */
     @FlowKey(defaultValue = "true")
     protected Boolean forward;
-    /** Target label which will be used when using {@link #forward(FlowMap)} or {@link #goTo(FlowMap)} */
+    /** Target label */
     @FlowKey
     protected String goTo;
 
@@ -301,12 +308,12 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     }
 
     /** Dispatches an action in an own thread, ignoring the result and possible exceptions. */
-    protected Future<?> dispatch(Callable<Void> o) {
+    protected CompletableFuture<FlowMap> dispatch(Supplier<FlowMap> o) {
         return dispatch(o, service);
     }
 
-    protected Future<?> dispatch(Callable<Void> o, String defaultService) {
-        return getJobPojo().getExecutors().getService(defaultService, threads).submit(o);
+    protected CompletableFuture<FlowMap> dispatch(Supplier<FlowMap> o, String defaultService) {
+        return CompletableFuture.supplyAsync(o, getJobPojo().getExecutors().getService(defaultService, threads));
     }
 
     // ------------------------
@@ -352,7 +359,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
 
     @Override
     public String getName() {
-        String name = getLabel();
+        String name = getAddress().getLabel();
         if (!(name == null || name.isEmpty())) name += "\\n";
         else name = "";
 
@@ -407,42 +414,46 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     }
 
     @Override
-    public void forward(FlowMap o) throws NodeException {
-        Node node = null;
+    public FlowMap forward(FlowMap o, @NotNull NodeAddress other) throws NodeException {
+        // do nothing
+        if(!getForward()) return o;
 
-        if(getForward()) {
+        // get target node
+        Node target = null;
+        if(other.getLabel() != null) {
+            // assume node target is always valid (static checking)
+            target = getJobPojo().getProcessNode(other.getLabel());
+        }
+        else if (getStageIndex() != getJobPojo().getJobProcess().size() - 1) {
+            target = getJobPojo().getProcessNode(String.valueOf(getStageIndex() + 1));
+        }
+
+        // last node or no node target
+        if(target == null) return o;
+
+        return target.accept(o);
+    }
+
+    @Override
+    public void forkDispatch(FlowMap o, NodeAddress target) {
+        dispatch(() -> {
             try {
-                if(getGoTo() != null) {
-                    node = getJobPojo().getProcessNode(getGoTo());
-                }
-
-                else if (getStageIndex() != getJobPojo().getJobProcess().size() - 1) {
-                    node = getJobPojo().getProcessNode(String.valueOf(getStageIndex() + 1));
-                }
-            } catch (Exception e){
-                getL().error("No node to forward to, goto: '{}', index: {} of {}: {}",
-                        getGoTo(), getStageIndex(), getJobPojo().getJobProcess().size()-1, e.toString());
-                throw e;
+                return forward(o, target);
+            } catch (NodeException e) {
+                return null;
             }
-        }
-
-        if(node != null) node.accept(o);
+        });
     }
 
     @Override
-    public void goTo(FlowMap o) throws NodeException {
-        Object target = getGoTo();
-        if(target == null) {
-            // use simple forward instead
-            forward(o);
-        } else {
-            getJobPojo().getProcessNode(String.valueOf(target)).accept(o);
-        }
-    }
-
-    @Override
-    public void goTo(FlowMap o, String target) throws NodeException {
-        getJobPojo().getProcessNode(target).accept(o);
+    public CompletableFuture<FlowMap> forkDepend(FlowMap o) {
+        return dispatch(() -> {
+            try {
+                return forward(o);
+            } catch (NodeException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
@@ -452,21 +463,6 @@ public abstract class AbstractNode implements Node, NodeInitializable {
 
     @Override
     public Map<String, Object> getNodeJsonSpec() {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    @Override
-    public void setArgument(String key, Object value) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    @Override
-    public void setDefinition(Map<String, Object> newDefinition) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    @Override
-    public void updateDefinition() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
@@ -482,8 +478,10 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         return this.logLevel;
     }
 
-    public String getLabel() {
-        return this.label;
+    @Override
+    public NodeAddress getAddress() {
+        // TODO better
+        return NodeUtil.addressOf(label);
     }
 
     public Boolean getForward() {
@@ -504,6 +502,27 @@ public abstract class AbstractNode implements Node, NodeInitializable {
 
     public String getFragment() {
         return this.fragment;
+    }
+
+    @Override
+    public NodeAddress getTarget() {
+        return NodeUtil.addressOf(goTo);
+    }
+
+
+    @Override
+    public CompletableFuture<FlowMap> forkDepend(FlowMap o, NodeAddress target) {
+        return null;
+    }
+
+    @Override
+    public Collection<NodeHook> beforeHooks() {
+        return Set.of(this::start);
+    }
+
+    @Override
+    public Collection<NodeHook> afterHooks() {
+        return Set.of(this::finish);
     }
 
 }

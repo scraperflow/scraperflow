@@ -57,7 +57,9 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
             return jobProcess.get(index);
         } catch (Exception e) { // try label
             for (Node node : jobProcess) {
-                if(node.getLabel() != null && node.getLabel().equalsIgnoreCase(target))
+                if(node.getAddress() != null
+                        && node.getAddress().getLabel() != null
+                        && node.getAddress().getLabel().equalsIgnoreCase(target))
                     return node;
             }
         }

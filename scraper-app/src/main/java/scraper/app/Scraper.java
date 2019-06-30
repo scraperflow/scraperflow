@@ -124,17 +124,16 @@ public class Scraper {
     	log.info("--- Starting Main Threads");
 		log.info("--------------------------------------------------------");
 		jobs.forEach((definition, job) -> {
-            CompletableFuture<Object> future = CompletableFuture.supplyAsync(() -> {
+            CompletableFuture<FlowMap> future = CompletableFuture.supplyAsync(() -> {
                 try {
                     FlowMap initial = flowOf(job.getInitialArguments());
 
                     job.getProcessNode(String.valueOf(0)).accept(initial);
 
+                    return initial;
                 } catch (NodeException e) {
                     throw new RuntimeException(e);
                 }
-
-                return null;
             }, executorsService.getService("main"));
 
             future.exceptionally(e -> {

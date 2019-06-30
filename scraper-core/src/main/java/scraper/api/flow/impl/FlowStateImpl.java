@@ -1,32 +1,27 @@
 package scraper.api.flow.impl;
 
 import scraper.api.flow.FlowState;
+import scraper.api.node.NodeAddress;
+import scraper.util.NodeUtil;
 
 import java.util.Objects;
 
 public class FlowStateImpl implements FlowState {
-    private final int stageIndex;
-    private final String label;
+    private final NodeAddress address;
     private final String jobName;
 
-    public FlowStateImpl(int stageIndex, String label, String jobName) {
-        this.stageIndex = stageIndex;
-        this.label = label;
+    public FlowStateImpl(NodeAddress address, String jobName) {
+        this.address = address;
         this.jobName = jobName;
     }
 
     public static FlowState initial() {
-        return new FlowStateImpl(-1, "unknown", "unknown");
+        return new FlowStateImpl(NodeUtil.addressOf("unknown"), "unknown");
     }
 
     @Override
-    public int getStageIndex() {
-        return stageIndex;
-    }
-
-    @Override
-    public String getLabel() {
-        return label;
+    public NodeAddress getAddress() {
+        return address;
     }
 
     @Override
@@ -39,13 +34,12 @@ public class FlowStateImpl implements FlowState {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FlowStateImpl flowState = (FlowStateImpl) o;
-        return stageIndex == flowState.stageIndex &&
-                label.equals(flowState.label) &&
+        return address.equals(flowState.address) &&
                 jobName.equals(flowState.jobName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(stageIndex, label, jobName);
+        return Objects.hash(address.getLabel(), jobName);
     }
 }

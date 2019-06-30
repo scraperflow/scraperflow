@@ -9,7 +9,7 @@ import scraper.core.AbstractNode;
 public final class GotoNode extends AbstractNode {
 
     @Override
-    public void accept(FlowMap o) throws NodeException {
-        goTo(o);
+    public FlowMap process(FlowMap o) throws NodeException {
+        return forward(o);
     }
 }

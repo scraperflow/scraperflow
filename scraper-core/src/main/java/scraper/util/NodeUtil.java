@@ -11,6 +11,8 @@ import scraper.api.flow.FlowState;
 import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.flow.impl.FlowStateImpl;
 import scraper.api.node.Node;
+import scraper.api.node.NodeAddress;
+import scraper.api.node.impl.NodeAddressImpl;
 import scraper.core.MapKey;
 import scraper.core.Template;
 import scraper.core.TemplateString;
@@ -76,7 +78,7 @@ public final class NodeUtil {
     }
 
     public static FlowState infoOf(FlowMap map, Node node, String jobName) {
-        return new FlowStateImpl(node.getStageIndex(), node.getLabel(), jobName);
+        return new FlowStateImpl(node.getTarget(), jobName);
     }
 
     public static FlowMap flowOf(Map<String, Object> initialArguments) {
@@ -85,6 +87,10 @@ public final class NodeUtil {
 
     public static FlowMap flowOf(FlowMap o) {
         return FlowMapImpl.copy(o);
+    }
+
+    public static NodeAddress addressOf(String label) {
+        return new NodeAddressImpl(label);
     }
 
     public static Object getValueForField(final Class<?> fieldType, final Object fieldValue,

@@ -3,6 +3,9 @@ package scraper.api.node;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 
+import java.util.Collection;
+import java.util.Set;
+
 /**
  * Objects which implement this interface can consume and modify {@link FlowMap}s.
  *
@@ -18,5 +21,16 @@ public interface NodeConsumer {
      * @param o The FlowMap to modifiy/use in the function
      * @throws NodeException if there is a processing error during the function call
      */
-    void accept(final FlowMap o) throws NodeException;
+    default FlowMap accept(final FlowMap o) throws NodeException {
+        for (NodeHook hook : beforeHooks()) { hook.accept(o); }
+        FlowMap fm = process(o);
+        for (NodeHook hook : afterHooks()) { hook.accept(o); }
+        return fm;
+    }
+
+    default Collection<NodeHook> afterHooks() { return Set.of(); }
+    default Collection<NodeHook> beforeHooks() {return Set.of(); }
+
+    FlowMap process(FlowMap o) throws NodeException;
+
 }

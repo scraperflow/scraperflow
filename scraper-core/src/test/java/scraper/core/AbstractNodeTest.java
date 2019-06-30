@@ -10,6 +10,7 @@ import scraper.api.flow.ControlFlowEdge;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.Node;
+import scraper.api.node.NodeAddress;
 import scraper.api.specification.impl.ScrapeInstaceImpl;
 import scraper.api.specification.impl.ScrapeSpecificationImpl;
 import scraper.util.DependencyInjectionUtil;
@@ -98,7 +99,7 @@ public class AbstractNodeTest {
         Assert.assertTrue(node instanceof AbstractFunctionalNode);
 
         FlowMap o = FlowMapImpl.of(Map.of());
-        node.accept(o);
+        o = node.accept(o);
 
         assertEquals(true, o.get("simple"));
 
@@ -123,7 +124,7 @@ public class AbstractNodeTest {
 
         Node node = instance.getJobProcess().get(0);
         FlowMap o = FlowMapImpl.of(Map.of());
-        node.accept(o);
+        o = node.accept(o);
 
         assertNull(o.get("simple"));
         // local key overwrites all key
@@ -244,7 +245,7 @@ public class AbstractNodeTest {
         JobFactory factory = deps.get(JobFactory.class);
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
         AbstractNode node = (AbstractNode) instance.getJobProcess().get(0); FlowMap o = NodeUtil.flowOf((Map.of()));
-        node.goTo(o);
+        node.forward(o);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -271,10 +272,10 @@ public class AbstractNodeTest {
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
         AbstractNode node = (AbstractNode) instance.getJobProcess().get(0);
         FlowMap o = NodeUtil.flowOf((Map.of()));
-        node.goTo(o);
+        FlowMap o2 = node.forward(o);
 
-        node.goTo(o, "oor");
-        assertNotNull(o.get("y"));
+        FlowMap o3 = node.forward(o2, NodeUtil.addressOf("oor"));
+        assertNotNull(o3.get("y"));
     }
 
     @Test
@@ -288,9 +289,9 @@ public class AbstractNodeTest {
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
         AbstractNode node = (AbstractNode) instance.getJobProcess().get(0);
         FlowMap o = NodeUtil.flowOf((Map.of()));
-        node.goTo(o);
+        FlowMap o2 = node.forward(o);
 
-        Assert.assertEquals(1, o.size());
+        Assert.assertEquals(1, o2.size());
     }
 
     @Test
@@ -303,19 +304,7 @@ public class AbstractNodeTest {
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
         AbstractNode node = (AbstractNode) instance.getJobProcess().get(0);
         try {
-            node.setArgument(null,null); fail();
-        } catch (Exception ignored){}
-        try {
             node.getNodeJsonSpec(); fail();
-        } catch (Exception ignored){}
-        try {
-            node.setArgument(null, null); fail();
-        } catch (Exception ignored){}
-        try {
-            node.setDefinition(null); fail();
-        } catch (Exception ignored){}
-        try {
-            node.updateDefinition(); fail();
         } catch (Exception ignored){}
     }
 
@@ -332,7 +321,7 @@ public class AbstractNodeTest {
 
         Node node = instance.getJobProcess().get(0);
         FlowMap o = FlowMapImpl.of(Map.of());
-        node.forward(o);
+        o = node.forward(o);
 
         assertEquals(true, o.get("simple"));
     }

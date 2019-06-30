@@ -13,7 +13,7 @@ import java.util.Map;
 @NodePlugin(value = "0.1.0", deprecated = true)
 public final class ComplexFlowNode extends AbstractNode {
     @Override
-    public void accept(final FlowMap o) {}
+    public FlowMap process(final FlowMap o) {return o;}
 
     public List<ControlFlowEdge> getOutput() {
         List<ControlFlowEdge> arr = new ArrayList<>(super.getOutput());
