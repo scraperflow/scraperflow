@@ -28,11 +28,27 @@ public class ProxyReservationImpl implements ProxyReservation {
     private final static Random random = new Random();
     private static final Logger log = org.slf4j.LoggerFactory.getLogger("TokenReservation");
 
-
-
     private ConcurrentHashMap<String, GroupInfoImpl> allProxies = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, LocalChannelInfo> allLocalChannels = new ConcurrentHashMap<>();
 
+    {
+        // TODO think about persisting proxy scores
+//        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//            System.out.println(allProxies.keySet());
+//            allProxies.forEach((group, groupInfo) -> {
+//                System.out.println("-----------------------");
+//                System.out.println("---------- Group: "+group);
+//                System.out.println("-----------------------");
+//                System.out.println("-----------------------");
+//                System.out.println("-----------------------");
+//                System.out.println("-----------------------");
+//                System.out.println(groupInfo.knownProxies.size());
+//                ArrayList<ProxyInfoImpl> list = new ArrayList<>(groupInfo.knownProxies);
+//                list.sort(Comparator.comparing(o -> o.score));
+//                list.forEach(l -> System.out.println(l.address+ "|"+l.score));
+//            });
+//        }));
+    }
 
     @Override
     public void addProxies(@NotNull String proxyPath, @NotNull String proxyGroup) {
@@ -156,19 +172,28 @@ public class ProxyReservationImpl implements ProxyReservation {
     // Functions
     // ========================
 
-    // takes a proxy String line (IP:PORT) and a set of groups and adds it to known proxies
+    // takes a proxy String line (IP:PORT) or (IP:PORT|SCORE) and a set of groups and adds it to known proxies
     private final BiConsumer<String, Set<String>> proxyLineConsumer = (line, groups) -> {
         if(line.isEmpty()) return;
 
         String hostname;
         Integer port;
+        Long score = -1L;
 
         try{
             hostname = line.split(":")[0];
-            port = Integer.valueOf(line.split(":")[1]);
+
+            String rest = line.split(":")[1];
+            if(rest.contains("|")) {
+                port = Integer.valueOf(rest.split("\\|")[0]);
+                score = Long.valueOf(rest.split("\\|")[1]);
+            } else {
+                port = Integer.valueOf(line.split(":")[1]);
+            }
 
             InetSocketAddress address = new InetSocketAddress(getByName(hostname), port);
 
+            Long finalScore = score;
             groups.forEach(group -> {
                 if(!allProxies.keySet().contains(group)) allProxies.put(group, new GroupInfoImpl());
 
@@ -176,8 +201,14 @@ public class ProxyReservationImpl implements ProxyReservation {
                     GroupInfoImpl info = allProxies.get(group);
 
                     ProxyInfoImpl proxy = ProxyInfoImpl.of(address, group);
-                    info.knownProxies.add(proxy);
-                    info.freeProxies.add(proxy);
+                    if(!info.knownProxies.contains(proxy)) {
+                        info.knownProxies.add(proxy);
+                        info.freeProxies.add(proxy);
+                        if(finalScore != -1) {
+                            log.info("Using known score {}", finalScore);
+                            proxy.score = finalScore;
+                        }
+                    }
                 }
             });
         } catch (Exception e){

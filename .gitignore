@@ -14,6 +14,9 @@
 ### vim
 **/*.swp
 
+## ignore antlr jar whereever it is
+**/antlr.jar
+
 ### junit error logs and normal logs
 **/errors.log
 **/*.log

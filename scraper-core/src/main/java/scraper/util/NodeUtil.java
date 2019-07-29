@@ -15,7 +15,6 @@ import scraper.api.node.NodeAddress;
 import scraper.api.node.impl.NodeAddressImpl;
 import scraper.core.MapKey;
 import scraper.core.Template;
-import scraper.core.TemplateString;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -212,7 +211,7 @@ public final class NodeUtil {
 
     public static Method getConverter(final Class<?> converter) throws ValidationException {
         Method convert;
-        try { convert = converter.getMethod("convert", String.class, Class.class); }
+        try { convert = converter.getMethod("convert", Object.class, Class.class); }
         catch (NoSuchMethodException e) { throw new ValidationException("Unknown template converter: " + e); }
         return convert;
     }
@@ -271,17 +270,10 @@ public final class NodeUtil {
                 return value;
             } else if (String.class.isAssignableFrom(value.getClass())) {
                 // string template found
-                return TemplateString.stringToTemplate((String) value, templ.getRawType());
+                return TemplateUtil.parseTemplate(((String) value), templ);
             } else {
                 throw new ValidationException("Argument type mismatch! Expected String or "+templ+", but found "+ value.getClass());
             }
         }
     }
-
-    /**
-     * Evaluates a template with the given map
-     */
-//    public static <C> C init(Template<C> template, Map<String, Object> arguments) throws NodeException {
-//        return template.eval(flowOf(arguments));
-//    }
 }

@@ -99,7 +99,8 @@ public class FileServiceImpl implements FileService {
             if(file.getParentFile().exists() && !file.getParentFile().isDirectory())
                 throw new IOException("Failed to create parent directory for file, already exists but not directory: "+file);
             if(!file.getParentFile().mkdirs())
-                throw new IOException("Failed to create parent directory for file: "+file);
+                if(!(file.getParentFile().exists() && file.getParentFile().isDirectory()))
+                    throw new IOException("Failed to create parent directory for file: "+file);
         }
     }
 

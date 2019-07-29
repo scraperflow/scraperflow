@@ -7,6 +7,7 @@ open module scraper.core {
     uses Node;
 
     exports scraper.core;
+    exports scraper.core.template;
     exports scraper.util;
     exports scraper.api.flow.impl;
     exports scraper.api.specification.impl;
@@ -27,4 +28,5 @@ open module scraper.core {
     requires org.slf4j;
 
     requires com.fasterxml.jackson.dataformat.yaml;
+    requires antlr4.runtime;
 }

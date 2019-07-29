@@ -35,11 +35,11 @@ public class ProxyInfoImpl implements ProxyInfo {
         public boolean equals(Object o) {
             if (this == o) return true; if (o == null || getClass() != o.getClass()) return false;
             ProxyInfoImpl proxyInfo = (ProxyInfoImpl) o;
-            return Objects.equals(id, proxyInfo.id);
+            return Objects.equals(address, proxyInfo.address);
         }
 
         @Override
-        public int hashCode() { return Objects.hash(id); }
+        public int hashCode() { return Objects.hash(address); }
 
         @Override
         public int compareTo(ProxyInfo o) {

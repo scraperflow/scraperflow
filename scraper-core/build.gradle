@@ -8,6 +8,8 @@ dependencies {
 }
 
 dependencies {
+    implementation 'org.antlr:antlr4-runtime:4.7.1'
+    
     // reflection framework
     api 'io.github.classgraph:classgraph:4.4.12'
 

@@ -440,7 +440,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
             try {
                 return forward(o, target);
             } catch (NodeException e) {
-                return null;
+                throw new RuntimeException(e);
             }
         });
     }

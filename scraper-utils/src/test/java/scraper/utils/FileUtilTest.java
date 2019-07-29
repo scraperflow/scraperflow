@@ -136,16 +136,16 @@ public class FileUtilTest {
 
         t.start();
 
-        Thread.sleep(100);
+        Thread.sleep(400);
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(tmp))) {
             pw.println("best content");
         }
 
-        Thread.sleep(100);
+        Thread.sleep(400);
         Assert.assertTrue(notified.get());
         Assert.assertTrue(tmp.delete());
 
-        Thread.sleep(300);
+        Thread.sleep(700);
         Assert.assertTrue(error.get());
     }
 }

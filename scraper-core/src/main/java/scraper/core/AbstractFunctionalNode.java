@@ -13,9 +13,7 @@ import scraper.api.node.type.FunctionalNode;
 public abstract class AbstractFunctionalNode extends AbstractNode implements FunctionalNode {
     @Override
     public FlowMap process(FlowMap o) throws NodeException {
-        start(o);
         modify(o);
-        finish(o);
         return forward(o);
     }
 }

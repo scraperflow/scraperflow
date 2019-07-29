@@ -21,21 +21,33 @@ public final class StringToClassConverter {
     /**
      * Converts a json string to a target class
      *
-     * @param s json string
+     * @param o object (should be a json string)
      * @param target which target class is expected
      * @return string converted to target class
      * @throws ValidationException if string cannot be converted to target class
      */
-    public static Object convert(final String s, final Class<?> target) throws ValidationException {
+    public static Object convert(final Object o, final Class<?> target) throws ValidationException {
         if(target == null) throw new ValidationException("Target class should not be null");
 
         // argument 'null'
-        if(s == null) return null;
+        if(o == null) return null;
         // json 'null'
-        if(s.equalsIgnoreCase("null")) return null;
+        if(o instanceof String && ((String) o).equalsIgnoreCase("null")) return null;
         // TODO #18
         if(target.equals(Object.class))
-            return s;
+            return o;
+
+        if(target.isAssignableFrom(o.getClass())){ return o; }
+
+        if(
+                !(o instanceof String)
+                        && !(o instanceof Integer)
+                        && !(o instanceof Boolean)
+                        && !(o instanceof Double)
+        )
+            throw new ValidationException("Could not convert object to target class; origin class: '"+ o.getClass()+"'; target class: '"+target+"'");
+
+        String s = String.valueOf(o);
 
         if(Double.class.isAssignableFrom(target))
             try {
