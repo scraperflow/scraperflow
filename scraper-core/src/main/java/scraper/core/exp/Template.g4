@@ -22,9 +22,8 @@ template : mixedtemplate
     ;
 
 mixedtemplate :
-    | (stringcontent+ fmlookup*)*
-    | (fmlookup stringcontent+ fmlookup*)*
-    | (fmlookup fmlookup+ stringcontent*)*;
+    | stringcontent
+    | ( (stringcontent | fmlookup) (stringcontent | fmlookup)+ );
 
 fmlookup :  LEFTP template RIGHTP;
 mllookup :  fmlookup LEFTA template LEFTB;

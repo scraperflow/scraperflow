@@ -5,12 +5,16 @@
 import com.google.common.reflect.TypeToken;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scraper.core.template.*;
 
 import java.util.List;
 import java.util.Map;
 
 public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<TemplateExpression<T>> implements TemplateVisitor<TemplateExpression<T>> {
+
+    protected Logger l = LoggerFactory.getLogger(getClass());
 
     private final TypeToken<T> target;
 
@@ -21,6 +25,7 @@ public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<Templ
 
     @Override
     public TemplateExpression<T> visitRoot(TemplateParser.RootContext ctx) {
+        l.warn("Parsing template '{}'", ctx.getText());
         if(ctx.children.size() != 2) { throw new RuntimeException("Root wrong children size: " + ctx.children.size()); }
         return visit(ctx.children.get(0));
     }

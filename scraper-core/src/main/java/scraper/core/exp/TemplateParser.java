@@ -257,10 +257,9 @@ public class TemplateParser extends Parser {
 		enterRule(_localctx, 4, RULE_mixedtemplate);
 		int _la;
 		try {
-			int _alt;
-			setState(74);
+			setState(35);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
@@ -269,153 +268,62 @@ public class TemplateParser extends Parser {
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(37);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-				while (_la==ANYCHAR || _la==ESCAPECHAR) {
-					{
-					{
-					setState(25); 
-					_errHandler.sync(this);
-					_alt = 1;
-					do {
-						switch (_alt) {
-						case 1:
-							{
-							{
-							setState(24);
-							stringcontent();
-							}
-							}
-							break;
-						default:
-							throw new NoViableAltException(this);
-						}
-						setState(27); 
-						_errHandler.sync(this);
-						_alt = getInterpreter().adaptivePredict(_input,1,_ctx);
-					} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
-					setState(32);
-					_errHandler.sync(this);
-					_la = _input.LA(1);
-					while (_la==LEFTP) {
-						{
-						{
-						setState(29);
-						fmlookup();
-						}
-						}
-						setState(34);
-						_errHandler.sync(this);
-						_la = _input.LA(1);
-					}
-					}
-					}
-					setState(39);
-					_errHandler.sync(this);
-					_la = _input.LA(1);
-				}
+				setState(24);
+				stringcontent();
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(54);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-				while (_la==LEFTP) {
-					{
-					{
-					setState(40);
-					fmlookup();
-					setState(42); 
-					_errHandler.sync(this);
-					_la = _input.LA(1);
-					do {
-						{
-						{
-						setState(41);
-						stringcontent();
-						}
-						}
-						setState(44); 
-						_errHandler.sync(this);
-						_la = _input.LA(1);
-					} while ( _la==ANYCHAR || _la==ESCAPECHAR );
-					setState(49);
-					_errHandler.sync(this);
-					_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
-					while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
-						if ( _alt==1 ) {
-							{
-							{
-							setState(46);
-							fmlookup();
-							}
-							} 
-						}
-						setState(51);
-						_errHandler.sync(this);
-						_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
-					}
-					}
-					}
-					setState(56);
-					_errHandler.sync(this);
-					_la = _input.LA(1);
-				}
-				}
-				break;
-			case 4:
-				enterOuterAlt(_localctx, 4);
 				{
-				setState(71);
+				setState(27);
+				_errHandler.sync(this);
+				switch (_input.LA(1)) {
+				case ANYCHAR:
+				case ESCAPECHAR:
+					{
+					setState(25);
+					stringcontent();
+					}
+					break;
+				case LEFTP:
+					{
+					setState(26);
+					fmlookup();
+					}
+					break;
+				default:
+					throw new NoViableAltException(this);
+				}
+				setState(31); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while (_la==LEFTP) {
+				do {
 					{
-					{
-					setState(57);
-					fmlookup();
-					setState(59); 
+					setState(31);
 					_errHandler.sync(this);
-					_alt = 1;
-					do {
-						switch (_alt) {
-						case 1:
-							{
-							{
-							setState(58);
-							fmlookup();
-							}
-							}
-							break;
-						default:
-							throw new NoViableAltException(this);
-						}
-						setState(61); 
-						_errHandler.sync(this);
-						_alt = getInterpreter().adaptivePredict(_input,7,_ctx);
-					} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
-					setState(66);
-					_errHandler.sync(this);
-					_la = _input.LA(1);
-					while (_la==ANYCHAR || _la==ESCAPECHAR) {
+					switch (_input.LA(1)) {
+					case ANYCHAR:
+					case ESCAPECHAR:
 						{
-						{
-						setState(63);
+						setState(29);
 						stringcontent();
 						}
+						break;
+					case LEFTP:
+						{
+						setState(30);
+						fmlookup();
 						}
-						setState(68);
-						_errHandler.sync(this);
-						_la = _input.LA(1);
+						break;
+					default:
+						throw new NoViableAltException(this);
 					}
 					}
-					}
-					setState(73);
+					setState(33); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
+				} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LEFTP) | (1L << ANYCHAR) | (1L << ESCAPECHAR))) != 0) );
 				}
 				}
 				break;
@@ -463,11 +371,11 @@ public class TemplateParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(76);
+			setState(37);
 			match(LEFTP);
-			setState(77);
+			setState(38);
 			template();
-			setState(78);
+			setState(39);
 			match(RIGHTP);
 			}
 		}
@@ -516,13 +424,13 @@ public class TemplateParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(80);
+			setState(41);
 			fmlookup();
-			setState(81);
+			setState(42);
 			match(LEFTA);
-			setState(82);
+			setState(43);
 			template();
-			setState(83);
+			setState(44);
 			match(LEFTB);
 			}
 		}
@@ -572,15 +480,15 @@ public class TemplateParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(85);
+			setState(46);
 			fmlookup();
-			setState(86);
+			setState(47);
 			match(APPEND);
-			setState(87);
+			setState(48);
 			match(LEFTP);
-			setState(88);
+			setState(49);
 			template();
-			setState(89);
+			setState(50);
 			match(RIGHTP);
 			}
 		}
@@ -624,7 +532,7 @@ public class TemplateParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(91);
+			setState(52);
 			_la = _input.LA(1);
 			if ( !(_la==ANYCHAR || _la==ESCAPECHAR) ) {
 			_errHandler.recoverInline(this);
@@ -648,31 +556,21 @@ public class TemplateParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\t`\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\t9\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\3\2\3\2\3\3\3\3\3\3\3\3"+
-		"\5\3\30\n\3\3\4\3\4\6\4\34\n\4\r\4\16\4\35\3\4\7\4!\n\4\f\4\16\4$\13\4"+
-		"\7\4&\n\4\f\4\16\4)\13\4\3\4\3\4\6\4-\n\4\r\4\16\4.\3\4\7\4\62\n\4\f\4"+
-		"\16\4\65\13\4\7\4\67\n\4\f\4\16\4:\13\4\3\4\3\4\6\4>\n\4\r\4\16\4?\3\4"+
-		"\7\4C\n\4\f\4\16\4F\13\4\7\4H\n\4\f\4\16\4K\13\4\5\4M\n\4\3\5\3\5\3\5"+
-		"\3\5\3\6\3\6\3\6\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3\7\3\b\3\b\3\b\2\2\t\2\4"+
-		"\6\b\n\f\16\2\3\3\2\b\t\2g\2\20\3\2\2\2\4\27\3\2\2\2\6L\3\2\2\2\bN\3\2"+
-		"\2\2\nR\3\2\2\2\fW\3\2\2\2\16]\3\2\2\2\20\21\5\4\3\2\21\22\7\2\2\3\22"+
-		"\3\3\2\2\2\23\30\5\6\4\2\24\30\5\b\5\2\25\30\5\n\6\2\26\30\5\f\7\2\27"+
-		"\23\3\2\2\2\27\24\3\2\2\2\27\25\3\2\2\2\27\26\3\2\2\2\30\5\3\2\2\2\31"+
-		"M\3\2\2\2\32\34\5\16\b\2\33\32\3\2\2\2\34\35\3\2\2\2\35\33\3\2\2\2\35"+
-		"\36\3\2\2\2\36\"\3\2\2\2\37!\5\b\5\2 \37\3\2\2\2!$\3\2\2\2\" \3\2\2\2"+
-		"\"#\3\2\2\2#&\3\2\2\2$\"\3\2\2\2%\33\3\2\2\2&)\3\2\2\2\'%\3\2\2\2\'(\3"+
-		"\2\2\2(M\3\2\2\2)\'\3\2\2\2*,\5\b\5\2+-\5\16\b\2,+\3\2\2\2-.\3\2\2\2."+
-		",\3\2\2\2./\3\2\2\2/\63\3\2\2\2\60\62\5\b\5\2\61\60\3\2\2\2\62\65\3\2"+
-		"\2\2\63\61\3\2\2\2\63\64\3\2\2\2\64\67\3\2\2\2\65\63\3\2\2\2\66*\3\2\2"+
-		"\2\67:\3\2\2\28\66\3\2\2\289\3\2\2\29M\3\2\2\2:8\3\2\2\2;=\5\b\5\2<>\5"+
-		"\b\5\2=<\3\2\2\2>?\3\2\2\2?=\3\2\2\2?@\3\2\2\2@D\3\2\2\2AC\5\16\b\2BA"+
-		"\3\2\2\2CF\3\2\2\2DB\3\2\2\2DE\3\2\2\2EH\3\2\2\2FD\3\2\2\2G;\3\2\2\2H"+
-		"K\3\2\2\2IG\3\2\2\2IJ\3\2\2\2JM\3\2\2\2KI\3\2\2\2L\31\3\2\2\2L\'\3\2\2"+
-		"\2L8\3\2\2\2LI\3\2\2\2M\7\3\2\2\2NO\7\3\2\2OP\5\4\3\2PQ\7\4\2\2Q\t\3\2"+
-		"\2\2RS\5\b\5\2ST\7\5\2\2TU\5\4\3\2UV\7\6\2\2V\13\3\2\2\2WX\5\b\5\2XY\7"+
-		"\7\2\2YZ\7\3\2\2Z[\5\4\3\2[\\\7\4\2\2\\\r\3\2\2\2]^\t\2\2\2^\17\3\2\2"+
-		"\2\r\27\35\"\'.\638?DIL";
+		"\5\3\30\n\3\3\4\3\4\3\4\3\4\5\4\36\n\4\3\4\3\4\6\4\"\n\4\r\4\16\4#\5\4"+
+		"&\n\4\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3\7\3\b"+
+		"\3\b\3\b\2\2\t\2\4\6\b\n\f\16\2\3\3\2\b\t\29\2\20\3\2\2\2\4\27\3\2\2\2"+
+		"\6%\3\2\2\2\b\'\3\2\2\2\n+\3\2\2\2\f\60\3\2\2\2\16\66\3\2\2\2\20\21\5"+
+		"\4\3\2\21\22\7\2\2\3\22\3\3\2\2\2\23\30\5\6\4\2\24\30\5\b\5\2\25\30\5"+
+		"\n\6\2\26\30\5\f\7\2\27\23\3\2\2\2\27\24\3\2\2\2\27\25\3\2\2\2\27\26\3"+
+		"\2\2\2\30\5\3\2\2\2\31&\3\2\2\2\32&\5\16\b\2\33\36\5\16\b\2\34\36\5\b"+
+		"\5\2\35\33\3\2\2\2\35\34\3\2\2\2\36!\3\2\2\2\37\"\5\16\b\2 \"\5\b\5\2"+
+		"!\37\3\2\2\2! \3\2\2\2\"#\3\2\2\2#!\3\2\2\2#$\3\2\2\2$&\3\2\2\2%\31\3"+
+		"\2\2\2%\32\3\2\2\2%\35\3\2\2\2&\7\3\2\2\2\'(\7\3\2\2()\5\4\3\2)*\7\4\2"+
+		"\2*\t\3\2\2\2+,\5\b\5\2,-\7\5\2\2-.\5\4\3\2./\7\6\2\2/\13\3\2\2\2\60\61"+
+		"\5\b\5\2\61\62\7\7\2\2\62\63\7\3\2\2\63\64\5\4\3\2\64\65\7\4\2\2\65\r"+
+		"\3\2\2\2\66\67\t\2\2\2\67\17\3\2\2\2\7\27\35!#%";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

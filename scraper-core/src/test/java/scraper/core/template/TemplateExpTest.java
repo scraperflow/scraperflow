@@ -172,4 +172,33 @@ public class TemplateExpTest {
         String target = test.eval(o);
         Assert.assertEquals("hello ok", target);
     }
+
+    @Test
+    public void dotInExpression() {
+        String source = "{id}.json";
+        TemplateExpression<String> test = TemplateUtil.parseTemplate(source, TypeToken.of(String.class));
+        o.put("id", "3");
+        String target = test.eval(o);
+        Assert.assertEquals("3.json", target);
+    }
+
+    @Test
+    public void mixedExpression() {
+        String source = "{A}{A}X{A}X";
+        TemplateExpression<String> test = TemplateUtil.parseTemplate(source, TypeToken.of(String.class));
+        o.put("A", "X");
+        String target = test.eval(o);
+        Assert.assertEquals("XXXXX", target);
+    }
+
+    @Test
+    public void dotInExpressionMixedTemplate() {
+        String source = "{root}{date}/{id}.json";
+        TemplateExpression<String> test = TemplateUtil.parseTemplate(source, TypeToken.of(String.class));
+        o.put("root", "/root");
+        o.put("date", "1");
+        o.put("id", "2");
+        String target = test.eval(o);
+        Assert.assertEquals("/root1/2.json", target);
+    }
 }
