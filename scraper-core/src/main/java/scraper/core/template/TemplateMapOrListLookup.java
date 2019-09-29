@@ -49,7 +49,7 @@ public class TemplateMapOrListLookup<T> extends TemplateExpression<T> {
 
             return m.get(k);
         } catch (Exception e) {
-            throw new TemplateException("Could not evaluate array/map lookup template '"+toString()+"'. ");
+            throw new TemplateException("Could not evaluate array/map lookup template '"+toString()+"'. " + e.getMessage());
         }
     }
 
@@ -57,7 +57,7 @@ public class TemplateMapOrListLookup<T> extends TemplateExpression<T> {
     public String toString() {
         StringBuilder str = new StringBuilder();
 
-        str.append(list.toString()+"["+index.toString()+"]");
+        str.append("{" + list.toString()+"}["+index.toString()+"]");
 
         return str.toString();
     }

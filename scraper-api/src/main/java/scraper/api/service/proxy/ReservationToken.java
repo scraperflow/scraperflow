@@ -12,7 +12,7 @@ public interface ReservationToken extends AutoCloseable {
     @NotNull
     Long score();
 
-    @Override // remove exception
+    @Override
     void close();
     void bad();
 

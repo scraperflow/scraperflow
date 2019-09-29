@@ -138,7 +138,7 @@ public class TemplateExpTest {
 
     @Test // "{L}[0]"
     public void simpleIndex() {
-        String source = "{L}[0]";
+        String source = "{{L}}[0]";
         TemplateExpression<String> test = TemplateUtil.parseTemplate(source, TypeToken.of(String.class));
         o.put("L", List.of("1","2","3"));
         String target = test.eval(o);
@@ -147,7 +147,7 @@ public class TemplateExpTest {
 
     @Test // "{L}[{index}]"
     public void indexAsTemplate() {
-        String source = "{L}[{index}]";
+        String source = "{{L}}[{index}]";
         TemplateExpression<String> test = TemplateUtil.parseTemplate(source, TypeToken.of(String.class));
         o.put("L", List.of("1","2","3"));
         o.put("index", 0);
@@ -166,7 +166,7 @@ public class TemplateExpTest {
 
     @Test // "{M}[ok]"
     public void simpleMapLookup() {
-        String source = "{M}[ok]";
+        String source = "{{M}}[ok]";
         TemplateExpression<String> test = TemplateUtil.parseTemplate(source, TypeToken.of(String.class));
         o.put("M", Map.of("1", "hello world", "ok", "hello ok"));
         String target = test.eval(o);
@@ -200,5 +200,44 @@ public class TemplateExpTest {
         o.put("id", "2");
         String target = test.eval(o);
         Assert.assertEquals("/root1/2.json", target);
+    }
+
+    @Test
+    public void arrayLookupInString() {
+        String source = "Mixed {{array}}[0]";
+        TemplateExpression<String> test = TemplateUtil.parseTemplate(source, TypeToken.of(String.class));
+        o.put("array", List.of("2","3"));
+        String target = test.eval(o);
+        Assert.assertEquals("Mixed 2", target);
+    }
+
+    @Test
+    public void nestedMapAndArrayLookup() {
+        String source = "{{{array}}[0]}[module]";
+        TemplateExpression<String> test = TemplateUtil.parseTemplate(source, TypeToken.of(String.class));
+        o.put("array", List.of(Map.of("module", "test-module")));
+        String target = test.eval(o);
+        Assert.assertEquals("test-module", target);
+    }
+
+//    @Test(timeout = 500)
+//    public void aVeryLongString() {
+//        String source = "hello world 123123123123 LONG                          string okhello world 123123123123 LO" +
+//                "NG                          string okhello world 123123123123 LONG                          string " +
+//                "okhello world 123123123123 LONG                          string okhello world 123123123123 LONG    " +
+//                "                      string okhello world 123123123123 LONG                          string ok";
+//        TemplateExpression<String> test = TemplateUtil.parseTemplate(source, TypeToken.of(String.class));
+//        String target = test.eval(o);
+//        Assert.assertEquals(source, target);
+//    }
+
+    @Test
+    public void precedenceOfMixedTemplates() {
+        String source = "{not-bound}{{bound}}[0]";
+        TemplateExpression<String> test = TemplateUtil.parseTemplate(source, TypeToken.of(String.class));
+        o.put("bound", List.of("world"));
+        o.put("not-bound", "hello ");
+        String target = test.eval(o);
+        Assert.assertEquals("hello world", target);
     }
 }

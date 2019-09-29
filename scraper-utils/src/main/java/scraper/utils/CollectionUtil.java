@@ -2,9 +2,7 @@ package scraper.utils;
 
 import scraper.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public final class CollectionUtil {
     private CollectionUtil(){}
@@ -23,5 +21,11 @@ public final class CollectionUtil {
         List<T> newList = new ArrayList<>(list);
         newList.add(arg);
         return newList;
+    }
+
+    public static <T> void removeDuplicates(@NotNull final Collection<T> collection) {
+        Collection<T> col = new HashSet<>(collection);
+        collection.clear();
+        collection.addAll(col);
     }
 }

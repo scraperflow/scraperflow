@@ -25,23 +25,17 @@ public interface TemplateVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTemplate(TemplateParser.TemplateContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TemplateParser#mixedtemplate}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMixedtemplate(TemplateParser.MixedtemplateContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link TemplateParser#fmlookup}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitFmlookup(TemplateParser.FmlookupContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TemplateParser#mllookup}.
+	 * Visit a parse tree produced by {@link TemplateParser#arraymaplookup}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMllookup(TemplateParser.MllookupContext ctx);
+	T visitArraymaplookup(TemplateParser.ArraymaplookupContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TemplateParser#append}.
 	 * @param ctx the parse tree

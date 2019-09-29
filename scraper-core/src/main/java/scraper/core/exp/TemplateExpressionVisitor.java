@@ -25,33 +25,77 @@ public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<Templ
 
     @Override
     public TemplateExpression<T> visitRoot(TemplateParser.RootContext ctx) {
-        l.warn("Parsing template '{}'", ctx.getText());
+        l.trace("Parsing template '{}'", ctx.getText());
+        if(ctx.getText().isEmpty()) {
+            TemplateString<T> t = new TemplateString<>(target);
+            t.addContent("");
+            return t;
+        }
+
         if(ctx.children.size() != 2) { throw new RuntimeException("Root wrong children size: " + ctx.children.size()); }
         return visit(ctx.children.get(0));
     }
 
-    @Override public TemplateExpression<T> visitTemplate(TemplateParser.TemplateContext ctx) {
-        if(ctx.children.size() != 1) { throw new RuntimeException("Template has more than 1 child"); }
-        return visit(ctx.children.get(0));
-    }
-
     @Override
-    public TemplateExpression<T> visitMixedtemplate(TemplateParser.MixedtemplateContext ctx) {
-        TemplateMixed<T> result = new TemplateMixed<>(target);
+    public TemplateExpression<T> visitTemplate(TemplateParser.TemplateContext ctx) {
+        l.trace("Visiting template '{}'", ctx.getText());
+        // string content or fmlookup
+        if(ctx.children.size() == 1) {
+            return visit(ctx.getChild(0));
+        }
 
-        if(ctx.children != null) {
+        // template template
+        if(ctx.children.size() == 2) {
+            TemplateMixed<T> result = new TemplateMixed<>(target);
+
             TemplateExpressionVisitor<String> targetVisitor = new TemplateExpressionVisitor<>(TypeToken.of(String.class));
-            for (ParseTree child : ctx.children) {
-                TemplateExpression<String> visited = targetVisitor.visit(child);
-                if(visited != null) result.addTemplateOrString(visited);
+
+            TemplateExpression<String> visited = targetVisitor.visit(ctx.getChild(0));
+            result.addTemplateOrString(visited);
+
+            visited = targetVisitor.visit(ctx.getChild(1));
+            result.addTemplateOrString(visited);
+
+            return result;
+        }
+
+
+        // lookup or append
+        if (ctx.children.size() == 4) {
+
+            if (ctx.getChild(3) instanceof TemplateParser.AppendContext) {
+                l.trace("Append");
+                throw new RuntimeException("Append not implemented");
+            }
+
+            if (ctx.getChild(3) instanceof TemplateParser.ArraymaplookupContext) {
+                l.trace("Array or map lookup");
+                ParseTree listexp = ctx.getChild(1);
+                ParseTree intexp = ctx.getChild(3);
+
+                TypeToken<List<T>> listToken = new TypeToken<>(){};
+                TemplateExpressionVisitor<List<T>> listTargetVisitor = new TemplateExpressionVisitor<>(listToken);
+                TemplateExpressionVisitor<Integer> intTargetVisitor = new TemplateExpressionVisitor<>(TypeToken.of(Integer.class));
+                TemplateExpression<List<T>> templateList = listTargetVisitor.visit(listexp);
+                TemplateExpression<Integer> templateInt = intTargetVisitor.visit(intexp);
+
+                TypeToken<Map<String, T>> mapToken = new TypeToken<>(){};
+                TemplateExpressionVisitor<Map<String, T>> mapTargetVisitor = new TemplateExpressionVisitor<>(mapToken);
+                TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(TypeToken.of(String.class));
+                TemplateExpression<Map<String, T>> templateMap = mapTargetVisitor.visit(listexp);
+                TemplateExpression<String> templateString = stringTargetVisitor.visit(intexp);
+
+                return new TemplateMapOrListLookup<>(templateMap, templateList, templateInt, templateString, target);
             }
         }
 
-        return result;
+
+        throw new RuntimeException("Template has wrong amount of children: " + ctx.getText());
     }
 
     @Override
     public TemplateExpression<T> visitFmlookup(TemplateParser.FmlookupContext ctx) {
+        l.trace("Visiting fm lookup '{}'", ctx.getText());
         if(ctx.children.size() != 3) throw new RuntimeException("FM Lookup Template does not look like ( T )");
 
         TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(TypeToken.of(String.class));
@@ -61,27 +105,19 @@ public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<Templ
     }
 
     @Override
-    public TemplateExpression<T> visitMllookup(TemplateParser.MllookupContext ctx) {
-        ParseTree listexp = ctx.getChild(0);
-        ParseTree intexp = ctx.getChild(2);
+    public TemplateExpression<T> visitArraymaplookup(TemplateParser.ArraymaplookupContext ctx) {
+        return visit(ctx.getChild(1));
+    }
 
-        TypeToken<List<T>> listToken = new TypeToken<>(){};
-        TemplateExpressionVisitor<List<T>> listTargetVisitor = new TemplateExpressionVisitor<>(listToken);
-        TemplateExpressionVisitor<Integer> intTargetVisitor = new TemplateExpressionVisitor<>(TypeToken.of(Integer.class));
-        TemplateExpression<List<T>> templateList = listTargetVisitor.visit(listexp);
-        TemplateExpression<Integer> templateInt = intTargetVisitor.visit(intexp);
-
-        TypeToken<Map<String, T>> mapToken = new TypeToken<>(){};
-        TemplateExpressionVisitor<Map<String, T>> mapTargetVisitor = new TemplateExpressionVisitor<>(mapToken);
-        TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(TypeToken.of(String.class));
-        TemplateExpression<Map<String, T>> templateMap = mapTargetVisitor.visit(listexp);
-        TemplateExpression<String> templateString = stringTargetVisitor.visit(intexp);
-
-        return new TemplateMapOrListLookup<>(templateMap, templateList, templateInt, templateString, target);
+    @Override
+    public TemplateExpression<T> visitAppend(TemplateParser.AppendContext ctx) {
+        l.trace("Visiting append '{}'", ctx.getText());
+        return null;
     }
 
     @Override
     public TemplateExpression<T> visitStringcontent(TemplateParser.StringcontentContext ctx) {
+        l.trace("String content '{}'", ctx.getText());
         TemplateString<T> content = new TemplateString<>(target);
         String unescape = ctx.getText()
                 .replaceAll("\\\\\\{", "{")
@@ -91,11 +127,6 @@ public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<Templ
                 ;
         content.addContent(unescape);
         return content;
-    }
-
-    @Override
-    public TemplateExpression<T> visitAppend(TemplateParser.AppendContext ctx) {
-        throw new IllegalStateException("Append not implemented yet");
     }
 
 }

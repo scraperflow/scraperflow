@@ -230,11 +230,16 @@ public abstract class AbstractNode implements Node, NodeInitializable {
             }
         }
 
-        value = NodeUtil.getValueForField(
-                field.getType(), field.get(this), jsonValue, globalValue,
-                flowKey.mandatory(), flowKey.defaultValue(),
-                ann != null, (ann != null ? ann.converter() : null),
-                args);
+        try {
+            value = NodeUtil.getValueForField(
+                    field.getType(), field.get(this), jsonValue, globalValue,
+                    flowKey.mandatory(), flowKey.defaultValue(),
+                    ann != null, (ann != null ? ann.converter() : null),
+                    args);
+        } catch (ValidationException e){
+            log(ERROR, "Bad field definition: '{}'", field.getName());
+            throw e;
+        }
 
         if(value != null) field.set(this, value);
     }
@@ -414,9 +419,9 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     }
 
     @Override
-    public FlowMap forward(FlowMap o, @NotNull NodeAddress other) throws NodeException {
+    public FlowMap forward(FlowMap o, @NotNull NodeAddress other, Boolean force) throws NodeException {
         // do nothing
-        if(!getForward()) return o;
+        if(!force) if(!getForward()) return o;
 
         // get target node
         Node target = null;
@@ -435,10 +440,10 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     }
 
     @Override
-    public void forkDispatch(FlowMap o, NodeAddress target) {
+    public void forkDispatch(FlowMap o, NodeAddress target, Boolean force) {
         dispatch(() -> {
             try {
-                return forward(o, target);
+                return forward(o, target, force);
             } catch (NodeException e) {
                 throw new RuntimeException(e);
             }
@@ -446,10 +451,10 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     }
 
     @Override
-    public CompletableFuture<FlowMap> forkDepend(FlowMap o) {
+    public CompletableFuture<FlowMap> forkDepend(FlowMap o, NodeAddress target, Boolean force) {
         return dispatch(() -> {
             try {
-                return forward(o);
+                return forward(o, target, force);
             } catch (NodeException e) {
                 throw new RuntimeException(e);
             }
@@ -507,12 +512,6 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     @Override
     public NodeAddress getTarget() {
         return NodeUtil.addressOf(goTo);
-    }
-
-
-    @Override
-    public CompletableFuture<FlowMap> forkDepend(FlowMap o, NodeAddress target) {
-        return null;
     }
 
     @Override

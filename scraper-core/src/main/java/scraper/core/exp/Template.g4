@@ -13,19 +13,25 @@ ANYCHAR : ~('\n' | '\r' | '{' | '}' | '[' | ']' | '^');
 ESCAPECHAR : ('\\{' | '\\}' | '\\[' | '\\]' | '\\^');
 
 
-root : template EOF;
-
-template : mixedtemplate
-    | fmlookup
-    | mllookup
-    | append
+root :
+    | template EOF
     ;
 
-mixedtemplate :
-    | stringcontent
-    | ( (stringcontent | fmlookup) (stringcontent | fmlookup)+ );
+template :
+    stringcontent               // string content
+    | fmlookup                  // single object fm lookup
+    | LEFTP template RIGHTP arraymaplookup   // map or array lookup
+    | LEFTP template RIGHTP append           // append operation
+    | template template         // mixed template
+    ;
 
-fmlookup :  LEFTP template RIGHTP;
-mllookup :  fmlookup LEFTA template LEFTB;
-append :  fmlookup APPEND LEFTP template RIGHTP;
-stringcontent :  ANYCHAR | ESCAPECHAR;
+fmlookup:
+    LEFTP template RIGHTP;
+
+arraymaplookup:
+    LEFTA template LEFTB;
+
+append:
+    APPEND LEFTP template RIGHTP;
+
+stringcontent :  (ANYCHAR | ESCAPECHAR)+;

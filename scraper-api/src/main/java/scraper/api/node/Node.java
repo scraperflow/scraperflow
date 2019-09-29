@@ -4,10 +4,8 @@ import scraper.api.exceptions.NodeException;
 import scraper.api.flow.ControlFlow;
 import scraper.api.flow.FlowMap;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 /**
  * The main component in a Scraper workflow specification.
@@ -28,6 +26,7 @@ import java.util.function.Consumer;
  *
  * @since 1.0.0
  */
+@SuppressWarnings("unused")
 public interface Node extends NodeConsumer, ControlFlow {
 
     // ==================
@@ -54,25 +53,17 @@ public interface Node extends NodeConsumer, ControlFlow {
 
     /**
      * Forwards the flow map to another node.
-     * Either next node, or the node specified by a target address at key 'goTo'
-     * If dependent is false, then this function returns immediately if the queue allows for creation of more flows
-     * and returns null as the result
-     */
-
-
-    /**
-     * Forwards the flow map to another node.
      * Either next node, or the node specified by a target address given
-     * If dependent is false, then this function returns immediately if the queue allows for creation of more flows
-     * and returns null as the result
-     *
      */
-    FlowMap forward(FlowMap o, NodeAddress target) throws NodeException;
+    FlowMap forward(FlowMap o, NodeAddress target, Boolean force) throws NodeException;
+    default FlowMap forward(FlowMap o, NodeAddress target) throws NodeException { return forward(o, target, false); }
     default FlowMap forward(FlowMap o) throws NodeException { return forward(o, getTarget()); }
 
-    CompletableFuture<FlowMap> forkDepend(FlowMap o, NodeAddress target);
+    CompletableFuture<FlowMap> forkDepend(FlowMap o, NodeAddress target, Boolean force);
+    default CompletableFuture<FlowMap> forkDepend(FlowMap o, NodeAddress target) { return forkDepend(o, target, false); }
     default CompletableFuture<FlowMap> forkDepend(FlowMap o) { return forkDepend(o, getTarget()); }
 
-    void forkDispatch(FlowMap o, NodeAddress target);
+    void forkDispatch(FlowMap o, NodeAddress target, Boolean force);
+    default void forkDispatch(FlowMap o, NodeAddress target) { forkDispatch(o, target, false); }
     default void forkDispatch(FlowMap o) { forkDispatch(o, getTarget()); }
 }

@@ -126,6 +126,7 @@ public final class NodeUtil {
                     value = converted;
                 } else if(MapKey.class.isAssignableFrom(fieldType)) {
                     MapKey<?> key = (MapKey<?>) fieldValue;
+                    if(key == null) throw new ValidationException("MapKey abstract class not initialized");
                     converted = mapper.readValue(defaultAnnotationValue, String.class);
                     key.key = (String) converted;
                 } else if (Enum.class.isAssignableFrom(fieldType)) {
