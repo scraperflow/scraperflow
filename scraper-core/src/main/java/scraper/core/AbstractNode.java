@@ -419,9 +419,9 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     }
 
     @Override
-    public FlowMap forward(FlowMap o, @NotNull NodeAddress other, Boolean force) throws NodeException {
+    public FlowMap forward(FlowMap o, @NotNull NodeAddress other) throws NodeException {
         // do nothing
-        if(!force) if(!getForward()) return o;
+        if(!getForward()) return o;
 
         // get target node
         Node target = null;
@@ -440,10 +440,10 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     }
 
     @Override
-    public void forkDispatch(FlowMap o, NodeAddress target, Boolean force) {
+    public void forkDispatch(FlowMap o, NodeAddress target) {
         dispatch(() -> {
             try {
-                return forward(o, target, force);
+                return forward(o, target);
             } catch (NodeException e) {
                 throw new RuntimeException(e);
             }
@@ -451,10 +451,10 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     }
 
     @Override
-    public CompletableFuture<FlowMap> forkDepend(FlowMap o, NodeAddress target, Boolean force) {
+    public CompletableFuture<FlowMap> forkDepend(FlowMap o, NodeAddress target) {
         return dispatch(() -> {
             try {
-                return forward(o, target, force);
+                return forward(o, target);
             } catch (NodeException e) {
                 throw new RuntimeException(e);
             }

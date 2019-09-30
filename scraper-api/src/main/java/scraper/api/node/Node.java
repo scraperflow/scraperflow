@@ -55,15 +55,12 @@ public interface Node extends NodeConsumer, ControlFlow {
      * Forwards the flow map to another node.
      * Either next node, or the node specified by a target address given
      */
-    FlowMap forward(FlowMap o, NodeAddress target, Boolean force) throws NodeException;
-    default FlowMap forward(FlowMap o, NodeAddress target) throws NodeException { return forward(o, target, false); }
+    FlowMap forward(FlowMap o, NodeAddress target) throws NodeException;
     default FlowMap forward(FlowMap o) throws NodeException { return forward(o, getTarget()); }
 
-    CompletableFuture<FlowMap> forkDepend(FlowMap o, NodeAddress target, Boolean force);
-    default CompletableFuture<FlowMap> forkDepend(FlowMap o, NodeAddress target) { return forkDepend(o, target, false); }
+    CompletableFuture<FlowMap> forkDepend(FlowMap o, NodeAddress target);
     default CompletableFuture<FlowMap> forkDepend(FlowMap o) { return forkDepend(o, getTarget()); }
 
-    void forkDispatch(FlowMap o, NodeAddress target, Boolean force);
-    default void forkDispatch(FlowMap o, NodeAddress target) { forkDispatch(o, target, false); }
+    void forkDispatch(FlowMap o, NodeAddress target);
     default void forkDispatch(FlowMap o) { forkDispatch(o, getTarget()); }
 }
