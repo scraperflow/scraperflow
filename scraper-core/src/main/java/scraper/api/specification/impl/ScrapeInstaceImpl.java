@@ -2,8 +2,10 @@ package scraper.api.specification.impl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
+import scraper.annotations.NotNull;
 import scraper.api.node.Node;
 import scraper.api.exceptions.ValidationException;
+import scraper.api.node.NodeAddress;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.node.NodeInitializable;
 import scraper.api.service.ExecutorsService;
@@ -12,7 +14,6 @@ import scraper.api.service.HttpService;
 import scraper.api.service.ProxyReservation;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 
 public class ScrapeInstaceImpl implements ScrapeInstance {
 
@@ -27,19 +28,19 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     /** Parsed arguments of each process */
     public List<Map<String, Object>> process = new ArrayList<>();
 
-    /** Generated process nodes of the jobPojo */
+    /** Generated nodes of the jobPojo */
     @JsonIgnore
-    public List<Node> jobProcess = new ArrayList<>();
+    private List<Node> mainFlow = new ArrayList<>();
+
+    /** Generated fragment nodes of the jobPojo */
+    @JsonIgnore
+    private List<List<Node>> fragmentFlows = new ArrayList<>();
 
     /** Initial input arguments */
     public Map<String, Object> initialArguments = new HashMap<>();
 
     /** Arguments applied to all nodes of given type */
     public Map<String, Map<String, Object>> all;
-
-    /** Current running tasks which stop JVM from exit. Periodically emptied by main application */
-    @JsonIgnore
-    public List<CompletableFuture<Void>> uncompletedTasks = Collections.synchronizedList(new ArrayList<>());
 
     /**
      * Gets the next node specified by {@code o}. If o is parsable as an integer, it is used as the next stage index.
@@ -51,67 +52,26 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
      */
     @JsonIgnore
     @Override
-    public Node getProcessNode(String target) {
-        try { // try index
-            int index = Integer.parseInt(target);
-            return jobProcess.get(index);
-        } catch (Exception e) { // try label
-            for (Node node : jobProcess) {
-                if(node.getAddress() != null
-                        && node.getAddress().getLabel() != null
-                        && node.getAddress().getLabel().equalsIgnoreCase(target))
-                    return node;
+    public @NotNull Node getNode(@NotNull NodeAddress target) {
+        for (Node node : mainFlow) {
+            if(node.getAddress().equals(target))
+                return node;
+        }
+
+        throw new IllegalArgumentException("Node address not existing! "+target);
+    }
+
+    @Override
+    public NodeAddress getForwardTarget(NodeAddress origin) {
+        for (int i = 0; i < mainFlow.size(); i++) {
+            if(mainFlow.get(i).getAddress().equals(origin)) {
+                if(i+1 < mainFlow.size()) {
+                    return mainFlow.get(i+1).getAddress();
+                }
             }
         }
 
-        log.error("Argument is neither an index nor a label: {}", target);
-        throw new IllegalArgumentException("Argument is neither an index nor a label! "+target);
-    }
-
-    @JsonIgnore
-    @Override
-    public Map<String, Object> getProcessNodeDefinition(String target) {
-        try { // try index
-            int index = Integer.parseInt(target);
-            return process.get(index);
-        } catch (Exception e) { // try label
-            for (Map<String, Object> nodeDefinition : process) {
-                String label = (String) nodeDefinition.get("label");
-                if(label != null && label.equalsIgnoreCase(target))
-                    return nodeDefinition;
-            }
-        }
-
-        log.error("Argument is neither an index nor a label: {}", target);
-        throw new IllegalArgumentException("Argument is neither an index nor a label! "+target);
-    }
-
-    /**
-     * Fetches one value for the key of the specified node.
-     * @param stageIndex Target node
-     * @param key Key in the node definition
-     * @return Value of key in the node definition; null if not defined in .scrape file
-     */
-    @Override
-    @JsonIgnore
-    public Object getProcessKey(int stageIndex, String key) {
-        return process.get(stageIndex).getOrDefault(key, null);
-    }
-
-    /**
-     * Fetches the argument map for the specified node.
-     * @param stageIndex Target node
-     * @return Parsed argument map
-     */
-    @Override
-    @JsonIgnore
-    public Map<String, Object> getProcessKeys(int stageIndex) {
-        return process.get(stageIndex);
-    }
-
-    /** Adds a new node to the jobPojo */
-    public synchronized void addProcessNode(Node node) {
-        this.jobProcess.add(node);
+        return null;
     }
 
 
@@ -122,10 +82,16 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
 
     @JsonIgnore
     public void init() throws ValidationException {
-        log.info("Initializing '{}'", getName());
+        log.info("Initializing main flow '{}'", getName());
 
-        for (Node node : jobProcess)
+        for (Node node : mainFlow)
             if (node instanceof NodeInitializable) ((NodeInitializable) node).init(this);
+
+        log.info("Initializing fragments '{}'", getName());
+
+        for (List<Node> fragmentFlow: fragmentFlows)
+            for (Node node : fragmentFlow)
+                if (node instanceof NodeInitializable) ((NodeInitializable) node).init(this);
     }
 
 
@@ -137,24 +103,31 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         return this.description;
     }
 
+
     public List<Map<String, Object>> getProcess() {
         return this.process;
     }
 
-    public List<Node> getJobProcess() {
-        return this.jobProcess;
+    public List<Node> getMainFlow() {
+        return this.mainFlow;
+    }
+
+    @Override
+    public List<List<Node>> getFragmentFlows() {
+        return fragmentFlows;
     }
 
     public Map<String, Object> getInitialArguments() {
         return this.initialArguments;
     }
 
-    public Map<String, Map<String, Object>> getAll() {
-        return this.all;
+    @Override
+    public Map<String, Map<String, Object>> getGlobalNodeConfigurations() {
+        return all;
     }
 
-    public List<CompletableFuture<Void>> getUncompletedTasks() {
-        return this.uncompletedTasks;
+    public Map<String, Map<String, Object>> getAll() {
+        return this.all;
     }
 
     public ExecutorsService getExecutors() {
@@ -173,8 +146,12 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         this.process = process;
     }
 
-    public void setJobProcess(List<Node> jobProcess) {
-        this.jobProcess = jobProcess;
+    public void setMainFlow(List<Node> flow) {
+        this.mainFlow = mainFlow;
+    }
+
+    public void addFragmentFlow(List<Node> flow) {
+        this.fragmentFlows.add(flow);
     }
 
     public void setInitialArguments(Map<String, Object> initialArguments) {
@@ -183,10 +160,6 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
 
     public void setAll(Map<String, Map<String, Object>> all) {
         this.all = all;
-    }
-
-    public void setUncompletedTasks(List<CompletableFuture<Void>> uncompletedTasks) {
-        this.uncompletedTasks = uncompletedTasks;
     }
 
     public void setExecutors(ExecutorsService executors) {

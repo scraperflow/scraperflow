@@ -41,17 +41,17 @@ public class AbstractNodeTest {
         JobFactory factory = deps.get(JobFactory.class);
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
 
-        ControlFlow startNode = instance.getJobProcess().get(0);
+        ControlFlow startNode = instance.getMainFlow().get(0);
         assertEquals(1, startNode.getOutput().size());
         assertEquals(1, startNode.getInput().size());
         assertEquals("hello\\nSimpleNode@0", startNode.getName());
 
-        ControlFlow endNode = instance.getJobProcess().get(1);
+        ControlFlow endNode = instance.getMainFlow().get(1);
         assertEquals(0, endNode.getOutput().size());
         assertEquals(1, endNode.getInput().size());
 
 
-        assertEquals("hello\\nSimpleNode@0", instance.getJobProcess().get(0).nameOf("hello"));
+        assertEquals("hello\\nSimpleNode@0", instance.getMainFlow().get(0).nameOf("hello"));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class AbstractNodeTest {
         JobFactory factory = deps.get(JobFactory.class);
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
 
-        ControlFlow middleNode = instance.getJobProcess().get(1);
+        ControlFlow middleNode = instance.getMainFlow().get(1);
         assertEquals(3, middleNode.getOutput().size());
         assertEquals(1, middleNode.getInput().size());
 
@@ -95,7 +95,7 @@ public class AbstractNodeTest {
         JobFactory factory = deps.get(JobFactory.class);
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
 
-        Node node = instance.getJobProcess().get(0);
+        Node node = instance.getMainFlow().get(0);
         Assert.assertTrue(node instanceof AbstractFunctionalNode);
 
         FlowMap o = FlowMapImpl.of(Map.of());
@@ -122,7 +122,7 @@ public class AbstractNodeTest {
         JobFactory factory = deps.get(JobFactory.class);
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
 
-        Node node = instance.getJobProcess().get(0);
+        Node node = instance.getMainFlow().get(0);
         FlowMap o = FlowMapImpl.of(Map.of());
         o = node.accept(o);
 
@@ -152,7 +152,7 @@ public class AbstractNodeTest {
         JobFactory factory = deps.get(JobFactory.class);
         // should not throw exception, only warning in the log that 'notexist' field is not expected
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
-        AbstractNode node = (AbstractNode) instance.getJobProcess().get(0);
+        AbstractNode node = (AbstractNode) instance.getMainFlow().get(0);
 
         // service thread group is created only once
         assertEquals(node.getService("newService"), node.getService("newService", 300));
@@ -182,7 +182,7 @@ public class AbstractNodeTest {
 
         JobFactory factory = deps.get(JobFactory.class);
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
-        AbstractNode node = (AbstractNode) instance.getJobProcess().get(0);
+        AbstractNode node = (AbstractNode) instance.getMainFlow().get(0);
         FlowMap o = FlowMapImpl.of(Map.of());
         // bad log should never stop the process
         node.start(o);
@@ -197,7 +197,7 @@ public class AbstractNodeTest {
 
         JobFactory factory = deps.get(JobFactory.class);
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
-        AbstractNode node = (AbstractNode) instance.getJobProcess().get(0);
+        AbstractNode node = (AbstractNode) instance.getMainFlow().get(0);
         FlowMap o = FlowMapImpl.of(Map.of());
         node.start(o);
     }
@@ -211,7 +211,7 @@ public class AbstractNodeTest {
 
         JobFactory factory = deps.get(JobFactory.class);
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
-        AbstractNode node = (AbstractNode) instance.getJobProcess().get(0);
+        AbstractNode node = (AbstractNode) instance.getMainFlow().get(0);
         FlowMap o = FlowMapImpl.of(Map.of("path-template", "/tmp/scraper-ok"));
         node.start(o);
     }
@@ -225,7 +225,7 @@ public class AbstractNodeTest {
 
         JobFactory factory = deps.get(JobFactory.class);
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
-        AbstractNode node = (AbstractNode) instance.getJobProcess().get(0);
+        AbstractNode node = (AbstractNode) instance.getMainFlow().get(0);
         FlowMap o = NodeUtil.flowOf((Map.of()));
 
         //trace
@@ -244,7 +244,7 @@ public class AbstractNodeTest {
 
         JobFactory factory = deps.get(JobFactory.class);
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
-        AbstractNode node = (AbstractNode) instance.getJobProcess().get(0); FlowMap o = NodeUtil.flowOf((Map.of()));
+        AbstractNode node = (AbstractNode) instance.getMainFlow().get(0); FlowMap o = NodeUtil.flowOf((Map.of()));
         node.forward(o);
     }
 
@@ -257,7 +257,7 @@ public class AbstractNodeTest {
 
         JobFactory factory = deps.get(JobFactory.class);
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
-        AbstractNode node = (AbstractNode) instance.getJobProcess().get(0); FlowMap o = NodeUtil.flowOf((Map.of()));
+        AbstractNode node = (AbstractNode) instance.getMainFlow().get(0); FlowMap o = NodeUtil.flowOf((Map.of()));
         node.forward(o);
     }
 
@@ -270,11 +270,11 @@ public class AbstractNodeTest {
 
         JobFactory factory = deps.get(JobFactory.class);
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
-        AbstractNode node = (AbstractNode) instance.getJobProcess().get(0);
+        AbstractNode node = (AbstractNode) instance.getMainFlow().get(0);
         FlowMap o = NodeUtil.flowOf((Map.of()));
         FlowMap o2 = node.forward(o);
 
-        FlowMap o3 = node.forward(o2, NodeUtil.addressOf("oor"));
+        FlowMap o3 = node.eval(o2, NodeUtil.addressOf("oor"));
         assertNotNull(o3.get("y"));
     }
 
@@ -287,27 +287,12 @@ public class AbstractNodeTest {
 
         JobFactory factory = deps.get(JobFactory.class);
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
-        AbstractNode node = (AbstractNode) instance.getJobProcess().get(0);
+        AbstractNode node = (AbstractNode) instance.getMainFlow().get(0);
         FlowMap o = NodeUtil.flowOf((Map.of()));
         FlowMap o2 = node.forward(o);
 
         Assert.assertEquals(1, o2.size());
     }
-
-    @Test
-    public void niyTest() throws IOException, ValidationException {
-        URL base = getClass().getResource("abstract");
-        ScrapeSpecificationImpl.JobDefinitionBuilder specification = new ScrapeSpecificationImpl.JobDefinitionBuilder();
-        specification.basePath(base.getPath());
-        specification.scrapeFile("implied-goto.scrape");
-        JobFactory factory = deps.get(JobFactory.class);
-        ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
-        AbstractNode node = (AbstractNode) instance.getJobProcess().get(0);
-        try {
-            node.getNodeJsonSpec(); fail();
-        } catch (Exception ignored){}
-    }
-
 
     @Test
     public void functionalNodeWithGotoTest() throws IOException, ValidationException, NodeException {
@@ -319,7 +304,7 @@ public class AbstractNodeTest {
         JobFactory factory = deps.get(JobFactory.class);
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
 
-        Node node = instance.getJobProcess().get(0);
+        Node node = instance.getMainFlow().get(0);
         FlowMap o = FlowMapImpl.of(Map.of());
         o = node.forward(o);
 
@@ -383,7 +368,7 @@ public class AbstractNodeTest {
                 }
             });
 
-            AbstractNode node = (AbstractNode) instance.getJobProcess().get(0);
+            AbstractNode node = (AbstractNode) instance.getMainFlow().get(0);
             FlowMap o = FlowMapImpl.of(Map.of());
             node.start(o);
         } finally {
@@ -401,7 +386,7 @@ public class AbstractNodeTest {
         JobFactory factory = deps.get(JobFactory.class);
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
 
-        AbstractNode node = (AbstractNode) instance.getJobProcess().get(0);
+        AbstractNode node = (AbstractNode) instance.getMainFlow().get(0);
         FlowMap o = FlowMapImpl.of(Map.of());
         node.accept(o);
     }
@@ -416,7 +401,7 @@ public class AbstractNodeTest {
         JobFactory factory = deps.get(JobFactory.class);
         ScrapeInstaceImpl instance = factory.convertScrapeJob(specification.build());
 
-        AbstractNode node = (AbstractNode) instance.getJobProcess().get(0);
+        AbstractNode node = (AbstractNode) instance.getMainFlow().get(0);
         FlowMap o = FlowMapImpl.of(Map.of());
         node.accept(o);
     }

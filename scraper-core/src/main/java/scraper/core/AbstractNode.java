@@ -38,7 +38,7 @@ import static scraper.util.NodeUtil.infoOf;
 
 
 /**
- * Basic abstract implementation of a Node with labeling and goTo support.
+ * Basic abstract implementation of a Node with labeling and target support.
  * <p>
  * Provides following utility functions:
  * <ul>
@@ -80,7 +80,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     protected Boolean forward;
     /** Target label */
     @FlowKey
-    protected String goTo;
+    protected String target;
 
     /** Reference to its parent job */
     @JsonIgnore
@@ -95,12 +95,15 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     @FlowKey(defaultValue = "\"main\"")
     protected String service;
     /** Number of worker threads for given executor service pool {@link #service} */
-    @FlowKey(defaultValue = "25")
-    protected @Argument
-    Integer threads;
+    @FlowKey(defaultValue = "25") @Argument
+    protected Integer threads;
 
     /** All ensureFile fields of this node */
     private final ConcurrentMap<Field, EnsureFile> ensureFileFields = new ConcurrentHashMap<>();
+
+    /** Current node configuration */
+    @JsonIgnore
+    protected Map<String, Object> nodeConfiguration;
 
     /**
      * Initializes the {@link #stageIndex} and all fields marked with {@link FlowKey}. Evaluates
@@ -110,31 +113,31 @@ public abstract class AbstractNode implements Node, NodeInitializable {
      * @throws ValidationException If a JSON parse error or a reflection error occurs
      */
     @Override
-    public void init(ScrapeInstance job) throws ValidationException {
+    public void init(final ScrapeInstance job) throws ValidationException {
 //        Runtime.getRuntime().addShutdownHook(new Thread(this::nodeShutdown));
 
         // set stage indices
         this.jobPojo = job;
-        for (int i = 0; i < job.getJobProcess().size(); i++) {
-            if(job.getJobProcess().get(i) == this) {
+        for (int i = 0; i < job.getMainFlow().size(); i++) {
+            if(job.getMainFlow().get(i) == this) {
                 this.stageIndex = i;
                 break;
             }
         }
 
         // set logger name
-        String number = String.valueOf(getJobPojo().getJobProcess().size());
+        String number = String.valueOf(getJobPojo().getMainFlow().size());
         int indexLength = number.toCharArray().length;
         initLogger(indexLength);
         log(TRACE,"Start init {}", this);
 
         // initialize fields with arguments
-        Set<String> expectedFields = initFields(job.getProcessKeys(stageIndex), job.getInitialArguments());
+        Set<String> expectedFields = initFields(getNodeConfiguration(), job.getInitialArguments());
 
         // check actual fields against expected fields
-        for (String actualField : job.getProcessKeys(getStageIndex()).keySet()) {
+        for (String actualField : getNodeConfiguration().keySet()) {
             if (!expectedFields.contains(actualField)) {
-                log(WARN,"Found field defined in scrape jobPojo, but not expected in implementation: {}", actualField);
+                log(WARN,"Found field defined in flow, but not expected in implementation of node: {}", actualField);
             }
         }
 
@@ -175,6 +178,14 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         }
 
         return expectedFields;
+    }
+
+    public Map<String, Object> getNodeConfiguration() {
+        return nodeConfiguration;
+    }
+
+    public void setNodeConfiguration(@NotNull final Map<String, Object> configuration) {
+        nodeConfiguration = configuration;
     }
 
     public void initLogger(int indexLength) {
@@ -218,8 +229,8 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         Object jsonValue = spec.get(field.getName());
         Object globalValue = null;
 
-        if(jobPojo != null && jobPojo.getAll() != null) {
-            allFields = jobPojo.getAll().get(getClass().getSimpleName());
+        if(jobPojo != null && jobPojo.getGlobalNodeConfigurations() != null) {
+            allFields = jobPojo.getGlobalNodeConfigurations().get(getClass().getSimpleName());
 
             // fetch global value, if any
             if(allFields != null) {
@@ -329,12 +340,12 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     public List<ControlFlowEdge> getOutput() {
         List<ControlFlowEdge> flows = new ArrayList<>();
         if(forward) {
-            if(goTo != null)
-                flows.add(new ControlFlowEdgeImpl(nameOf(goTo), " goto ", goTo));
+            if(target != null)
+                flows.add(new ControlFlowEdgeImpl(nameOf(target), " goto ", target));
             else {
                 int i = getStageIndex();
                 // if not last node: add simple forward
-                if(getJobPojo().getJobProcess().size() != i+1) {
+                if(getJobPojo().getMainFlow().size() != i+1) {
                     flows.add(new ControlFlowEdgeImpl(nameOf(""+(i+1))," forward ", String.valueOf(i+1)));
                 }
             }
@@ -350,8 +361,8 @@ public abstract class AbstractNode implements Node, NodeInitializable {
             input.add(new ControlFlowEdgeImpl("start", "", null));
         }
 
-        for (int stageIndex = 0; stageIndex < jobPojo.getJobProcess().size(); stageIndex++) {
-            List<ControlFlowEdge> output = jobPojo.getJobProcess().get(stageIndex).getOutput();
+        for (int stageIndex = 0; stageIndex < jobPojo.getMainFlow().size(); stageIndex++) {
+            List<ControlFlowEdge> output = jobPojo.getMainFlow().get(stageIndex).getOutput();
             for (ControlFlowEdge flow : output) {
                 if(flow.getTarget().equalsIgnoreCase(getName()) && !flow.isDispatched()) {
                     input.add(new ControlFlowEdgeImpl(nameOf(""+stageIndex), " return ", ""+stageIndex));
@@ -381,7 +392,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     // GETTER AND UTILITY FUNCTIONS
     // ----------------------------
 
-    @Override public String nameOf(String target) { return getJobPojo().getProcessNode(target).getName(); }
+    @Override public String nameOf(String target) { return getJobPojo().getNode(NodeUtil.addressOf(target)).getName(); }
     @Override public String toString(){ return "["+getClass().getSimpleName()+"@"+getStageIndex()+"]"; }
 
     // node shutdown
@@ -418,44 +429,42 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         }
     }
 
+
     @Override
-    public FlowMap forward(FlowMap o, @NotNull NodeAddress other) throws NodeException {
+    public FlowMap forward(final FlowMap o) throws NodeException {
         // do nothing
         if(!getForward()) return o;
-
-        // get target node
-        Node target = null;
-        if(other.getLabel() != null) {
-            // assume node target is always valid (static checking)
-            target = getJobPojo().getProcessNode(other.getLabel());
-        }
-        else if (getStageIndex() != getJobPojo().getJobProcess().size() - 1) {
-            target = getJobPojo().getProcessNode(String.valueOf(getStageIndex() + 1));
+        if(getTarget() != null) {
+            return jobPojo.getNode(getTarget()).accept(o);
         }
 
-        // last node or no node target
-        if(target == null) return o;
-
-        return target.accept(o);
+        return o;
     }
 
     @Override
-    public void forkDispatch(FlowMap o, NodeAddress target) {
+    public FlowMap eval(final FlowMap o, final NodeAddress target) throws NodeException {
+        return jobPojo.getNode(target).accept(o);
+    }
+
+    @Override
+    public void forkDispatch(final FlowMap o, final NodeAddress target) {
         dispatch(() -> {
             try {
-                return forward(o, target);
+                return eval(o, target);
             } catch (NodeException e) {
+                log(ERROR, "Fork dispatch to target '{}' terminated exceptionally. {}", target, e);
                 throw new RuntimeException(e);
             }
         });
     }
 
     @Override
-    public CompletableFuture<FlowMap> forkDepend(FlowMap o, NodeAddress target) {
+    public CompletableFuture<FlowMap> forkDepend(final FlowMap o, final NodeAddress target) {
         return dispatch(() -> {
             try {
-                return forward(o, target);
+                return eval(o, target);
             } catch (NodeException e) {
+                log(ERROR, "Fork depend to target '{}' terminated exceptionally. {}", target, e);
                 throw new RuntimeException(e);
             }
         });
@@ -463,12 +472,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
 
     @Override
     public Object getKeySpec(final String argument) {
-        return getJobPojo().getProcessKey(getStageIndex(), argument);
-    }
-
-    @Override
-    public Map<String, Object> getNodeJsonSpec() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return nodeConfiguration.get(argument);
     }
 
     public String getType() {
@@ -493,10 +497,6 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         return this.forward;
     }
 
-    public String getGoTo() {
-        return this.goTo;
-    }
-
     public ScrapeInstance getJobPojo() {
         return this.jobPojo;
     }
@@ -511,7 +511,11 @@ public abstract class AbstractNode implements Node, NodeInitializable {
 
     @Override
     public NodeAddress getTarget() {
-        return NodeUtil.addressOf(goTo);
+        if(target != null) {
+            return NodeUtil.addressOf(target);
+        } else {
+            return getJobPojo().getForwardTarget(getAddress());
+        }
     }
 
     @Override

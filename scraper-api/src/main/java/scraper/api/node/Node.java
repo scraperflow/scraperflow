@@ -1,5 +1,7 @@
 package scraper.api.node;
 
+import scraper.annotations.NotNull;
+import scraper.annotations.Nullable;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.ControlFlow;
 import scraper.api.flow.FlowMap;
@@ -33,34 +35,42 @@ public interface Node extends NodeConsumer, ControlFlow {
     // JSON Specification
     // ==================
 
+    /** Sets the node configuration (key value pairs) */
+    void setNodeConfiguration(@NotNull Map<String, Object> nodeConfiguration);
+
+    /** Returns the node spec */
+    @NotNull Map<String, Object> getNodeConfiguration();
+
     /** Returns one value for one key of the node spec */
-    Object getKeySpec(String key);
-
-    /** Returns the complete node definition */
-    Map<String, Object> getNodeJsonSpec();
-
+    @Nullable Object getKeySpec(@NotNull String key);
 
     /** Job-Unique node address used for control flow */
-    NodeAddress getAddress();
+    @Nullable NodeAddress getAddress();
 
-
-    /** Job-Unique target node address */
-    NodeAddress getTarget();
+    /** Job-Unique target forward node address. Defaults to the next node in the specification */
+    @Nullable NodeAddress getTarget();
 
     // ============
     // Control Flow
     // ============
 
+    //-----------
+    // Sequential
+    //-----------
+
     /**
      * Forwards the flow map to another node.
      * Either next node, or the node specified by a target address given
+     * Can be controlled with the forward flag
      */
-    FlowMap forward(FlowMap o, NodeAddress target) throws NodeException;
-    default FlowMap forward(FlowMap o) throws NodeException { return forward(o, getTarget()); }
+    FlowMap forward(@NotNull FlowMap o) throws NodeException;
+    FlowMap eval(@NotNull FlowMap o, @NotNull NodeAddress target) throws NodeException;
 
-    CompletableFuture<FlowMap> forkDepend(FlowMap o, NodeAddress target);
-    default CompletableFuture<FlowMap> forkDepend(FlowMap o) { return forkDepend(o, getTarget()); }
+    //-----------
+    // Concurrent
+    //-----------
 
-    void forkDispatch(FlowMap o, NodeAddress target);
-    default void forkDispatch(FlowMap o) { forkDispatch(o, getTarget()); }
+    CompletableFuture<FlowMap> forkDepend(@NotNull FlowMap o, @NotNull NodeAddress target);
+    void forkDispatch(@NotNull FlowMap o, @NotNull NodeAddress target);
+
 }

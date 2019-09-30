@@ -1,18 +1,31 @@
 package scraper.api.node.impl;
 
+import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.node.NodeAddress;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class NodeAddressImpl implements NodeAddress {
     // ============
     // Getter
     // ============
+
     /** Unique node label used for control flow */
-    private String label;
+    private @NotNull String label;
 
     public NodeAddressImpl(@Nullable String label) {
+        this.label = label;
+        if(label == null) this.label = UUID.randomUUID().toString();
+    }
+
+    @Override
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(@NotNull String label) {
         this.label = label;
     }
 
@@ -21,20 +34,11 @@ public class NodeAddressImpl implements NodeAddress {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NodeAddressImpl that = (NodeAddressImpl) o;
-        return Objects.equals(label, that.label);
+        return label.equals(that.label);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(label);
-    }
-
-    @Override
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
     }
 }

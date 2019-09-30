@@ -152,14 +152,16 @@ public class JobFactory {
         // Pre-process fragments
         // ===
         log.info("Pre process fragments");
-        preprocessFragments(jobDefinition, job);
+//        preprocessFragments(jobDefinition, job);
 
 
         // ===
         // Process nodes and instantiate actual matching implementations
         // ===
         for (int index = 0; index < job.getProcess().size(); index++) {
-            String nodeType = (String) job.getProcessKey(index, "type");
+            Map<String, Object> nodeConfiguration = job.getProcess().get(index);
+
+            String nodeType = (String) nodeConfiguration.get("type");
 
             String vers = jobNodeDependencies
                     .getOrDefault(jobDefinition, new LinkedHashMap<>())
@@ -168,7 +170,8 @@ public class JobFactory {
 
             List<? extends AbstractMetadata> processPlugins = plugins.getPlugins().getPluginsFor(metadata);
             Node n = getHighestMatchingPlugin(processPlugins, metadata);
-            job.addProcessNode(n);
+            n.setNodeConfiguration(nodeConfiguration);
+            job.getMainFlow().add(n);
         }
 
         job.init();
@@ -194,74 +197,74 @@ public class JobFactory {
 
 
 
-    private void preprocessFragments(ScrapeSpecification jobDefinition, ScrapeInstaceImpl job) throws IOException {
-        boolean fragmentFound;
-        do {
-            fragmentFound = false;
+//    private void preprocessFragments(ScrapeSpecification jobDefinition, ScrapeInstaceImpl job) throws IOException {
+//        boolean fragmentFound;
+//        do {
+//            fragmentFound = false;
+//
+//            Iterator<Map<String, Object>> iter = job.getProcess().iterator();
+//            int i = 0;
+//
+//            // iterate over all current process nodes in the definition
+//            while (iter.hasNext()) {
+//                iter.next();
+//
+//                // check if node is a fragment
+//                if(((String) job.getProcessKey(i, "type")).equalsIgnoreCase("fragment")) {
+//
+//                    // find fragment file
+//                    String location = (String) job.getProcessKey(i, "required");
+//                    File fragment = findFragment(location, jobDefinition);
+//
+//                    List<Map<String, Object>> replaced = generateFragmentRecursive(fragment, jobDefinition, location);
+//
+//                    iter.remove();
+//
+//                    for (int i1 = 0; i1 < replaced.size(); i1++) {
+//                        job.getProcess().add(i+i1, replaced.get(i1));
+//                    }
+//
+//                    fragmentFound = true;
+//                    break;
+//                }
+//
+//                i++;
+//            }
+//        } while (fragmentFound);
+//    }
 
-            Iterator<Map<String, Object>> iter = job.getProcess().iterator();
-            int i = 0;
 
-            // iterate over all current process nodes in the definition
-            while (iter.hasNext()) {
-                iter.next();
-
-                // check if node is a fragment
-                if(((String) job.getProcessKey(i, "type")).equalsIgnoreCase("fragment")) {
-
-                    // find fragment file
-                    String location = (String) job.getProcessKey(i, "required");
-                    File fragment = findFragment(location, jobDefinition);
-
-                    List<Map<String, Object>> replaced = generateFragmentRecursive(fragment, jobDefinition, location);
-
-                    iter.remove();
-
-                    for (int i1 = 0; i1 < replaced.size(); i1++) {
-                        job.getProcess().add(i+i1, replaced.get(i1));
-                    }
-
-                    fragmentFound = true;
-                    break;
-                }
-
-                i++;
-            }
-        } while (fragmentFound);
-    }
-
-
-    private List<Map<String, Object>> generateFragmentRecursive(
-            File fragmentPath,
-            ScrapeSpecification jobDefinition,
-            String fragmentName
-    ) throws IOException {
-        // read fragment content
-        List<FragmentDefinition> fragmentDefinitions = objectMapper.readValue(fragmentPath, FragmentDefinitionList.class);
-
-        List<Map<String, Object>> fragments = new LinkedList<>();
-
-        // go through fragment node list
-        for (Map<String, Object> node : fragmentDefinitions) {
-            if(((String) node.get("type")).equalsIgnoreCase("fragment")) {
-                String location = (String) node.get("required");
-                // fragment inside fragment found, get path
-                File fragment = findFragment(location, jobDefinition);
-
-                // generate fragments
-                List<Map<String, Object>> generated = generateFragmentRecursive(fragment, jobDefinition, location);
-
-                // add all in order
-                fragments.addAll(generated);
-            } else {
-                // not a fragment
-                node.put("fragment", fragmentName);
-                fragments.add(node);
-            }
-        }
-
-        return fragments;
-    }
+//    private List<Map<String, Object>> generateFragmentRecursive(
+//            File fragmentPath,
+//            ScrapeSpecification jobDefinition,
+//            String fragmentName
+//    ) throws IOException {
+//        // read fragment content
+//        List<FragmentDefinition> fragmentDefinitions = objectMapper.readValue(fragmentPath, FragmentDefinitionList.class);
+//
+//        List<Map<String, Object>> fragments = new LinkedList<>();
+//
+//        // go through fragment node list
+//        for (Map<String, Object> node : fragmentDefinitions) {
+//            if(((String) node.get("type")).equalsIgnoreCase("fragment")) {
+//                String location = (String) node.get("required");
+//                // fragment inside fragment found, get path
+//                File fragment = findFragment(location, jobDefinition);
+//
+//                // generate fragments
+//                List<Map<String, Object>> generated = generateFragmentRecursive(fragment, jobDefinition, location);
+//
+//                // add all in order
+//                fragments.addAll(generated);
+//            } else {
+//                // not a fragment
+//                node.put("fragment", fragmentName);
+//                fragments.add(node);
+//            }
+//        }
+//
+//        return fragments;
+//    }
 
     public List<? extends AbstractMetadata> getPlugins() {
         return plugins.getPlugins().getPlugins();

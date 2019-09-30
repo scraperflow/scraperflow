@@ -1,6 +1,9 @@
 package scraper.api.specification;
 
+import scraper.annotations.NotNull;
+import scraper.annotations.Nullable;
 import scraper.api.node.Node;
+import scraper.api.node.NodeAddress;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
@@ -15,31 +18,34 @@ import java.util.Map;
  * @since 1.0.0
  */
 public interface ScrapeInstance {
-    /** Returns the initial arguments parsed from .args files */
-    Map<String, Object> getInitialArguments();
 
-    /** Returns instantiated node in the workflow */
-    Node getProcessNode(String target);
+    /** Returns the initial arguments parsed from .args files */
+    @NotNull Map<String, Object> getInitialArguments();
+
+    /** 'all' configuration */
+    @NotNull Map<String, Map<String, Object>> getGlobalNodeConfigurations();
 
     /** Returns the name of this workflow instance */
     String getName();
 
-    /** Returns the initial definition of the labeled node in the workflow */
-    Map<String, Object> getProcessNodeDefinition(String target);
-
-    /** Returns the complete process */
-    List<Node> getJobProcess();
-
-
-    Object getProcessKey(int stageIndex, String key);
-    Map<String, Object> getProcessKeys(int stageIndex);
-
+    /** Returns the description of this workflow instance */
     String getDescription();
 
-    Map<String, Map<String, Object>> getAll();
+    /** Returns instantiated node in the flow. main flow has precedence over fragment flows. Throws a runtime exception if address is not found */
+    @NotNull Node getNode(@NotNull NodeAddress target);
 
+    @Nullable NodeAddress getForwardTarget(@NotNull NodeAddress origin);
+
+    /** Returns the main flow */
+    @NotNull List<Node> getMainFlow();
+
+    /** Returns the fragment flows */
+    @NotNull List<List<Node>> getFragmentFlows();
+
+    // Cross-cutting concerns services
     ExecutorsService getExecutors();
     HttpService getHttpService();
     ProxyReservation getProxyReservation();
     FileService getFileService();
+
 }
