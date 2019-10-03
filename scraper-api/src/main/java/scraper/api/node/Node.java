@@ -48,7 +48,7 @@ public interface Node extends NodeConsumer, ControlFlow {
     @Nullable NodeAddress getAddress();
 
     /** Job-Unique target forward node address. Defaults to the next node in the specification */
-    @Nullable NodeAddress getTarget();
+    @Nullable NodeAddress getGoTo();
 
     // ============
     // Control Flow

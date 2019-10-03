@@ -24,23 +24,23 @@ public class MapKeyTest {
     @Test(expected = NodeException.class)
     public void missingKeyTest() throws NodeException {
         MapKey<String> missing = new MapKey<String>() {}.failOnMissing();
-        missing.key = "target";
+        missing.key = "goTo";
         missing.eval(o);
     }
 
     @Test(expected = NodeException.class)
     public void unexpectedRawTypeTest() throws NodeException {
         MapKey<String> missing = new MapKey<String>() {}.failOnMissing();
-        missing.key = "target";
-        o.put("target", 1);
+        missing.key = "goTo";
+        o.put("goTo", 1);
         missing.eval(o);
     }
 
     @Test
     public void continueOnUnsafeTypeTest() throws NodeException {
         MapKey<List<String>> missing = new MapKey<List<String>>(){}.base(TypesafeAggregateStringList::new);
-        missing.key = "target";
-        o.put("target", new ArrayList<String>());
+        missing.key = "goTo";
+        o.put("goTo", new ArrayList<String>());
 
         System.setProperty("scraper.failOnNonSafeMapKey", "false");
         missing.eval(o);

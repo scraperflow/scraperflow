@@ -77,7 +77,7 @@ public final class NodeUtil {
     }
 
     public static FlowState infoOf(FlowMap map, Node node, String jobName) {
-        return new FlowStateImpl(node.getTarget(), jobName);
+        return new FlowStateImpl(node.getAddress(), jobName);
     }
 
     public static FlowMap flowOf(Map<String, Object> initialArguments) {
@@ -139,8 +139,8 @@ public final class NodeUtil {
             }
 
             // argument annotation :
-            //     String -> target primitive type or enum (default converter)
-            //     String -> custom target                 (custom converter)
+            //     String -> goTo primitive type or enum (default converter)
+            //     String -> custom goTo                 (custom converter)
             if (isArgument && value != null) {
 
                 // get template converter

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @NodePlugin(value = "0.1.0", deprecated = true)
-public final class ComplexFlowNode extends AbstractNode {
+public final class ComplexFlowNode extends TestNode {
     @Override
     public FlowMap process(final FlowMap o) {return o;}
 
@@ -20,13 +20,13 @@ public final class ComplexFlowNode extends AbstractNode {
 
 
         { // dispatched edge
-            ControlFlowEdge f = new ControlFlowEdgeImpl(nameOf("target"), "" + 3, "target", true);
+            ControlFlowEdge f = new ControlFlowEdgeImpl(nameOf("goTo"), "" + 3, "goTo", true);
             f.setDispatched(true);
             arr.add(f);
         }
 
         { // multi edge
-            ControlFlowEdge f = new ControlFlowEdgeImpl(nameOf("target"), "" + 3, "target");
+            ControlFlowEdge f = new ControlFlowEdgeImpl(nameOf("goTo"), "" + 3, "goTo");
             f.setMultiple(true);
             arr.add(f);
         }

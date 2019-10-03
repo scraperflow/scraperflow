@@ -9,7 +9,7 @@ import scraper.core.NodeLogLevel;
 import static scraper.core.NodeLogLevel.*;
 
 @NodePlugin(value = "0.1.0", deprecated = true)
-public final class SimpleLogNode extends AbstractNode {
+public final class SimpleLogNode extends TestNode {
     @Override
     public FlowMap process(final FlowMap o) throws NodeException {
         log(TRACE, "1");

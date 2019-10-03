@@ -38,7 +38,7 @@ import static scraper.util.NodeUtil.infoOf;
 
 
 /**
- * Basic abstract implementation of a Node with labeling and target support.
+ * Basic abstract implementation of a Node with labeling and goTo support.
  * <p>
  * Provides following utility functions:
  * <ul>
@@ -80,7 +80,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     protected Boolean forward;
     /** Target label */
     @FlowKey
-    protected String target;
+    protected String goTo;
 
     /** Reference to its parent job */
     @JsonIgnore
@@ -340,8 +340,8 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     public List<ControlFlowEdge> getOutput() {
         List<ControlFlowEdge> flows = new ArrayList<>();
         if(forward) {
-            if(target != null)
-                flows.add(new ControlFlowEdgeImpl(nameOf(target), " goto ", target));
+            if(goTo != null)
+                flows.add(new ControlFlowEdgeImpl(nameOf(goTo), " goto ", goTo));
             else {
                 int i = getStageIndex();
                 // if not last node: add simple forward
@@ -434,8 +434,8 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     public FlowMap forward(final FlowMap o) throws NodeException {
         // do nothing
         if(!getForward()) return o;
-        if(getTarget() != null) {
-            return jobPojo.getNode(getTarget()).accept(o);
+        if(getGoTo() != null) {
+            return jobPojo.getNode(getGoTo()).accept(o);
         }
 
         return o;
@@ -452,7 +452,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
             try {
                 return eval(o, target);
             } catch (NodeException e) {
-                log(ERROR, "Fork dispatch to target '{}' terminated exceptionally. {}", target, e);
+                log(ERROR, "Fork dispatch to goTo '{}' terminated exceptionally. {}", target, e);
                 throw new RuntimeException(e);
             }
         });
@@ -464,7 +464,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
             try {
                 return eval(o, target);
             } catch (NodeException e) {
-                log(ERROR, "Fork depend to target '{}' terminated exceptionally. {}", target, e);
+                log(ERROR, "Fork depend to goTo '{}' terminated exceptionally. {}", target, e);
                 throw new RuntimeException(e);
             }
         });
@@ -498,6 +498,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     }
 
     public ScrapeInstance getJobPojo() {
+        if(jobPojo == null) throw new IllegalStateException("Node is not associated to a job");
         return this.jobPojo;
     }
 
@@ -510,9 +511,9 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     }
 
     @Override
-    public NodeAddress getTarget() {
-        if(target != null) {
-            return NodeUtil.addressOf(target);
+    public NodeAddress getGoTo() {
+        if(goTo != null) {
+            return NodeUtil.addressOf(goTo);
         } else {
             return getJobPojo().getForwardTarget(getAddress());
         }

@@ -1,5 +1,6 @@
 package scraper.api.flow.impl;
 
+import scraper.annotations.NotNull;
 import scraper.api.flow.FlowState;
 import scraper.api.node.NodeAddress;
 import scraper.util.NodeUtil;
@@ -10,7 +11,7 @@ public class FlowStateImpl implements FlowState {
     private final NodeAddress address;
     private final String jobName;
 
-    public FlowStateImpl(NodeAddress address, String jobName) {
+    public FlowStateImpl(@NotNull NodeAddress address, @NotNull String jobName) {
         this.address = address;
         this.jobName = jobName;
     }

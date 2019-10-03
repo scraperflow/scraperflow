@@ -6,7 +6,7 @@ import scraper.api.flow.FlowMap;
 import scraper.core.AbstractNode;
 
 @NodePlugin(value = "0.1.0", deprecated = true)
-public final class GotoNode extends AbstractNode {
+public final class GotoNode extends TestNode {
 
     @Override
     public FlowMap process(FlowMap o) throws NodeException {

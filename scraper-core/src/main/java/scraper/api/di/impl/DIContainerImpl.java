@@ -101,7 +101,7 @@ public class DIContainerImpl implements DIContainer {
 
         for (Class<?> dependency : constructor.getParameterTypes()) {
             if(dependency.isAssignableFrom(Collection.class)) {
-                if(annotations[index].length != 1) throw new IllegalArgumentException("Expected exactly one annotation with target type of collection");
+                if(annotations[index].length != 1) throw new IllegalArgumentException("Expected exactly one annotation with goTo type of collection");
 
                 DITarget targetAnnotation = (DITarget) annotations[index][0];
                 Collection<?> dependencyCollection = multiInstances.get(targetAnnotation.value());

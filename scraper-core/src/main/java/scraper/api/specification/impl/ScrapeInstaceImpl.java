@@ -44,11 +44,11 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
 
     /**
      * Gets the next node specified by {@code o}. If o is parsable as an integer, it is used as the next stage index.
-     * Otherwise, its used as a target label.
+     * Otherwise, its used as a goTo label.
      *
-     * @param target Stage index or target label
-     * @return Node target
-     * @throws RuntimeException If node target can not be found
+     * @param target Stage index or goTo label
+     * @return Node goTo
+     * @throws RuntimeException If node goTo can not be found
      */
     @JsonIgnore
     @Override

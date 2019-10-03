@@ -37,7 +37,7 @@ public abstract class Template<T> {
             // create raw list
             List<Object> rawList = new ArrayList<>();
 
-            // populate with target element type
+            // populate with goTo element type
             for (Object element : ((List) jsonObject)) {
                 Object retElement = eval(element, elementType, o);
                 rawList.add(retElement);
@@ -54,7 +54,7 @@ public abstract class Template<T> {
             // create raw Map
             Map<Object, Object> rawMap = new LinkedHashMap<>();
 
-            // populate with target element type
+            // populate with goTo element type
             for (Object key : ((Map) jsonObject).keySet()) {
                 Object retElement = eval(((Map) jsonObject).get(key), elementType, o);
                 rawMap.put(key, retElement);

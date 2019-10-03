@@ -227,8 +227,8 @@ public class TemplateExpTest {
 //                "okhello world 123123123123 LONG                          string okhello world 123123123123 LONG    " +
 //                "                      string okhello world 123123123123 LONG                          string ok";
 //        TemplateExpression<String> test = TemplateUtil.parseTemplate(source, TypeToken.of(String.class));
-//        String target = test.eval(o);
-//        Assert.assertEquals(source, target);
+//        String goTo = test.eval(o);
+//        Assert.assertEquals(source, goTo);
 //    }
 
     @Test

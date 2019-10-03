@@ -77,7 +77,7 @@ public class AbstractNodeTest {
 
 
             Assert.assertTrue(edge.getLabel().contains("goto") || edge.getLabel().contains("3"));
-            Assert.assertTrue(edge.getTargetLabel().contains("2") || edge.getTargetLabel().contains("target"));
+            Assert.assertTrue(edge.getTargetLabel().contains("2") || edge.getTargetLabel().contains("goTo"));
         }
 
         Assert.assertTrue(oneDispatch);
@@ -129,7 +129,7 @@ public class AbstractNodeTest {
         assertNull(o.get("simple"));
         // local key overwrites all key
         assertEquals(true, o.get("overwritten"));
-        assertEquals(true, o.get("target"));
+        assertEquals(true, o.get("goTo"));
     }
 
     @Test
