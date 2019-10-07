@@ -1,0 +1,21 @@
+{
+  "name": "extended",
+  "paths": [],
+  "args": ["extended.args"],
+  "dependencies": "extended.ndep",
+  "import": {
+    "imported-flow": "import.scrape"
+  },
+  "flow"    : [
+    { "type": "PipeNode", "pipe": ["imported-flow"], "log":"Scrape job is running!" },
+    { "type": "Fragment", "required":"other.fragment" },
+    {
+      "type": "Section",
+      "section": [
+        { "type": "SimpleNode" },
+        { "type": "SimpleNode", "log":"stopping!" }
+      ]
+    },
+    { "type": "SimpleNode", "log": "Not executing since section finished" }
+  ]
+}
