@@ -19,17 +19,18 @@ public final class ComplexFlowNode extends TestNode {
         List<ControlFlowEdge> arr = new ArrayList<>(super.getOutput());
 
 
-        { // dispatched edge
-            ControlFlowEdge f = new ControlFlowEdgeImpl(nameOf("goTo"), "" + 3, "goTo", true);
-            f.setDispatched(true);
-            arr.add(f);
-        }
-
-        { // multi edge
-            ControlFlowEdge f = new ControlFlowEdgeImpl(nameOf("goTo"), "" + 3, "goTo");
-            f.setMultiple(true);
-            arr.add(f);
-        }
+        // FIXME
+//        { // dispatched edge
+//            ControlFlowEdge f = new ControlFlowEdgeImpl(nameOf("goTo"), "" + 3, "goTo", true);
+//            f.setDispatched(true);
+//            arr.add(f);
+//        }
+//
+//        { // multi edge
+//            ControlFlowEdge f = new ControlFlowEdgeImpl(nameOf("goTo"), "" + 3, "goTo");
+//            f.setMultiple(true);
+//            arr.add(f);
+//        }
 
         return arr;
     }

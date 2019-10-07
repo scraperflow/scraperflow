@@ -372,7 +372,8 @@ public abstract class AbstractNode implements Node, NodeInitializable {
                 .collect(Collectors.toList());
     }
 
-    public String getName() {
+    @Override
+    public String getDisplayName() {
         String name = getAddress().getLabel();
         if (!(name == null || name.isEmpty())) name += "\\n";
         else name = "";

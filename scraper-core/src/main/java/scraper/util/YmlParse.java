@@ -24,59 +24,60 @@ final class YmlParse {
 
     @SuppressWarnings("unchecked") // exception catches type errors
     static List<ScrapeSpecification> parseYmlFile(String ym, Set<String> canditatePaths) throws IOException {
-        log.info("Processing yml {}", ym);
-        List<ScrapeSpecification> jobDefinitions = new LinkedList<>();
-
-        // get first specified yml file among candidate paths
-        File ymlPath = FileUtil.getFirstExisting(ym, canditatePaths);
-        Map args = mapper.readValue(ymlPath, Map.class);
-
-        // ???
-        List use = (args.get("use") == null ? new ArrayList<>() : (List) args.get("use"));
-        use.forEach(p -> log.debug("Classpath: {}", p));
-
-        // parse each specified job
-        Map jobs = (Map) args.get("jobs");
-
-        jobs.forEach((job, spec) -> {
-            ScrapeSpecificationImpl.JobDefinitionBuilder b = ScrapeSpecificationImpl.builder();
-
-            // ???
-            use.forEach(p -> b.path((String) p));
-
-            // set base path as the parent of the .yml file
-            b.basePath((ymlPath.getParent() == null
-                    ? System.getProperty("user.dir")
-                    : ymlPath.getParent()));
-
-            String scrapeArg = (String) ((Map) spec).get("scrape-file");
-            List argumentArgs = (List) ((Map) spec).getOrDefault("arguments", new ArrayList());
-            List fragmentArgs = (List) ((Map) spec).getOrDefault("fragments", new ArrayList());
-
-            if(scrapeArg != null) {
-                b.scrapeFile(scrapeArg);
-            } else {
-                throw new IllegalStateException("Missing scrape file definition for job "+ job);
-            }
-
-            if (argumentArgs != null) {
-                argumentArgs.forEach(arg -> b.argumentFile((String) arg));
-            }
-
-            if (fragmentArgs != null) {
-                fragmentArgs.forEach(arg -> b.fragmentFolder((String) arg));
-            }
-
-            b.name((String) job);
-
-            b.packagedFile((String) ((Map) spec).get("packaged-file"));
-
-            canditatePaths.forEach(b::path);
-
-            jobDefinitions.add(b.build());
-        });
-
-        return jobDefinitions;
+        return null;
+//        log.info("Processing yml {}", ym);
+//        List<ScrapeSpecification> jobDefinitions = new LinkedList<>();
+//
+//        // get first specified yml file among candidate paths
+//        File ymlPath = FileUtil.getFirstExisting(ym, canditatePaths);
+//        Map args = mapper.readValue(ymlPath, Map.class);
+//
+//        // ???
+//        List use = (args.get("use") == null ? new ArrayList<>() : (List) args.get("use"));
+//        use.forEach(p -> log.debug("Classpath: {}", p));
+//
+//        // parse each specified job
+//        Map jobs = (Map) args.get("jobs");
+//
+//        jobs.forEach((job, spec) -> {
+//            ScrapeSpecificationImpl.JobDefinitionBuilder b = ScrapeSpecificationImpl.builder();
+//
+//            // ???
+//            use.forEach(p -> b.path((String) p));
+//
+//            // set base path as the parent of the .yml file
+//            b.basePath((ymlPath.getParent() == null
+//                    ? System.getProperty("user.dir")
+//                    : ymlPath.getParent()));
+//
+//            String scrapeArg = (String) ((Map) spec).get("scrape-file");
+//            List argumentArgs = (List) ((Map) spec).getOrDefault("arguments", new ArrayList());
+//            List fragmentArgs = (List) ((Map) spec).getOrDefault("fragments", new ArrayList());
+//
+//            if(scrapeArg != null) {
+//                b.scrapeFile(scrapeArg);
+//            } else {
+//                throw new IllegalStateException("Missing scrape file definition for job "+ job);
+//            }
+//
+//            if (argumentArgs != null) {
+//                argumentArgs.forEach(arg -> b.argumentFile((String) arg));
+//            }
+//
+//            if (fragmentArgs != null) {
+//                fragmentArgs.forEach(arg -> b.fragmentFolder((String) arg));
+//            }
+//
+//            b.name((String) job);
+//
+//            b.packagedFile((String) ((Map) spec).get("packaged-file"));
+//
+//            canditatePaths.forEach(b::path);
+//
+//            jobDefinitions.add(b.build());
+//        });
+//
+//        return jobDefinitions;
     }
 
 }

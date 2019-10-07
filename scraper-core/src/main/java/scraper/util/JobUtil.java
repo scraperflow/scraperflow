@@ -1,5 +1,7 @@
 package scraper.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.slf4j.Logger;
 import scraper.annotations.ArgsCommand;
 import scraper.api.specification.ScrapeSpecification;
@@ -36,6 +38,10 @@ import java.util.*;
         example = "scraper app.scrape config_db.args config_runtime.args"
 )
 public final class JobUtil {
+
+    // JSON and YML mapper
+    private static final ObjectMapper jsonMapper = new ObjectMapper();
+    private static final ObjectMapper ymlMapper = new ObjectMapper(new YAMLFactory());
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(JobUtil.class);
 
@@ -145,13 +151,30 @@ public final class JobUtil {
                 ? System.getProperty("user.dir")
                 : Paths.get("").getParent().toString());
 
-        return ScrapeSpecificationImpl.builder()
-                .paths(candidatePaths)
-                .basePath(base)
-                .scrapeFile(scrapePath)
-                .nodeDependencyFile(ndepPath)
-                .argumentFiles(argsPaths)
-                .fragmentFolders(fragmentFolders)
-                .build();
+        // search for file
+        File scrapeFile = FileUtil.getFirstExisting(scrapePath, candidatePaths);
+        if(!scrapeFile.exists() || !scrapeFile.isFile()) throw new IOException("scrape file is not a file or does not exist");
+
+        // try to parse JSON and YML
+        ScrapeSpecification spec;
+        try {
+            jsonMapper.readValue(scrapeFile, ScrapeSpecificationImpl.class);
+            System.out.println("OK");
+        } catch (Exception e) {
+            e.printStackTrace();
+            ymlMapper.readValue(scrapeFile, ScrapeSpecificationImpl.class);
+            System.out.println("YML");
+        }
+
+
+        throw new IllegalStateException("finished");
+//        return ScrapeSpecificationImpl.builder()
+//                .paths(candidatePaths)
+//                .basePath(base)
+//                .scrapeFile(scrapePath)
+//                .nodeDependencyFile(ndepPath)
+//                .argumentFiles(argsPaths)
+//                .fragmentFolders(fragmentFolders)
+//                .build();
     }
 }

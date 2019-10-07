@@ -101,82 +101,83 @@ public class JobFactory {
 
     private ScrapeInstaceImpl convertJob(final ScrapeSpecification jobDefinition,
                                          Function<String, Map<String, Object>> nodeSupplier) throws IOException, ValidationException {
-        // ===
-        // Node dependencies
-        // ===
-        if (jobDefinition.getNodeDependencyFile() != null) {
-            try {
-                parseNodeDependencies(jobDefinition);
-                log.info("Using node dependency file for job '{}': {}",
-                        jobDefinition.getScrapeFile(),
-                        jobDefinition.getNodeDependencyFile());
-            } catch (FileNotFoundException e) {
-                log.warn("Missing node dependency file: '{}'. Continuing without node versioning.",
-                        jobDefinition.getNodeDependencyFile());
-            }
-        }
-
-        // ===
-        // Job Pojo
-        // ===
-        log.info("Parsing {}",jobDefinition.getScrapeFile());
-        ScrapeInstaceImpl job = parseJob(jobDefinition);
-
-        // ===
-        // .args files
-        // ===
-
-        // first args from definition
-        Map<String, Object> combinedArgs = new HashMap<>(job.initialArguments);
-
-        // implied args
-        try {
-            String impliedArgs = Paths.get(FileUtil.replaceFileExtension(jobDefinition.getScrapeFile(), "args")).toString();
-            File impliedArgsFile = findArgsFile(impliedArgs, jobDefinition);
-            log.info("Parsing implied args file: {}", impliedArgs);
-            Map<String, String> init = parseInputArguments(impliedArgsFile);
-            combinedArgs.putAll(init);
-        } catch (FileNotFoundException ignored) {}
-
-        // later args files overwrite earlier ones
-        for (String arg : jobDefinition.getArgumentFiles()) {
-            File argsFile = findArgsFile(arg, jobDefinition);
-            log.info("Parsing args file: {}", arg);
-            Map<String, String> init = parseInputArguments(argsFile);
-            combinedArgs.putAll(init);
-        }
-
-        job.setInitialArguments(combinedArgs);
-
-        // ===
-        // Pre-process fragments
-        // ===
-        log.info("Pre process fragments");
-        preprocessFragments(jobDefinition, job);
-
-
-        // ===
-        // Process nodes and instantiate actual matching implementations
-        // ===
-        for (int index = 0; index < job.getProcess().size(); index++) {
-            Map<String, Object> nodeConfiguration = job.getProcess().get(index);
-
-            String nodeType = (String) nodeConfiguration.get("type");
-
-            String vers = jobNodeDependencies
-                    .getOrDefault(jobDefinition, new LinkedHashMap<>())
-                    .getOrDefault(nodeType, "0.0.0");
-            PluginMetadata metadata = new SimplePluginMetadata(nodeType, vers);
-
-            List<? extends AbstractMetadata> processPlugins = plugins.getPlugins().getPluginsFor(metadata);
-            Node n = getHighestMatchingPlugin(processPlugins, metadata);
-            n.setNodeConfiguration(nodeConfiguration);
-            job.getMainFlow().add(n);
-        }
-
-        job.init();
-
-        return job;
+//        // ===
+//        // Node dependencies
+//        // ===
+//        if (jobDefinition.getNodeDependencyFile() != null) {
+//            try {
+//                parseNodeDependencies(jobDefinition);
+//                log.info("Using node dependency file for job '{}': {}",
+//                        jobDefinition.getScrapeFile(),
+//                        jobDefinition.getNodeDependencyFile());
+//            } catch (FileNotFoundException e) {
+//                log.warn("Missing node dependency file: '{}'. Continuing without node versioning.",
+//                        jobDefinition.getNodeDependencyFile());
+//            }
+//        }
+//
+//        // ===
+//        // Job Pojo
+//        // ===
+//        log.info("Parsing {}",jobDefinition.getScrapeFile());
+//        ScrapeInstaceImpl job = parseJob(jobDefinition);
+//
+//        // ===
+//        // .args files
+//        // ===
+//
+//        // first args from definition
+//        Map<String, Object> combinedArgs = new HashMap<>(job.initialArguments);
+//
+//        // implied args
+//        try {
+//            String impliedArgs = Paths.get(FileUtil.replaceFileExtension(jobDefinition.getScrapeFile(), "args")).toString();
+//            File impliedArgsFile = findArgsFile(impliedArgs, jobDefinition);
+//            log.info("Parsing implied args file: {}", impliedArgs);
+//            Map<String, String> init = parseInputArguments(impliedArgsFile);
+//            combinedArgs.putAll(init);
+//        } catch (FileNotFoundException ignored) {}
+//
+//        // later args files overwrite earlier ones
+//        for (String arg : jobDefinition.getArgumentFiles()) {
+//            File argsFile = findArgsFile(arg, jobDefinition);
+//            log.info("Parsing args file: {}", arg);
+//            Map<String, String> init = parseInputArguments(argsFile);
+//            combinedArgs.putAll(init);
+//        }
+//
+//        job.setInitialArguments(combinedArgs);
+//
+//        // ===
+//        // Pre-process fragments
+//        // ===
+//        log.info("Pre process fragments");
+//        preprocessFragments(jobDefinition, job);
+//
+//
+//        // ===
+//        // Process nodes and instantiate actual matching implementations
+//        // ===
+//        for (int index = 0; index < job.getProcess().size(); index++) {
+//            Map<String, Object> nodeConfiguration = job.getProcess().get(index);
+//
+//            String nodeType = (String) nodeConfiguration.get("type");
+//
+//            String vers = jobNodeDependencies
+//                    .getOrDefault(jobDefinition, new LinkedHashMap<>())
+//                    .getOrDefault(nodeType, "0.0.0");
+//            PluginMetadata metadata = new SimplePluginMetadata(nodeType, vers);
+//
+//            List<? extends AbstractMetadata> processPlugins = plugins.getPlugins().getPluginsFor(metadata);
+//            Node n = getHighestMatchingPlugin(processPlugins, metadata);
+//            n.setNodeConfiguration(nodeConfiguration);
+//            job.getMainFlow().add(n);
+//        }
+//
+//        job.init();
+//
+//        return job;
+        return null;
     }
 
 
@@ -301,22 +302,26 @@ public class JobFactory {
     }
 
     private File locateScrapeFile(ScrapeSpecification def) throws FileNotFoundException {
-        return FileUtil.getFirstExisting(def.getScrapeFile(), newAppend(def.getPaths(), def.getBasePath()));
+        return null;
+//        return FileUtil.getFirstExisting(def.getScrapeFile(), newAppend(def.getPaths(), def.getBasePath()));
     }
 
     private File findArgsFile(String args, ScrapeSpecification job) throws FileNotFoundException {
-        return FileUtil.getFirstExisting(args, newAppend(job.getPaths(), job.getBasePath()));
+        return null;
+//        return FileUtil.getFirstExisting(args, newAppend(job.getPaths(), job.getBasePath()));
     }
 
     private File findNdepFile(ScrapeSpecification job) throws FileNotFoundException {
-        String ndepLocation = StringUtil.removeExtension(job.getScrapeFile()).concat(".ndep");
-        return FileUtil.getFirstExisting(ndepLocation, newAppend(job.getPaths(), job.getBasePath()));
+        return null;
+//        String ndepLocation = StringUtil.removeExtension(job.getScrapeFile()).concat(".ndep");
+//        return FileUtil.getFirstExisting(ndepLocation, newAppend(job.getPaths(), job.getBasePath()));
     }
 
     private File findFragment(String location, ScrapeSpecification jobDefinition) throws FileNotFoundException {
-        Collection<String> paths = StringUtil.pathProduct(jobDefinition.getPaths(), jobDefinition.getFragmentFolders());
-        String parent = FileUtil.getParentPath(jobDefinition.getScrapeFile(), "").toString();
-        List<String> candidates = newAppend((List<String>) new LinkedList<>(paths), new String[]{jobDefinition.getBasePath(), parent});
-        return FileUtil.getFirstExisting(location, candidates);
+        return null;
+//        Collection<String> paths = StringUtil.pathProduct(jobDefinition.getPaths(), jobDefinition.getFragmentFolders());
+//        String parent = FileUtil.getParentPath(jobDefinition.getScrapeFile(), "").toString();
+//        List<String> candidates = newAppend((List<String>) new LinkedList<>(paths), new String[]{jobDefinition.getBasePath(), parent});
+//        return FileUtil.getFirstExisting(location, candidates);
     }
 }
