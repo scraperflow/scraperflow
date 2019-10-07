@@ -2,7 +2,7 @@
   "name": "extended",
   "dependencies": "extended.ndep",
   "arguments": ["extended.args"],
-  "import": {
+  "imports": {
     "imported-graph": "import.scrape"
   },
   "entries": ["start"],
