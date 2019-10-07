@@ -10,6 +10,7 @@ import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
+import scraper.api.flow.ControlFlow;
 import scraper.api.flow.ControlFlowEdge;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.FlowState;
@@ -31,8 +32,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static scraper.api.flow.impl.ControlFlowEdgeImpl.edge;
 import static scraper.core.NodeLogLevel.*;
 import static scraper.util.NodeUtil.infoOf;
 
@@ -336,44 +342,36 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     // CONTROL FLOW FUNCTIONS
     // ------------------------
 
+    // default implementation only is concerned with forward to next/goTo node
     @Override
     public List<ControlFlowEdge> getOutput() {
-        List<ControlFlowEdge> flows = new ArrayList<>();
+        Node nextNode = getJobPojo().getNode(getGoTo());
         if(forward) {
             if(goTo != null)
-                flows.add(new ControlFlowEdgeImpl(nameOf(goTo), " goto ", goTo));
-            else {
-                int i = getStageIndex();
-                // if not last node: add simple forward
-                if(getJobPojo().getMainFlow().size() != i+1) {
-                    flows.add(new ControlFlowEdgeImpl(nameOf(""+(i+1))," forward ", String.valueOf(i+1)));
-                }
-            }
+                return List.of(edge(getAddress(), nextNode.getAddress(), "goTo"));
+            else
+                return List.of(edge(getAddress(), nextNode.getAddress(), "forward"));
         }
 
-        return flows;
+        return List.of();
     }
 
     @Override
     public List<ControlFlowEdge> getInput() {
-        List<ControlFlowEdge> input = new ArrayList<>();
-        if(stageIndex == 0) {
-            input.add(new ControlFlowEdgeImpl("start", "", null));
-        }
-
-        for (int stageIndex = 0; stageIndex < jobPojo.getMainFlow().size(); stageIndex++) {
-            List<ControlFlowEdge> output = jobPojo.getMainFlow().get(stageIndex).getOutput();
-            for (ControlFlowEdge flow : output) {
-                if(flow.getTarget().equalsIgnoreCase(getName()) && !flow.isDispatched()) {
-                    input.add(new ControlFlowEdgeImpl(nameOf(""+stageIndex), " return ", ""+stageIndex));
-                }
-            }
-        }
-
-        return input;
+        return jobPojo.getMainFlow()
+                .stream()
+                // every output of every node is checked
+                .map(ControlFlow::getOutput)
+                .flatMap(Collection::stream)
+                // if target address is included, then the input to this node is that node
+                .filter(edge -> edge.getToAddress().equals(getAddress()))
+                // flip the from/to addresses for every filtered edge
+                .map((Function<ControlFlowEdge, ControlFlowEdge>) origin ->
+                        new ControlFlowEdgeImpl(origin.getToAddress(), origin.getFromAddress(), origin.getDisplayLabel(),
+                                origin.isMultiple(), origin.isDispatched()))
+                .collect(Collectors.toList());
     }
 
-    @Override
     public String getName() {
         String name = getAddress().getLabel();
         if (!(name == null || name.isEmpty())) name += "\\n";
@@ -392,7 +390,6 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     // GETTER AND UTILITY FUNCTIONS
     // ----------------------------
 
-    @Override public String nameOf(String target) { return getJobPojo().getNode(NodeUtil.addressOf(target)).getName(); }
     @Override public String toString(){ return "["+getClass().getSimpleName()+"@"+getStageIndex()+"]"; }
 
     // node shutdown

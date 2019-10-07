@@ -51,7 +51,7 @@ public class AbstractNodeTest {
         assertEquals(1, endNode.getInput().size());
 
 
-        assertEquals("hello\\nSimpleNode@0", instance.getMainFlow().get(0).nameOf("hello"));
+        assertEquals("hello\\nSimpleNode@0", instance.getMainFlow().get(0).getAddress().getLabel());
     }
 
     @Test

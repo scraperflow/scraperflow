@@ -1,55 +1,45 @@
 package scraper.api.flow.impl;
 
 
+import scraper.annotations.NotNull;
 import scraper.api.flow.ControlFlowEdge;
+import scraper.api.node.NodeAddress;
 
 /**
  * @since 1.0.0
  */
 public class ControlFlowEdgeImpl implements ControlFlowEdge {
-    final String target;
-    final String label;
-    final String targetLabel;
-    boolean multiple;
-    boolean dispatched;
+    @NotNull private final NodeAddress fromAddress;
+    @NotNull private final NodeAddress toAddress;
+    @NotNull private final String displayLabel;
 
-    public ControlFlowEdgeImpl(String target, String label, String targetLabel) {
-        this.target = target;
-        this.label = label;
-        this.targetLabel = targetLabel;
-    }
+    private final boolean multiple;
+    private final boolean dispatched;
 
-    public ControlFlowEdgeImpl(String target, String label, String targetLabel, Boolean dispatched) {
-        this(target, label, targetLabel);
-        this.dispatched = dispatched;
-    }
+    public ControlFlowEdgeImpl(
+            @NotNull final NodeAddress from,
+            @NotNull final NodeAddress to,
+            @NotNull String displayName,
+            boolean multiple,
+            boolean dispatched
 
-    public String getTarget() {
-        return this.target;
-    }
-
-    public String getLabel() {
-        return this.label;
-    }
-
-    public String getTargetLabel() {
-        return this.targetLabel;
-    }
-
-    public boolean isMultiple() {
-        return this.multiple;
-    }
-
-    public boolean isDispatched() {
-        return this.dispatched;
-    }
-
-    public void setMultiple(boolean multiple) {
+    ) {
+        this.fromAddress = from;
+        this.toAddress = to;
+        this.displayLabel = displayName;
         this.multiple = multiple;
-    }
-
-    public void setDispatched(boolean dispatched) {
         this.dispatched = dispatched;
     }
+
+    @Override public String getDisplayLabel() { return displayLabel; }
+    @Override public NodeAddress getFromAddress() { return fromAddress; }
+    @Override public NodeAddress getToAddress() { return toAddress; }
+    @Override public boolean isMultiple() { return multiple; }
+    @Override public boolean isDispatched() { return dispatched; }
+
+    public static ControlFlowEdge edge(@NotNull final NodeAddress from, @NotNull final NodeAddress to, @NotNull String displayLabel) {
+        return new ControlFlowEdgeImpl(from, to, displayLabel, false, false);
+    }
+
 }
 
