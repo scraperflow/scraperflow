@@ -1,21 +1,18 @@
 {
   "name": "extended",
-  "paths": [],
-  "args": ["extended.args"],
   "dependencies": "extended.ndep",
+  "arguments": ["extended.args"],
   "import": {
-    "imported-flow": "import.scrape"
+    "imported-graph": "import.scrape"
   },
-  "flow"    : [
-    { "type": "PipeNode", "pipe": ["imported-flow"], "log":"Scrape job is running!" },
-    { "type": "Fragment", "required":"other.fragment" },
-    {
-      "type": "Section",
-      "section": [
-        { "type": "SimpleNode" },
-        { "type": "SimpleNode", "log":"stopping!" }
-      ]
-    },
-    { "type": "SimpleNode", "log": "Not executing since section finished" }
-  ]
+  "entries": ["start"],
+  "graphs": {
+    "start": [
+      { "type": "PipeNode", "pipe": ["imported-graph"], "log": "Scrape job is running!" },
+      { "type": "Fragment", "required": "other.fragment" }
+    ],
+    "unused": [
+      { "type": "SimpleNode","log":"This graph is not used!" }
+    ]
+  }
 }
