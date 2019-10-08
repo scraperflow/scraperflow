@@ -16,8 +16,7 @@ open module scraper.core {
     requires scraper.api;
     requires scraper.utils;
 
-    requires jackson.databind;
-    requires jackson.annotations;
+
     requires spring.core;
     requires io.github.classgraph;
     requires spring.plugin.core;
@@ -27,6 +26,8 @@ open module scraper.core {
 
     requires org.slf4j;
 
+    requires com.fasterxml.jackson.annotation;
+    requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.dataformat.yaml;
     requires antlr4.runtime;
 }
