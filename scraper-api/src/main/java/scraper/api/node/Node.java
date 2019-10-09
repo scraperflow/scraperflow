@@ -44,6 +44,9 @@ public interface Node extends NodeConsumer, ControlFlow {
     /** Returns one value for one key of the node spec */
     @Nullable Object getKeySpec(@NotNull String key);
 
+    /** Graph this node is contained in */
+    @Nullable String getGraphKey();
+
     /** Job-Unique node address used for control flow */
     @Nullable NodeAddress getAddress();
 

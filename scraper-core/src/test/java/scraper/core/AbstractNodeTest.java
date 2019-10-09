@@ -35,7 +35,7 @@ public class AbstractNodeTest {
 //        URL base = getClass().getResource("jobfactory");
 //        ScrapeSpecificationImpl.JobDefinitionBuilder specification = new ScrapeSpecificationImpl.JobDefinitionBuilder();
 //        specification.basePath(base.getPath());
-//        specification.scrapeFile("job1.scrape");
+//        specification.scrapeFile("job1.yf");
 //        specification.name("job1");
 //
 //        JobFactory factory = deps.get(JobFactory.class);
@@ -59,7 +59,7 @@ public class AbstractNodeTest {
 //        URL base = getClass().getResource("cf");
 //        ScrapeSpecificationImpl.JobDefinitionBuilder specification = new ScrapeSpecificationImpl.JobDefinitionBuilder();
 //        specification.basePath(base.getPath());
-//        specification.scrapeFile("job1.scrape");
+//        specification.scrapeFile("job1.yf");
 //        specification.name("job1");
 //
 //        JobFactory factory = deps.get(JobFactory.class);

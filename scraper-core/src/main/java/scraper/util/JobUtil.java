@@ -1,10 +1,13 @@
 package scraper.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.slf4j.Logger;
 import scraper.annotations.ArgsCommand;
+import scraper.api.node.NodeAddress;
 import scraper.api.specification.ScrapeSpecification;
+import scraper.api.specification.impl.NodeAddressDeserializer;
 import scraper.api.specification.impl.ScrapeSpecificationImpl;
 import scraper.api.exceptions.ValidationException;
 import scraper.utils.FileUtil;
@@ -13,14 +16,17 @@ import scraper.utils.StringUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @ArgsCommand(
         value = "<path ends with .ndep>",
-        doc = "Specifies a .ndep file which is used for node versioning. By default, the .scrape file name is used implicitly to look for a node versioning file.",
-        example = "scraper app.scrape dependencies.ndep"
+        doc = "Specifies a .ndep file which is used for node versioning. By default, the job file name is used implicitly to look for a node versioning file.",
+        example = "scraper app.jf dependencies.ndep"
 )
 @ArgsCommand(
         value = "<path ends with .yml>",
@@ -28,20 +34,31 @@ import java.util.*;
         example = "scraper app.yml"
 )
 @ArgsCommand(
-        value = "<path ends with .scrape>",
-        doc = "Specify a scrape job specification to run.",
-        example = "scraper app.scrape"
+        value = "<path ends with .jf>",
+        doc = "Specify a scrape job specification in JSON to run.",
+        example = "scraper app.jf"
+)
+@ArgsCommand(
+        value = "<path ends with .yf>",
+        doc = "Specify a scrape job specification in YML to run.",
+        example = "scraper app.yf"
 )
 @ArgsCommand(
         value = "<path ends with .args>",
         doc = "Specify a scrape job argument file to include.",
-        example = "scraper app.scrape config_db.args config_runtime.args"
+        example = "scraper app.jf config_db.args config_runtime.args"
 )
 public final class JobUtil {
 
     // JSON and YML mapper
     private static final ObjectMapper jsonMapper = new ObjectMapper();
     private static final ObjectMapper ymlMapper = new ObjectMapper(new YAMLFactory());
+    static {
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(NodeAddress.class, new NodeAddressDeserializer());
+        ymlMapper.registerModule(module);
+        jsonMapper.registerModule(module);
+    }
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(JobUtil.class);
 
@@ -49,67 +66,50 @@ public final class JobUtil {
             throws IOException, ValidationException {
         List<ScrapeSpecification> jobs = new LinkedList<>();
 
-        List<String> ymls = StringUtil.getAllArguments(args,".yml");
 
-        // TODO implement handle more than one yml
-        if (ymls.size() > 1) {
-            log.warn("More than 1 .yml file! {}", ymls);
-            log.error("Processing more than 1 yml file not implemented");
-            throw new ValidationException("More than 1 yml file not allowed");
-        }
-
-
-        // jobs defined via yml file
-        if(ymls.size() == 1) {
-            jobs = YmlParse.parseYmlFile(ymls.get(0), canditatePaths);
-        } // single job defined via application arguments
-        else {
-            ScrapeSpecification jobDefinition = parseArgsJob(args,canditatePaths);
-            if(jobDefinition != null) {
-                jobs.add(jobDefinition);
-            }
-        }
-
+        jobs.add(parseSingleSpecification(args, canditatePaths));
         log.info("Parsed {} scrape job definitions", jobs.size());
+
         return jobs;
     }
 
 
-    public static ScrapeSpecification parseArgsJob(String[] args, Set<String> canditatePaths) throws IOException, ValidationException {
-        return parseSingleFormat(args, ".scrape", canditatePaths);
-    }
-
-    public static ScrapeSpecification parseTestJob(String[] args) throws IOException, ValidationException {
-        return parseSingleFormat(args, ".stest", Collections.emptySet());
-    }
-
-    private static ScrapeSpecification parseSingleFormat(String[] args, String format, Set<String> candidatePaths) throws IOException, ValidationException {
+    private static ScrapeSpecification parseSingleSpecification(String[] args, Set<String> candidatePaths) throws IOException, ValidationException {
         String scrapePath;
+        // TODO implement command line parameters (update file spec after creation)
         String ndepPath;
         List<String> argsPaths = new LinkedList<>();
         List<String> fragmentFolders = new LinkedList<>();
 
-        {
-            // check paths for exactly one scrape file
-            List<String> paths = StringUtil.getAllArguments(args, format);
+        List<String> specs = Stream.concat(
+                StringUtil.getAllArguments(args,".yf").stream(),
+                StringUtil.getAllArguments(args,".jf").stream())
+                .collect(Collectors.toList());
 
-            if(paths.size() == 1) { // priority over implied paths
-                scrapePath = paths.get(0);
-            } else if (paths.size() > 1) {
-                log.error("Expected exactly one {} file! Specified: {}", format, paths);
-                throw new ValidationException("More than one "+format+" file specified as arguments: "+paths);
-            } else { // try implied .scrape files
-                List<String> impliedPaths = new LinkedList<>();
-                Files.list(Paths.get(System.getProperty("user.dir")))
-                        .filter(path -> path.toString().endsWith(".scrape"))
-                        .forEach(p -> impliedPaths.add(p.toString()));
-                if (impliedPaths.size() != 1) {
-                    log.warn("None or too many scrape files in current working folder found. Specify the scrape file directly. ");
-                    return null;
-                }
-                scrapePath = impliedPaths.get(0);
-            }
+        if (specs.size() > 1) {
+            log.warn("More than 1 specification file! ({}) Use a group specification to start multiple jobs in one JVM.", specs.size());
+            throw new ValidationException("Multiple single specifications not allowed, use a group specification instead");
         }
+
+        if(specs.size() == 1) {
+            scrapePath = specs.get(0);
+        } else {
+            List<String> impliedPaths = new LinkedList<>();
+            Stream.concat(
+                    Files.list(Paths.get(System.getProperty("user.dir")))
+                            .filter(path -> path.toString().endsWith(".yf")),
+                    Files.list(Paths.get(System.getProperty("user.dir")))
+                            .filter(path -> path.toString().endsWith(".jf"))
+            )
+                    .forEach(p -> impliedPaths.add(p.toString()));
+
+            if (impliedPaths.size() != 1) {
+                log.warn("None or too many scrape files (.yf, .jf) in current working folder found. Specify the scrape file directly. ");
+                throw new ValidationException("None or too many scrape file in current working folder: " + impliedPaths.size());
+            }
+            scrapePath = impliedPaths.get(0);
+        }
+
 
         {
             // check dependency file
@@ -124,7 +124,7 @@ public final class JobUtil {
             if (paths.size() == 1) {
                 ndepPath = paths.iterator().next();
             } else {
-                log.info("Using implied node dependency location");
+                log.debug("Using implied node dependency location");
                 ndepPath = FileUtil.replaceFileExtension(scrapePath, "ndep");
             }
         }
@@ -146,35 +146,31 @@ public final class JobUtil {
             fragmentFolders.addAll(paths);
         }
 
-        // set base path as current working directory
-        String base = (Paths.get("").getParent() == null
-                ? System.getProperty("user.dir")
-                : Paths.get("").getParent().toString());
-
         // search for file
         File scrapeFile = FileUtil.getFirstExisting(scrapePath, candidatePaths);
         if(!scrapeFile.exists() || !scrapeFile.isFile()) throw new IOException("scrape file is not a file or does not exist");
 
         // try to parse JSON and YML
-        ScrapeSpecification spec;
+        ScrapeSpecificationImpl spec;
         try {
-            jsonMapper.readValue(scrapeFile, ScrapeSpecificationImpl.class);
-            System.out.println("OK");
+            spec = jsonMapper.readValue(scrapeFile, ScrapeSpecificationImpl.class);
         } catch (Exception e) {
-            e.printStackTrace();
-            ymlMapper.readValue(scrapeFile, ScrapeSpecificationImpl.class);
-            System.out.println("YML");
+            try {
+                spec = ymlMapper.readValue(scrapeFile, ScrapeSpecificationImpl.class);
+            } catch (Exception e2) {
+                throw new ValidationException("Could not parse specification, not a JSON and not a YML file!", e2);
+            }
         }
+        spec.setScrapeFile(scrapeFile.toPath());
 
+        validate(spec);
+        return spec;
+    }
 
-        throw new IllegalStateException("finished");
-//        return ScrapeSpecificationImpl.builder()
-//                .paths(candidatePaths)
-//                .basePath(base)
-//                .scrapeFile(scrapePath)
-//                .nodeDependencyFile(ndepPath)
-//                .argumentFiles(argsPaths)
-//                .fragmentFolders(fragmentFolders)
-//                .build();
+    private static void validate(ScrapeSpecification spec) throws ValidationException {
+        if(spec.getName() == null) throw new ValidationException("Name field not specified");
+        if(spec.getEntry() == null) throw new ValidationException("Entry field not specified");
+        if(spec.getGraphs() == null) throw new ValidationException("Graphs field not specified");
+        if(spec.getScrapeFile() == null) throw new ValidationException("Path to scrape file null");
     }
 }

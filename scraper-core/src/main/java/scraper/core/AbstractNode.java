@@ -33,10 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static scraper.api.flow.impl.ControlFlowEdgeImpl.edge;
 import static scraper.core.NodeLogLevel.*;
@@ -111,6 +109,10 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     @JsonIgnore
     protected Map<String, Object> nodeConfiguration;
 
+    /** Set during init of node */
+    @JsonIgnore
+    private String graphKey;
+
     /**
      * Initializes the {@link #stageIndex} and all fields marked with {@link FlowKey}. Evaluates
      * actual values for fields marked with {@link Argument} with the initial argument map.
@@ -124,15 +126,17 @@ public abstract class AbstractNode implements Node, NodeInitializable {
 
         // set stage indices
         this.jobPojo = job;
-        for (int i = 0; i < job.getMainFlow().size(); i++) {
-            if(job.getMainFlow().get(i) == this) {
-                this.stageIndex = i;
-                break;
+        job.getGraphs().forEach((k, graph) -> {
+            for (int i = 0; i < graph.size(); i++) {
+                if(job.getGraph(k).get(i) == this) {
+                    this.stageIndex = i;
+                    break;
+                }
             }
-        }
+        });
 
         // set logger name
-        String number = String.valueOf(getJobPojo().getMainFlow().size());
+        String number = String.valueOf(job.getGraph(getGraphKey()).size());
         int indexLength = number.toCharArray().length;
         initLogger(indexLength);
         log(TRACE,"Start init {}", this);
@@ -358,7 +362,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
 
     @Override
     public List<ControlFlowEdge> getInput() {
-        return jobPojo.getMainFlow()
+        return getJobPojo().getGraph(getGraphKey())
                 .stream()
                 // every output of every node is checked
                 .map(ControlFlow::getOutput)
@@ -515,6 +519,11 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         } else {
             return getJobPojo().getForwardTarget(getAddress());
         }
+    }
+
+    @Override
+    public String getGraphKey() {
+        return this.graphKey;
     }
 
     @Override

@@ -128,7 +128,7 @@ public class Scraper {
                 try {
                     FlowMap initial = flowOf(job.getInitialArguments());
 
-                    job.getMainFlow().get(0).accept(initial);
+                    job.getNode(definition.getEntry()).accept(initial);
 
                     return initial;
                 } catch (NodeException e) {

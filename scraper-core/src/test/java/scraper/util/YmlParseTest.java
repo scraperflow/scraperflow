@@ -22,7 +22,7 @@ public class YmlParseTest {
 //        ScrapeSpecification spec1 = spec.get(0);
 //        ScrapeSpecification spec2 = spec.get(1);
 //
-//        Assert.assertEquals("job1.scrape", spec1.getScrapeFile());
+//        Assert.assertEquals("job1.yf", spec1.getScrapeFile());
 //        String path = basePath.getPath();
 //        if (basePath.getPath().endsWith("/")) { path = path.substring(0, path.length()-1); }
 //        Assert.assertEquals(path, spec1.getBasePath());
@@ -39,9 +39,9 @@ public class YmlParseTest {
 //        Assert.assertEquals("important.args", spec2.getArgumentFiles().get(2));
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void YmlFileMissingScrapeTest() throws IOException {
-        URL ymlToParse = (getClass().getResource("yml/bad.yml"));
-        YmlParse.parseYmlFile(ymlToParse.getPath(), Collections.emptySet());
-    }
+//    @Test(expected = IllegalStateException.class)
+//    public void YmlFileMissingScrapeTest() throws IOException {
+//        URL ymlToParse = (getClass().getResource("yml/bad.yml"));
+//        YmlParse.parseYmlFile(ymlToParse.getPath(), Collections.emptySet());
+//    }
 }

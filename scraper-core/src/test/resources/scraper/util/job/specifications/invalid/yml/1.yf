@@ -1,0 +1,5 @@
+entry: start
+graphs:
+  start:
+    - type: PipeNode
+      log: Scrape job is running!

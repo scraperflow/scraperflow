@@ -1,6 +1,6 @@
 jobs:
   somejob1:
-    scrape-file: job1.scrape
+    scrape-file: job1.yf
     arguments:
       - job1.args
   somejob2:

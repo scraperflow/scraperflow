@@ -1,0 +1,9 @@
+name: extended
+entry: start
+graphs:
+  start:
+    - type: PipeNode
+      log: Scrape job is running!
+  unused:
+    - type: SimpleNode
+      log: This graph is not used!

@@ -32,7 +32,7 @@ public interface ScrapeSpecification {
     Map<String, String> getImports();
 
     /** Entry points */
-    List<NodeAddress> getEntries();
+    NodeAddress getEntry();
 
     /** label -> Graph definitions */
     Map<String, List<Map<String, Object>>> getGraphs();

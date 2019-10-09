@@ -1,0 +1,9 @@
+{
+  "name": "extended",
+  "entry": "start",
+  "graphs": {
+    "start": [
+      { "type": "SimpleNode" }
+    ]
+  }
+}

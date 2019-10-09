@@ -28,19 +28,16 @@ public interface ScrapeInstance {
     /** Returns the name of this workflow instance */
     String getName();
 
-    /** Returns the description of this workflow instance */
-    String getDescription();
-
     /** Returns instantiated node in the flow. main flow has precedence over fragment flows. Throws a runtime exception if address is not found */
     @NotNull Node getNode(@NotNull NodeAddress target);
 
     @Nullable NodeAddress getForwardTarget(@NotNull NodeAddress origin);
 
-    /** Returns the main flow */
-    @NotNull List<Node> getMainFlow();
+    /** ? */
+    @NotNull Map<String, List<Node>> getGraphs();
 
-    /** Returns the fragment flows */
-    @NotNull List<List<Node>> getFragmentFlows();
+    /** ? */
+    @NotNull List<Node> getGraph(String label);
 
     // Cross-cutting concerns services
     ExecutorsService getExecutors();

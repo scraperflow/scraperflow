@@ -11,12 +11,16 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 public final class FileUtil {
     private FileUtil(){}
+
+
 
     /** Searches for files with the candidate paths in both file system and class loader resources */
     @NotNull
@@ -44,6 +48,12 @@ public final class FileUtil {
         }
 
         throw new FileNotFoundException("'"+name+"'"+ " not found among candidate paths: " +candidates);
+    }
+
+    /** Searches for files with the candidate paths in both file system and class loader resources */
+    @NotNull
+    public static File getFirstExistingPaths(@NotNull final String name, @NotNull final Collection<Path> candidates) throws FileNotFoundException {
+        return getFirstExisting(name, candidates.stream().map(Path::toString).collect(Collectors.toList()));
     }
 
     /** Function to apply when a file has changed */
@@ -94,6 +104,13 @@ public final class FileUtil {
             return Paths.get(defaultPath);
 
         return p;
+    }
+
+    /** Replace the extension of a file, if any */
+    @NotNull
+    public static String replaceFileExtension(@NotNull final Path scrapePath, @NotNull final String extension) {
+        // TODO correct?
+        return FilenameUtils.removeExtension(scrapePath.toFile().getPath()) + "." +extension;
     }
 
     /** Replace the extension of a file, if any */

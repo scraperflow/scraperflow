@@ -14,6 +14,7 @@ import scraper.api.service.HttpService;
 import scraper.api.service.ProxyReservation;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 
 public class ScrapeInstaceImpl implements ScrapeInstance {
 
@@ -30,11 +31,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
 
     /** Generated nodes of the jobPojo */
     @JsonIgnore
-    private List<Node> mainFlow = new ArrayList<>();
-
-    /** Generated fragment nodes of the jobPojo */
-    @JsonIgnore
-    private List<List<Node>> fragmentFlows = new ArrayList<>();
+    private Map<String, List<Node>> graphs = new HashMap<>();
 
     /** Initial input arguments */
     public Map<String, Object> initialArguments = new HashMap<>();
@@ -50,12 +47,15 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
      * @return Node goTo
      * @throws RuntimeException If node goTo can not be found
      */
+
     @JsonIgnore
     @Override
     public @NotNull Node getNode(@NotNull NodeAddress target) {
-        for (Node node : mainFlow) {
-            if(node.getAddress().equals(target))
-                return node;
+        for (String k : graphs.keySet()) {
+            for (Node node : graphs.get(k)) {
+                if(node.getAddress().equals(target))
+                    return node;
+            }
         }
 
         throw new IllegalArgumentException("Node address not existing! "+target);
@@ -63,15 +63,27 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
 
     @Override
     public NodeAddress getForwardTarget(NodeAddress origin) {
-        for (int i = 0; i < mainFlow.size(); i++) {
-            if(mainFlow.get(i).getAddress().equals(origin)) {
-                if(i+1 < mainFlow.size()) {
-                    return mainFlow.get(i+1).getAddress();
-                }
-            }
-        }
+//
+//        for (int i = 0; i < mainFlow.size(); i++) {
+//            if(mainFlow.get(i).getAddress().equals(origin)) {
+//                if(i+1 < mainFlow.size()) {
+//                    return mainFlow.get(i+1).getAddress();
+//                }
+//            }
+//        }
+//
+//        return null;
+        throw new IllegalStateException("NYI");
+    }
 
-        return null;
+    @Override
+    public Map<String, List<Node>> getGraphs() {
+        return graphs;
+    }
+
+    @Override
+    public List<Node> getGraph(String label) {
+        return getGraphs().getOrDefault(label, new ArrayList<>());
     }
 
 
@@ -82,16 +94,12 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
 
     @JsonIgnore
     public void init() throws ValidationException {
-        log.info("Initializing main flow '{}'", getName());
-
-        for (Node node : mainFlow)
-            if (node instanceof NodeInitializable) ((NodeInitializable) node).init(this);
-
-        log.info("Initializing fragments '{}'", getName());
-
-        for (List<Node> fragmentFlow: fragmentFlows)
-            for (Node node : fragmentFlow)
+        log.info("Initializing graphs '{}'", getName());
+        for (String k : getGraphs().keySet()) {
+            for (Node node : getGraph(k)) {
                 if (node instanceof NodeInitializable) ((NodeInitializable) node).init(this);
+            }
+        }
     }
 
 
@@ -103,18 +111,8 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         return this.description;
     }
 
-
     public List<Map<String, Object>> getProcess() {
         return this.process;
-    }
-
-    public List<Node> getMainFlow() {
-        return this.mainFlow;
-    }
-
-    @Override
-    public List<List<Node>> getFragmentFlows() {
-        return fragmentFlows;
     }
 
     public Map<String, Object> getInitialArguments() {
@@ -144,14 +142,6 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
 
     public void setProcess(List<Map<String, Object>> process) {
         this.process = process;
-    }
-
-    public void setMainFlow(List<Node> flow) {
-        this.mainFlow = mainFlow;
-    }
-
-    public void addFragmentFlow(List<Node> flow) {
-        this.fragmentFlows.add(flow);
     }
 
     public void setInitialArguments(Map<String, Object> initialArguments) {

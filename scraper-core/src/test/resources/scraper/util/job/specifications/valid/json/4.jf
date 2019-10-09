@@ -1,0 +1,16 @@
+{
+  "name": "extended",
+  "imports": {
+    "imported-graph": "import.scrape"
+  },
+  "entry": "start",
+  "graphs": {
+    "start": [
+      { "type": "PipeNode", "pipe": ["imported-graph"], "log": "Scrape job is running!" },
+      { "type": "Fragment", "required": "other.fragment" }
+    ],
+    "unused": [
+      { "type": "SimpleNode","log":"This graph is not used!" }
+    ]
+  }
+}

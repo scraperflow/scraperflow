@@ -28,7 +28,7 @@ public class JobFactoryTest {
 //        URL base = getClass().getResource("jobfactory");
 //        ScrapeSpecificationImpl.JobDefinitionBuilder specification = new ScrapeSpecificationImpl.JobDefinitionBuilder();
 //        specification.basePath(base.getPath());
-//        specification.scrapeFile("job1.scrape");
+//        specification.scrapeFile("job1.yf");
 //        specification.name("job1");
 //        specification.nodeDependencyFile("job1.ndep");
 //        specification.argumentFile("level0.args");
@@ -49,7 +49,7 @@ public class JobFactoryTest {
 //        URL base = getClass().getResource("missingplugin");
 //        ScrapeSpecificationImpl.JobDefinitionBuilder specification = new ScrapeSpecificationImpl.JobDefinitionBuilder();
 //        specification.basePath(base.getPath());
-//        specification.scrapeFile("job1.scrape");
+//        specification.scrapeFile("job1.yf");
 //        specification.name("job1");
 //
 //        JobFactory factory = deps.get(JobFactory.class);
@@ -61,7 +61,7 @@ public class JobFactoryTest {
 //        URL base = getClass().getResource("missingplugin");
 //        ScrapeSpecificationImpl.JobDefinitionBuilder specification = new ScrapeSpecificationImpl.JobDefinitionBuilder();
 //        specification.basePath(base.getPath());
-//        specification.scrapeFile("job1.scrape");
+//        specification.scrapeFile("job1.yf");
 //        specification.name("job1");
 //
 //        JobFactory factory = deps.get(JobFactory.class);

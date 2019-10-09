@@ -17,10 +17,7 @@ import scraper.hooks.PluginHook;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class DependencyInjectionUtilTest {
 
@@ -55,7 +52,7 @@ public class DependencyInjectionUtilTest {
         File temp = File.createTempFile("ndep-test", null).getParentFile();
         JobFactory jobFactory = container.get(JobFactory.class);
         List<ScrapeSpecification> specs = YmlParse.parseYmlFile(getClass().getResource("yml/minimal.yml").getPath(), Set.of());
-        ScrapeSpecification spec = specs.get(0);
+        ScrapeSpecification spec = Objects.requireNonNull(specs).get(0);
         ScrapeInstance instance = jobFactory.convertScrapeJob(spec);
         container.get(NodeDependencyGeneratorHook.class).execute(container, new String[]{"ndep:"+temp.getPath()}, Map.of(spec, instance));
         Path path = Path.of(temp.getPath(), "job1.ndep");
