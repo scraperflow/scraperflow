@@ -28,8 +28,8 @@ public interface ScrapeSpecification {
     /** Arguments used */
     List<String> getArguments();
 
-    /** Label -> .scrape file references */
-    Map<String, String> getImports();
+    /** .scrape file reference -> exported labels */
+    Map<String, List<NodeAddress>> getImports();
 
     /** Entry points */
     NodeAddress getEntry();

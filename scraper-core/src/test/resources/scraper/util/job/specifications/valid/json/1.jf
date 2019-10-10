@@ -3,7 +3,7 @@
   "dependencies": "extended.ndep",
   "arguments": ["extended.args"],
   "imports": {
-    "imported-graph": "import.scrape"
+    "import.scrape": ["imported-graph"]
   },
   "entry": "start",
   "graphs": {

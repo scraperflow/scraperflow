@@ -2,9 +2,6 @@
   "name": "extended",
   "dependencies": "extended.ndep",
   "arguments": ["extended.args"],
-  "imports": {
-    "imported-graph": "import.scrape"
-  },
   "graphs": {
     "start": [
       { "type": "PipeNode", "pipe": ["imported-graph"], "log": "Scrape job is running!" },

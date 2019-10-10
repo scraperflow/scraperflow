@@ -1,9 +1,6 @@
 {
   "name": "extended",
   "dependencies": "extended.ndep",
-  "imports": {
-    "imported-graph": "import.scrape"
-  },
   "entry": "start",
   "graphs": {
     "start": [

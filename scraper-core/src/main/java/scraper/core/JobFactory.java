@@ -14,6 +14,7 @@ import scraper.api.service.HttpService;
 import scraper.api.service.ProxyReservation;
 import scraper.api.specification.ScrapeSpecification;
 import scraper.api.specification.impl.ScrapeInstaceImpl;
+import scraper.util.JobUtil;
 import scraper.utils.FileUtil;
 import scraper.utils.StringUtil;
 
@@ -98,6 +99,19 @@ public class JobFactory {
     private @NotNull ScrapeInstaceImpl convertJob(@NotNull final ScrapeSpecification jobDefinition,
                                          Function<String, Map<String, Object>> nodeSupplier) throws IOException, ValidationException {
         // ===
+        // Imports
+        // ===
+
+        ScrapeSpecification old = null;
+        for (String job : jobDefinition.getImports().keySet()) {
+            List<NodeAddress> exportedAddresses = jobDefinition.getImports().get(job);
+            log.info("Importing '{}' with labels {}", job, exportedAddresses);
+            ScrapeSpecification importedJob = JobUtil.parseJobsP(new String[]{job}, jobDefinition.getPaths()).get(0);
+            if(old != null) JobUtil.merge(old, importedJob);
+            old = importedJob;
+        }
+
+        // ===
         // Node dependencies
         // ===
         if (jobDefinition.getDependencies() != null) {
@@ -116,6 +130,7 @@ public class JobFactory {
         // Job Pojo
         // ===
         log.info("Parsing {}",jobDefinition.getScrapeFile());
+        if(old != null) JobUtil.merge(jobDefinition, old);
         ScrapeInstaceImpl job = parseJob(jobDefinition);
 
         // ===

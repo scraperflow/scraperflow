@@ -57,17 +57,19 @@ public final class JobUtil {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(NodeAddress.class, new NodeAddressDeserializer());
         ymlMapper.registerModule(module);
-        SimpleModule module2 = new SimpleModule();
-        module2.addDeserializer(NodeAddress.class, new NodeAddressDeserializer());
-        jsonMapper.registerModule(module2);
+        jsonMapper.registerModule(module);
     }
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(JobUtil.class);
 
+    public static List<ScrapeSpecification> parseJobsP(final String[] args, final Collection<Path> canditatePaths)
+            throws IOException, ValidationException {
+        return parseJobs(args, canditatePaths.stream().map(Path::toString).collect(Collectors.toSet()));
+    }
+
     public static List<ScrapeSpecification> parseJobs(final String[] args, final Set<String> canditatePaths)
             throws IOException, ValidationException {
         List<ScrapeSpecification> jobs = new LinkedList<>();
-
 
         ScrapeSpecification parsed = parseSingleSpecification(args, canditatePaths);
         if(parsed != null) jobs.add(parsed);
@@ -153,17 +155,14 @@ public final class JobUtil {
         File scrapeFile = FileUtil.getFirstExisting(scrapePath, candidatePaths);
         if(!scrapeFile.exists() || !scrapeFile.isFile()) throw new IOException("scrape file is not a file or does not exist");
 
-        // try to parse JSON and YML
+        // try to parse JSON or YML
         ScrapeSpecificationImpl spec;
-        try {
+        if(scrapeFile.getName().endsWith("yf")) {
+            spec = ymlMapper.readValue(scrapeFile, ScrapeSpecificationImpl.class);
+        } else {
             spec = jsonMapper.readValue(scrapeFile, ScrapeSpecificationImpl.class);
-        } catch (Exception e) {
-            try {
-                spec = ymlMapper.readValue(scrapeFile, ScrapeSpecificationImpl.class);
-            } catch (Exception e2) {
-                throw new ValidationException("Could not parse specification, not a JSON and not a YML file!", e2);
-            }
         }
+
         spec.setScrapeFile(scrapeFile.toPath());
 
         validate(spec);
@@ -182,5 +181,17 @@ public final class JobUtil {
         if(spec.getName() == null) throw new ValidationException("Name field not specified");
         if(spec.getGraphs() == null) throw new ValidationException("Graphs field not specified");
         if(spec.getScrapeFile() == null) throw new ValidationException("Path to scrape file null");
+    }
+
+    public static void merge(ScrapeSpecification overwriteInto, ScrapeSpecification newJob) throws ValidationException {
+        for (NodeAddress nodeAddress : overwriteInto.getGraphs().keySet()) {
+            if (newJob.getGraphs().containsKey(nodeAddress)) {
+                throw new ValidationException("Imported scrape job has graph address conflict: " + nodeAddress);
+            }
+        }
+        overwriteInto.getGraphs().putAll(newJob.getGraphs());
+        overwriteInto.getPaths().addAll(newJob.getPaths());
+        overwriteInto.getArguments().addAll(newJob.getArguments());
+        overwriteInto.getGlobalNodeConfigurations().putAll(newJob.getGlobalNodeConfigurations());
     }
 }

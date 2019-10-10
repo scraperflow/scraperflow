@@ -28,4 +28,9 @@ subprojects {
         implementation project(':scraper-core')
         implementation project(':scraper-utils')
     }
+
+    task bundleDependencies(type: Jar) {
+        from { configurations.provided.collect { it.isDirectory() ? it : zipTree(it) } }
+        with jar
+    }
 }

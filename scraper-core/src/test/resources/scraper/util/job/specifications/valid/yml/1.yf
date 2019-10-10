@@ -4,7 +4,8 @@ dependencies: extended.ndep
 arguments:
   - extended.args
 imports:
-  imported-graph: import.scrape
+  imported-graph.scrape:
+    - import
 entry: start
 graphs:
   start:

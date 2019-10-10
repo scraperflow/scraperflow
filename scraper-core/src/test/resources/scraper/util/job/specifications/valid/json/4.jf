@@ -1,8 +1,5 @@
 {
   "name": "extended",
-  "imports": {
-    "imported-graph": "import.scrape"
-  },
   "entry": "start",
   "graphs": {
     "start": [
