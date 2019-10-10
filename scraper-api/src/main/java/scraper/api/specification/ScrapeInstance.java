@@ -34,10 +34,13 @@ public interface ScrapeInstance {
     @Nullable NodeAddress getForwardTarget(@NotNull NodeAddress origin);
 
     /** ? */
-    @NotNull Map<String, List<Node>> getGraphs();
+    @NotNull Map<NodeAddress, List<Node>> getGraphs();
 
     /** ? */
-    @NotNull List<Node> getGraph(String label);
+    @NotNull List<Node> getEntryGraph();
+
+    /** ? */
+    @NotNull List<Node> getGraph(NodeAddress label);
 
     // Cross-cutting concerns services
     ExecutorsService getExecutors();

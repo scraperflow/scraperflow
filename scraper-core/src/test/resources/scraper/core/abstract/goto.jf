@@ -1,0 +1,11 @@
+{
+  "name"       : "job",
+  "graphs"    : {
+    "start":
+    [
+      { "type": "SimpleFunctionalNode", "goTo":  "ok" },
+      { "type": "SimpleFunctionalNode", "address":  "ok", "forward": false },
+      { "type": "SimpleFunctionalNode", "address":  "oor", "output": "y" }
+    ]
+  }
+}

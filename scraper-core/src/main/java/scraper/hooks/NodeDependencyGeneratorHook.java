@@ -39,21 +39,21 @@ public class NodeDependencyGeneratorHook implements Hook {
         // ==
         // node dependency generation
         // ==
-//        String createNodeDependencies = StringUtil.getArgument(args, "ndep");
-//        if(createNodeDependencies != null) {
-//            log.info("Generating node dependencies");
-//
-//            for (ScrapeSpecification job : jobs.keySet()) {
-//                Path path;
-//                if(createNodeDependencies.isEmpty())
-//                    path = Path.of(job.getBasePath(), job.getName()+".ndep");
-//                else
-//                    path = Path.of(createNodeDependencies, job.getName()+".ndep");
-//
-//                log.info("Creating node dependencies file at {}", path.toString());
-//                generateNodeDependencies(path.toString());
-//            }
-//        }
+        String createNodeDependencies = StringUtil.getArgument(args, "ndep");
+        if(createNodeDependencies != null) {
+            log.info("Generating node dependencies");
+
+            for (ScrapeSpecification job : jobs.keySet()) {
+                Path path;
+                if(createNodeDependencies.isEmpty())
+                    path = Path.of(job.getScrapeFile().toString()+".ndep");
+                else
+                    path = Path.of(createNodeDependencies, job.getName()+".ndep");
+
+                log.info("Creating node dependencies file at {}", path.toString());
+                generateNodeDependencies(path.toString());
+            }
+        }
     }
 
     private void generateNodeDependencies(String path) throws FileNotFoundException {

@@ -1,5 +1,6 @@
 package scraper.nodes.apptest;
 
+import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
@@ -18,8 +19,9 @@ public final class NoNode extends AbstractNode {
     @FlowKey(defaultValue = "false")
     private Boolean fail;
 
+    @NotNull
     @Override
-    public FlowMap process(final FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull final FlowMap o) throws NodeException {
         System.setProperty("done", "true");
         if(fail) {
             log(ERROR,"EXP");

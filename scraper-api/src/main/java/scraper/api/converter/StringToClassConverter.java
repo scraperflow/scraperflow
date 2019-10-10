@@ -1,6 +1,7 @@
 package scraper.api.converter;
 
 import scraper.api.exceptions.ValidationException;
+import scraper.api.node.NodeAddress;
 
 /**
  * Converts string to target (primitive) type. Precedence is as follows:

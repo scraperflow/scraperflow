@@ -69,7 +69,7 @@ public class SimpleSystemTest {
 
     @Test
     public void loadJobTest() throws Exception {
-        URL f = Scraper.class.getResource("t.scrape");
+        URL f = Scraper.class.getResource("t.jf");
         File ff = new File(f.toURI());
         Assert.assertTrue(ff.exists());
         Scraper.main(new String[]{ff.getAbsolutePath()});
@@ -80,7 +80,7 @@ public class SimpleSystemTest {
 
     @Test
     public void exceptionTest() throws Exception {
-        URL f = Scraper.class.getResource("fail.scrape");
+        URL f = Scraper.class.getResource("fail.jf");
         File ff = new File(f.toURI());
         Assert.assertTrue(ff.exists());
         Scraper.main(new String[]{ff.getAbsolutePath()});

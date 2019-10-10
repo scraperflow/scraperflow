@@ -14,6 +14,7 @@ public final class SimpleFunctionalNode extends AbstractFunctionalNode {
 
     @Override
     public void modify(final FlowMap o) {
+        System.out.println(output);
         if(output != null)
             o.put(output, true);
         else {

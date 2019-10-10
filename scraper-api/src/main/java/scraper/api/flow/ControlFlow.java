@@ -1,5 +1,7 @@
 package scraper.api.flow;
 
+import scraper.annotations.NotNull;
+
 import java.util.List;
 
 /**
@@ -16,14 +18,15 @@ import java.util.List;
  */
 public interface ControlFlow {
     /** @return control flow to output nodes */
-    List<ControlFlowEdge> getOutput();
+    @NotNull List<ControlFlowEdge> getOutput();
 
     /** @return control flow from input nodes */
-    List<ControlFlowEdge> getInput();
+    @NotNull List<ControlFlowEdge> getInput();
 
     /** @return display name of this node */
-    String getDisplayName();
+    @NotNull String getDisplayName();
 
     /** @return fragment of this node; null if none */
-    String getFragment();
+    // FIXME necessary?
+    @NotNull String getFragment();
 }

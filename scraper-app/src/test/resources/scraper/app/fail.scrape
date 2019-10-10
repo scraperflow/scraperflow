@@ -1,5 +1,0 @@
-{
-  "name"       : "Name",
-  "description": "Description",
-  "process"    : [ { "type":"NoNode", "fail": true } ]
-}

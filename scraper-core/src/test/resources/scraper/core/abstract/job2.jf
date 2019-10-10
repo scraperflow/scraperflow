@@ -1,0 +1,9 @@
+{
+  "name"       : "job",
+  "entry": "start",
+  "graphs"    : {
+    "start": [
+      { "type":"SimpleFunctionalNode", "address": "hello" }
+    ]
+  }
+}

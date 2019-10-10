@@ -57,7 +57,9 @@ public final class JobUtil {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(NodeAddress.class, new NodeAddressDeserializer());
         ymlMapper.registerModule(module);
-        jsonMapper.registerModule(module);
+        SimpleModule module2 = new SimpleModule();
+        module2.addDeserializer(NodeAddress.class, new NodeAddressDeserializer());
+        jsonMapper.registerModule(module2);
     }
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(JobUtil.class);
@@ -67,7 +69,8 @@ public final class JobUtil {
         List<ScrapeSpecification> jobs = new LinkedList<>();
 
 
-        jobs.add(parseSingleSpecification(args, canditatePaths));
+        ScrapeSpecification parsed = parseSingleSpecification(args, canditatePaths);
+        if(parsed != null) jobs.add(parsed);
         log.info("Parsed {} scrape job definitions", jobs.size());
 
         return jobs;
@@ -105,7 +108,7 @@ public final class JobUtil {
 
             if (impliedPaths.size() != 1) {
                 log.warn("None or too many scrape files (.yf, .jf) in current working folder found. Specify the scrape file directly. ");
-                throw new ValidationException("None or too many scrape file in current working folder: " + impliedPaths.size());
+                return null;
             }
             scrapePath = impliedPaths.get(0);
         }
@@ -164,12 +167,19 @@ public final class JobUtil {
         spec.setScrapeFile(scrapeFile.toPath());
 
         validate(spec);
+
+        spec.setArguments(
+                Stream.concat(
+                        spec.getArguments().stream(),
+                        argsPaths.stream()
+                ).collect(Collectors.toList())
+        );
+
         return spec;
     }
 
     private static void validate(ScrapeSpecification spec) throws ValidationException {
         if(spec.getName() == null) throw new ValidationException("Name field not specified");
-        if(spec.getEntry() == null) throw new ValidationException("Entry field not specified");
         if(spec.getGraphs() == null) throw new ValidationException("Graphs field not specified");
         if(spec.getScrapeFile() == null) throw new ValidationException("Path to scrape file null");
     }

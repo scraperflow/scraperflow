@@ -1,5 +1,6 @@
 package scraper.api.node.type;
 
+import scraper.annotations.NotNull;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Node;
@@ -14,7 +15,8 @@ public interface FunctionalNode extends Node {
     void modify(FlowMap o) throws NodeException;
 
     /** Default accept method should only modify and forward the modified map */
-    default FlowMap process(final FlowMap o) throws NodeException {
+    @NotNull
+    default FlowMap process(@NotNull final FlowMap o) throws NodeException {
         modify(o);
         return forward(o);
     }

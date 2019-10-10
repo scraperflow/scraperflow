@@ -12,6 +12,7 @@ import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
 import scraper.api.service.ProxyReservation;
+import scraper.util.NodeUtil;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -26,18 +27,16 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     /** Describes what the intent of the jobPojo is */
     public String description = "No description given";
 
-    /** Parsed arguments of each process */
-    public List<Map<String, Object>> process = new ArrayList<>();
+    public NodeAddress entry = NodeUtil.addressOf("start");
 
     /** Generated nodes of the jobPojo */
-    @JsonIgnore
-    private Map<String, List<Node>> graphs = new HashMap<>();
+    private Map<NodeAddress, List<Node>> graphs = new HashMap<>();
 
     /** Initial input arguments */
     public Map<String, Object> initialArguments = new HashMap<>();
 
     /** Arguments applied to all nodes of given type */
-    public Map<String, Map<String, Object>> all;
+    public Map<String, Map<String, Object>> globalNodeConfigurations = new HashMap<>();
 
     /**
      * Gets the next node specified by {@code o}. If o is parsable as an integer, it is used as the next stage index.
@@ -48,10 +47,14 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
      * @throws RuntimeException If node goTo can not be found
      */
 
-    @JsonIgnore
     @Override
     public @NotNull Node getNode(@NotNull NodeAddress target) {
-        for (String k : graphs.keySet()) {
+
+        for (NodeAddress k : graphs.keySet()) {
+            if(k.equals(target)) {
+                return graphs.get(k).get(0);
+            }
+
             for (Node node : graphs.get(k)) {
                 if(node.getAddress().equals(target))
                     return node;
@@ -62,40 +65,55 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     }
 
     @Override
-    public NodeAddress getForwardTarget(NodeAddress origin) {
-//
-//        for (int i = 0; i < mainFlow.size(); i++) {
-//            if(mainFlow.get(i).getAddress().equals(origin)) {
-//                if(i+1 < mainFlow.size()) {
-//                    return mainFlow.get(i+1).getAddress();
-//                }
-//            }
-//        }
-//
-//        return null;
-        throw new IllegalStateException("NYI");
+    public NodeAddress getForwardTarget(@NotNull NodeAddress origin) {
+        for (NodeAddress k : graphs.keySet()) {
+            if(k.equals(origin)) {
+                return graphs.get(k).get(0).getAddress();
+            }
+
+            Iterator<Node> it = graphs.get(k).iterator();
+            while(it.hasNext()) {
+                Node node = it.next();
+                if(node.getAddress().equals(origin)){
+                    if(it.hasNext()) {
+                        return it.next().getAddress();
+                    } else {
+                        return null;
+                    }
+                }
+            }
+        }
+
+        throw new IllegalStateException("Origin node address not found in any graph");
     }
 
+    @NotNull
     @Override
-    public Map<String, List<Node>> getGraphs() {
+    public Map<NodeAddress, List<Node>> getGraphs() {
         return graphs;
     }
 
+    @NotNull
     @Override
-    public List<Node> getGraph(String label) {
-        return getGraphs().getOrDefault(label, new ArrayList<>());
+    public List<Node> getEntryGraph() {
+        return getGraph(entry);
+    }
+
+    @Override
+    public @NotNull List<Node> getGraph(@NotNull final NodeAddress address) {
+        getGraphs().putIfAbsent(address, new ArrayList<>());
+        return getGraphs().get(address);
     }
 
 
-    @JsonIgnore private ExecutorsService executors;
-    @JsonIgnore private HttpService httpService;
-    @JsonIgnore private ProxyReservation proxyReservation;
-    @JsonIgnore private FileService fileService;
+    private ExecutorsService executors;
+    private HttpService httpService;
+    private ProxyReservation proxyReservation;
+    private FileService fileService;
 
-    @JsonIgnore
     public void init() throws ValidationException {
         log.info("Initializing graphs '{}'", getName());
-        for (String k : getGraphs().keySet()) {
+        for (NodeAddress k : getGraphs().keySet()) {
             for (Node node : getGraph(k)) {
                 if (node instanceof NodeInitializable) ((NodeInitializable) node).init(this);
             }
@@ -111,21 +129,15 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         return this.description;
     }
 
-    public List<Map<String, Object>> getProcess() {
-        return this.process;
-    }
-
+    @NotNull
     public Map<String, Object> getInitialArguments() {
         return this.initialArguments;
     }
 
+    @NotNull
     @Override
     public Map<String, Map<String, Object>> getGlobalNodeConfigurations() {
-        return all;
-    }
-
-    public Map<String, Map<String, Object>> getAll() {
-        return this.all;
+        return globalNodeConfigurations;
     }
 
     public ExecutorsService getExecutors() {
@@ -136,20 +148,20 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         this.name = name;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setEntry(NodeAddress entryGraph) {
+        this.entry = entryGraph;
     }
 
-    public void setProcess(List<Map<String, Object>> process) {
-        this.process = process;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setInitialArguments(Map<String, Object> initialArguments) {
         this.initialArguments = initialArguments;
     }
 
-    public void setAll(Map<String, Map<String, Object>> all) {
-        this.all = all;
+    public void setGlobalNodeConfigurations(Map<String, Map<String, Object>> globalNodeConfigurations) {
+        this.globalNodeConfigurations = globalNodeConfigurations;
     }
 
     public void setExecutors(ExecutorsService executors) {

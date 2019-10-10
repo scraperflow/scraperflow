@@ -1,8 +1,0 @@
-{
-  "name"       : "job",
-  "description": "",
-  "process"    : [
-    { "type":"SimpleNode" },
-    { "type":"SimpleFunctionalNode" }
-  ]
-}

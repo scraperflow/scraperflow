@@ -1,7 +1,0 @@
-{
-  "name"       : "job",
-  "description": "functional",
-  "process"    : [
-    { "type":"SimpleFunctionalNode", "label": "hello", "__comment": "anode"}
-  ]
-}

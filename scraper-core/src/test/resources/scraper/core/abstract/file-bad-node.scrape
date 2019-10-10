@@ -1,8 +1,0 @@
-{
-  "name"       : "job",
-  "description": "",
-  "process"    : [
-    { "type":"FileNode", "file": "/tmp/test-scraper/first" },
-    { "type":"FileNode", "file": "/tmp/test-scraper" }
-  ]
-}

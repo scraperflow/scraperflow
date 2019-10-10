@@ -35,7 +35,9 @@ public interface ScrapeSpecification {
     NodeAddress getEntry();
 
     /** label -> Graph definitions */
-    Map<String, List<Map<String, Object>>> getGraphs();
+    Map<NodeAddress, List<Map<String, Object>>> getGraphs();
+
+    Map<String, Map<String, Object>> getGlobalNodeConfigurations();
 
 //    /** Tries to instantiate the scrape job */
 //    ScrapeInstance getInstance() throws ValidationException;

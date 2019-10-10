@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraper.annotations.NotNull;
+import scraper.annotations.Nullable;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.EnsureFile;
 import scraper.annotations.node.FlowKey;
@@ -19,6 +20,7 @@ import scraper.api.node.Node;
 import scraper.api.node.NodeAddress;
 import scraper.api.node.NodeHook;
 import scraper.api.node.NodeInitializable;
+import scraper.api.node.impl.NodeAddressImpl;
 import scraper.api.specification.ScrapeInstance;
 import scraper.util.NodeUtil;
 import scraper.utils.ClassUtil;
@@ -65,9 +67,9 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     /** Node type. Is used once to create an instance of an actual node implementation. */
     @FlowKey(mandatory = true)
     protected String type;
-    /** Comment is only used in the .scrape file to describe what the intent of the node is */
-    @FlowKey
-    protected String __comment;
+//    /** Comment is only used in the .scrape file to describe what the intent of the node is */
+//    @FlowKey
+//    protected String __comment;
 
     /** Decide log level threshold for this node */
     @FlowKey(defaultValue = "\"INFO\"")
@@ -78,7 +80,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
 
     /** Label of a node which can be used as a goto reference */
     @FlowKey
-    protected String label;
+    protected NodeAddress address = new NodeAddressImpl();
     /** Indicates if forward has any effect or not. */
     @FlowKey(defaultValue = "true")
     protected Boolean forward;
@@ -111,7 +113,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
 
     /** Set during init of node */
     @JsonIgnore
-    private String graphKey;
+    private NodeAddress graphKey;
 
     /**
      * Initializes the {@link #stageIndex} and all fields marked with {@link FlowKey}. Evaluates
@@ -121,7 +123,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
      * @throws ValidationException If a JSON parse error or a reflection error occurs
      */
     @Override
-    public void init(final ScrapeInstance job) throws ValidationException {
+    public void init(@NotNull final ScrapeInstance job) throws ValidationException {
 //        Runtime.getRuntime().addShutdownHook(new Thread(this::nodeShutdown));
 
         // set stage indices
@@ -190,12 +192,14 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         return expectedFields;
     }
 
+    @NotNull
     public Map<String, Object> getNodeConfiguration() {
         return nodeConfiguration;
     }
 
-    public void setNodeConfiguration(@NotNull final Map<String, Object> configuration) {
+    public void setNodeConfiguration(@NotNull Map<String, Object> configuration, @NotNull NodeAddress graphKey) {
         nodeConfiguration = configuration;
+        this.graphKey = graphKey;
     }
 
     public void initLogger(int indexLength) {
@@ -347,9 +351,13 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     // ------------------------
 
     // default implementation only is concerned with forward to next/goTo node
+    @NotNull
     @Override
     public List<ControlFlowEdge> getOutput() {
-        Node nextNode = getJobPojo().getNode(getGoTo());
+        NodeAddress nextTarget = getGoTo();
+        if(nextTarget == null) return List.of();
+
+        Node nextNode = getJobPojo().getNode(nextTarget);
         if(forward) {
             if(goTo != null)
                 return List.of(edge(getAddress(), nextNode.getAddress(), "goTo"));
@@ -360,6 +368,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         return List.of();
     }
 
+    @NotNull
     @Override
     public List<ControlFlowEdge> getInput() {
         return getJobPojo().getGraph(getGraphKey())
@@ -376,6 +385,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
                 .collect(Collectors.toList());
     }
 
+    @NotNull
     @Override
     public String getDisplayName() {
         String name = getAddress().getLabel();
@@ -432,8 +442,9 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     }
 
 
+    @NotNull
     @Override
-    public FlowMap forward(final FlowMap o) throws NodeException {
+    public FlowMap forward(@NotNull final FlowMap o) throws NodeException {
         // do nothing
         if(!getForward()) return o;
         if(getGoTo() != null) {
@@ -443,13 +454,14 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         return o;
     }
 
+    @NotNull
     @Override
-    public FlowMap eval(final FlowMap o, final NodeAddress target) throws NodeException {
+    public FlowMap eval(@NotNull final FlowMap o, @NotNull final NodeAddress target) throws NodeException {
         return jobPojo.getNode(target).accept(o);
     }
 
     @Override
-    public void forkDispatch(final FlowMap o, final NodeAddress target) {
+    public void forkDispatch(@NotNull final FlowMap o, @NotNull final NodeAddress target) {
         dispatch(() -> {
             try {
                 return eval(o, target);
@@ -461,7 +473,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     }
 
     @Override
-    public CompletableFuture<FlowMap> forkDepend(final FlowMap o, final NodeAddress target) {
+    public CompletableFuture<FlowMap> forkDepend(@NotNull final FlowMap o, @NotNull final NodeAddress target) {
         return dispatch(() -> {
             try {
                 return eval(o, target);
@@ -473,7 +485,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     }
 
     @Override
-    public Object getKeySpec(final String argument) {
+    public Object getKeySpec(@NotNull final String argument) {
         return nodeConfiguration.get(argument);
     }
 
@@ -481,18 +493,14 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         return this.type;
     }
 
-    public String get__comment() {
-        return this.__comment;
-    }
-
     public NodeLogLevel getLogLevel() {
         return this.logLevel;
     }
 
+    @NotNull
     @Override
     public NodeAddress getAddress() {
-        // TODO better
-        return NodeUtil.addressOf(label);
+        return address;
     }
 
     public Boolean getForward() {
@@ -508,12 +516,13 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         return this.stageIndex;
     }
 
+    @NotNull
     public String getFragment() {
         return this.fragment;
     }
 
     @Override
-    public NodeAddress getGoTo() {
+    public @Nullable NodeAddress getGoTo() {
         if(goTo != null) {
             return NodeUtil.addressOf(goTo);
         } else {
@@ -521,16 +530,19 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         }
     }
 
+    @NotNull
     @Override
-    public String getGraphKey() {
+    public NodeAddress getGraphKey() {
         return this.graphKey;
     }
 
+    @NotNull
     @Override
     public Collection<NodeHook> beforeHooks() {
         return Set.of(this::start);
     }
 
+    @NotNull
     @Override
     public Collection<NodeHook> afterHooks() {
         return Set.of(this::finish);

@@ -1,0 +1,10 @@
+{
+  "name"       : "job",
+  "graphs"    : {
+    "start":
+    [
+      { "type":"FileNode", "file": "/tmp/test-scraper/first" },
+      { "type":"FileNode", "file": "/tmp/test-scraper" }
+    ]
+  }
+}

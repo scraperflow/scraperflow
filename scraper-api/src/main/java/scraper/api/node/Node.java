@@ -35,8 +35,8 @@ public interface Node extends NodeConsumer, ControlFlow {
     // JSON Specification
     // ==================
 
-    /** Sets the node configuration (key value pairs) */
-    void setNodeConfiguration(@NotNull Map<String, Object> nodeConfiguration);
+    /** Sets the node configuration (key value pairs) and the graph its contained in */
+    void setNodeConfiguration(@NotNull Map<String, Object> nodeConfiguration, @NotNull NodeAddress graphKey);
 
     /** Returns the node spec */
     @NotNull Map<String, Object> getNodeConfiguration();
@@ -45,10 +45,10 @@ public interface Node extends NodeConsumer, ControlFlow {
     @Nullable Object getKeySpec(@NotNull String key);
 
     /** Graph this node is contained in */
-    @Nullable String getGraphKey();
+    @NotNull NodeAddress getGraphKey();
 
     /** Job-Unique node address used for control flow */
-    @Nullable NodeAddress getAddress();
+    @NotNull NodeAddress getAddress();
 
     /** Job-Unique target forward node address. Defaults to the next node in the specification */
     @Nullable NodeAddress getGoTo();
@@ -66,8 +66,8 @@ public interface Node extends NodeConsumer, ControlFlow {
      * Either next node, or the node specified by a target address given
      * Can be controlled with the forward flag
      */
-    FlowMap forward(@NotNull FlowMap o) throws NodeException;
-    FlowMap eval(@NotNull FlowMap o, @NotNull NodeAddress target) throws NodeException;
+    @NotNull FlowMap forward(@NotNull FlowMap o) throws NodeException;
+    @NotNull FlowMap eval(@NotNull FlowMap o, @NotNull NodeAddress target) throws NodeException;
 
     //-----------
     // Concurrent

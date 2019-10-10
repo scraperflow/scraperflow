@@ -197,6 +197,9 @@ public final class NodeUtil {
             else if (String.class.isAssignableFrom(value.getClass()) && MapKey.class.isAssignableFrom(fieldType)) {
                 ((MapKey) fieldValue).key = (String) value;
                 return null;
+            } // check if field type is an Address
+            else if (String.class.isAssignableFrom(value.getClass()) && NodeAddress.class.isAssignableFrom(fieldType)) {
+                value = NodeUtil.addressOf(String.valueOf(value));
             } // try converting as a last resort
             else { // TODO #23 test this branch for full coverage
                 value = StringToClassConverter.convert(String.valueOf(value), fieldType);

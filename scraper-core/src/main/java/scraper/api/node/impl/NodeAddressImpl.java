@@ -15,6 +15,10 @@ public class NodeAddressImpl implements NodeAddress {
     /** Unique node label used for control flow */
     private @NotNull String label;
 
+    public NodeAddressImpl() {
+        this(null);
+    }
+
     public NodeAddressImpl(@Nullable String label) {
         this.label = label;
         if(label == null) this.label = UUID.randomUUID().toString();
@@ -40,5 +44,10 @@ public class NodeAddressImpl implements NodeAddress {
     @Override
     public int hashCode() {
         return Objects.hash(label);
+    }
+
+    @Override
+    public String toString() {
+        return "<"+label+">";
     }
 }

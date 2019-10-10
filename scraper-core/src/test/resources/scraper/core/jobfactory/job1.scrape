@@ -1,8 +1,0 @@
-{
-  "name"       : "job1",
-  "description": "minimal",
-  "process"    : [
-    { "type":"SimpleNode", "label": "hello", "log":"Scrape job is running!" },
-    { "type":"Fragment", "required":"other.fragment" }
-  ]
-}

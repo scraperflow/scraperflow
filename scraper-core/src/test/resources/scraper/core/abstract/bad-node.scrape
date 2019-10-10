@@ -1,7 +1,0 @@
-{
-  "name"       : "job",
-  "description": "",
-  "process"    : [
-    { "type":"BadJsonDefaultsNode" }
-  ]
-}

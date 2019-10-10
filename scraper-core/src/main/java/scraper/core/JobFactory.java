@@ -7,6 +7,7 @@ import org.springframework.plugin.metadata.SimplePluginMetadata;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.Node;
+import scraper.api.node.NodeAddress;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
@@ -53,6 +54,8 @@ public class JobFactory {
     private ScrapeInstaceImpl parseJob(ScrapeSpecification def) {
         ScrapeInstaceImpl job = new ScrapeInstaceImpl();
         job.setName(def.getName());
+        job.setEntry(def.getEntry());
+        job.setGlobalNodeConfigurations(def.getGlobalNodeConfigurations());
 
         job.setExecutors(executorsService);
         job.setFileService(fileService);
@@ -76,7 +79,7 @@ public class JobFactory {
 
         return inputMap;
     }
-//
+
 //    public ScrapeInstaceImpl createEmptyJob() {
 //        ScrapeInstaceImpl job = new ScrapeInstaceImpl();
 //
@@ -145,14 +148,14 @@ public class JobFactory {
         // Pre-process fragments
         // ===
         log.info("Pre process fragments");
-        for (String graph : jobDefinition.getGraphs().keySet()) {
+        for (NodeAddress graph : jobDefinition.getGraphs().keySet()) {
             preprocessFragments(jobDefinition.getGraphs().get(graph), jobDefinition);
         }
 
         // ===
         // Process nodes and instantiate actual matching implementations
         // ===
-        for (String graphKey : jobDefinition.getGraphs().keySet()) {
+        for (NodeAddress graphKey : jobDefinition.getGraphs().keySet()) {
             List<Map<String, Object>> graph = jobDefinition.getGraphs().get(graphKey);
 
             for (int index = 0; index < graph.size(); index++) {
@@ -167,9 +170,9 @@ public class JobFactory {
 
                 List<? extends AbstractMetadata> processPlugins = plugins.getPlugins().getPluginsFor(metadata);
                 Node n = getHighestMatchingPlugin(processPlugins, metadata);
-                n.setNodeConfiguration(nodeConfiguration);
+                n.setNodeConfiguration(nodeConfiguration, graphKey);
 
-
+                job.getGraphs().putIfAbsent(graphKey, new ArrayList<>());
                 job.getGraph(graphKey).add(n);
             }
         }
