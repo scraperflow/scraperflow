@@ -101,14 +101,13 @@ public class JobFactory {
         // ===
         // Imports
         // ===
-
         ScrapeSpecification old = null;
         for (String job : jobDefinition.getImports().keySet()) {
             List<NodeAddress> exportedAddresses = jobDefinition.getImports().get(job);
             log.info("Importing '{}' with labels {}", job, exportedAddresses);
             ScrapeSpecification importedJob = JobUtil.parseJobsP(new String[]{job}, jobDefinition.getPaths()).get(0);
             if(old != null) JobUtil.merge(old, importedJob);
-            old = importedJob;
+            if(old == null) old = importedJob;
         }
 
         // ===
