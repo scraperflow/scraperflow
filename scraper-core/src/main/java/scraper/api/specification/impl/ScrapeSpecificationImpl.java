@@ -2,6 +2,8 @@ package scraper.api.specification.impl;
 
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import scraper.annotations.NotNull;
+import scraper.annotations.Nullable;
 import scraper.api.node.NodeAddress;
 import scraper.api.specification.ScrapeSpecification;
 import scraper.util.NodeUtil;
@@ -23,19 +25,27 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
     private Map<NodeAddress, List<Map<String, Object>>> graphs;
     private Map<String, Map<String, Object>> globalNodeConfigurations = new HashMap<>();
 
+    @NotNull
     @Override public String getName() { return this.name; }
+    @NotNull
     @Override public Path getScrapeFile() { return this.scrapeFile; }
+    @NotNull
     @Override public List<Path> getPaths() {
         if(!paths.contains(scrapeFile) && scrapeFile.getParent() != null) {
             paths.add(scrapeFile.getParent());
         }
         return this.paths;
     }
+    @Nullable
     @Override public String getDependencies() { return dependencies; }
+    @NotNull
     @Override public List<String> getArguments() { return arguments; }
+    @NotNull
     @Override public Map<String, List<NodeAddress>> getImports() { return imports; }
+    @NotNull
     @Override public NodeAddress getEntry() { return entry; }
 
+    @NotNull
     @JsonDeserialize(keyUsing = NodeAddressKeyDeserializer.class)
     @Override public Map<NodeAddress, List<Map<String, Object>>> getGraphs() { return graphs; }
 
@@ -48,6 +58,7 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
     public void setEntry(NodeAddress entry) { this.entry = entry; }
     public void setGraphs(Map<NodeAddress, List<Map<String, Object>>> graphs) { this.graphs = graphs; }
 
+    @NotNull
     @Override
     public Map<String, Map<String, Object>> getGlobalNodeConfigurations() {
         return globalNodeConfigurations;

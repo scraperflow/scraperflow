@@ -1,7 +1,9 @@
 package scraper.api.service.proxy;
 
+import scraper.annotations.NotNull;
+
 import java.util.List;
 
 public interface GroupInfo {
-    List<String> getAllProxiesAsString();
+    @NotNull List<String> getAllProxiesAsString();
 }

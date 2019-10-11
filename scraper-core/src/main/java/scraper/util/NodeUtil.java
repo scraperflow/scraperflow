@@ -76,10 +76,6 @@ public final class NodeUtil {
         return false;
     }
 
-    public static FlowState infoOf(FlowMap map, Node node, String jobName) {
-        return new FlowStateImpl(node.getAddress(), jobName);
-    }
-
     public static FlowMap flowOf(Map<String, Object> initialArguments) {
         return FlowMapImpl.of(initialArguments);
     }

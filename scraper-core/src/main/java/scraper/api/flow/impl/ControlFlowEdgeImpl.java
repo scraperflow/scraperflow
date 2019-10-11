@@ -31,12 +31,9 @@ public class ControlFlowEdgeImpl implements ControlFlowEdge {
         this.dispatched = dispatched;
     }
 
-    @NotNull
-    @Override public String getDisplayLabel() { return displayLabel; }
-    @NotNull
-    @Override public NodeAddress getFromAddress() { return fromAddress; }
-    @NotNull
-    @Override public NodeAddress getToAddress() { return toAddress; }
+    @NotNull @Override public String getDisplayLabel() { return displayLabel; }
+    @NotNull @Override public NodeAddress getFromAddress() { return fromAddress; }
+    @NotNull @Override public NodeAddress getToAddress() { return toAddress; }
     @Override public boolean isMultiple() { return multiple; }
     @Override public boolean isDispatched() { return dispatched; }
 

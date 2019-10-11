@@ -20,12 +20,11 @@ public class NodeAddressImpl implements NodeAddress {
     }
 
     public NodeAddressImpl(@Nullable String label) {
-        this.label = label;
         if(label == null) this.label = UUID.randomUUID().toString();
+        else this.label = label;
     }
 
-    @Override
-    public String getLabel() {
+    @NotNull @Override public String getLabel() {
         return label;
     }
 

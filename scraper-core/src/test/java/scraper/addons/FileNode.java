@@ -1,5 +1,6 @@
 package scraper.addons;
 
+import scraper.annotations.NotNull;
 import scraper.annotations.node.EnsureFile;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
@@ -27,5 +28,5 @@ public final class FileNode extends AbstractFunctionalNode {
     private Template<String> filet = new Template<>() {};
 
     @Override
-    public void modify(final FlowMap o) {}
+    public void modify(@NotNull final FlowMap o) {}
 }

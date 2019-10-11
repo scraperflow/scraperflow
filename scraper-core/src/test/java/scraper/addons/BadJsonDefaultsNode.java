@@ -1,5 +1,6 @@
 package scraper.addons;
 
+import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
@@ -16,5 +17,5 @@ public final class BadJsonDefaultsNode extends AbstractFunctionalNode {
     private String astring;
 
     @Override
-    public void modify(final FlowMap o) {}
+    public void modify(@NotNull final FlowMap o) {}
 }

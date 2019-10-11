@@ -26,7 +26,7 @@ public interface ScrapeInstance {
     @NotNull Map<String, Map<String, Object>> getGlobalNodeConfigurations();
 
     /** Returns the name of this workflow instance */
-    String getName();
+    @NotNull String getName();
 
     /** Returns instantiated node in the flow. main flow has precedence over fragment flows. Throws a runtime exception if address is not found */
     @NotNull Node getNode(@NotNull NodeAddress target);
@@ -40,12 +40,12 @@ public interface ScrapeInstance {
     @NotNull List<Node> getEntryGraph();
 
     /** ? */
-    @NotNull List<Node> getGraph(NodeAddress label);
+    @NotNull List<Node> getGraph(@NotNull NodeAddress label);
 
     // Cross-cutting concerns services
-    ExecutorsService getExecutors();
-    HttpService getHttpService();
-    ProxyReservation getProxyReservation();
-    FileService getFileService();
+    @NotNull ExecutorsService getExecutors();
+    @NotNull HttpService getHttpService();
+    @NotNull ProxyReservation getProxyReservation();
+    @NotNull FileService getFileService();
 
 }

@@ -30,8 +30,8 @@ public interface NodeConsumer {
     }
 
     default @NotNull Collection<NodeHook> afterHooks() { return Set.of(); }
-    default @NotNull Collection<NodeHook> beforeHooks() {return Set.of(); }
+    default @NotNull Collection<NodeHook> beforeHooks() { return Set.of(); }
 
-    @NotNull FlowMap process(@NotNull FlowMap o) throws NodeException;
+    @NotNull FlowMap process(@NotNull final FlowMap o) throws NodeException;
 
 }

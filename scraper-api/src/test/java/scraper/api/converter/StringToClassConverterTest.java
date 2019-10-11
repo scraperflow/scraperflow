@@ -7,7 +7,7 @@ import scraper.api.exceptions.ValidationException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 import static junit.framework.TestCase.assertTrue;
@@ -122,7 +122,7 @@ public class StringToClassConverterTest {
             // get random utf-8 string
             byte[] array = new byte[10];
             new Random().nextBytes(array);
-            String generatedString = new String(array, Charset.forName("UTF-8"));
+            String generatedString = new String(array, StandardCharsets.UTF_8);
 
             // converting should only produce ValidationExceptions
             try {

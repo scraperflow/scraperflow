@@ -12,7 +12,7 @@ import scraper.api.node.Node;
  */
 public interface FunctionalNode extends Node {
     /** Modify the given flowMap */
-    void modify(FlowMap o) throws NodeException;
+    void modify(@NotNull final FlowMap o) throws NodeException;
 
     /** Default accept method should only modify and forward the modified map */
     @NotNull

@@ -14,8 +14,8 @@ import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.ControlFlow;
 import scraper.api.flow.ControlFlowEdge;
 import scraper.api.flow.FlowMap;
-import scraper.api.flow.FlowState;
 import scraper.api.flow.impl.ControlFlowEdgeImpl;
+import scraper.api.flow.impl.FlowStateImpl;
 import scraper.api.node.Node;
 import scraper.api.node.NodeAddress;
 import scraper.api.node.NodeHook;
@@ -40,7 +40,6 @@ import java.util.stream.Collectors;
 
 import static scraper.api.flow.impl.ControlFlowEdgeImpl.edge;
 import static scraper.core.NodeLogLevel.*;
-import static scraper.util.NodeUtil.infoOf;
 
 
 /**
@@ -275,7 +274,8 @@ public abstract class AbstractNode implements Node, NodeInitializable {
      * @param map The current forwarded map
      */
     protected void start(FlowMap map) throws NodeException {
-        //TODO plugin preconditions
+        // update FlowState
+        updateFlowInfo(map, this, "start");
 
         // evaluate and write log message if any
         try {
@@ -284,9 +284,6 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         } catch (Exception e) {
             log(ERROR, "Could not evaluate log template: {}", e.getMessage());
         }
-
-        // update FlowState
-        updateFlowInfo(map, this);
 
         // ensure files exist
         try {
@@ -322,17 +319,47 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         }
     }
 
-    private void updateFlowInfo(FlowMap map, AbstractNode abstractNode) {
-        FlowState newState = infoOf(map, abstractNode, getJobPojo().getName());
-        map.setFlowState(newState);
-    }
-
     /**
-     * @param args The current map
+     * @param o The current map
      */
-    protected void finish(final FlowMap args) {
-
+    protected void finish(final FlowMap o) {
+        updateFlowInfo(o, this, "finish");
     }
+
+    private void updateFlowInfo(FlowMap map, AbstractNode abstractNode, String phase) {
+        if(logLevel.worseOrEqual(WARN)) {
+            // only history of start is tracked
+            if(phase.equalsIgnoreCase("start")) return;
+        }
+
+        FlowStateImpl state = new FlowStateImpl(phase);
+        state.log("node", getDisplayName());
+        state.log("address", getAddress());
+        state.log("graph", getGraphKey());
+
+        if(logLevel.worseOrEqual(INFO)) {
+            state.log("keys", new HashSet<>(map.keySet()));
+        }
+
+        if(logLevel.worseOrEqual(DEBUG)) {
+            Map<String, Object> keyValues = new HashMap<>();
+
+            for (String key : map.keySet()) {
+                if(map.get(key) instanceof String) {
+                    // trim string
+                    keyValues.put(key, ((String) Objects.requireNonNull(map.get(key)))
+                            .substring(0, Math.min(100, ((String) Objects.requireNonNull(map.get(key))).length())));
+                } else {
+                    // else just put class name
+                    keyValues.put(key, Objects.requireNonNull(map.get(key)).getClass().getName());
+                }
+            }
+            state.log("key-values", keyValues);
+        }
+
+        // TODO implement TRACE deep copy keys
+    }
+
 
     /** Dispatches an action in an own thread, ignoring the result and possible exceptions. */
     protected CompletableFuture<FlowMap> dispatch(Supplier<FlowMap> o) {
@@ -469,6 +496,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         });
     }
 
+    @NotNull
     @Override
     public CompletableFuture<FlowMap> forkDepend(@NotNull final FlowMap o, @NotNull final NodeAddress target) {
         return dispatch(() -> {

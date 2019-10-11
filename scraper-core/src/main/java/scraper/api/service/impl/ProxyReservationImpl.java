@@ -66,6 +66,7 @@ public class ProxyReservationImpl implements ProxyReservation {
     }
 
 
+    @NotNull
     @Override
     public ReservationToken reserveToken(@NotNull String proxyGroup, @NotNull ProxyMode proxyMode) throws InterruptedException {
         ReservationToken token = null;
@@ -80,6 +81,7 @@ public class ProxyReservationImpl implements ProxyReservation {
         return token;
     }
 
+    @NotNull
     @Override
     public ReservationToken reserveToken(@NotNull String proxyGroup, @NotNull ProxyMode proxyMode, int timeout, int holdOnReservation) throws InterruptedException, TimeoutException {
         // warn user that waiting with prefer mode does not make sense

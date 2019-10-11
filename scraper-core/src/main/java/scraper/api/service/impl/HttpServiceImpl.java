@@ -1,6 +1,7 @@
 package scraper.api.service.impl;
 
 import org.slf4j.Logger;
+import scraper.annotations.NotNull;
 import scraper.api.service.HttpService;
 import scraper.api.service.proxy.ReservationToken;
 
@@ -32,7 +33,7 @@ public class HttpServiceImpl implements HttpService {
     ConcurrentHashMap<InetSocketAddress, HttpClient> clients = new ConcurrentHashMap<>();
 
     @Override
-    public HttpResponse<?> send(HttpRequest request, HttpResponse.BodyHandler<?> handler, ReservationToken token) throws IOException, InterruptedException, TimeoutException, ExecutionException {
+    public HttpResponse<?> send(@NotNull HttpRequest request, @NotNull HttpResponse.BodyHandler<?> handler, @NotNull ReservationToken token) throws IOException, InterruptedException, TimeoutException, ExecutionException {
         InetSocketAddress address = token.get();
         HttpClient client;
         if(address == null) {

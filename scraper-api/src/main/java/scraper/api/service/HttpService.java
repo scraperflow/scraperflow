@@ -1,5 +1,6 @@
 package scraper.api.service;
 
+import scraper.annotations.NotNull;
 import scraper.api.service.proxy.ReservationToken;
 
 import java.io.IOException;
@@ -36,11 +37,14 @@ public interface HttpService {
      * @see java.net.http.HttpResponse.BodyHandler
      * @see HttpResponse
      */
-    HttpResponse<?> send(HttpRequest request, HttpResponse.BodyHandler<?> handler, ReservationToken token) throws IOException, InterruptedException, TimeoutException, ExecutionException;
+    HttpResponse<?> send(@NotNull final HttpRequest request,
+                         @NotNull final HttpResponse.BodyHandler<?> handler,
+                         @NotNull final ReservationToken token)
+            throws IOException, InterruptedException, TimeoutException, ExecutionException;
 
     class RedirectToNode {
-        public final String target;
-        public RedirectToNode(String target) {
+        public @NotNull final String target;
+        public RedirectToNode(@NotNull String target) {
             this.target = target;
         }
     }

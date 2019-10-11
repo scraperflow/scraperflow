@@ -2,6 +2,7 @@ package scraper.hooks;
 
 
 import scraper.annotations.ArgsCommand;
+import scraper.annotations.NotNull;
 import scraper.api.di.DIContainer;
 import scraper.api.plugin.Hook;
 import scraper.api.specification.ScrapeInstance;
@@ -25,7 +26,7 @@ import java.util.Map;
 public class ExitHook implements Hook {
 
     @Override
-    public void execute(final DIContainer dependencies, final String[] args, final Map<ScrapeSpecification, ScrapeInstance> jobs) {
+    public void execute(@NotNull final DIContainer dependencies, @NotNull final String[] args, @NotNull final Map<ScrapeSpecification, ScrapeInstance> jobs) {
         if (StringUtil.getArgument(args, "exit") != null) {
             System.setProperty("scraper.exit", "true");
         }

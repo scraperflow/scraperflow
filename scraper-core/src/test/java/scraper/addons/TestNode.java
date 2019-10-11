@@ -20,15 +20,20 @@ public abstract class TestNode extends AbstractNode {
         this.jobPojo = new ScrapeInstance() {
             @NotNull @Override public Map<String, Object> getInitialArguments() { return null; }
             @NotNull @Override public Map<String, Map<String, Object>> getGlobalNodeConfigurations() { return null; }
+            @NotNull
             @Override public String getName() { return null; }
             @NotNull @Override public Node getNode(@NotNull NodeAddress target) { return null; }
             @Override public NodeAddress getForwardTarget(@NotNull NodeAddress origin) { return null; }
             @NotNull @Override public Map<NodeAddress, List<Node>> getGraphs() { return null; }
             @NotNull @Override public List<Node> getEntryGraph() { return null; }
-            @NotNull @Override public List<Node> getGraph(NodeAddress graph) { return null; }
+            @NotNull @Override public List<Node> getGraph(@NotNull NodeAddress graph) { return null; }
+            @NotNull
             @Override public ExecutorsService getExecutors() { return null; }
+            @NotNull
             @Override public HttpService getHttpService() { return null; }
+            @NotNull
             @Override public ProxyReservation getProxyReservation() { return null; }
+            @NotNull
             @Override public FileService getFileService() { return null; }
         };
     }

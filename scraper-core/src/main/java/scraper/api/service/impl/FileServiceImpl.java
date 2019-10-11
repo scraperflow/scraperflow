@@ -3,6 +3,7 @@ package scraper.api.service.impl;
 import com.google.common.io.Files;
 import org.slf4j.Logger;
 import org.springframework.util.FileSystemUtils;
+import scraper.annotations.NotNull;
 import scraper.api.service.FileService;
 
 import java.io.*;
@@ -25,7 +26,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void ensureFile(String output) throws IOException {
+    public void ensureFile(@NotNull String output) throws IOException {
         knownFiles.putIfAbsent(output, new File(output));
 
         // acquire lock, jvm-wide only
@@ -50,12 +51,13 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public boolean containsLineStartsWith(String output, String lineStart) throws IOException {
+    public boolean containsLineStartsWith(@NotNull String output, @NotNull String lineStart) throws IOException {
         return getFirstLineStartsWith(output, lineStart) != null;
     }
 
+    @NotNull
     @Override
-    public String getFirstLineStartsWith(String output, String lineStart) throws IOException {
+    public String getFirstLineStartsWith(@NotNull String output, @NotNull String lineStart) throws IOException {
         synchronized (knownFiles.get(output)) {
             File file = knownFiles.get(output);
 
@@ -77,7 +79,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void appendToFile(String output, String outputLine) {
+    public void appendToFile(@NotNull String output, @NotNull String outputLine) {
         synchronized (knownFiles.get(output)) {
             File file = knownFiles.get(output);
 
@@ -92,7 +94,7 @@ public class FileServiceImpl implements FileService {
 
 
     @Override
-    public void ensureDirectory(File file) throws IOException {
+    public void ensureDirectory(@NotNull File file) throws IOException {
         if(file.getParentFile() == null) return;
 
         if (!file.getParentFile().exists()) {
@@ -105,12 +107,13 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void replaceFile(String path, String body) throws IOException {
+    public void replaceFile(@NotNull String path, @NotNull String body) throws IOException {
         synchronized (knownFiles.get(path)) {
             replaceFileImpl(new File(path), body);
         }
     }
 
+    @NotNull
     @Override
     public File getTemporaryDirectory() {
         return tempDir;

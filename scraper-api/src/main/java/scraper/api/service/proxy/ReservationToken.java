@@ -6,11 +6,9 @@ import scraper.annotations.Nullable;
 import java.net.InetSocketAddress;
 
 public interface ReservationToken extends AutoCloseable {
-    @Nullable
-    InetSocketAddress get();
+    @Nullable InetSocketAddress get();
 
-    @NotNull
-    Long score();
+    @NotNull Long score();
 
     @Override
     void close();

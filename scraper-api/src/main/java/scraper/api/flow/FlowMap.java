@@ -46,9 +46,6 @@ public interface FlowMap {
     /** Checks if this maps contains all elements of the other map by recursive descent */
     boolean containsElements(@NotNull FlowMap expectedOutput);
 
-    /** Returns the current state of this flow */
-    @NotNull FlowState getFlowState();
-
-    /** Sets the current state of this flow */
-    void setFlowState(@NotNull FlowState newState);
+    /** State of this flow. Useful for debugging purposes. Amount of tracking increases with log level of the nodes accessed in the flow. */
+    @NotNull FlowHistory getFlowHistory();
 }

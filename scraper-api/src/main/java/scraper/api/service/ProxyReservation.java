@@ -25,14 +25,13 @@ public interface ProxyReservation {
     void addProxies(@NotNull String proxyFile, @NotNull String proxyGroup) throws IOException;
 
     /** Waits until a token for given proxy mode and group is free */
-    ReservationToken reserveToken(@NotNull String proxyGroup, @NotNull ProxyMode proxyMode) throws InterruptedException;
+    @NotNull ReservationToken reserveToken(@NotNull String proxyGroup, @NotNull ProxyMode proxyMode) throws InterruptedException;
     /** Waits until a token for given proxy mode and group is free with a timeout */
-    ReservationToken reserveToken(@NotNull String proxyGroup, @NotNull ProxyMode proxyMode, int timeout, int holdOnReservation)
+    @NotNull ReservationToken reserveToken(@NotNull String proxyGroup, @NotNull ProxyMode proxyMode, int timeout, int holdOnReservation)
             throws InterruptedException, TimeoutException;
 
     /** Retrieves proxy info for given group */
-    @Nullable
-    GroupInfo getInfoForGroup(@NotNull String group);
+    @Nullable GroupInfo getInfoForGroup(@NotNull String group);
 
 
 

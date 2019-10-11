@@ -1,5 +1,6 @@
 package scraper.api.plugin;
 
+import scraper.annotations.NotNull;
 import scraper.api.di.DIContainer;
 
 /**
@@ -11,5 +12,5 @@ import scraper.api.di.DIContainer;
  */
 public interface PreHook {
     /** Executes the pre hook and provides command-line arguments and dependencies */
-    void execute(DIContainer dependencies, String[] args) throws Exception;
+    void execute(@NotNull final DIContainer dependencies, @NotNull final String[] args) throws Exception;
 }

@@ -2,45 +2,33 @@ package scraper.api.flow.impl;
 
 import scraper.annotations.NotNull;
 import scraper.api.flow.FlowState;
-import scraper.api.node.NodeAddress;
-import scraper.util.NodeUtil;
 
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FlowStateImpl implements FlowState {
-    private final NodeAddress address;
-    private final String jobName;
+    private final Map<String, Object> state = new HashMap<>();
+    private final String phase;
 
-    public FlowStateImpl(@NotNull NodeAddress address, @NotNull String jobName) {
-        this.address = address;
-        this.jobName = jobName;
+    public FlowStateImpl(@NotNull String phase) {
+        this.phase = phase;
     }
 
-    public static FlowState initial() {
-        return new FlowStateImpl(NodeUtil.addressOf("unknown"), "unknown");
+    @NotNull
+    @Override
+    public Map<String, Object> getState() {
+        return state;
+    }
+
+    @NotNull
+    @Override
+    public String getPhase() {
+        return phase;
     }
 
     @Override
-    public NodeAddress getAddress() {
-        return address;
+    public void log(@NotNull String key, @NotNull Object log) {
+        state.put(key, log);
     }
 
-    @Override
-    public String getJobName() {
-        return jobName;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FlowStateImpl flowState = (FlowStateImpl) o;
-        return address.equals(flowState.address) &&
-                jobName.equals(flowState.jobName);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(address.getLabel(), jobName);
-    }
 }

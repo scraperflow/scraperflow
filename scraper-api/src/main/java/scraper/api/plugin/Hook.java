@@ -1,5 +1,6 @@
 package scraper.api.plugin;
 
+import scraper.annotations.NotNull;
 import scraper.api.di.DIContainer;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
@@ -17,5 +18,6 @@ import java.util.Map;
  */
 public interface Hook {
     /** Executes the hook and provides arguments, dependencies, and a ScrapeSpecification to ScrapeInstance map */
-    void execute(DIContainer dependencies, String[] args, Map<ScrapeSpecification, ScrapeInstance> scraper) throws Exception;
+    void execute(@NotNull final DIContainer dependencies, @NotNull final String[] args,
+                 @NotNull final Map<ScrapeSpecification, ScrapeInstance> scraper) throws Exception;
 }

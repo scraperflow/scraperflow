@@ -1,5 +1,6 @@
 package scraper.addons;
 
+import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
@@ -13,7 +14,7 @@ public final class SimpleFunctionalNode extends AbstractFunctionalNode {
     private String output;
 
     @Override
-    public void modify(final FlowMap o) {
+    public void modify(@NotNull final FlowMap o) {
         System.out.println(output);
         if(output != null)
             o.put(output, true);

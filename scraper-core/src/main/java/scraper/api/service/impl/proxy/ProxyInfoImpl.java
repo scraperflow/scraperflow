@@ -1,5 +1,6 @@
 package scraper.api.service.impl.proxy;
 
+import scraper.annotations.NotNull;
 import scraper.api.service.proxy.ProxyInfo;
 
 import java.net.InetSocketAddress;
@@ -55,11 +56,13 @@ public class ProxyInfoImpl implements ProxyInfo {
                     '}';
         }
 
+    @NotNull
     @Override
     public Long getScore() {
         return score;
     }
 
+    @NotNull
     @Override
     public String getAddress() {
         return address.getHostString();

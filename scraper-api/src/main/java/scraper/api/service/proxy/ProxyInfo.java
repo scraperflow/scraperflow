@@ -1,9 +1,11 @@
 package scraper.api.service.proxy;
 
-public interface ProxyInfo extends Comparable<ProxyInfo> {
-    Long getScore();
+import scraper.annotations.NotNull;
 
-    String getAddress();
+public interface ProxyInfo extends Comparable<ProxyInfo> {
+    @NotNull Long getScore();
+
+    @NotNull String getAddress();
 
     int getPort();
 }

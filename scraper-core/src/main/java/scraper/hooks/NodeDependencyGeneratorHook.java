@@ -2,6 +2,7 @@ package scraper.hooks;
 
 import org.slf4j.Logger;
 import scraper.annotations.ArgsCommand;
+import scraper.annotations.NotNull;
 import scraper.api.di.DIContainer;
 import scraper.api.plugin.Hook;
 import scraper.api.specification.ScrapeInstance;
@@ -33,7 +34,7 @@ public class NodeDependencyGeneratorHook implements Hook {
     private JobFactory jobFactory;
 
     @Override
-    public void execute(final DIContainer dependencies, final String[] args, final Map<ScrapeSpecification, ScrapeInstance> jobs) throws Exception {
+    public void execute(@NotNull final DIContainer dependencies, @NotNull final String[] args, @NotNull final Map<ScrapeSpecification, ScrapeInstance> jobs) throws Exception {
         this.jobFactory = dependencies.get(JobFactory.class);
 
         // ==

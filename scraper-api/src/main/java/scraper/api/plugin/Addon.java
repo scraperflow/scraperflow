@@ -1,5 +1,6 @@
 package scraper.api.plugin;
 
+import scraper.annotations.NotNull;
 import scraper.api.di.DIContainer;
 
 /**
@@ -12,5 +13,5 @@ import scraper.api.di.DIContainer;
  */
 public interface Addon {
     /** Loads and initializes the addon with already loaded dependencies */
-    void load(DIContainer loadedDependencies);
+    void load(@NotNull final DIContainer loadedDependencies);
 }

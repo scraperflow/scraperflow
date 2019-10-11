@@ -2,6 +2,7 @@ package scraper.api.service.impl;
 
 
 import org.slf4j.Logger;
+import scraper.annotations.NotNull;
 import scraper.api.service.ExecutorsService;
 
 import java.util.Map;
@@ -15,13 +16,15 @@ public class ExecutorsServiceImpl implements ExecutorsService {
 
     private boolean warned = false;
 
+    @NotNull
     @Override
-    public synchronized ExecutorService getService(String group, Integer count) {
+    public synchronized ExecutorService getService(@NotNull String group, @NotNull Integer count) {
         return getService(count, group, true);
     }
 
+    @NotNull
     @Override
-    public synchronized ExecutorService getService(String group) {
+    public synchronized ExecutorService getService(@NotNull String group) {
         return getService(100, group, true);
     }
 

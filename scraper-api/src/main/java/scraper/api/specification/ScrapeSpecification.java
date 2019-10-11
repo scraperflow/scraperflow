@@ -1,5 +1,7 @@
 package scraper.api.specification;
 
+import scraper.annotations.NotNull;
+import scraper.annotations.Nullable;
 import scraper.api.node.NodeAddress;
 
 import java.nio.file.Path;
@@ -14,31 +16,28 @@ import java.util.Map;
 public interface ScrapeSpecification {
 
     /** Name of the scrape spec */
-    String getName();
+    @NotNull String getName();
 
     /** Returns the path to the .scrape file which will be used as the workflow specification for this workflow */
-    Path getScrapeFile();
+    @NotNull Path getScrapeFile();
 
     /** Any number of added base paths (with command line arguments) to search for arguments, dependencies, imports, fragments */
-    List<Path> getPaths();
+    @NotNull List<Path> getPaths();
 
     /** Node dependency reference */
-    String getDependencies();
+    @Nullable String getDependencies();
 
     /** Arguments used */
-    List<String> getArguments();
+    @NotNull List<String> getArguments();
 
     /** .scrape file reference -> exported labels */
-    Map<String, List<NodeAddress>> getImports();
+    @NotNull Map<String, List<NodeAddress>> getImports();
 
     /** Entry points */
-    NodeAddress getEntry();
+    @NotNull NodeAddress getEntry();
 
     /** label -> Graph definitions */
-    Map<NodeAddress, List<Map<String, Object>>> getGraphs();
+    @NotNull Map<NodeAddress, List<Map<String, Object>>> getGraphs();
 
-    Map<String, Map<String, Object>> getGlobalNodeConfigurations();
-
-//    /** Tries to instantiate the scrape job */
-//    ScrapeInstance getInstance() throws ValidationException;
+    @NotNull Map<String, Map<String, Object>> getGlobalNodeConfigurations();
 }

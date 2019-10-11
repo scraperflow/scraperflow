@@ -1,7 +1,7 @@
 package scraper.api.flow.impl;
 
 import scraper.annotations.NotNull;
-import scraper.api.flow.FlowState;
+import scraper.api.flow.FlowHistory;
 import scraper.api.flow.FlowMap;
 
 import java.util.*;
@@ -12,15 +12,11 @@ public class FlowMapImpl implements FlowMap {
 
     private final ConcurrentMap<String, Object> privateMap;
 
-    private FlowState flowState = FlowStateImpl.initial();
+    private final FlowHistory flowHistory = new FlowHistoryImpl();
 
-    public FlowMapImpl(ConcurrentMap<String, Object> privateMap) {
-        this.privateMap = privateMap;
-    }
+    public FlowMapImpl(@NotNull ConcurrentMap<String, Object> privateMap) { this.privateMap = privateMap; }
 
-    public FlowMapImpl() {
-        privateMap = new ConcurrentHashMap<>();
-    }
+    public FlowMapImpl() { privateMap = new ConcurrentHashMap<>(); }
 
     @Override
     public Object put(@NotNull String location, @NotNull Object value) {
@@ -82,16 +78,7 @@ public class FlowMapImpl implements FlowMap {
         return true;
     }
 
-    @NotNull
-    @Override
-    public FlowState getFlowState() {
-        return flowState;
-    }
-
-    @Override
-    public void setFlowState(@NotNull FlowState newState) {
-        flowState = newState;
-    }
+    @NotNull @Override public FlowHistory getFlowHistory() { return flowHistory; }
 
     private boolean descendMap(Map<?,?> currentMap, Map<?,?> otherMap) {
         for (Object s : otherMap.keySet()) {
@@ -163,12 +150,13 @@ public class FlowMapImpl implements FlowMap {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FlowMapImpl flowMap = (FlowMapImpl) o;
-        return privateMap.equals(flowMap.privateMap) &&
-                flowState.equals(flowMap.flowState);
+        return privateMap.equals(flowMap.privateMap);
+//                &&
+//                flowState.equals(flowMap.flowState);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(privateMap, flowState);
+        return Objects.hash(privateMap);
     }
 }

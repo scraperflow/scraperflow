@@ -1,5 +1,6 @@
 package scraper.addons;
 
+import scraper.annotations.NotNull;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.core.AbstractFunctionalNode;
@@ -9,5 +10,5 @@ public final class BadNode extends AbstractFunctionalNode {
     public BadNode () { throw new RuntimeException(); }
 
     @Override
-    public void modify(final FlowMap o) {}
+    public void modify(@NotNull final FlowMap o) {}
 }

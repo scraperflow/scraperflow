@@ -1,5 +1,7 @@
 package scraper.api.service;
 
+import scraper.annotations.NotNull;
+
 import java.util.Set;
 
 /**
@@ -9,7 +11,7 @@ import java.util.Set;
  */
 public interface CandidatePathService {
     /** Add a path to the service */
-    void addPath(String path);
+    void addPath(@NotNull String path);
     /** Get all currently known paths */
-    Set<String> getCandidatePaths();
+    @NotNull Set<String> getCandidatePaths();
 }

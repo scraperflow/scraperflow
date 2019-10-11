@@ -1,5 +1,6 @@
 package scraper.plugins;
 
+import scraper.annotations.NotNull;
 import scraper.api.di.DIContainer;
 import scraper.api.plugin.PreHook;
 
@@ -9,7 +10,7 @@ import scraper.api.plugin.PreHook;
  */
 public final class NoPreHook implements PreHook {
     @Override
-    public void execute(DIContainer dependencies, String[] args) {
+    public void execute(@NotNull DIContainer dependencies, @NotNull String[] args) {
         System.setProperty("noprehook", "true");
     }
 }

@@ -121,6 +121,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     }
 
 
+    @NotNull
     public String getName() {
         return this.name;
     }
@@ -140,6 +141,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         return globalNodeConfigurations;
     }
 
+    @NotNull
     public ExecutorsService getExecutors() {
         return this.executors;
     }
@@ -168,6 +170,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         this.executors = executors;
     }
 
+    @NotNull
     public HttpService getHttpService() {
         return httpService;
     }
@@ -176,6 +179,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         this.httpService = httpService;
     }
 
+    @NotNull
     public ProxyReservation getProxyReservation() {
         return proxyReservation;
     }
@@ -184,6 +188,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         this.proxyReservation = proxyReservation;
     }
 
+    @NotNull
     public FileService getFileService() {
         return fileService;
     }

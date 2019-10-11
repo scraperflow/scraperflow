@@ -1,5 +1,6 @@
 package scraper.api.service.impl.proxy;
 
+import scraper.annotations.NotNull;
 import scraper.api.service.proxy.GroupInfo;
 import scraper.api.service.proxy.ProxyInfo;
 
@@ -22,6 +23,7 @@ public class GroupInfoImpl implements GroupInfo {
     @Override
     public int hashCode() { return Objects.hash(id); }
 
+    @NotNull
     @Override
     public List<String> getAllProxiesAsString() {
         List<String> result = new ArrayList<>();

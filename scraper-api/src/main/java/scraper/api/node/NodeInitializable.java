@@ -9,5 +9,5 @@ import java.util.Map;
 
 public interface NodeInitializable {
     /** Initializes parsed node definition */
-    void init(@NotNull ScrapeInstance parent) throws ValidationException;
+    void init(@NotNull final ScrapeInstance parent) throws ValidationException;
 }

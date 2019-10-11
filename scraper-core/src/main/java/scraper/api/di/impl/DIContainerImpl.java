@@ -32,7 +32,6 @@ public class DIContainerImpl implements DIContainer {
 
     @Override
     public void addComponent(@NotNull final Class<?> targetClass, final boolean multipleAllowed) {
-        if(targetClass == null) throw new IllegalArgumentException("Null not allowed");
         if(targetClass.isInterface()) throw new IllegalArgumentException("Only actual implementations allowed: " + targetClass.getName());
         if(targetClass.getDeclaredConstructors().length != 1) throw new IllegalArgumentException("Expecting only 1 declared constructor: "+targetClass.getName());
 

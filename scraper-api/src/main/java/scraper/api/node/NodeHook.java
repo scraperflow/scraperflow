@@ -1,5 +1,6 @@
 package scraper.api.node;
 
+import scraper.annotations.NotNull;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 
@@ -13,5 +14,5 @@ import java.util.Set;
  */
 @FunctionalInterface
 public interface NodeHook {
-    void accept(FlowMap o) throws NodeException;
+    void accept(@NotNull final FlowMap o) throws NodeException;
 }

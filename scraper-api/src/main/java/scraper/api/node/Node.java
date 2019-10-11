@@ -36,7 +36,7 @@ public interface Node extends NodeConsumer, ControlFlow {
     // ==================
 
     /** Sets the node configuration (key value pairs) and the graph its contained in */
-    void setNodeConfiguration(@NotNull Map<String, Object> nodeConfiguration, @NotNull NodeAddress graphKey);
+    void setNodeConfiguration(@NotNull final Map<String, Object> nodeConfiguration, @NotNull final NodeAddress graphKey);
 
     /** Returns the node spec */
     @NotNull Map<String, Object> getNodeConfiguration();
@@ -66,14 +66,14 @@ public interface Node extends NodeConsumer, ControlFlow {
      * Either next node, or the node specified by a target address given
      * Can be controlled with the forward flag
      */
-    @NotNull FlowMap forward(@NotNull FlowMap o) throws NodeException;
-    @NotNull FlowMap eval(@NotNull FlowMap o, @NotNull NodeAddress target) throws NodeException;
+    @NotNull FlowMap forward(@NotNull final FlowMap o) throws NodeException;
+    @NotNull FlowMap eval(@NotNull final FlowMap o, @NotNull final NodeAddress target) throws NodeException;
 
     //-----------
     // Concurrent
     //-----------
 
-    CompletableFuture<FlowMap> forkDepend(@NotNull FlowMap o, @NotNull NodeAddress target);
-    void forkDispatch(@NotNull FlowMap o, @NotNull NodeAddress target);
+    @NotNull CompletableFuture<FlowMap> forkDepend(@NotNull final FlowMap o, @NotNull final NodeAddress target);
+    void forkDispatch(@NotNull final FlowMap o, @NotNull final NodeAddress target);
 
 }
