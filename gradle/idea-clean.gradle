@@ -1,0 +1,6 @@
+allprojects {
+    clean.doLast {
+        // clean-up idea build directory
+        file(new File(projectDir, "/out")).deleteDir()
+    }
+}
