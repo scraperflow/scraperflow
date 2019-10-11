@@ -1,8 +1,6 @@
 open module scraper.api {
     requires scraper.annotations;
 
-    requires spring.plugin.metadata;
-    requires com.google.common;
     requires java.net.http;
 
     exports scraper.api.exceptions;

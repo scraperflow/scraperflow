@@ -1,13 +1,11 @@
 package scraper.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.reflect.TypeToken;
 import org.junit.Test;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
-import scraper.api.node.TypesafeObject;
 import scraper.core.MapKey;
 import scraper.core.Template;
 
@@ -261,55 +259,6 @@ public class FieldTranslationTest {
     private Integer baseMapKeyEval = 42;
 
 
-    // generic type safe mapKey usage with base
-    @FlowKey(defaultValue = "\"@runtimeList\"")
-    @TranslationInput
-    private MapKey<List<Integer>> complexMapKey = new MapKey<List<Integer>>(){}.base(TypesafeAggregateList::new);
-    private BiConsumer<MapKey<List<Integer>>, FlowMap> complexMapKeyCheck = (o, flow) -> {
-        try {
-            List<Integer> list = o.eval(flow);
-            list.add(100);
-            // ok
-        } catch (NodeException e) {
-            throw new IllegalStateException(e);
-        }
-    };
-
-
-    // mapKey expects a type-safe implementation at key
-    @FlowKey(defaultValue = "\"@runtimeList\"")
-    @TranslationInput(fail = true)
-    private MapKey<List<Integer>> noTypeMapKey = new MapKey<List<Integer>>(){}.base(TypesafeAggregateList::new);
-    private BiConsumer<MapKey<List<Integer>>, FlowMap> noTypeMapKeyCheck = (o, flow) -> {
-        // non-type-safe list
-        List<Object> list = new ArrayList<>();
-        flow.put("@runtimeList", list);
-        try {
-            List<Integer> typesafeList = o.eval(flow);
-        } catch (NodeException e) {
-            throw new IllegalStateException(e);
-        }
-    };
-
-
-    // mapKey got a bad type-safe implementation at key
-    @FlowKey(defaultValue = "\"@runtimeList\"")
-    @TranslationInput(fail = true)
-    private MapKey<List<Integer>> badTypeMapKey = new MapKey<List<Integer>>(){}.base(TypesafeAggregateList::new);
-    private BiConsumer<MapKey<List<Integer>>, FlowMap> badTypeMapKeyCheck = (o, flow) -> {
-        // bad generic type from another node
-        List<String> list = new TypesafeAggregateStringList();
-        list.add("a string");
-        flow.put("@runtimeList", list);
-
-        // evaluate the list with a bad type in it
-        try {
-            List<Integer> typesafeList = o.eval(flow);
-        } catch (NodeException e) {
-            throw new IllegalStateException(e);
-        }
-    };
-
     // raw type is important
     @FlowKey(defaultValue = "\"@rawList\"")
     @TranslationInput
@@ -432,16 +381,5 @@ public class FieldTranslationTest {
 
             if(checkMethod != null) checkMethod.accept(mapKey, NodeUtil.flowOf(args));
         }
-    }
-
-
-
-    // type token has to be saved explicitly
-    private class TypesafeAggregateList extends ArrayList<Integer> implements TypesafeObject {
-        @Override public TypeToken<?> getType() { return new TypeToken<List<Integer>>(){}; }
-    }
-
-    private class TypesafeAggregateStringList extends ArrayList<String> implements TypesafeObject {
-        @Override public TypeToken<?> getType() { return new TypeToken<List<String>>(){}; }
     }
 }

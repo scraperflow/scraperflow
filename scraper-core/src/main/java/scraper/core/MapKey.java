@@ -3,7 +3,6 @@ package scraper.core;
 import com.google.common.reflect.TypeToken;
 import org.slf4j.Logger;
 import scraper.api.flow.FlowMap;
-import scraper.api.node.TypesafeObject;
 import scraper.api.exceptions.NodeException;
 
 import java.util.function.Supplier;
@@ -41,31 +40,18 @@ public abstract class MapKey<T> {
         }
 
 
-        try { // try type safe check first
-            TypesafeObject object = (TypesafeObject) value;
-            if(object.getType().isSubtypeOf(type) && type.isSubtypeOf(object.getType())) {
-                // type safe by checking type tokens
-                @SuppressWarnings("unchecked") T castVal = (T) value;
-                return castVal;
-            } else {
-                log.error("Unexpected type at map key '{}'. Expected {}, got {} ({})", key, type, object.getType(), value.getClass());
-                throw new NodeException("Unexpected type at map key '"+key+"'. Expected "+type+", got "
-                        +object.getType()+" ("+value.getClass()+"). Check scrape definition");
-            }
-        } catch (ClassCastException e) {
-            // if not a TypesafeObject, fail if not specified to continue
-            String fail = System.getProperty("scraper.failOnNonSafeMapKey", null);
-            if(fail == null) {
-                log.error("Object not a type-safe map key value, got {} ({})", value.getClass(), key);
-                throw new NodeException("Object not a type-safe map key value, got " +
-                        value.getClass()+"! ("+key+"). Check scrape definition");
-            }
-
-            log.warn("Not using type-safe objects for MapKey! (key: '{}')", key);
-            // warning for unsafe usage
-            @SuppressWarnings("unchecked") T castVal = (T) value;
-            return castVal;
+        // fail if not specified to continue
+        String fail = System.getProperty("scraper.failOnNonSafeMapKey", null);
+        if(fail == null) {
+            log.error("Object not a type-safe map key value, got {} ({})", value.getClass(), key);
+            throw new NodeException("Object not a type-safe map key value, got " +
+                    value.getClass()+"! ("+key+"). Check scrape definition");
         }
+
+        log.warn("Not using type-safe objects for MapKey! (key: '{}')", key);
+        // warning for unsafe usage
+        @SuppressWarnings("unchecked") T castVal = (T) value;
+        return castVal;
     }
 
     public MapKey<T> base(Supplier<T> base) {
