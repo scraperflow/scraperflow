@@ -93,9 +93,6 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     protected ScrapeInstance jobPojo;
     /** Index of the node in the process list. Is set on init. */
     protected int stageIndex;
-    /** Fragment this node belongs to, if any */
-    @FlowKey
-    protected String fragment; // automatically set on processing
 
     /** If set, returns a thread pool with given name and {@link #threads} */
     @FlowKey(defaultValue = "\"main\"")
@@ -516,11 +513,6 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         return this.stageIndex;
     }
 
-    @NotNull
-    public String getFragment() {
-        return this.fragment;
-    }
-
     @Override
     public @Nullable NodeAddress getGoTo() {
         if(goTo != null) {
@@ -535,6 +527,8 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     public NodeAddress getGraphKey() {
         return this.graphKey;
     }
+
+    @NotNull @Override public String getGraph() { return this.graphKey.toString(); }
 
     @NotNull
     @Override

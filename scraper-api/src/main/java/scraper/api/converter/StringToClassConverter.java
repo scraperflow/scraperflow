@@ -1,7 +1,8 @@
 package scraper.api.converter;
 
+import scraper.annotations.NotNull;
+import scraper.annotations.Nullable;
 import scraper.api.exceptions.ValidationException;
-import scraper.api.node.NodeAddress;
 
 /**
  * Converts string to target (primitive) type. Precedence is as follows:
@@ -27,8 +28,7 @@ public final class StringToClassConverter {
      * @return string converted to target class
      * @throws ValidationException if string cannot be converted to target class
      */
-    public static Object convert(final Object o, final Class<?> target) throws ValidationException {
-        if(target == null) throw new ValidationException("Target class should not be null");
+    public static Object convert(@Nullable final Object o, @NotNull final Class<?> target) throws ValidationException {
 
         // argument 'null'
         if(o == null) return null;

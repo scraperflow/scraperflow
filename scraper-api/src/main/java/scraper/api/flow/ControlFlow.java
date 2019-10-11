@@ -26,7 +26,6 @@ public interface ControlFlow {
     /** @return display name of this node */
     @NotNull String getDisplayName();
 
-    /** @return fragment of this node; null if none */
-    // FIXME necessary?
-    @NotNull String getFragment();
+    /** @return The graph this node belongs to */
+    @NotNull String getGraph();
 }

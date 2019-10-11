@@ -2,6 +2,7 @@ package scraper.api.di.impl;
 
 
 import org.slf4j.Logger;
+import scraper.annotations.NotNull;
 import scraper.annotations.di.DITarget;
 import scraper.api.di.DIContainer;
 
@@ -27,10 +28,10 @@ public class DIContainerImpl implements DIContainer {
     private final List<Runnable> queue = new LinkedList<>();
 
     @Override
-    public void addComponent(final Class<?> targetClass) { addComponent(targetClass, false); }
+    public void addComponent(@NotNull final Class<?> targetClass) { addComponent(targetClass, false); }
 
     @Override
-    public void addComponent(final Class<?> targetClass, final boolean multipleAllowed) {
+    public void addComponent(@NotNull final Class<?> targetClass, final boolean multipleAllowed) {
         if(targetClass == null) throw new IllegalArgumentException("Null not allowed");
         if(targetClass.isInterface()) throw new IllegalArgumentException("Only actual implementations allowed: " + targetClass.getName());
         if(targetClass.getDeclaredConstructors().length != 1) throw new IllegalArgumentException("Expecting only 1 declared constructor: "+targetClass.getName());
@@ -81,7 +82,7 @@ public class DIContainerImpl implements DIContainer {
     }
 
     @Override
-    public <T> T get(Class<T> targetClass) {
+    public <T> T get(@NotNull Class<T> targetClass) {
         for (Class<?> a : multiInstances.keySet()) {
             for (Object knownInstance : multiInstances.get(a)) {
                 if(knownInstance.getClass().getName().equalsIgnoreCase(targetClass.getName()))

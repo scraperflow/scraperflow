@@ -1,6 +1,7 @@
 package scraper.api.flow;
 
 
+import scraper.annotations.NotNull;
 import scraper.api.node.NodeAddress;
 
 /**
@@ -10,13 +11,13 @@ import scraper.api.node.NodeAddress;
  */
 public interface ControlFlowEdge {
     /** From address */
-    NodeAddress getFromAddress();
+    @NotNull NodeAddress getFromAddress();
 
     /** To address */
-    NodeAddress getToAddress();
+    @NotNull NodeAddress getToAddress();
 
     /** Middle display string */
-    String getDisplayLabel();
+    @NotNull String getDisplayLabel();
 
     /** Indicates if the edge is used multiple times from the origin node */
     boolean isMultiple();
