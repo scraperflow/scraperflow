@@ -112,7 +112,7 @@ public class StringToClassConverterTest {
 
     @Test
     public void stringFuzzer() {
-        Class[] targetClasses = new Class[]{null, void.class, Object.class, Boolean.class, Integer.class, Double.class, Long.class, Enum.class, String.class};
+        Class[] targetClasses = new Class[]{void.class, Object.class, Boolean.class, Integer.class, Double.class, Long.class, Enum.class, String.class};
         Random r = new Random();
 
         for (int i = 0; i < 10000; i++) {

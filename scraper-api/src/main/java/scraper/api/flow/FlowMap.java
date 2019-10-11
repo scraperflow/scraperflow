@@ -1,6 +1,8 @@
 package scraper.api.flow;
 
 
+import scraper.annotations.NotNull;
+import scraper.annotations.Nullable;
 import scraper.api.node.Node;
 
 import java.util.Map;
@@ -16,17 +18,18 @@ import java.util.Set;
  * @since 1.0.0
  */
 public interface FlowMap {
+
     /** @see Map#put(Object, Object) */
-    Object put(String key, Object value);
+    @Nullable Object put(@NotNull String key, @NotNull Object value);
 
     /** @see Map#putAll(Map) */
-    void putAll(Map<String, Object> m);
+    void putAll(@NotNull Map<String, Object> m);
 
     /** @see Map#remove(Object) */
-    Object remove(String key);
+    @Nullable Object remove(@NotNull String key);
 
     /** @see Map#get(Object) */
-    Object get(String key);
+    @Nullable Object get(@NotNull String key);
 
     /** @see Map#size() */
     int size();
@@ -35,19 +38,19 @@ public interface FlowMap {
     void clear();
 
     /** @see Map#keySet() */
-    Set<String> keySet();
+    @NotNull Set<String> keySet();
 
     /** @see Map#getOrDefault(Object, Object) */
-    Object getOrDefault(Object key, Object defaultObjectalue);
+    @NotNull Object getOrDefault(@NotNull Object key, @NotNull Object defaultObjectValue);
 
     /** Checks if this maps contains all elements of the other map by recursive descent */
-    boolean containsElements(FlowMap expectedOutput);
+    boolean containsElements(@NotNull FlowMap expectedOutput);
 
     /** Returns the current state of this flow */
-    FlowState getFlowState();
+    @NotNull FlowState getFlowState();
 
     /** Sets the current state of this flow */
-    void setFlowState(FlowState newState);
+    void setFlowState(@NotNull FlowState newState);
 
     /** Will get removed from this interface */
     // TODO #19 refactor this method out of this interface

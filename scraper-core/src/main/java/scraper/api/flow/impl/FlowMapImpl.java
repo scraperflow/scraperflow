@@ -1,5 +1,6 @@
 package scraper.api.flow.impl;
 
+import scraper.annotations.NotNull;
 import scraper.api.flow.FlowState;
 import scraper.api.flow.FlowMap;
 
@@ -22,22 +23,22 @@ public class FlowMapImpl implements FlowMap {
     }
 
     @Override
-    public Object put(String location, Object value) {
+    public Object put(@NotNull String location, @NotNull Object value) {
         return privateMap.put(location, value);
     }
 
     @Override
-    public void putAll(Map<String, Object> m) {
+    public void putAll(@NotNull Map<String, Object> m) {
         privateMap.putAll(m);
     }
 
     @Override
-    public Object remove(String location) {
+    public Object remove(@NotNull String location) {
         return privateMap.remove(location);
     }
 
     @Override
-    public Object get(String expected) {
+    public Object get(@NotNull String expected) {
         return privateMap.get(expected);
     }
 
@@ -51,13 +52,15 @@ public class FlowMapImpl implements FlowMap {
         privateMap.clear();
     }
 
+    @NotNull
     @Override
     public Set<String> keySet() {
         return privateMap.keySet();
     }
 
+    @NotNull
     @Override
-    public Object getOrDefault(Object key , Object defaultObjectalue) {
+    public Object getOrDefault(@NotNull Object key , @NotNull Object defaultObjectalue) {
         return privateMap.getOrDefault(key, defaultObjectalue);
     }
 
@@ -71,7 +74,7 @@ public class FlowMapImpl implements FlowMap {
         return new ConcurrentHashMap<>(privateMap);
     }
 
-    public boolean containsElements(FlowMap expectedOutput) {
+    public boolean containsElements(@NotNull FlowMap expectedOutput) {
         for (String key : expectedOutput.keySet()) {
             if(!compareElement(get(key), expectedOutput.get(key))) return false;
         }
@@ -79,13 +82,14 @@ public class FlowMapImpl implements FlowMap {
         return true;
     }
 
+    @NotNull
     @Override
     public FlowState getFlowState() {
         return flowState;
     }
 
     @Override
-    public void setFlowState(FlowState newState) {
+    public void setFlowState(@NotNull FlowState newState) {
         flowState = newState;
     }
 
