@@ -51,9 +51,4 @@ public interface FlowMap {
 
     /** Sets the current state of this flow */
     void setFlowState(@NotNull FlowState newState);
-
-    /** Will get removed from this interface */
-    // TODO #19 refactor this method out of this interface
-    @Deprecated
-    Map<String,Object> getMap();
 }
