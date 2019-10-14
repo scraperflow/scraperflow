@@ -1,7 +1,6 @@
 package scraper.utils;
 
 
-import org.apache.commons.io.FilenameUtils;
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 
@@ -23,7 +22,17 @@ public final class StringUtil {
     /** Removes the extension of a filename */
     @NotNull
     public static String removeExtension(@NotNull final String filename) {
-        return FilenameUtils.removeExtension(filename);
+        int indexOfFirstSeparator = filename.indexOf(File.separator);
+        int indexOfLastDot = filename.lastIndexOf(".");
+        if(indexOfLastDot != -1) {
+            if(indexOfLastDot > indexOfFirstSeparator) {
+                return filename.substring(0, indexOfLastDot);
+            } else {
+                return filename;
+            }
+        } else {
+            return filename;
+        }
     }
 
     /** Reads the body of a file and concatenates the lines with the newline separator */

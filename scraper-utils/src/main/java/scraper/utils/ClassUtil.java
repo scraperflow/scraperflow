@@ -10,20 +10,14 @@ public final class ClassUtil {
     private ClassUtil(){}
 
     /** Returns all fields of a given class, including the fields of all super classes */
-    @NotNull
-    public static List<Field> getAllFields(@NotNull final List<Field> fields, @NotNull final Class<?> type) {
+    public static @NotNull List<Field> getAllFields(@NotNull final List<Field> fields, @NotNull final Class<?> type) {
         fields.addAll(Arrays.asList(type.getDeclaredFields()));
-
-        if (type.getSuperclass() != null) {
-            getAllFields(fields, type.getSuperclass());
-        }
-
+        if (type.getSuperclass() != null) getAllFields(fields, type.getSuperclass());
         return fields;
     }
 
     /** Tries to extract the category of a fully qualified node name */
-    @NotNull
-    public static String extractCategoryOfNode(@NotNull final String fullyQualifiedNodeClassName) {
+    public static @NotNull String extractCategoryOfNode(@NotNull final String fullyQualifiedNodeClassName) {
         int index = fullyQualifiedNodeClassName.indexOf("nodes");
         if(index == -1) return "NotANode";
 
@@ -31,6 +25,7 @@ public final class ClassUtil {
         try {
             return fullyQualifiedNodeClassName.substring(index+6, Math.min(index2, fullyQualifiedNodeClassName.length()));
         } catch (IndexOutOfBoundsException e) {
+            System.err.println("Trying to extract a category, unexpected bounds of substring encountered for " + fullyQualifiedNodeClassName);
             return "unknown";
         }
     }
@@ -41,6 +36,7 @@ public final class ClassUtil {
         throw (E) e;
     }
 
+    /** Sleep with runtime throw of the interrupted exception */
     public static void sleep(int timems) {
         try {
             Thread.sleep(timems);

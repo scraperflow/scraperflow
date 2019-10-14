@@ -1,6 +1,5 @@
 package scraper.utils;
 
-import org.apache.commons.io.FilenameUtils;
 import scraper.annotations.NotNull;
 
 import java.io.File;
@@ -11,7 +10,6 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
@@ -19,8 +17,6 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 public final class FileUtil {
     private FileUtil(){}
-
-
 
     /** Searches for files with the candidate paths in both file system and class loader resources */
     @NotNull
@@ -39,6 +35,11 @@ public final class FileUtil {
             File f = new File(Paths.get(path, name).toString());
             if(f.exists()) return f;
         }
+
+        // try classloader base
+        URL u = FileUtil.class.getClassLoader().getResource(name);
+        if(u != null && new File(u.getFile()).exists())
+            return new File(u.getFile());
 
         // try classloader
         for (String path : candidates) {
@@ -109,14 +110,13 @@ public final class FileUtil {
     /** Replace the extension of a file, if any */
     @NotNull
     public static String replaceFileExtension(@NotNull final Path scrapePath, @NotNull final String extension) {
-        // TODO correct?
-        return FilenameUtils.removeExtension(scrapePath.toFile().getPath()) + "." +extension;
+        return StringUtil.removeExtension(scrapePath.toFile().getPath()) + "." +extension;
     }
 
     /** Replace the extension of a file, if any */
     @NotNull
     public static String replaceFileExtension(@NotNull final String scrapePath, @NotNull final String extension) {
-        return FilenameUtils.removeExtension(scrapePath) + "." +extension;
+        return StringUtil.removeExtension(scrapePath) + "." +extension;
     }
 
     /**

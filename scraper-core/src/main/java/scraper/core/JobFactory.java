@@ -25,7 +25,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
 
-import static scraper.utils.CollectionUtil.newAppend;
 import static scraper.utils.FileUtil.getFirstExistingPaths;
 
 public class JobFactory {
