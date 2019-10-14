@@ -1,6 +1,7 @@
 package scraper.api.flow;
 
 import scraper.annotations.NotNull;
+import scraper.api.node.NodeAddress;
 
 import java.util.List;
 
@@ -12,8 +13,6 @@ import java.util.List;
  *     <li>Output flow</li>
  * </ol>
  *
- * The interface also provides a method to generate a display name for the current node.
- *
  * @since 1.0.0
  */
 public interface ControlFlow {
@@ -23,9 +22,6 @@ public interface ControlFlow {
     /** @return control flow from input nodes */
     @NotNull List<ControlFlowEdge> getInput();
 
-    /** @return display name of this node */
+    /** @return formatted display name of this node */
     @NotNull String getDisplayName();
-
-    /** @return The graph this node belongs to */
-    @NotNull String getGraph();
 }

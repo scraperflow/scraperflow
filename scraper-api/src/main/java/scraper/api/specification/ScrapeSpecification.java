@@ -39,5 +39,6 @@ public interface ScrapeSpecification {
     /** label -> Graph definitions */
     @NotNull Map<NodeAddress, List<Map<String, Object>>> getGraphs();
 
+    /** Global node configuration */
     @NotNull Map<String, Map<String, Object>> getGlobalNodeConfigurations();
 }

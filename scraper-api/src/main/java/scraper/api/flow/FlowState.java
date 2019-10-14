@@ -14,11 +14,11 @@ public interface FlowState {
     /**
      * The higher the log level of a node is, the more information will be put into the flow state
      *
-     * For TRACE, the whole flow map content is copied into the history
+     * For TRACE, the whole flow map content is deep-copied into the state
      * For DEBUG, only top-level values are inserted and trimmed if necessary
      * For INFO, only keys without values are tracked
      * For WARN, only history of node accesses is tracked
-     * For ERROR, nothing is tracked
+     * For ERROR, history is disabled
      */
     @NotNull Map<String, Object> getState();
 

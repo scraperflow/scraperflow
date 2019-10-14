@@ -8,6 +8,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.Random;
 
 import static junit.framework.TestCase.assertTrue;
@@ -26,7 +27,7 @@ public class StringToClassConverterTest {
             Class<?> target = Boolean.class;
             Object convert = StringToClassConverter.convert(bool, target);
 
-            Assert.assertTrue(Boolean.class.isAssignableFrom(convert.getClass()));
+            Assert.assertTrue(Boolean.class.isAssignableFrom(Objects.requireNonNull(convert).getClass()));
             Assert.assertEquals(Boolean.valueOf(bool), convert);
         }
     }
@@ -38,7 +39,7 @@ public class StringToClassConverterTest {
             Class<?> target = Integer.class;
             Object convert = StringToClassConverter.convert(i, target);
 
-            Assert.assertTrue(Integer.class.isAssignableFrom(convert.getClass()));
+            Assert.assertTrue(Integer.class.isAssignableFrom(Objects.requireNonNull(convert).getClass()));
             Assert.assertEquals(Integer.valueOf(i), convert);
         }
     }
@@ -50,7 +51,7 @@ public class StringToClassConverterTest {
             Class<?> target = Long.class;
             Object convert = StringToClassConverter.convert(i, target);
 
-            Assert.assertTrue(Long.class.isAssignableFrom(convert.getClass()));
+            Assert.assertTrue(Long.class.isAssignableFrom(Objects.requireNonNull(convert).getClass()));
             Assert.assertEquals(Long.valueOf(i), convert);
         }
     }
@@ -61,11 +62,6 @@ public class StringToClassConverterTest {
         Assert.assertEquals(0.0, StringToClassConverter.convert("0", Double.class));
         Assert.assertEquals(1.5, StringToClassConverter.convert("1.5", Double.class));
         Assert.assertEquals(1.2345, StringToClassConverter.convert("1.2345", Double.class));
-    }
-
-    @Test
-    public void objectTest() {
-        // TODO #18 use case? String convert to target class object?
     }
 
     @Test(expected = ValidationException.class)
@@ -86,11 +82,11 @@ public class StringToClassConverterTest {
         Assert.assertNull(convert);
     }
 
+    @SuppressWarnings("ConstantConditions") // testing the constant condition
     @Test
     public void nullStringTest() throws Exception {
-        String nullString = null;
         Class<?> target = Object.class;
-        Object convert = StringToClassConverter.convert(nullString, target);
+        Object convert = StringToClassConverter.convert(null, target);
         Assert.assertNull(convert);
     }
 

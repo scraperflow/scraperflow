@@ -1,4 +1,4 @@
-open module scraper.api {
+module scraper.api {
     requires scraper.annotations;
 
     requires java.net.http;

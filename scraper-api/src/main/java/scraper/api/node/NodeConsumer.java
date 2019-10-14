@@ -19,6 +19,8 @@ public interface NodeConsumer {
      * The FlowMap can be modified in the process.
      * Side-effects are possible.
      *
+     * The default implementation has hooks before and hooks after processing the incoming flow map.
+     *
      * @param o The FlowMap to modifiy/use in the function
      * @throws NodeException if there is a processing error during the function call
      */

@@ -556,8 +556,6 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         return this.graphKey;
     }
 
-    @NotNull @Override public String getGraph() { return this.graphKey.toString(); }
-
     @NotNull
     @Override
     public Collection<NodeHook> beforeHooks() {

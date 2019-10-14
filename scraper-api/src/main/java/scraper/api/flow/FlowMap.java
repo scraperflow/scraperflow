@@ -43,8 +43,8 @@ public interface FlowMap {
     /** @see Map#getOrDefault(Object, Object) */
     @NotNull Object getOrDefault(@NotNull Object key, @NotNull Object defaultObjectValue);
 
-    /** Checks if this maps contains all elements of the other map by recursive descent */
-    boolean containsElements(@NotNull FlowMap expectedOutput);
+    /** Checks if this maps contains all elements (equals method) of the other map by recursive descent */
+    boolean containsElements(@NotNull FlowMap otherMap);
 
     /** State of this flow. Useful for debugging purposes. Amount of tracking increases with log level of the nodes accessed in the flow. */
     @NotNull FlowHistory getFlowHistory();

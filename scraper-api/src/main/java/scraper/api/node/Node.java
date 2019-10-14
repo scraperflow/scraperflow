@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
  * <p>
  *     Nodes provide functionality which can be used by {@link FlowMap}s
  *     via the functional interface {@link NodeConsumer}.
- *     Many {@code FlowMaps} can use the Node concurrently.
+ *     Many {@code FlowMaps} can access the Node concurrently.
  * </p>
  * <p>
  *     Most nodes are state-less. If stateful nodes are used in a specification,
@@ -28,11 +28,10 @@ import java.util.concurrent.CompletableFuture;
  *
  * @since 1.0.0
  */
-@SuppressWarnings("unused")
 public interface Node extends NodeConsumer, ControlFlow {
 
     // ==================
-    // JSON Specification
+    // Specification
     // ==================
 
     /** Sets the node configuration (key value pairs) and the graph its contained in */
@@ -67,13 +66,30 @@ public interface Node extends NodeConsumer, ControlFlow {
      * Can be controlled with the forward flag
      */
     @NotNull FlowMap forward(@NotNull final FlowMap o) throws NodeException;
+
+    /**
+     * Forwards the flow map to another node.
+     * Either next node, or the node specified by a target address given
+     * Is not controlled by the forward flag
+     */
     @NotNull FlowMap eval(@NotNull final FlowMap o, @NotNull final NodeAddress target) throws NodeException;
 
     //-----------
     // Concurrent
     //-----------
 
+    /**
+     * Copies and dispatches a flow to another target address.
+     * Returns a future which can be used to get the output flow of the dispatched flow.
+     * This call only returns if the service pool has available space for another flow.
+     */
     @NotNull CompletableFuture<FlowMap> forkDepend(@NotNull final FlowMap o, @NotNull final NodeAddress target);
+
+    /**
+     * Copies and dispatches a flow to another target address.
+     * Does not wait for the other flow to finish.
+     * This call only returns if the service pool has available space for another flow.
+     */
     void forkDispatch(@NotNull final FlowMap o, @NotNull final NodeAddress target);
 
 }

@@ -6,7 +6,7 @@ import scraper.api.exceptions.ValidationException;
 
 /**
  * Converts string to target (primitive) type. Precedence is as follows:
- * <li> null (if null given)
+ * <li> null (if null given) or String 'null'
  * <li> Double
  * <li> Long
  * <li> Integer
@@ -21,24 +21,21 @@ import scraper.api.exceptions.ValidationException;
 public final class StringToClassConverter {
     private StringToClassConverter(){}
     /**
-     * Converts a json string to a target class
+     * Converts an object to a target class
      *
-     * @param o object (should be a json string)
+     * @param o object
      * @param target which target class is expected
-     * @return string converted to target class
+     * @return string converted to target class, null if o is null or String 'null'
      * @throws ValidationException if string cannot be converted to target class
      */
-    public static Object convert(@Nullable final Object o, @NotNull final Class<?> target) throws ValidationException {
+    public static @Nullable Object convert(@Nullable final Object o, @NotNull final Class<?> target) throws ValidationException {
 
         // argument 'null'
         if(o == null) return null;
         // json 'null'
         if(o instanceof String && ((String) o).equalsIgnoreCase("null")) return null;
-        // TODO #18
-        if(target.equals(Object.class))
-            return o;
 
-        if(target.isAssignableFrom(o.getClass())){ return o; }
+        if(target.isAssignableFrom(o.getClass())) return o;
 
         if(
                 !(o instanceof String)

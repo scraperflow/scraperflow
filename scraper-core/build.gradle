@@ -23,6 +23,10 @@ dependencies {
     api group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.+'
     api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.+'
     api group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.10.+'
+
+    // small plugin framework
+    api group: 'org.springframework.plugin', name: 'spring-plugin-core', version: '1.2.0.RELEASE'
+    api group: 'org.springframework.plugin', name: 'spring-plugin-metadata', version: '1.2.0.RELEASE'
 }
 
 // test dependencies

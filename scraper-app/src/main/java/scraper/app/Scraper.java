@@ -14,7 +14,6 @@ import scraper.api.flow.FlowMap;
 import scraper.api.plugin.Addon;
 import scraper.api.plugin.Hook;
 import scraper.api.plugin.PreHook;
-import scraper.api.service.CandidatePathService;
 import scraper.api.service.ExecutorsService;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
@@ -24,10 +23,7 @@ import scraper.utils.StringUtil;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import static scraper.util.DependencyInjectionUtil.getDIContainer;
@@ -41,7 +37,6 @@ public class Scraper {
     // dependencies
     private final JobFactory jobFactory;
     private final ExecutorsService executorsService;
-    private final CandidatePathService pathService;
 
 
     // addons
@@ -57,13 +52,12 @@ public class Scraper {
     // saved jobs and dispatched futures
     private final Map<ScrapeSpecification, ScrapeInstance> jobs = new LinkedHashMap<>();
 
-    public Scraper(JobFactory jobFactory, ExecutorsService executorsService, CandidatePathService pathService,
+    public Scraper(JobFactory jobFactory, ExecutorsService executorsService,
                    @DITarget(PreHook.class) Collection<PreHook> prehooks,
                    @DITarget(Hook.class) Collection<Hook> hooks,
                    @DITarget(Addon.class) Collection<Addon> addons) {
         this.jobFactory = jobFactory;
         this.executorsService = executorsService;
-        this.pathService = pathService;
         this.prehooks = prehooks;
         this.hooks = hooks;
         this.addons = addons;
@@ -100,7 +94,8 @@ public class Scraper {
             hook.execute(pico, args);
 
         log.info("Parsing scrape jobs");
-        List<ScrapeSpecification> jobDefinitions = parseJobs(args, pathService.getCandidatePaths());
+        // TODO instead of Set.of(), available paths
+        List<ScrapeSpecification> jobDefinitions = parseJobs(args, Set.of());
 
         log.info("Converting scrape jobs");
         for (ScrapeSpecification jobDefinition : jobDefinitions) {

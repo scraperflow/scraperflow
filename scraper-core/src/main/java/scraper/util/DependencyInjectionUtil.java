@@ -24,7 +24,6 @@ public class DependencyInjectionUtil {
         diContainer.addComponent(ExecutorsServiceImpl.class);
         diContainer.addComponent(HttpServiceImpl.class);
         diContainer.addComponent(ProxyReservationImpl.class);
-        diContainer.addComponent(CandidatePathServiceImpl.class);
         diContainer.addComponent(FileServiceImpl.class);
 
         diContainer.addComponent(JobFactory.class);
