@@ -40,9 +40,7 @@ coverage:
 install:
   stage: install
   script:
-    - ./gradlew install
-    - ./gradlew bundle
-    - ./gradlew api
+    - ./gradlew bundleAll
 
 run:
   stage: run
