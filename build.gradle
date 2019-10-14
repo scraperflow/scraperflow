@@ -1,14 +1,23 @@
-// repository configuration
-// java source compatibility
-allprojects {
+configure( subprojects.findAll {
+    it.name in ['scraper-api', 'scraper-annotations', 'scraper-app', 'scraper-core', 'scraper-utils']
+}) {
+    // repository configuration
     repositories {
         mavenCentral()
         jcenter()
     }
 
+    // java source compatibility
     apply plugin: "java"
     sourceCompatibility = 1.11
+
+    // fixes
+    apply from: '../gradle/gradle-module-fix.gradle'
+    apply from: '../gradle/gradle-test-resources-fix.gradle'
 }
+
+// top-level project is not a java project, needs a clean task
+task clean {}
 
 // apply jacoco coverage for all projects
 apply from: 'gradle/jacoco-all.gradle'
@@ -19,15 +28,7 @@ apply from: 'gradle/idea-clean.gradle'
 // fix resource finding problem for idea
 apply from: 'gradle/idea-fix.gradle'
 
-configure(subprojects.findAll {!it.name.contains('scraper-nodes') && !it.name.contains('scraper-plugins')}) {
-    // core is versioned separately from nodes and plugins
-    version = '1.0.0-rc1'
-
-    // fixes
-    apply from: '../gradle/gradle-module-fix.gradle'
-    apply from: '../gradle/gradle-test-resources-fix.gradle'
-
-    task api(type: Jar) {
-        destinationDir = file("$rootDir/build/api")
-    }
-}
+// all possible bundles (bundleAll, bundleApi, bundleCore, bundleNodes,
+//                       bundleNodesOnly, bundleNodesDependencies,
+//                       bundleAddonsOnly, bundleAddonsDependencies
+apply from: 'gradle/scraper-bundle.gradle'

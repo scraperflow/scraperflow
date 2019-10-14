@@ -4,6 +4,7 @@ import com.google.common.reflect.TypeToken;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.slf4j.Logger;
+import scraper.annotations.NotNull;
 import scraper.api.exceptions.TemplateException;
 import scraper.core.exp.TemplateExpressionVisitor;
 import scraper.core.exp.TemplateLexer;
@@ -16,7 +17,8 @@ public final class TemplateUtil {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(TemplateUtil.class);
 
 
-    public static <C> TemplateExpression<C> parseTemplate(String term, TypeToken<C> targetType) {
+    public static <C> TemplateExpression<C> parseTemplate(@NotNull final String term,
+                                                          @NotNull final TypeToken<C> targetType) {
         log.trace("Converting term to template expression: '{}'", term);
 
         try {

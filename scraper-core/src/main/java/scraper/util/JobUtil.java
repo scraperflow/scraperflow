@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.slf4j.Logger;
 import scraper.annotations.ArgsCommand;
+import scraper.annotations.NotNull;
 import scraper.api.node.NodeAddress;
 import scraper.api.specification.ScrapeSpecification;
 import scraper.api.specification.impl.NodeAddressDeserializer;
@@ -79,12 +80,13 @@ public final class JobUtil {
     }
 
 
-    private static ScrapeSpecification parseSingleSpecification(String[] args, Set<String> candidatePaths) throws IOException, ValidationException {
+    private static ScrapeSpecification parseSingleSpecification(@NotNull final String[] args,
+                                                                @NotNull final Set<String> candidatePaths)
+            throws IOException, ValidationException {
         String scrapePath;
         // TODO implement command line parameters (update file spec after creation)
         String ndepPath;
         List<String> argsPaths = new LinkedList<>();
-        List<String> fragmentFolders = new LinkedList<>();
 
         List<String> specs = Stream.concat(
                 StringUtil.getAllArguments(args,".yf").stream(),
@@ -144,13 +146,6 @@ public final class JobUtil {
             argsPaths.addAll(paths);
         }
 
-        {
-            // check fragment folders
-            List<String> paths = StringUtil.getAllArguments(args,"fragments:");
-            paths.add(System.getProperty("user.dir"));
-            fragmentFolders.addAll(paths);
-        }
-
         // search for file
         File scrapeFile = FileUtil.getFirstExisting(scrapePath, candidatePaths);
         if(!scrapeFile.exists() || !scrapeFile.isFile()) throw new IOException("scrape file is not a file or does not exist");
@@ -177,13 +172,16 @@ public final class JobUtil {
         return spec;
     }
 
-    private static void validate(ScrapeSpecification spec) throws ValidationException {
+    // separate check for null values since Jackson does not support mandatory keys
+    @SuppressWarnings("ConstantConditions")
+    private static void validate(@NotNull ScrapeSpecification spec) throws ValidationException {
         if(spec.getName() == null) throw new ValidationException("Name field not specified");
         if(spec.getGraphs() == null) throw new ValidationException("Graphs field not specified");
         if(spec.getScrapeFile() == null) throw new ValidationException("Path to scrape file null");
     }
 
-    public static void merge(ScrapeSpecification overwriteInto, ScrapeSpecification newJob) throws ValidationException {
+    public static void merge(@NotNull ScrapeSpecification overwriteInto, @NotNull ScrapeSpecification newJob)
+            throws ValidationException {
         for (NodeAddress nodeAddress : overwriteInto.getGraphs().keySet()) {
             if (newJob.getGraphs().containsKey(nodeAddress)) {
                 throw new ValidationException("Imported scrape job has graph address conflict: " + nodeAddress);

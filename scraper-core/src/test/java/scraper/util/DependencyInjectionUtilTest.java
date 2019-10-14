@@ -5,19 +5,14 @@ import org.junit.Test;
 import scraper.addons.TestAddon;
 import scraper.annotations.di.DITarget;
 import scraper.api.di.DIContainer;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.specification.ScrapeSpecification;
-import scraper.core.JobFactory;
 import scraper.hooks.ExitHook;
-import scraper.hooks.NodeDependencyGeneratorHook;
+import scraper.hooks.PluginHook;
 import scraper.hooks.TestHook;
 import scraper.hooks.TestPreHook;
-import scraper.hooks.PluginHook;
 
-import java.io.File;
-import java.net.URL;
-import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
 
 public class DependencyInjectionUtilTest {
 
@@ -27,16 +22,16 @@ public class DependencyInjectionUtilTest {
         DIContainer container = DependencyInjectionUtil.getDIContainer();
 
         // addon discovery
-        container.get(TestAddon.class).load(container);
+        Objects.requireNonNull(container.get(TestAddon.class)).load(container);
 
         // hook discovery
-        container.get(TestHook.class).execute(container, null, null);
+        Objects.requireNonNull(container.get(TestHook.class)).execute(container, new String[]{}, Map.of());
 
         // pre hook discovery
-        container.get(TestPreHook.class).execute(container, null);
+        Objects.requireNonNull(container.get(TestPreHook.class)).execute(container, new String[]{});
 
         // plugin discovery
-        container.get(PluginHook.class).execute(container, null, null);
+        Objects.requireNonNull(container.get(PluginHook.class)).execute(container, new String[]{}, Map.of());
 
         Assert.assertEquals("true", System.getProperty("test-addon"));
         Assert.assertEquals("true", System.getProperty("test-hook"));
@@ -44,7 +39,7 @@ public class DependencyInjectionUtilTest {
         Assert.assertEquals("true", System.getProperty("plugin-hook"));
 
         // exit hook
-        container.get(ExitHook.class).execute(container, new String[]{"exit"}, Map.of());
+        Objects.requireNonNull(container.get(ExitHook.class)).execute(container, new String[]{"exit"}, Map.of());
         Assert.assertEquals("true", System.getProperty("scraper.exit"));
 
 
@@ -79,7 +74,7 @@ public class DependencyInjectionUtilTest {
         container.addComponent(ClassWithCollectionDependencyOk.class);
 
         ClassWithCollectionDependencyOk inst = container.get(ClassWithCollectionDependencyOk.class);
-        Assert.assertEquals(0, inst.field.size());
+        Assert.assertEquals(0, Objects.requireNonNull(inst).field.size());
     }
 
     @Test(expected = IllegalArgumentException.class)

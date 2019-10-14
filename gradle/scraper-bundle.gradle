@@ -1,0 +1,44 @@
+def version = '1.0.0-rc1'
+def api = '1'
+
+def getGitHash = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
+task bundleAll(dependsOn: [':bundleFatJar', ':bundleApi']) {}
+
+task bundleFatJar(type: Jar) { t ->
+    subprojects.each { dependsOn("${it.name}:jar") }
+    manifest { attributes 'Main-Class': 'scraper.app.Scraper' }
+    subprojects.each {s ->
+        from {
+            s.configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+        }
+        from {
+            s.sourceSets.main.output
+        }
+    }
+
+    archiveFileName = "Scraper-${api}-${getGitHash()}-bundled.jar"
+    destinationDirectory = file("$rootDir/build/libs")
+}
+
+task bundleApi(type: Jar, dependsOn: ':scraper-api:jar') {
+    from {
+        project(":scraper-api").sourceSets.main.output
+    }
+
+    archiveFileName = "Scraper-${api}-api.jar"
+    destinationDirectory = file("$rootDir/build/libs")
+}
+
+
+clean.doLast {
+    file(new File(projectDir, "/build")).deleteDir()
+}
+

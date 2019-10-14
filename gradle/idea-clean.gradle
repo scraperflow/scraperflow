@@ -1,6 +1,11 @@
-allprojects {
+configure( subprojects ) {
     clean.doLast {
         // clean-up idea build directory
         file(new File(projectDir, "/out")).deleteDir()
     }
+}
+
+clean.doLast {
+    // clean-up idea build directory
+    file(new File(projectDir, "/out")).deleteDir()
 }

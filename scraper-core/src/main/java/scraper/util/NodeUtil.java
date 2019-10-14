@@ -2,13 +2,10 @@ package scraper.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.reflect.TypeToken;
-import org.slf4j.Logger;
-import scraper.annotations.node.NodePlugin;
 import scraper.api.converter.StringToClassConverter;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.node.Node;
 import scraper.api.node.NodeAddress;
 import scraper.api.node.impl.NodeAddressImpl;
 import scraper.core.Template;
@@ -25,12 +22,7 @@ import java.util.regex.Pattern;
 
 public final class NodeUtil {
 
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(NodeUtil.class);
     private static final ObjectMapper mapper = new ObjectMapper();
-
-    public static String replaceArguments(String base, Map<String, Object> args){
-        return (String) replaceArguments((Object) base, args);
-    }
 
     /**
      * Evaluates the base template with the given map. Does nothing if base is not of type String.
@@ -55,22 +47,6 @@ public final class NodeUtil {
         }
 
         return replaced;
-    }
-
-
-
-    /**
-     * Parses a node spec and initializes a node
-     */
-    public static Node parseNodeSpec(Map<String,Object> spec) {
-        return null;
-    }
-
-    public static boolean isStateful(Class<?> targetClass) {
-        // check annotations
-        NodePlugin plugin = targetClass.getAnnotation(NodePlugin.class);
-        if(plugin != null) return plugin.stateful();
-        return false;
     }
 
     public static FlowMap flowOf(Map<String, Object> initialArguments) {

@@ -21,6 +21,9 @@ public interface ScrapeSpecification {
     /** Returns the path to the .scrape file which will be used as the workflow specification for this workflow */
     @NotNull Path getScrapeFile();
 
+    /** label -> Graph definitions */
+    @NotNull Map<NodeAddress, List<Map<String, Object>>> getGraphs();
+
     /** Any number of added base paths (with command line arguments) to search for arguments, dependencies, imports, fragments */
     @NotNull List<Path> getPaths();
 
@@ -35,9 +38,6 @@ public interface ScrapeSpecification {
 
     /** Entry points */
     @NotNull NodeAddress getEntry();
-
-    /** label -> Graph definitions */
-    @NotNull Map<NodeAddress, List<Map<String, Object>>> getGraphs();
 
     /** Global node configuration */
     @NotNull Map<String, Map<String, Object>> getGlobalNodeConfigurations();

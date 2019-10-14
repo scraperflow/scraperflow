@@ -1,4 +1,4 @@
-allprojects {
+configure( subprojects ) {
     apply plugin: 'jacoco'
 }
 

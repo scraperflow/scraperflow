@@ -62,7 +62,7 @@ public class Scraper {
     }
 
 
-    public static void main(String[] args) throws Exception {
+    public static void main(@NotNull final String[] args) throws Exception {
         printBanner();
 
         String helpArgs = StringUtil.getArgument(args, "help");
@@ -84,7 +84,7 @@ public class Scraper {
     }
 
 
-    private void run(String... args) throws Exception {
+    private void run(@NotNull final String... args) throws Exception {
         log.info("Loading {} addons", addons.size());
         for (Addon addon : addons) addon.load(pico);
 
@@ -160,7 +160,7 @@ public class Scraper {
         }
     }
 
-    private static void printArgsCommand(AnnotationInfo argsCommand) {
+    private static void printArgsCommand(@NotNull final AnnotationInfo argsCommand) {
         String val = (String) argsCommand.getParameterValues().getValue("value");
         String doc = (String) argsCommand.getParameterValues().getValue("doc");
         String example = (String) argsCommand.getParameterValues().getValue("example");
