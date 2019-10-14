@@ -2,6 +2,11 @@ configure( subprojects ) {
     apply plugin: 'jacoco'
 }
 
+apply plugin: 'jacoco'
+repositories {
+    mavenCentral()
+}
+
 task codeCoverageReport(type: JacocoReport) {
     executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
 
@@ -21,6 +26,7 @@ task codeCoverageReport(type: JacocoReport) {
         html.enabled true
         csv.enabled true
     }
+
 }
 
 codeCoverageReport.dependsOn {
