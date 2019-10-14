@@ -1,9 +1,6 @@
 package scraper.app;
 
-import io.github.classgraph.AnnotationInfo;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ClassInfo;
-import io.github.classgraph.ScanResult;
+import io.github.classgraph.*;
 import org.slf4j.Logger;
 import scraper.annotations.ArgsCommand;
 import scraper.annotations.ArgsCommands;
@@ -156,18 +153,18 @@ public class Scraper {
             }
 
             for (ClassInfo routeClassInfo : scanResult.getClassesWithAnnotation(ArgsCommands.class.getName())) {
-                AnnotationInfo argsCommands = (routeClassInfo.getAnnotationInfo(ArgsCommands.class.getName()));
-                for (Object value : ((Object[]) argsCommands.getParameterValues().get("value"))) {
-                    printArgsCommand(((AnnotationInfo) value));
+                AnnotationInfoList argsCommands = (routeClassInfo.getAnnotationInfoRepeatable(ArgsCommand.class.getName()));
+                for (AnnotationInfo argsCommand : argsCommands) {
+                    printArgsCommand(argsCommand);
                 }
             }
         }
     }
 
     private static void printArgsCommand(AnnotationInfo argsCommand) {
-        String val = (String) argsCommand.getParameterValues().get("value");
-        String doc = (String) argsCommand.getParameterValues().get("doc");
-        String example = (String) argsCommand.getParameterValues().get("example");
+        String val = (String) argsCommand.getParameterValues().getValue("value");
+        String doc = (String) argsCommand.getParameterValues().getValue("doc");
+        String example = (String) argsCommand.getParameterValues().getValue("example");
 
 
         System.out.println("-------------------");

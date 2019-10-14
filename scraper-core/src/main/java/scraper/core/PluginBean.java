@@ -35,8 +35,8 @@ public class PluginBean {
                 AnnotationInfo routeAnnotationInfo = routeClassInfo.getAnnotationInfo(routeAnnotation);
 
                 String metadataName = routeClassInfo.getSimpleName();
-                String metadataVersion = (String) routeAnnotationInfo.getParameterValues().get("value");
-                Boolean metadataDeprecated = (Boolean) routeAnnotationInfo.getParameterValues().get("deprecated");
+                String metadataVersion = (String) routeAnnotationInfo.getParameterValues().getValue("value");
+                Boolean metadataDeprecated = (Boolean) routeAnnotationInfo.getParameterValues().getValue("deprecated");
                 String metadataCategory = ClassUtil.extractCategoryOfNode(routeClassInfo.getName());
                 String className = routeClassInfo.getName();
 
@@ -46,7 +46,7 @@ public class PluginBean {
                         try {
                             return (Node) Class.forName(className).getDeclaredConstructor().newInstance();
                         } catch (Exception e) {
-                            throw new ValidationException("Could not instantiate node");
+                            throw new ValidationException("Could not instantiate node", e);
                         }
                     }
                 };

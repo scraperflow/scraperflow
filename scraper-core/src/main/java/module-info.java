@@ -29,5 +29,6 @@ open module scraper.core {
     requires com.fasterxml.jackson.annotation;
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.dataformat.yaml;
-    requires antlr4.runtime;
+
+    requires org.antlr.antlr4.runtime;
 }

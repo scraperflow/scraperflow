@@ -3,15 +3,15 @@ apply plugin: 'java-library'
 dependencies {
     // core api + transitive dependencies
     api project(':scraper-api')
-
     api project(':scraper-utils')
 }
 
 dependencies {
-    implementation 'org.antlr:antlr4-runtime:4.7.1'
+    // template grammar parser generator
+    implementation 'org.antlr:antlr4-runtime:4.7.2'
     
     // reflection framework
-    api 'io.github.classgraph:classgraph:4.4.12'
+    api 'io.github.classgraph:classgraph:4.8.47'
 
     // logger framework
     api group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta1'
