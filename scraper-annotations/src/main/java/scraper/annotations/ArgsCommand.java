@@ -14,9 +14,9 @@ import java.lang.annotation.*;
 @Repeatable(ArgsCommands.class)
 public @interface ArgsCommand {
     /** The expected command-line format, i.e. a synopsis */
-    String value();
+    @NotNull String value();
     /** Documentation of the argument */
-    String doc();
+    @NotNull String doc();
     /** Example usage of the argument */
-    String example();
+    @NotNull String example();
 }

@@ -1,5 +1,7 @@
 package scraper.annotations.node;
 
+import scraper.annotations.NotNull;
+
 import java.lang.annotation.*;
 
 /**
@@ -16,6 +18,6 @@ public @interface Argument {
      * Target class which provides a static Object convert(String, Class<?>) method.
      * Default implementation can handle primitive types only.
      */
-    Class<?> converter() default void.class;
+    @NotNull Class<?> converter() default void.class;
 }
 

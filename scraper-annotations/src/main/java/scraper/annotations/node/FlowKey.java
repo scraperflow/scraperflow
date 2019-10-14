@@ -1,9 +1,11 @@
 package scraper.annotations.node;
 
+import scraper.annotations.NotNull;
+
 import java.lang.annotation.*;
 
 /**
- * Indicates that this field will be parsed from a JSON specification.
+ * Indicates that this field will be parsed from a scrape specification.
  * If mandatory is enabled, it enforces the key to exist in the specification.
  *
  * @since 1.0.0
@@ -12,12 +14,9 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 @Documented
 public @interface FlowKey {
-    /** If enabled, forces the key to exist in the JSON specification */
+    /** If enabled, forces the key to exist in the scrape specification */
     boolean mandatory() default false;
 
     /** The default value of a JSON flow key if no value is provided */
-    String defaultValue() default "null";
-
-    /** The default value of a JSON flow value for a MapKey location, if that location is null */
-    String mapkeyValue() default "null";
+    @NotNull String defaultValue() default "null";
 }
