@@ -26,7 +26,8 @@ import java.util.Map;
 public class ExitHook implements Hook {
 
     @Override
-    public void execute(@NotNull final DIContainer dependencies, @NotNull final String[] args, @NotNull final Map<ScrapeSpecification, ScrapeInstance> jobs) {
+    public void execute(@NotNull final DIContainer dependencies, @NotNull final String[] args,
+                        @NotNull final Map<ScrapeSpecification, ScrapeInstance> jobs) {
         if (StringUtil.getArgument(args, "exit") != null) {
             System.setProperty("scraper.exit", "true");
         }

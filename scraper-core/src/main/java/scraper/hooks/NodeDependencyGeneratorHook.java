@@ -34,7 +34,8 @@ public class NodeDependencyGeneratorHook implements Hook {
     private JobFactory jobFactory;
 
     @Override
-    public void execute(@NotNull final DIContainer dependencies, @NotNull final String[] args, @NotNull final Map<ScrapeSpecification, ScrapeInstance> jobs) throws Exception {
+    public void execute(@NotNull final DIContainer dependencies, @NotNull final String[] args,
+                        @NotNull final Map<ScrapeSpecification, ScrapeInstance> jobs) throws Exception {
         this.jobFactory = dependencies.get(JobFactory.class);
 
         // ==

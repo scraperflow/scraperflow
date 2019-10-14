@@ -17,9 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PluginBean {
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger("NodeDiscovery");
-
-    private final PluginRegistry<? extends AbstractMetadata, PluginMetadata> plugins;
+    private @NotNull static final Logger log = org.slf4j.LoggerFactory.getLogger("NodeDiscovery");
+    private @NotNull final PluginRegistry<? extends AbstractMetadata, PluginMetadata> plugins;
 
     public PluginBean() {
         List<AbstractMetadata> nodePlugins = new ArrayList<>();
@@ -73,7 +72,7 @@ public class PluginBean {
         log.info("Discovered {} nodes, {}", plugins.getPlugins().size(), sb.append("]").toString());
     }
 
-    public PluginRegistry<? extends AbstractMetadata, PluginMetadata> getPlugins() {
+    @NotNull PluginRegistry<? extends AbstractMetadata, PluginMetadata> getPlugins() {
         return this.plugins;
     }
 }
