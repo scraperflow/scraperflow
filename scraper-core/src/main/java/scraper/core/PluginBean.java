@@ -7,6 +7,7 @@ import io.github.classgraph.ScanResult;
 import org.slf4j.Logger;
 import org.springframework.plugin.core.PluginRegistry;
 import org.springframework.plugin.metadata.PluginMetadata;
+import scraper.annotations.NotNull;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.Node;
@@ -42,6 +43,7 @@ public class PluginBean {
                 String className = routeClassInfo.getName();
 
                 AbstractMetadata metadata = new AbstractMetadata(metadataName, metadataVersion, metadataCategory, metadataDeprecated) {
+                    @NotNull
                     @Override
                     public Node getNode() throws ValidationException {
                         try {

@@ -4,16 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
-import scraper.api.exceptions.NodeException;
-import scraper.api.flow.FlowMap;
-import scraper.core.MapKey;
 import scraper.core.Template;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 
@@ -234,49 +229,6 @@ public class FieldTranslationTest {
     private Map<String, Object> badMultiTemplateArgs = Map.of("id", "test");
 
 
-    // ====================
-    // MapKey tests
-    // ====================
-
-    // simple MapKey usage
-    @FlowKey(mandatory = true)
-    @TranslationInput(jsonValue = "\"@thiskey\"")
-    private MapKey<String> mapKeyString = new MapKey<>(){};
-    private Map<String, Object> mapKeyStringArgs = Map.of("@thiskey", "hello");
-    private String mapKeyStringEval = "hello";
-
-
-    // missing key in args
-    @FlowKey(mandatory = true)
-    @TranslationInput(jsonValue = "\"@thiskey\"", fail = true)
-    private MapKey<String> mapKeyStringMissing = new MapKey<>(){};
-    private String mapKeyStringMissingEval = "hello";
-
-
-    // base value for missing value @key
-    @FlowKey(mandatory = true, defaultValue = "\"@nokey\"")
-    private MapKey<Integer> baseMapKey = new MapKey<Integer>(){}.base(() -> 42);
-    private Integer baseMapKeyEval = 42;
-
-
-    // raw type is important
-    @FlowKey(defaultValue = "\"@rawList\"")
-    @TranslationInput
-    private final MapKey<List> mapKeyRaw = new MapKey<List>(){}.raw(ArrayList::new);
-    private BiConsumer<MapKey<List>, FlowMap> mapKeyRawCheck = (o, flow) -> {
-        // evaluate the list
-        try {
-            List rawList = o.eval(flow);
-            //noinspection unchecked raw list
-            rawList.add(120);
-            flow.put(o.key, rawList);
-        } catch (NodeException e) {
-            throw new IllegalStateException(e);
-        }
-
-        if (!((List) flow.get("@rawList")).get(0).equals(120)) throw new IllegalStateException("Bad map key modification");
-    };
-
 
     @Test
     public void fieldTranslationTest() throws Exception {
@@ -360,26 +312,6 @@ public class FieldTranslationTest {
             } catch (Exception ignored) {}
 
             if(checkMethod != null) checkMethod.accept(templateEvaluation);
-        }
-
-
-        if(field.getType().isAssignableFrom(MapKey.class)) {
-            MapKey<?> mapKey = (MapKey<?>) field.get(this);
-            Object mapKeyEval = mapKey.eval(NodeUtil.flowOf(args));
-
-            // static convention check for simple cases
-            if(expectedTemplateEval != null && !expectedTemplateEval.equals(mapKeyEval)) {
-                throw new IllegalStateException("Expected mapKey evaluation does not match actual mapKey evaluation");
-            }
-
-            // custom method check for complex cases
-            BiConsumer<? super Object, ? super Object> checkMethod = null;
-            try { // try to get check method by convention, if not, do not use it
-                //noinspection unchecked
-                checkMethod = (BiConsumer<? super Object, ? super Object>) getClass().getDeclaredField(field.getName()+"Check").get(this);
-            } catch (Exception ignored) {}
-
-            if(checkMethod != null) checkMethod.accept(mapKey, NodeUtil.flowOf(args));
         }
     }
 }

@@ -4,6 +4,7 @@ import io.github.classgraph.*;
 import org.slf4j.Logger;
 import scraper.annotations.ArgsCommand;
 import scraper.annotations.ArgsCommands;
+import scraper.annotations.NotNull;
 import scraper.annotations.di.DITarget;
 import scraper.api.di.DIContainer;
 import scraper.api.exceptions.NodeException;
@@ -23,36 +24,36 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+import static java.util.Objects.requireNonNull;
 import static scraper.util.DependencyInjectionUtil.getDIContainer;
 import static scraper.util.JobUtil.parseJobs;
 import static scraper.util.NodeUtil.flowOf;
 
 public class Scraper {
 
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(Scraper.class);
+    private @NotNull static final Logger log = org.slf4j.LoggerFactory.getLogger(Scraper.class);
 
     // dependencies
-    private final JobFactory jobFactory;
-    private final ExecutorsService executorsService;
-
+    private @NotNull final JobFactory jobFactory;
+    private @NotNull final ExecutorsService executorsService;
 
     // addons
-    private final Collection<Addon> addons;
+    private @NotNull final Collection<Addon> addons;
     // pre parse job hooks
-    private final Collection<PreHook> prehooks;
+    private @NotNull final Collection<PreHook> prehooks;
     // hooks
-    private final Collection<Hook> hooks;
+    private @NotNull final Collection<Hook> hooks;
 
     // DI container
-    public DIContainer pico;
+    private DIContainer pico;
 
-    // saved jobs and dispatched futures
-    private final Map<ScrapeSpecification, ScrapeInstance> jobs = new LinkedHashMap<>();
+    // specifications and instantiations
+    private @NotNull final Map<ScrapeSpecification, ScrapeInstance> jobs = new LinkedHashMap<>();
 
-    public Scraper(JobFactory jobFactory, ExecutorsService executorsService,
-                   @DITarget(PreHook.class) Collection<PreHook> prehooks,
-                   @DITarget(Hook.class) Collection<Hook> hooks,
-                   @DITarget(Addon.class) Collection<Addon> addons) {
+    public Scraper(@NotNull JobFactory jobFactory, @NotNull ExecutorsService executorsService,
+                   @NotNull @DITarget(PreHook.class) Collection<PreHook> prehooks,
+                   @NotNull @DITarget(Hook.class) Collection<Hook> hooks,
+                   @NotNull @DITarget(Addon.class) Collection<Addon> addons) {
         this.jobFactory = jobFactory;
         this.executorsService = executorsService;
         this.prehooks = prehooks;
@@ -65,8 +66,9 @@ public class Scraper {
         printBanner();
 
         String helpArgs = StringUtil.getArgument(args, "help");
-        if(helpArgs == null) log.info("To see available command-line arguments, provide the 'help' argument when starting Scraper");
-        else {
+        if(helpArgs == null) {
+            log.info("To see available command-line arguments, provide the 'help' argument when starting Scraper");
+        } else {
             collectAndPrintCommandLineArguments();
             return;
         }
@@ -76,28 +78,26 @@ public class Scraper {
         pico.addComponent(Scraper.class);
 
         Scraper main = pico.get(Scraper.class);
-        main.pico = pico;
+        requireNonNull(main).pico = pico;
 
         main.run(args);
     }
 
 
-    public void run(String... args) throws Exception {
-        log.info("Loading {} hooks", addons.size());
+    private void run(String... args) throws Exception {
+        log.info("Loading {} addons", addons.size());
         for (Addon addon : addons) addon.load(pico);
 
         log.info("Executing {} pre-hooks", prehooks.size());
-        for (PreHook hook : prehooks)
-            hook.execute(pico, args);
+        for (PreHook hook : prehooks) hook.execute(pico, args);
 
-        log.info("Parsing scrape jobs");
+        log.debug("Parsing scrape jobs");
         // TODO instead of Set.of(), available paths
         List<ScrapeSpecification> jobDefinitions = parseJobs(args, Set.of());
 
-        log.info("Converting scrape jobs");
-        for (ScrapeSpecification jobDefinition : jobDefinitions) {
+        log.debug("Converting scrape jobs");
+        for (ScrapeSpecification jobDefinition : jobDefinitions)
             jobs.put(jobDefinition, jobFactory.convertScrapeJob(jobDefinition));
-        }
 
         log.info("Executing {} hooks", hooks.size());
         for (Hook hook : hooks) hook.execute(pico, args, jobs);
@@ -107,7 +107,6 @@ public class Scraper {
             return;
         }
 
-        log.info("Starting scrape jobs");
         startScrapeJobs();
     }
 

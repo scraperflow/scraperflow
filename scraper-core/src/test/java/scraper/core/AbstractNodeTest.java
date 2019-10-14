@@ -10,7 +10,6 @@ import scraper.api.flow.ControlFlowEdge;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.Node;
-import scraper.api.node.NodeAddress;
 import scraper.api.specification.impl.ScrapeInstaceImpl;
 import scraper.api.specification.impl.ScrapeSpecificationImpl;
 import scraper.util.DependencyInjectionUtil;
@@ -18,13 +17,11 @@ import scraper.util.JobUtil;
 import scraper.util.NodeUtil;
 import scraper.utils.ClassUtil;
 
-import java.io.IOException;
 import java.lang.reflect.ReflectPermission;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.security.Permission;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -38,7 +35,7 @@ public class AbstractNodeTest {
     private ScrapeInstaceImpl getInstance(String basePath, String scrapeFile) throws Exception {
         URL base = getClass().getResource(basePath);
         ScrapeSpecificationImpl spec = (ScrapeSpecificationImpl) JobUtil.parseJobs(new String[]{scrapeFile}, Set.of(base.getFile())).get(0);
-        return deps.get(JobFactory.class).convertScrapeJob(spec);
+        return Objects.requireNonNull(deps.get(JobFactory.class)).convertScrapeJob(spec);
     }
 
     @Test
@@ -114,7 +111,7 @@ public class AbstractNodeTest {
     @Test
     public void tooManyKeysTest() throws Exception {
         // should not throw exception, only warning in the log that 'notexist' field is not expected
-        ScrapeInstaceImpl instance = getInstance("abstract", "field-missing-only-warning.jf");
+        getInstance("abstract", "field-missing-only-warning.jf");
     }
 
     @Test
@@ -122,10 +119,10 @@ public class AbstractNodeTest {
         ScrapeInstaceImpl instance = getInstance("abstract", "dummy.jf");
 
         AbstractNode node = (AbstractNode) instance.getEntryGraph().get(0);
+        node.service = "newService";
 
         // service thread group is created only once
-        assertEquals(node.getService("newService"), node.getService("newService", 300));
-        assertEquals(node.getService("newService"), node.getService(null));
+        assertEquals(node.getService(), node.getService());
 
         AtomicBoolean t = new AtomicBoolean(false);
         node.dispatch(() -> { t.set(true); return null; });
@@ -135,7 +132,7 @@ public class AbstractNodeTest {
 
     @Test(expected = ValidationException.class)
     public void badJsonDefaultTest() throws Exception {
-        ScrapeInstaceImpl instance = getInstance("abstract", "bad-node.jf");
+        getInstance("abstract", "bad-node.jf");
     }
 
     @Test
@@ -248,7 +245,7 @@ public class AbstractNodeTest {
         });
 
         try {
-            ScrapeInstaceImpl instance = getInstance("abstract", "func-goto.jf");
+            getInstance("abstract", "func-goto.jf");
         } finally {
             System.setSecurityManager(sm);
         }

@@ -19,12 +19,12 @@ public class ProxyInfoImpl implements ProxyInfo {
         public Long score = (long) new Random().nextInt(5)+100L;
         public Date lastUsed;
 
-        ProxyInfoImpl(InetSocketAddress address, String group) {
+        private ProxyInfoImpl(@NotNull final InetSocketAddress address, @NotNull final String group) {
             this.address = address;
             this.group = group;
         }
 
-        public static ProxyInfoImpl of(InetSocketAddress address, String group) {
+        public static ProxyInfoImpl of(@NotNull final InetSocketAddress address, @NotNull final String group) {
             return new ProxyInfoImpl(address, group);
         }
 
@@ -43,7 +43,7 @@ public class ProxyInfoImpl implements ProxyInfo {
         public int hashCode() { return Objects.hash(address); }
 
         @Override
-        public int compareTo(ProxyInfo o) {
+        public int compareTo(@NotNull ProxyInfo o) {
             return o.getScore().compareTo(score);
         }
 

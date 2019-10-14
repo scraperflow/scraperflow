@@ -1,6 +1,7 @@
 package scraper.api.service;
 
 import scraper.annotations.NotNull;
+import scraper.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +19,7 @@ public interface FileService {
     boolean containsLineStartsWith(@NotNull String path, @NotNull String lineStart) throws IOException;
 
     /** Returns the first line of the file denoted by the given path starting with given string */
-    @NotNull String getFirstLineStartsWith(@NotNull String path, @NotNull String lineStart) throws IOException;
+    @Nullable String getFirstLineStartsWith(@NotNull String path, @NotNull String lineStart) throws IOException;
 
     /** Appends given line to file denoted by the given path */
     void appendToFile(@NotNull String path, @NotNull String outputLine);

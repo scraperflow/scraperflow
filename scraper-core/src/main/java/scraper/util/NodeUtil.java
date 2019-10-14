@@ -7,13 +7,10 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.converter.StringToClassConverter;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
-import scraper.api.flow.FlowState;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.flow.impl.FlowStateImpl;
 import scraper.api.node.Node;
 import scraper.api.node.NodeAddress;
 import scraper.api.node.impl.NodeAddressImpl;
-import scraper.core.MapKey;
 import scraper.core.Template;
 
 import java.lang.reflect.InvocationTargetException;
@@ -120,11 +117,6 @@ public final class NodeUtil {
                 if(Template.class.isAssignableFrom(fieldType)) {
                     converted = mapper.readValue(defaultAnnotationValue, Object.class);
                     value = converted;
-                } else if(MapKey.class.isAssignableFrom(fieldType)) {
-                    MapKey<?> key = (MapKey<?>) fieldValue;
-                    if(key == null) throw new ValidationException("MapKey abstract class not initialized");
-                    converted = mapper.readValue(defaultAnnotationValue, String.class);
-                    key.key = (String) converted;
                 } else if (Enum.class.isAssignableFrom(fieldType)) {
                     converted = mapper.readValue(defaultAnnotationValue, String.class);
                     value = converted;
@@ -189,10 +181,6 @@ public final class NodeUtil {
             else //noinspection StatementWithEmptyBody readability
                 if (fieldType.isAssignableFrom(value.getClass())) {
                 // value is correct
-            } // if map & field is MapKey
-            else if (String.class.isAssignableFrom(value.getClass()) && MapKey.class.isAssignableFrom(fieldType)) {
-                ((MapKey) fieldValue).key = (String) value;
-                return null;
             } // check if field type is an Address
             else if (String.class.isAssignableFrom(value.getClass()) && NodeAddress.class.isAssignableFrom(fieldType)) {
                 value = NodeUtil.addressOf(String.valueOf(value));

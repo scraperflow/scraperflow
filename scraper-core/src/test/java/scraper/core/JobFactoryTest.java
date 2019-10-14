@@ -2,13 +2,11 @@ package scraper.core;
 
 import org.junit.Test;
 import scraper.api.di.DIContainer;
-import scraper.api.exceptions.ValidationException;
 import scraper.api.specification.impl.ScrapeInstaceImpl;
 import scraper.api.specification.impl.ScrapeSpecificationImpl;
 import scraper.util.DependencyInjectionUtil;
 import scraper.util.JobUtil;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Set;
 
@@ -31,9 +29,9 @@ public class JobFactoryTest {
         ScrapeSpecificationImpl spec = (ScrapeSpecificationImpl) JobUtil.parseJobs(new String[]{"job1.jf", "level0.args", "level1.args"}, Set.of(base.getFile())).get(0);
         ScrapeInstaceImpl instance = deps.get(JobFactory.class).convertScrapeJob(spec);
 
-        assertEquals(2, instance.initialArguments.size());
-        assertEquals("ok", instance.initialArguments.get("arg1"));
-        assertEquals("42", instance.initialArguments.get("l1"));
+        assertEquals(2, instance.getInitialArguments().size());
+        assertEquals("ok", instance.getInitialArguments().get("arg1"));
+        assertEquals("42", instance.getInitialArguments().get("l1"));
 
         assertEquals(2, instance.getEntryGraph().size());
     }

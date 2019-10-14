@@ -2,6 +2,7 @@ package scraper.core;
 
 import org.springframework.plugin.metadata.AbstractMetadataBasedPlugin;
 import org.springframework.plugin.metadata.PluginMetadata;
+import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.Node;
 
@@ -14,15 +15,16 @@ import scraper.api.node.Node;
 public abstract class AbstractMetadata extends AbstractMetadataBasedPlugin {
 
     /** The category of the node */
-    private final String category;
-    public String getCategory() { return category; }
+    private @NotNull final String category;
+    public @NotNull String getCategory() { return category; }
 
     /** Indicates if the node is deprecated */
     private final boolean deprecated;
     public boolean isDeprecated() { return deprecated; }
 
     /** Creates a new instance of {@code AbstractMetadata} */
-    protected AbstractMetadata(final String name, final String version, final String category, boolean deprecated) {
+    protected AbstractMetadata(@NotNull final String name, @NotNull final String version,
+                               @NotNull final String category, boolean deprecated) {
         super(name, version);
         this.deprecated = deprecated;
         this.category = category;
@@ -31,7 +33,7 @@ public abstract class AbstractMetadata extends AbstractMetadataBasedPlugin {
 
     /** Implements basic semantic versioning of metadata */
     @Override
-    public boolean supports(final PluginMetadata delimiter) {
+    public boolean supports(@NotNull final PluginMetadata delimiter) {
         String name = getMetadata().getName();
 
         if(!name.equalsIgnoreCase(delimiter.getName())) return false;
@@ -47,7 +49,7 @@ public abstract class AbstractMetadata extends AbstractMetadataBasedPlugin {
     }
 
     /** Each actual implementation for a node should be able to instantiate the node implementation */
-    public abstract Node getNode() throws ValidationException;
+    public abstract @NotNull Node getNode() throws ValidationException;
 
     /**
      * Checks if this node is backwards compatible with another node
@@ -55,11 +57,11 @@ public abstract class AbstractMetadata extends AbstractMetadataBasedPlugin {
      * @param other Other node metadata to check against
      * @return true, if this node implementation is backwards compatible with the other node implementation
      */
-    public boolean backwardsCompatible(final AbstractMetadata other) {
+    public boolean backwardsCompatible(@NotNull final AbstractMetadata other) {
         String oversion = other.getMetadata().getVersion();
-        int oapi = Integer.valueOf(oversion.split("\\.")[0]);
-        int omajor = Integer.valueOf(oversion.split("\\.")[1]);
-        int ominor = Integer.valueOf(oversion.split("\\.")[2]);
+        int oapi = Integer.parseInt(oversion.split("\\.")[0]);
+        int omajor = Integer.parseInt(oversion.split("\\.")[1]);
+        int ominor = Integer.parseInt(oversion.split("\\.")[2]);
 
         return backwardsCompatible(oapi, omajor, ominor);
     }
@@ -67,9 +69,9 @@ public abstract class AbstractMetadata extends AbstractMetadataBasedPlugin {
     /** Implementation of backwards compatibility check with api, major, and minor version */
     private boolean backwardsCompatible(int oapi, int omajor, int ominor) {
         String version = getMetadata().getVersion();
-        int api = Integer.valueOf(version.split("\\.")[0]);
-        int major = Integer.valueOf(version.split("\\.")[1]);
-        int minor = Integer.valueOf(version.split("\\.")[2]);
+        int api = Integer.parseInt(version.split("\\.")[0]);
+        int major = Integer.parseInt(version.split("\\.")[1]);
+        int minor = Integer.parseInt(version.split("\\.")[2]);
 
         if(api < oapi) return false;
         if(api > oapi) return false;

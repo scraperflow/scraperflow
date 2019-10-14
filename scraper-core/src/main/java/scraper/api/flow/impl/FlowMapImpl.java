@@ -1,6 +1,7 @@
 package scraper.api.flow.impl;
 
 import scraper.annotations.NotNull;
+import scraper.annotations.Nullable;
 import scraper.api.flow.FlowHistory;
 import scraper.api.flow.FlowMap;
 
@@ -10,18 +11,15 @@ import java.util.concurrent.ConcurrentMap;
 
 public class FlowMapImpl implements FlowMap {
 
-    private final ConcurrentMap<String, Object> privateMap;
-
-    private final FlowHistory flowHistory = new FlowHistoryImpl();
+    private @NotNull final ConcurrentMap<String, Object> privateMap;
+    private @NotNull final FlowHistory flowHistory = new FlowHistoryImpl();
 
     public FlowMapImpl(@NotNull ConcurrentMap<String, Object> privateMap) { this.privateMap = privateMap; }
 
     public FlowMapImpl() { privateMap = new ConcurrentHashMap<>(); }
 
     @Override
-    public Object put(@NotNull String location, @NotNull Object value) {
-        return privateMap.put(location, value);
-    }
+    public @Nullable Object put(@NotNull String location, @NotNull Object value) { return privateMap.put(location, value); }
 
     @Override
     public void putAll(@NotNull Map<String, Object> m) {
@@ -29,12 +27,12 @@ public class FlowMapImpl implements FlowMap {
     }
 
     @Override
-    public Object remove(@NotNull String location) {
+    public @Nullable Object remove(@NotNull String location) {
         return privateMap.remove(location);
     }
 
     @Override
-    public Object get(@NotNull String expected) {
+    public @Nullable Object get(@NotNull String expected) {
         return privateMap.get(expected);
     }
 
@@ -48,29 +46,27 @@ public class FlowMapImpl implements FlowMap {
         privateMap.clear();
     }
 
-    @NotNull
     @Override
-    public Set<String> keySet() {
+    public @NotNull Set<String> keySet() {
         return privateMap.keySet();
     }
 
-    @NotNull
     @Override
-    public Object getOrDefault(@NotNull Object key , @NotNull Object defaultObjectalue) {
+    public @NotNull Object getOrDefault(@NotNull Object key , @NotNull Object defaultObjectalue) {
         return privateMap.getOrDefault(key, defaultObjectalue);
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "[Map: "+privateMap.toString()+"]";
     }
 
 
-    public ConcurrentMap<String, Object> getMap() {
+    public @NotNull ConcurrentMap<String, Object> getMap() {
         return new ConcurrentHashMap<>(privateMap);
     }
 
-    public boolean containsElements(@NotNull FlowMap expectedOutput) {
+    public boolean containsElements(@NotNull final FlowMap expectedOutput) {
         for (String key : expectedOutput.keySet()) {
             if(!compareElement(get(key), expectedOutput.get(key))) return false;
         }
@@ -80,7 +76,7 @@ public class FlowMapImpl implements FlowMap {
 
     @NotNull @Override public FlowHistory getFlowHistory() { return flowHistory; }
 
-    private boolean descendMap(Map<?,?> currentMap, Map<?,?> otherMap) {
+    private boolean descendMap(@NotNull final Map<?,?> currentMap, @NotNull final Map<?,?> otherMap) {
         for (Object s : otherMap.keySet()) {
             Object otherElement = otherMap.get(s);
             if(otherElement == null) return false;
@@ -95,7 +91,7 @@ public class FlowMapImpl implements FlowMap {
         return true;
     }
 
-    private boolean compareElement(Object thisElement, Object otherElement) {
+    private boolean compareElement(@Nullable final Object thisElement, @Nullable final Object otherElement) {
         if(thisElement == null || otherElement == null) return false;
 
         if(Map.class.isAssignableFrom(thisElement.getClass()) && Map.class.isAssignableFrom(otherElement.getClass())) {
@@ -109,7 +105,7 @@ public class FlowMapImpl implements FlowMap {
 
     }
 
-    private boolean descendCollection(Collection<?> currentCollection, Collection<?> otherCollection) {
+    private boolean descendCollection(@NotNull final Collection<?> currentCollection, @NotNull final Collection<?> otherCollection) {
         // if empty, current collection should also be empty
         if(otherCollection.isEmpty() && !currentCollection.isEmpty()) return false;
 
@@ -128,21 +124,16 @@ public class FlowMapImpl implements FlowMap {
         return true;
     }
 
-    public static synchronized FlowMapImpl of(Map<String, Object> initialArguments) {
-        if(initialArguments == null) initialArguments = new HashMap<>();
-        return new FlowMapImpl(new ConcurrentHashMap<>(initialArguments));
+    public static synchronized @NotNull FlowMapImpl of(final @NotNull Map<String, Object> initialArguments) {
+        return new FlowMapImpl(new ConcurrentHashMap<>(Objects.requireNonNullElseGet(initialArguments, Map::of)));
     }
 
-    public static synchronized FlowMapImpl copy(FlowMapImpl o) {
-        return new FlowMapImpl(
-                new ConcurrentHashMap<>(o.privateMap)
-        );
+    public static synchronized @NotNull FlowMapImpl copy(final @NotNull FlowMapImpl o) {
+        return new FlowMapImpl( new ConcurrentHashMap<>(o.privateMap) );
     }
 
-    public static synchronized FlowMapImpl copy(FlowMap o) {
-        return new FlowMapImpl(
-                new ConcurrentHashMap<>(((FlowMapImpl) o).privateMap)
-        );
+    public static synchronized @NotNull FlowMapImpl copy(final @NotNull FlowMap o) {
+        return new FlowMapImpl( new ConcurrentHashMap<>(((FlowMapImpl) o).privateMap) );
     }
 
     @Override

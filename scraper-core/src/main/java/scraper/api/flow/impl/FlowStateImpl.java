@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FlowStateImpl implements FlowState {
-    private final Map<String, Object> state = new HashMap<>();
-    private final String phase;
+    private final @NotNull Map<String, Object> state = new HashMap<>();
+    private final @NotNull String phase;
 
     public FlowStateImpl(@NotNull String phase) {
         this.phase = phase;

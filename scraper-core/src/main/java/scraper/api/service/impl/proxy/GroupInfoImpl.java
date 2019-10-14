@@ -8,10 +8,10 @@ import java.util.*;
 import java.util.concurrent.PriorityBlockingQueue;
 
 public class GroupInfoImpl implements GroupInfo {
-    public UUID id = UUID.randomUUID();
-    public Set<ProxyInfoImpl> knownProxies = new HashSet<>();
-    public Set<ProxyInfoImpl> usedProxies = new HashSet<>();
-    public PriorityBlockingQueue<ProxyInfoImpl> freeProxies = new PriorityBlockingQueue<>(100);
+    public @NotNull final UUID id = UUID.randomUUID();
+    public @NotNull final Set<ProxyInfoImpl> knownProxies = new HashSet<>();
+    public @NotNull final Set<ProxyInfoImpl> usedProxies = new HashSet<>();
+    public @NotNull final PriorityBlockingQueue<ProxyInfoImpl> freeProxies = new PriorityBlockingQueue<>(100);
 
     @Override
     public boolean equals(Object o) {
@@ -23,9 +23,8 @@ public class GroupInfoImpl implements GroupInfo {
     @Override
     public int hashCode() { return Objects.hash(id); }
 
-    @NotNull
     @Override
-    public List<String> getAllProxiesAsString() {
+    public @NotNull List<String> getAllProxiesAsString() {
         List<String> result = new ArrayList<>();
         for (ProxyInfo knownProxy : knownProxies) {
             result.add( knownProxy.getAddress() + ":" +knownProxy.getPort() );

@@ -3,6 +3,7 @@ package scraper.api.di.impl;
 
 import org.slf4j.Logger;
 import scraper.annotations.NotNull;
+import scraper.annotations.Nullable;
 import scraper.annotations.di.DITarget;
 import scraper.api.di.DIContainer;
 
@@ -92,7 +93,7 @@ public class DIContainerImpl implements DIContainer {
         return (T) instances.get(targetClass);
     }
 
-    private Object[] getInitArgs(final Constructor<?> constructor) {
+    private @Nullable Object[] getInitArgs(@NotNull final Constructor<?> constructor) {
         if(constructor.getParameterCount() == 0) return new Object[0];
 
         List<Object> dependencies = new ArrayList<>();

@@ -12,8 +12,8 @@ public class ReservationTokenImpl implements ReservationToken {
         private boolean used = false;
         private final UUID id;
 
-        private Long score;
-        private Long timesUsed;
+        private final Long score;
+        private final Long timesUsed;
 
         private final Runnable release;
         private final Runnable markBad;

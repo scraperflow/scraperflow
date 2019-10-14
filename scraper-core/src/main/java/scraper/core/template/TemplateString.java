@@ -1,7 +1,7 @@
 package scraper.core.template;
 
 import com.google.common.reflect.TypeToken;
-import org.slf4j.Logger;
+import scraper.annotations.NotNull;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
@@ -12,15 +12,13 @@ import java.util.Set;
 import static scraper.api.converter.StringToClassConverter.convert;
 
 public class TemplateString<T> extends TemplateExpression<T>{
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(TemplateString.class);
-
     private StringBuilder stringContent = new StringBuilder();
 
     public TemplateString(TypeToken<T> targetType) {
         super(targetType);
     }
 
-    public T eval(final FlowMap o) {
+    public T eval(@NotNull final FlowMap o) {
         try {
             return (T) convert(stringContent.toString(), targetType.getRawType());
         } catch (ValidationException e) {
@@ -32,7 +30,8 @@ public class TemplateString<T> extends TemplateExpression<T>{
         return stringContent.toString();
     }
 
-    public Collection<String> getKeysInTemplate(FlowMap o ) {
+    @NotNull
+    public Collection<String> getKeysInTemplate(@NotNull FlowMap o ) {
         return Set.of();
     }
 

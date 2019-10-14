@@ -10,26 +10,23 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ExecutorsServiceImpl implements ExecutorsService {
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(ExecutorsServiceImpl.class);
-
-    private Map<String, ExecutorService> executorServiceMap = new ConcurrentHashMap<>();
+    private @NotNull static final Logger log = org.slf4j.LoggerFactory.getLogger(ExecutorsServiceImpl.class);
+    private @NotNull final Map<String, ExecutorService> executorServiceMap = new ConcurrentHashMap<>();
 
     private boolean warned = false;
 
-    @NotNull
     @Override
-    public synchronized ExecutorService getService(@NotNull String group, @NotNull Integer count) {
-        return getService(count, group, true);
+    public synchronized @NotNull ExecutorService getService(@NotNull String group, @NotNull Integer count) {
+        return getService(count, group);
     }
 
-    @NotNull
     @Override
-    public synchronized ExecutorService getService(@NotNull String group) {
-        return getService(100, group, true);
+    public synchronized @NotNull ExecutorService getService(@NotNull String group) {
+        return getService(999, group);
     }
 
 
-    public synchronized ExecutorService getService(int count, String group, boolean show){
+    private synchronized @NotNull ExecutorService getService(int count, @NotNull final String group){
         // one time warnings for l formatting
         if(!warned && count > 999) {
             log.warn("Using more than 999 threads the group {}. Log formatting will be affected.", group);
@@ -42,16 +39,16 @@ public class ExecutorsServiceImpl implements ExecutorsService {
 
         ExecutorService pool = executorServiceMap.get(group);
         if(pool == null) {
-            pool = createExecutorService(count, group, show);
+            pool = createExecutorService(count, group);
         }
 
         return pool;
     }
 
-    private synchronized ExecutorService createExecutorService(int count, String group, boolean show) {
+    private synchronized @NotNull ExecutorService createExecutorService(int count, @NotNull final String group) {
         BlockingQueue<Runnable> arrayBlockingQueue = new ArrayBlockingQueue<>(count);
         ThreadPoolExecutor executorService =
-                new ThreadPoolExecutor(count, count, 1, TimeUnit.SECONDS, arrayBlockingQueue, new DefaultThreadFactory(group, show));
+                new ThreadPoolExecutor(count, count, 1, TimeUnit.SECONDS, arrayBlockingQueue, new DefaultThreadFactory(group, true));
         executorService.allowCoreThreadTimeOut(true);
 
         // when the blocking queue is full, this tries to put into the queue which blocks
@@ -79,7 +76,7 @@ public class ExecutorsServiceImpl implements ExecutorsService {
         private final String namePrefix;
         private final boolean show;
 
-        DefaultThreadFactory(String name, boolean show) {
+        DefaultThreadFactory(@NotNull final String name, boolean show) {
             this.show = show;
             SecurityManager s = System.getSecurityManager();
             group = (s != null) ? s.getThreadGroup() :
@@ -90,7 +87,7 @@ public class ExecutorsServiceImpl implements ExecutorsService {
             namePrefix = name;
         }
 
-        public synchronized Thread newThread(Runnable r) {
+        public synchronized Thread newThread(@NotNull final Runnable r) {
             int number = threadNumber.getAndIncrement();
 
             Thread t;
@@ -105,8 +102,6 @@ public class ExecutorsServiceImpl implements ExecutorsService {
             }
 
             t.setDaemon(false);
-//            if (t.isDaemon())
-//                t.setDaemon(false);
             if (t.getPriority() != Thread.NORM_PRIORITY)
                 t.setPriority(Thread.NORM_PRIORITY);
 

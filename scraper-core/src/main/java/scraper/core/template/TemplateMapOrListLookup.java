@@ -1,7 +1,7 @@
 package scraper.core.template;
 
 import com.google.common.reflect.TypeToken;
-import org.slf4j.Logger;
+import scraper.annotations.NotNull;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
 
@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 public class TemplateMapOrListLookup<T> extends TemplateExpression<T> {
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(TemplateMapOrListLookup.class);
-
     private TemplateExpression<List<T>> list;
     private TemplateExpression<Integer> index;
     private TemplateExpression<Map<String, T>> map;
@@ -31,7 +29,7 @@ public class TemplateMapOrListLookup<T> extends TemplateExpression<T> {
     }
 
 
-    public T eval(final FlowMap o) {
+    public T eval(@NotNull final FlowMap o) {
         try{
             List<T> l = list.eval(o);
             Integer index = this.index.eval(o);
@@ -55,14 +53,11 @@ public class TemplateMapOrListLookup<T> extends TemplateExpression<T> {
 
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder();
-
-        str.append("{" + list.toString()+"}["+index.toString()+"]");
-
-        return str.toString();
+        return "{" + list.toString() + "}[" + index.toString() + "]";
     }
 
-    public Collection<String> getKeysInTemplate(FlowMap o) {
+    public @NotNull Collection<String> getKeysInTemplate(@NotNull FlowMap o) {
+        // TODO implement
         return null;
     }
 }

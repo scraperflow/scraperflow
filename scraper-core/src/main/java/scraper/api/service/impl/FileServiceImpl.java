@@ -4,6 +4,7 @@ import com.google.common.io.Files;
 import org.slf4j.Logger;
 import org.springframework.util.FileSystemUtils;
 import scraper.annotations.NotNull;
+import scraper.annotations.Nullable;
 import scraper.api.service.FileService;
 
 import java.io.*;
@@ -11,11 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class FileServiceImpl implements FileService {
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(FileServiceImpl.class);
+    private static final @NotNull Logger log = org.slf4j.LoggerFactory.getLogger(FileServiceImpl.class);
 
-    private final ConcurrentMap<String, File> knownFiles = new ConcurrentHashMap<>();
-
-    private final File tempDir = Files.createTempDir();
+    private @NotNull final ConcurrentMap<String, File> knownFiles = new ConcurrentHashMap<>();
+    private @NotNull final File tempDir = Files.createTempDir();
 
     public FileServiceImpl() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -26,7 +26,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void ensureFile(@NotNull String output) throws IOException {
+    public void ensureFile(@NotNull final String output) throws IOException {
         knownFiles.putIfAbsent(output, new File(output));
 
         // acquire lock, jvm-wide only
@@ -51,13 +51,12 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public boolean containsLineStartsWith(@NotNull String output, @NotNull String lineStart) throws IOException {
+    public boolean containsLineStartsWith(@NotNull final String output, @NotNull final String lineStart) throws IOException {
         return getFirstLineStartsWith(output, lineStart) != null;
     }
 
-    @NotNull
     @Override
-    public String getFirstLineStartsWith(@NotNull String output, @NotNull String lineStart) throws IOException {
+    public @Nullable String getFirstLineStartsWith(@NotNull final String output, @NotNull final String lineStart) throws IOException {
         synchronized (knownFiles.get(output)) {
             File file = knownFiles.get(output);
 
@@ -79,7 +78,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void appendToFile(@NotNull String output, @NotNull String outputLine) {
+    public void appendToFile(@NotNull final String output, @NotNull final String outputLine) {
         synchronized (knownFiles.get(output)) {
             File file = knownFiles.get(output);
 
@@ -94,7 +93,7 @@ public class FileServiceImpl implements FileService {
 
 
     @Override
-    public void ensureDirectory(@NotNull File file) throws IOException {
+    public void ensureDirectory(@NotNull final File file) throws IOException {
         if(file.getParentFile() == null) return;
 
         if (!file.getParentFile().exists()) {
@@ -107,7 +106,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void replaceFile(@NotNull String path, @NotNull String body) throws IOException {
+    public void replaceFile(@NotNull final String path, @NotNull final String body) throws IOException {
         synchronized (knownFiles.get(path)) {
             replaceFileImpl(new File(path), body);
         }
@@ -119,7 +118,7 @@ public class FileServiceImpl implements FileService {
         return tempDir;
     }
 
-    private void replaceFileImpl(File file, String body) throws IOException {
+    private void replaceFileImpl(@NotNull final File file, @NotNull final String body) throws IOException {
         FileWriter fooWriter = new FileWriter(file, false); // true to append
         fooWriter.write(body);
         fooWriter.close();

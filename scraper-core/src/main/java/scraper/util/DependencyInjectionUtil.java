@@ -15,7 +15,7 @@ import scraper.core.PluginBean;
 
 
 public class DependencyInjectionUtil {
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger("DependencyInjector");
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger("DependencyInjection");
 
     public static DIContainer getDIContainer() {
         DIContainer diContainer = new DIContainerImpl();
@@ -35,7 +35,7 @@ public class DependencyInjectionUtil {
                 try {
                     Class<?> addon = Class.forName(routeClassInfo.getName());
                     diContainer.addComponent(addon, true);
-                    log.info("Found addon '{}'", addon.getSimpleName());
+                    log.debug("Found addon '{}'", addon.getSimpleName());
                 } catch (ClassNotFoundException e) {
                     log.error("Scan found addon, but class not found", e);
                 }
@@ -45,7 +45,7 @@ public class DependencyInjectionUtil {
                 try {
                     Class<?> hook = Class.forName(routeClassInfo.getName());
                     diContainer.addComponent(hook, true);
-                    log.info("Found hook '{}'", hook.getSimpleName());
+                    log.debug("Found hook '{}'", hook.getSimpleName());
                 } catch (ClassNotFoundException e) {
                     log.error("Scan found hook, but class not found", e);
                 }
@@ -55,7 +55,7 @@ public class DependencyInjectionUtil {
                 try {
                     Class<?> hook = Class.forName(routeClassInfo.getName());
                     diContainer.addComponent(hook, true);
-                    log.info("Found pre-hook '{}'", hook.getSimpleName());
+                    log.debug("Found pre-hook '{}'", hook.getSimpleName());
                 } catch (ClassNotFoundException e) {
                     log.error("Scan found pre-hook, but class not found", e);
                 }

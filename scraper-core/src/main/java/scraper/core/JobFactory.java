@@ -136,7 +136,7 @@ public class JobFactory {
         // ===
 
         // first args from definition
-        Map<String, Object> combinedArgs = new HashMap<>(job.initialArguments);
+        Map<String, Object> combinedArgs = new HashMap<>(job.getInitialArguments());
 
         // implied args
         try {
@@ -171,9 +171,7 @@ public class JobFactory {
         for (NodeAddress graphKey : jobDefinition.getGraphs().keySet()) {
             List<Map<String, Object>> graph = jobDefinition.getGraphs().get(graphKey);
 
-            for (int index = 0; index < graph.size(); index++) {
-                Map<String, Object> nodeConfiguration = graph.get(index);
-
+            for (Map<String, Object> nodeConfiguration : graph) {
                 String nodeType = (String) nodeConfiguration.get("type");
 
                 String vers = jobNodeDependencies
@@ -195,19 +193,22 @@ public class JobFactory {
     }
 
 
-    private void parseNodeDependencies(ScrapeSpecification jobDefinition) throws IOException {
-        File ndep = getFirstExistingPaths(jobDefinition.getDependencies(), jobDefinition.getPaths());
+    private void parseNodeDependencies(@NotNull final ScrapeSpecification jobDefinition) throws IOException {
+        if(jobDefinition.getDependencies() != null) {
+            File ndep = getFirstExistingPaths(jobDefinition.getDependencies(), jobDefinition.getPaths());
 
-        Map<String, String> nodeDependencies = jobNodeDependencies.getOrDefault(jobDefinition, new LinkedHashMap<>());
-        StringUtil.readBody(ndep, line -> {
-            // TODO validate
-            String node = line.split(":")[0];
-            String version = line.split(":")[1];
+            Map<String, String> nodeDependencies = jobNodeDependencies.getOrDefault(jobDefinition, new LinkedHashMap<>());
+            StringUtil.readBody(ndep, line -> {
+                // TODO validate
+                String node = line.split(":")[0];
+                String version = line.split(":")[1];
 
-            if (nodeDependencies.get(node) != null) log.warn("Node dependency already contained, overwriting: {}", node);
-            nodeDependencies.put(node, version);
-        });
-        jobNodeDependencies.put(jobDefinition, nodeDependencies);
+                if (nodeDependencies.get(node) != null) log.warn("Node dependency already contained, overwriting: {}", node);
+                nodeDependencies.put(node, version);
+            });
+            jobNodeDependencies.put(jobDefinition, nodeDependencies);
+        }
+
     }
 
 

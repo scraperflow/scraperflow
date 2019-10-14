@@ -18,7 +18,7 @@ public class FlowHistoryImpl implements FlowHistory {
     @NotNull @Override public String getJobName() { return jobName; }
     @Nullable @Override public NodeAddress getFirstAcceptingNode() { return firstAcceptingNode; }
 
-    public void init(NodeAddress firstAcceptingNode, String jobName) {
+    public void init(@NotNull NodeAddress firstAcceptingNode, @NotNull String jobName) {
         this.firstAcceptingNode = firstAcceptingNode;
         this.jobName = jobName;
     }

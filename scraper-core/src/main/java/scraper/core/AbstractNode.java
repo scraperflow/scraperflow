@@ -152,7 +152,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         log(TRACE,"Finished init {}", this);
     }
 
-    public Set<String> initFields(Map<String, Object> spec, Map<String,Object> initialArguments) throws ValidationException {
+    private Set<String> initFields(Map<String, Object> spec, Map<String,Object> initialArguments) throws ValidationException {
         // collect expected fields to check against
         Set<String> expectedFields = new HashSet<>();
 
@@ -208,11 +208,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         l = LoggerFactory.getLogger(loggerName);
     }
 
-    protected ExecutorService getService(String defaultService) {
-        return getJobPojo().getExecutors().getService(service, threads);
-    }
-
-    protected ExecutorService getService(String defaultService, Integer threads) {
+    protected ExecutorService getService() {
         return getJobPojo().getExecutors().getService(service, threads);
     }
 

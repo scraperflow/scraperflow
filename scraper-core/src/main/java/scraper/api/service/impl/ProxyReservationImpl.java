@@ -25,13 +25,13 @@ import static java.net.InetAddress.getByName;
 
 
 public class ProxyReservationImpl implements ProxyReservation {
-    private final static Random random = new Random();
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger("TokenReservation");
+//    private @NotNull final static Random random = new Random();
+    private @NotNull static final Logger log = org.slf4j.LoggerFactory.getLogger("TokenReservation");
 
-    private ConcurrentHashMap<String, GroupInfoImpl> allProxies = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, LocalChannelInfo> allLocalChannels = new ConcurrentHashMap<>();
+    private @NotNull final ConcurrentHashMap<String, GroupInfoImpl> allProxies = new ConcurrentHashMap<>();
+    private @NotNull final ConcurrentHashMap<String, LocalChannelInfo> allLocalChannels = new ConcurrentHashMap<>();
 
-    {
+//    {
         // TODO think about persisting proxy scores
 //        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 //            System.out.println(allProxies.keySet());
@@ -48,7 +48,7 @@ public class ProxyReservationImpl implements ProxyReservation {
 //                list.forEach(l -> System.out.println(l.address+ "|"+l.score));
 //            });
 //        }));
-    }
+//    }
 
     @Override
     public void addProxies(@NotNull String proxyPath, @NotNull String proxyGroup) {
@@ -66,9 +66,9 @@ public class ProxyReservationImpl implements ProxyReservation {
     }
 
 
-    @NotNull
     @Override
-    public ReservationToken reserveToken(@NotNull String proxyGroup, @NotNull ProxyMode proxyMode) throws InterruptedException {
+    public @NotNull ReservationToken reserveToken(@NotNull String proxyGroup, @NotNull ProxyMode proxyMode)
+            throws InterruptedException {
         ReservationToken token = null;
         while(token == null) {
             try {
@@ -81,9 +81,10 @@ public class ProxyReservationImpl implements ProxyReservation {
         return token;
     }
 
-    @NotNull
     @Override
-    public ReservationToken reserveToken(@NotNull String proxyGroup, @NotNull ProxyMode proxyMode, int timeout, int holdOnReservation) throws InterruptedException, TimeoutException {
+    public @NotNull ReservationToken reserveToken(@NotNull String proxyGroup, @NotNull ProxyMode proxyMode,
+                                                  int timeout, int holdOnReservation)
+            throws InterruptedException, TimeoutException {
         // warn user that waiting with prefer mode does not make sense
         if(timeout == 0 && (proxyMode.equals(ProxyMode.BOTH_PREFER_PROXY) || proxyMode.equals(ProxyMode.BOTH_PREFER_LOCAL))) {
             log.warn("Infinite waiting for prefer mode, using default timeout of 60s!");
@@ -113,14 +114,14 @@ public class ProxyReservationImpl implements ProxyReservation {
         }
     }
 
-    @Nullable
     @Override
-    public GroupInfo getInfoForGroup(@NotNull String group) {
+    public @Nullable GroupInfo getInfoForGroup(@NotNull String group) {
         return allProxies.get(group);
     }
 
 
-    private ProxyInfoImpl reserveProxy(String proxyGroup, int timeout, int holdOnReservation) throws InterruptedException, TimeoutException {
+    private @NotNull ProxyInfoImpl reserveProxy(@NotNull final String proxyGroup, int timeout, int holdOnReservation)
+            throws InterruptedException, TimeoutException {
         GroupInfoImpl o = allProxies.get(proxyGroup);
         if(o == null) {
             log.warn("No proxies loaded for group {}", proxyGroup);
@@ -145,7 +146,7 @@ public class ProxyReservationImpl implements ProxyReservation {
         return reserved;
     }
 
-    private void releaseProxy(ProxyInfoImpl info) {
+    private void releaseProxy(@NotNull final ProxyInfoImpl info) {
         try {
             Thread.sleep(info.hold);
         } catch (InterruptedException e) {
@@ -162,10 +163,9 @@ public class ProxyReservationImpl implements ProxyReservation {
         }
     }
 
-    private ReservationTokenImpl proxyToken(ProxyInfoImpl reserved) {
-        if(reserved == null) return null;
+    private @NotNull ReservationTokenImpl proxyToken(@NotNull final ProxyInfoImpl reserved) {
         return new ReservationTokenImpl(reserved.id, reserved.score, reserved.timesUsed, reserved.address, () -> releaseProxy(reserved), () -> {
-            System.out.println(reserved.address+ " :: "+reserved.score +" -> "+reserved.score/2);
+            log.debug(reserved.address+ " :: "+reserved.score +" -> "+reserved.score/2);
             reserved.score = reserved.score/2;
         });
     }
@@ -197,7 +197,7 @@ public class ProxyReservationImpl implements ProxyReservation {
 
             Long finalScore = score;
             groups.forEach(group -> {
-                if(!allProxies.keySet().contains(group)) allProxies.put(group, new GroupInfoImpl());
+                if(!allProxies.containsKey(group)) allProxies.put(group, new GroupInfoImpl());
 
                 synchronized (allProxies.get(group)) {
                     GroupInfoImpl info = allProxies.get(group);
@@ -222,7 +222,9 @@ public class ProxyReservationImpl implements ProxyReservation {
     // LOCAL TRANSPORT RESERVATION
     // ===========================
 
-    private ReservationTokenImpl reserveLocal(String proxyGroup, int timeout, int holdOnReservation) throws InterruptedException, TimeoutException {
+    private @NotNull ReservationTokenImpl reserveLocal(@NotNull final String proxyGroup,
+                                              int timeout, int holdOnReservation)
+            throws InterruptedException, TimeoutException {
         ensureLocalGroup(proxyGroup);
 
         synchronized (allLocalChannels.get(proxyGroup)) {
@@ -241,7 +243,8 @@ public class ProxyReservationImpl implements ProxyReservation {
         }
     }
 
-    private ReservationTokenImpl createLocalToken(String proxyGroup, int holdOnReservation, LocalChannelInfo info) {
+    private @NotNull ReservationTokenImpl createLocalToken(@NotNull final String proxyGroup,
+                                                           int holdOnReservation, LocalChannelInfo info) {
         return new ReservationTokenImpl(info.id, 0L, 0L, null,
                 () -> {
                     try { Thread.sleep(holdOnReservation); } catch (InterruptedException e) { throw new RuntimeException(e); }
@@ -254,7 +257,7 @@ public class ProxyReservationImpl implements ProxyReservation {
         );
     }
 
-    private void ensureLocalGroup(String proxyGroup) {
+    private void ensureLocalGroup(@NotNull final String proxyGroup) {
         synchronized (allLocalChannels) {
             if (allLocalChannels.get(proxyGroup) == null) {
                 allLocalChannels.put(proxyGroup, new LocalChannelInfo(proxyGroup));
@@ -267,7 +270,7 @@ public class ProxyReservationImpl implements ProxyReservation {
         String group;
         AtomicBoolean inUse = new AtomicBoolean(false);
 
-        LocalChannelInfo(String proxyGroup) {
+        LocalChannelInfo(@NotNull String proxyGroup) {
             this.group = proxyGroup;
         }
 

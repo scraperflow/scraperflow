@@ -18,10 +18,10 @@ import java.util.concurrent.TimeoutException;
 
 public class HttpServiceImpl implements HttpService {
 
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger("HttpService");
+    private static final @NotNull Logger log = org.slf4j.LoggerFactory.getLogger("HttpService");
 
 
-    private final HttpClient localClient;
+    private final @NotNull HttpClient localClient;
     {
         localClient = HttpClient
                 .newBuilder()
@@ -30,10 +30,14 @@ public class HttpServiceImpl implements HttpService {
                 .build();
     }
 
-    ConcurrentHashMap<InetSocketAddress, HttpClient> clients = new ConcurrentHashMap<>();
+    private @NotNull final ConcurrentHashMap<InetSocketAddress, HttpClient> clients = new ConcurrentHashMap<>();
 
     @Override
-    public HttpResponse<?> send(@NotNull HttpRequest request, @NotNull HttpResponse.BodyHandler<?> handler, @NotNull ReservationToken token) throws IOException, InterruptedException, TimeoutException, ExecutionException {
+    public @NotNull HttpResponse<?> send(
+            @NotNull final HttpRequest request,
+            @NotNull final HttpResponse.BodyHandler<?> handler,
+            @NotNull final ReservationToken token
+    ) throws IOException, InterruptedException, TimeoutException, ExecutionException {
         InetSocketAddress address = token.get();
         HttpClient client;
         if(address == null) {

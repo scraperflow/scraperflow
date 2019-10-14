@@ -1,42 +1,38 @@
 package scraper.api.specification.impl;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import scraper.annotations.NotNull;
-import scraper.api.node.Node;
+import scraper.annotations.Nullable;
 import scraper.api.exceptions.ValidationException;
+import scraper.api.node.Node;
 import scraper.api.node.NodeAddress;
-import scraper.api.specification.ScrapeInstance;
 import scraper.api.node.NodeInitializable;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
 import scraper.api.service.ProxyReservation;
+import scraper.api.specification.ScrapeInstance;
 import scraper.util.NodeUtil;
 
 import java.util.*;
-import java.util.function.BiConsumer;
 
 public class ScrapeInstaceImpl implements ScrapeInstance {
 
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(ScrapeInstaceImpl.class);
+    private @NotNull static final Logger log = org.slf4j.LoggerFactory.getLogger(ScrapeInstaceImpl.class);
 
     /** Name of the jobPojo */
-    public String name = "NoName";
+    private @NotNull String name = "NoName";
 
-    /** Describes what the intent of the jobPojo is */
-    public String description = "No description given";
-
-    public NodeAddress entry = NodeUtil.addressOf("start");
+    private @NotNull NodeAddress entry = NodeUtil.addressOf("start");
 
     /** Generated nodes of the jobPojo */
-    private Map<NodeAddress, List<Node>> graphs = new HashMap<>();
+    private @NotNull Map<NodeAddress, List<Node>> graphs = new HashMap<>();
 
     /** Initial input arguments */
-    public Map<String, Object> initialArguments = new HashMap<>();
+    private @NotNull Map<String, Object> initialArguments = new HashMap<>();
 
     /** Arguments applied to all nodes of given type */
-    public Map<String, Map<String, Object>> globalNodeConfigurations = new HashMap<>();
+    private @NotNull Map<String, Map<String, Object>> globalNodeConfigurations = new HashMap<>();
 
     /**
      * Gets the next node specified by {@code o}. If o is parsable as an integer, it is used as the next stage index.
@@ -65,7 +61,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     }
 
     @Override
-    public NodeAddress getForwardTarget(@NotNull NodeAddress origin) {
+    public @Nullable NodeAddress getForwardTarget(@NotNull NodeAddress origin) {
         for (NodeAddress k : graphs.keySet()) {
             if(k.equals(origin)) {
                 return graphs.get(k).get(0).getAddress();
@@ -87,15 +83,13 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         throw new IllegalStateException("Origin node address not found in any graph");
     }
 
-    @NotNull
     @Override
-    public Map<NodeAddress, List<Node>> getGraphs() {
+    public @NotNull Map<NodeAddress, List<Node>> getGraphs() {
         return graphs;
     }
 
-    @NotNull
     @Override
-    public List<Node> getEntryGraph() {
+    public @NotNull List<Node> getEntryGraph() {
         return getGraph(entry);
     }
 
@@ -126,10 +120,6 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         return this.name;
     }
 
-    public String getDescription() {
-        return this.description;
-    }
-
     @NotNull
     public Map<String, Object> getInitialArguments() {
         return this.initialArguments;
@@ -146,23 +136,19 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         return this.executors;
     }
 
-    public void setName(String name) {
+    public void setName(@NotNull String name) {
         this.name = name;
     }
 
-    public void setEntry(NodeAddress entryGraph) {
+    public void setEntry(@NotNull NodeAddress entryGraph) {
         this.entry = entryGraph;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setInitialArguments(Map<String, Object> initialArguments) {
+    public void setInitialArguments(@NotNull Map<String, Object> initialArguments) {
         this.initialArguments = initialArguments;
     }
 
-    public void setGlobalNodeConfigurations(Map<String, Map<String, Object>> globalNodeConfigurations) {
+    public void setGlobalNodeConfigurations(@NotNull Map<String, Map<String, Object>> globalNodeConfigurations) {
         this.globalNodeConfigurations = globalNodeConfigurations;
     }
 
