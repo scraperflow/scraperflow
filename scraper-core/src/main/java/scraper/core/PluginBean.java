@@ -5,19 +5,20 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
 import org.slf4j.Logger;
-import org.springframework.plugin.core.OrderAwarePluginRegistry;
+import org.springframework.plugin.core.PluginRegistry;
 import org.springframework.plugin.metadata.PluginMetadata;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.Node;
 import scraper.utils.ClassUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PluginBean {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger("NodeDiscovery");
 
-    private final OrderAwarePluginRegistry<? extends AbstractMetadata, PluginMetadata> plugins;
+    private final PluginRegistry<? extends AbstractMetadata, PluginMetadata> plugins;
 
     public PluginBean() {
         List<AbstractMetadata> nodePlugins = new ArrayList<>();
@@ -55,7 +56,7 @@ public class PluginBean {
             }
         }
 
-        this.plugins = OrderAwarePluginRegistry.create(nodePlugins);
+        plugins = PluginRegistry.of(nodePlugins);
 
         printDiscovery();
     }
@@ -70,7 +71,7 @@ public class PluginBean {
         log.info("Discovered {} nodes, {}", plugins.getPlugins().size(), sb.append("]").toString());
     }
 
-    public OrderAwarePluginRegistry<? extends AbstractMetadata, PluginMetadata> getPlugins() {
+    public PluginRegistry<? extends AbstractMetadata, PluginMetadata> getPlugins() {
         return this.plugins;
     }
 }
