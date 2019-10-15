@@ -1,0 +1,9 @@
+{
+    "name" : "map",
+    "graphs" : {
+        "start":
+        [
+          { "type": "SimplestNode" }
+        ]
+    }
+}

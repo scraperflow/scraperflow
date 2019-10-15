@@ -6,8 +6,8 @@ import scraper.api.converter.StringToClassConverter;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.node.NodeAddress;
-import scraper.api.node.impl.NodeAddressImpl;
+import scraper.api.node.Address;
+import scraper.api.node.impl.NodeAddress;
 import scraper.core.Template;
 
 import java.lang.reflect.InvocationTargetException;
@@ -57,8 +57,8 @@ public final class NodeUtil {
         return FlowMapImpl.copy(o);
     }
 
-    public static NodeAddress addressOf(String label) {
-        return new NodeAddressImpl(label);
+    public static Address addressOf(String label) {
+        return new NodeAddress(label);
     }
 
     public static Object getValueForField(final Class<?> fieldType, final Object fieldValue,
@@ -80,7 +80,7 @@ public final class NodeUtil {
             if(jsonValue != null) value = jsonValue;
 
             // value has to be defined if mandatory
-            if (mandatory && value == null) throw new IllegalArgumentException("Value has to be defined if mandatory");
+            if (mandatory && value == null) throw new ValidationException("Value has to be defined if mandatory: " + fieldType);
 
             // --------- current state of value
             // value != null: from JSON file
@@ -158,7 +158,8 @@ public final class NodeUtil {
                 if (fieldType.isAssignableFrom(value.getClass())) {
                 // value is correct
             } // check if field type is an Address
-            else if (String.class.isAssignableFrom(value.getClass()) && NodeAddress.class.isAssignableFrom(fieldType)) {
+            else if (String.class.isAssignableFrom(value.getClass()) && Address.class.isAssignableFrom(fieldType)) {
+                    System.err.println("ADDRESS");
                 value = NodeUtil.addressOf(String.valueOf(value));
             } // try converting as a last resort
             else { // TODO #23 test this branch for full coverage

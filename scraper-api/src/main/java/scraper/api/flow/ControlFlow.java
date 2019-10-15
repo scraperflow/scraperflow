@@ -1,7 +1,6 @@
 package scraper.api.flow;
 
 import scraper.annotations.NotNull;
-import scraper.api.node.NodeAddress;
 
 import java.util.List;
 

@@ -3,7 +3,7 @@ package scraper.api.specification;
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.node.Node;
-import scraper.api.node.NodeAddress;
+import scraper.api.node.Address;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
@@ -29,18 +29,19 @@ public interface ScrapeInstance {
     @NotNull String getName();
 
     /** Returns instantiated node in the flow. main flow has precedence over fragment flows. Throws a runtime exception if address is not found */
-    @NotNull Node getNode(@NotNull NodeAddress target);
+    @NotNull Node getNode(@NotNull Address target);
 
-    @Nullable NodeAddress getForwardTarget(@NotNull NodeAddress origin);
+    @Nullable
+    Address getForwardTarget(@NotNull Address origin);
 
     /** ? */
-    @NotNull Map<NodeAddress, List<Node>> getGraphs();
+    @NotNull Map<Address, List<Node>> getGraphs();
 
     /** ? */
     @NotNull List<Node> getEntryGraph();
 
     /** ? */
-    @NotNull List<Node> getGraph(@NotNull NodeAddress label);
+    @NotNull List<Node> getGraph(@NotNull Address label);
 
     // Cross-cutting concerns services
     @NotNull ExecutorsService getExecutors();

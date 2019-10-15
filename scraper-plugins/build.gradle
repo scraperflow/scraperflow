@@ -11,6 +11,7 @@ subprojects.each {
 subprojects {
     apply plugin: 'java-library'
 
+    // this is a different module fix for nodes, because of the included scraper-nodes-test package
     apply from: '../gradle/gradle-module-fix.gradle'
     apply from: '../../gradle/gradle-test-resources-fix.gradle'
 

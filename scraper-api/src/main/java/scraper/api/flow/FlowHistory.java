@@ -2,7 +2,7 @@ package scraper.api.flow;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
-import scraper.api.node.NodeAddress;
+import scraper.api.node.Address;
 
 import java.util.List;
 
@@ -26,7 +26,8 @@ public interface FlowHistory {
     @NotNull List<FlowState> getFlowHistory();
 
     /** Origin of the flow. Is set once the flow is dispatched into action */
-    @Nullable NodeAddress getFirstAcceptingNode();
+    @Nullable
+    Address getFirstAcceptingNode();
 
     /** Name of the job this flow state belongs to */
     @NotNull String getJobName();

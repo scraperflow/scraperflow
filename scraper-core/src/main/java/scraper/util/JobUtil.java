@@ -6,7 +6,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.slf4j.Logger;
 import scraper.annotations.ArgsCommand;
 import scraper.annotations.NotNull;
-import scraper.api.node.NodeAddress;
+import scraper.api.node.Address;
 import scraper.api.specification.ScrapeSpecification;
 import scraper.api.specification.impl.NodeAddressDeserializer;
 import scraper.api.specification.impl.ScrapeSpecificationImpl;
@@ -56,7 +56,7 @@ public final class JobUtil {
     private static final ObjectMapper ymlMapper = new ObjectMapper(new YAMLFactory());
     static {
         SimpleModule module = new SimpleModule();
-        module.addDeserializer(NodeAddress.class, new NodeAddressDeserializer());
+        module.addDeserializer(Address.class, new NodeAddressDeserializer());
         ymlMapper.registerModule(module);
         jsonMapper.registerModule(module);
     }
@@ -182,7 +182,7 @@ public final class JobUtil {
 
     public static void merge(@NotNull ScrapeSpecification overwriteInto, @NotNull ScrapeSpecification newJob)
             throws ValidationException {
-        for (NodeAddress nodeAddress : overwriteInto.getGraphs().keySet()) {
+        for (Address nodeAddress : overwriteInto.getGraphs().keySet()) {
             if (newJob.getGraphs().containsKey(nodeAddress)) {
                 throw new ValidationException("Imported scrape job has graph address conflict: " + nodeAddress);
             }

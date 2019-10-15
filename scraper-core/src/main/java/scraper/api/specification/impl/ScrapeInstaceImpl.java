@@ -5,7 +5,7 @@ import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.Node;
-import scraper.api.node.NodeAddress;
+import scraper.api.node.Address;
 import scraper.api.node.NodeInitializable;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
@@ -23,10 +23,11 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     /** Name of the jobPojo */
     private @NotNull String name = "NoName";
 
-    private @NotNull NodeAddress entry = NodeUtil.addressOf("start");
+    private @NotNull
+    Address entry = NodeUtil.addressOf("start");
 
     /** Generated nodes of the jobPojo */
-    private @NotNull Map<NodeAddress, List<Node>> graphs = new HashMap<>();
+    private @NotNull Map<Address, List<Node>> graphs = new HashMap<>();
 
     /** Initial input arguments */
     private @NotNull Map<String, Object> initialArguments = new HashMap<>();
@@ -44,9 +45,9 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
      */
 
     @Override
-    public @NotNull Node getNode(@NotNull NodeAddress target) {
+    public @NotNull Node getNode(@NotNull Address target) {
 
-        for (NodeAddress k : graphs.keySet()) {
+        for (Address k : graphs.keySet()) {
             if(k.equals(target)) {
                 return graphs.get(k).get(0);
             }
@@ -61,8 +62,9 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     }
 
     @Override
-    public @Nullable NodeAddress getForwardTarget(@NotNull NodeAddress origin) {
-        for (NodeAddress k : graphs.keySet()) {
+    public @Nullable
+    Address getForwardTarget(@NotNull Address origin) {
+        for (Address k : graphs.keySet()) {
             if(k.equals(origin)) {
                 return graphs.get(k).get(0).getAddress();
             }
@@ -84,7 +86,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     }
 
     @Override
-    public @NotNull Map<NodeAddress, List<Node>> getGraphs() {
+    public @NotNull Map<Address, List<Node>> getGraphs() {
         return graphs;
     }
 
@@ -94,7 +96,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     }
 
     @Override
-    public @NotNull List<Node> getGraph(@NotNull final NodeAddress address) {
+    public @NotNull List<Node> getGraph(@NotNull final Address address) {
         getGraphs().putIfAbsent(address, new ArrayList<>());
         return getGraphs().get(address);
     }
@@ -107,7 +109,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
 
     public void init() throws ValidationException {
         log.info("Initializing graphs '{}'", getName());
-        for (NodeAddress k : getGraphs().keySet()) {
+        for (Address k : getGraphs().keySet()) {
             for (Node node : getGraph(k)) {
                 if (node instanceof NodeInitializable) ((NodeInitializable) node).init(this);
             }
@@ -140,7 +142,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         this.name = name;
     }
 
-    public void setEntry(@NotNull NodeAddress entryGraph) {
+    public void setEntry(@NotNull Address entryGraph) {
         this.entry = entryGraph;
     }
 

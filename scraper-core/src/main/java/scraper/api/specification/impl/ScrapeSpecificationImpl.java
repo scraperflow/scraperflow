@@ -4,7 +4,7 @@ package scraper.api.specification.impl;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
-import scraper.api.node.NodeAddress;
+import scraper.api.node.Address;
 import scraper.api.specification.ScrapeSpecification;
 import scraper.util.NodeUtil;
 
@@ -20,9 +20,9 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
     private List<Path> paths = new ArrayList<>();
     private String dependencies;
     private List<String> arguments = List.of();
-    private Map<String, List<NodeAddress>> imports = Map.of();
-    private NodeAddress entry = NodeUtil.addressOf("start");
-    private Map<NodeAddress, List<Map<String, Object>>> graphs;
+    private Map<String, List<Address>> imports = Map.of();
+    private Address entry = NodeUtil.addressOf("start");
+    private Map<Address, List<Map<String, Object>>> graphs;
     private Map<String, Map<String, Object>> globalNodeConfigurations = new HashMap<>();
 
     @NotNull
@@ -41,22 +41,22 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
     @NotNull
     @Override public List<String> getArguments() { return arguments; }
     @NotNull
-    @Override public Map<String, List<NodeAddress>> getImports() { return imports; }
+    @Override public Map<String, List<Address>> getImports() { return imports; }
     @NotNull
-    @Override public NodeAddress getEntry() { return entry; }
+    @Override public Address getEntry() { return entry; }
 
     @NotNull
     @JsonDeserialize(keyUsing = NodeAddressKeyDeserializer.class)
-    @Override public Map<NodeAddress, List<Map<String, Object>>> getGraphs() { return graphs; }
+    @Override public Map<Address, List<Map<String, Object>>> getGraphs() { return graphs; }
 
     public void setName(String name) { this.name = name; }
     public void setScrapeFile(Path scrapeFile) { this.scrapeFile = scrapeFile; }
     public void setPaths(List<Path> paths) { this.paths = paths; }
     public void setDependencies(String dependencies) { this.dependencies = dependencies; }
     public void setArguments(List<String> arguments) { this.arguments = arguments; }
-    public void setImports(Map<String, List<NodeAddress>> imports) { this.imports = imports; }
-    public void setEntry(NodeAddress entry) { this.entry = entry; }
-    public void setGraphs(Map<NodeAddress, List<Map<String, Object>>> graphs) { this.graphs = graphs; }
+    public void setImports(Map<String, List<Address>> imports) { this.imports = imports; }
+    public void setEntry(Address entry) { this.entry = entry; }
+    public void setGraphs(Map<Address, List<Map<String, Object>>> graphs) { this.graphs = graphs; }
 
     @NotNull
     @Override

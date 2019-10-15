@@ -7,7 +7,7 @@ import org.springframework.plugin.metadata.SimplePluginMetadata;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.Node;
-import scraper.api.node.NodeAddress;
+import scraper.api.node.Address;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
@@ -102,7 +102,7 @@ public class JobFactory {
         // ===
         ScrapeSpecification old = null;
         for (String job : jobDefinition.getImports().keySet()) {
-            List<NodeAddress> exportedAddresses = jobDefinition.getImports().get(job);
+            List<Address> exportedAddresses = jobDefinition.getImports().get(job);
             log.info("Importing '{}' with labels {}", job, exportedAddresses);
             ScrapeSpecification importedJob = JobUtil.parseJobsP(new String[]{job}, jobDefinition.getPaths()).get(0);
             if(old != null) JobUtil.merge(old, importedJob);
@@ -161,14 +161,14 @@ public class JobFactory {
         // Pre-process fragments
         // ===
         log.info("Pre process fragments");
-        for (NodeAddress graph : jobDefinition.getGraphs().keySet()) {
+        for (Address graph : jobDefinition.getGraphs().keySet()) {
             preprocessFragments(jobDefinition.getGraphs().get(graph), jobDefinition);
         }
 
         // ===
         // Process nodes and instantiate actual matching implementations
         // ===
-        for (NodeAddress graphKey : jobDefinition.getGraphs().keySet()) {
+        for (Address graphKey : jobDefinition.getGraphs().keySet()) {
             List<Map<String, Object>> graph = jobDefinition.getGraphs().get(graphKey);
 
             for (Map<String, Object> nodeConfiguration : graph) {

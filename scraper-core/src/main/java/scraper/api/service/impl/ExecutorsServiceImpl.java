@@ -16,30 +16,31 @@ public class ExecutorsServiceImpl implements ExecutorsService {
     private boolean warned = false;
 
     @Override
-    public synchronized @NotNull ExecutorService getService(@NotNull String group, @NotNull Integer count) {
-        return getService(count, group);
+    public synchronized @NotNull ExecutorService getService(@NotNull String jobName, @NotNull String group, @NotNull Integer count) {
+        return getService(count, group, jobName);
     }
 
     @Override
-    public synchronized @NotNull ExecutorService getService(@NotNull String group) {
-        return getService(999, group);
+    public synchronized @NotNull ExecutorService getService(@NotNull String jobName, @NotNull String group) {
+        return getService(999, group, jobName);
     }
 
 
-    private synchronized @NotNull ExecutorService getService(int count, @NotNull final String group){
+    private synchronized @NotNull ExecutorService getService(int count, @NotNull final String group, String jobName){
+        String id = jobName+" > "+group;
         // one time warnings for l formatting
         if(!warned && count > 999) {
-            log.warn("Using more than 999 threads the group {}. Log formatting will be affected.", group);
+            log.warn("Using more than 999 threads the id {}. Log formatting will be affected.", group);
             warned = true;
         }
-        if(!warned && group.length() > 8) {
-            log.warn("Thread group name is longer than  8 characters, '{}'. Log formatting will be affected.", group);
+        if(!warned && id.length() > 14) {
+            log.warn("Thread id name (jobname + group name) is longer than 14 characters, '{}'. Log formatting will be affected.", group);
             warned = true;
         }
 
-        ExecutorService pool = executorServiceMap.get(group);
+        ExecutorService pool = executorServiceMap.get(id);
         if(pool == null) {
-            pool = createExecutorService(count, group);
+            pool = createExecutorService(count, id);
         }
 
         return pool;

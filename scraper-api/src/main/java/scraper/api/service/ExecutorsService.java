@@ -12,15 +12,15 @@ import java.util.concurrent.ExecutorService;
 public interface ExecutorsService {
 
     /**
-     * Returns the executor service for given group.
+     * Returns the executor service for given group and job.
      * If the service for the group was not instantiated yet,
      * creates a new ExecutorService with the specified limit of threads
      */
-    @NotNull ExecutorService getService(@NotNull String group, @NotNull Integer count);
+    @NotNull ExecutorService getService(@NotNull String jobName, @NotNull String group, @NotNull Integer count);
 
     /**
      * Gets the executor service for given group.
      * If service was not instatiated yet, creates a new ExecutorService with the default limit of threads
      */
-    @NotNull ExecutorService getService(@NotNull String group);
+    @NotNull ExecutorService getService(@NotNull String jobName, @NotNull String group);
 }

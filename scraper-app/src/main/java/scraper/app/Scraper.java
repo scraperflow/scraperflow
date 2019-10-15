@@ -125,7 +125,7 @@ public class Scraper {
                 } catch (NodeException e) {
                     throw new RuntimeException(e);
                 }
-            }, executorsService.getService("main"));
+            }, executorsService.getService(definition.getName(), "main"));
 
             future.exceptionally(e -> {
                 log.error("'{}' failed", job.getName(), e);

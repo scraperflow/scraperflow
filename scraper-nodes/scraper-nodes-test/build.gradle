@@ -1,0 +1,9 @@
+dependencies {
+    // http server for simulation node
+    provided group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.+'
+    provided 'pl.pragmatists:JUnitParams:1.1.1'
+
+    api 'pl.pragmatists:JUnitParams:1.1.1'
+    testImplementation 'pl.pragmatists:JUnitParams:1.1.1'
+}
+

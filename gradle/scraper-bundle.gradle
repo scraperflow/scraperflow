@@ -10,7 +10,7 @@ def getGitHash = { ->
     return stdout.toString().trim()
 }
 
-task bundleAll(dependsOn: [':bundleFatJar', ':bundleApi']) {}
+task bundleAll(dependsOn: [':bundleFatJar', ':bundleApi', ':bundleCore']) {}
 
 task bundleFatJar(type: Jar) { t ->
     subprojects.each { dependsOn("${it.name}:jar") }
@@ -25,6 +25,23 @@ task bundleFatJar(type: Jar) { t ->
     }
 
     archiveFileName = "Scraper-${api}-${getGitHash()}-bundled.jar"
+    destinationDirectory = file("$rootDir/build/libs")
+}
+
+task bundleCore(type: Jar, dependsOn: [':scraper-app:jar']) {
+    manifest { attributes 'Main-Class': 'scraper.app.Scraper' }
+    from { project(":scraper-app").sourceSets.main.output }
+    from { project(":scraper-app").configurations.compileClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) } }
+//    doLast {
+//        println project(":scraper-app").configurations.apiElements
+//    }
+
+
+//    from {
+//        (":scraper-api").sourceSets.main.output
+//    }
+
+    archiveFileName = "Scraper-${version}-core.jar"
     destinationDirectory = file("$rootDir/build/libs")
 }
 

@@ -5,12 +5,12 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
-import scraper.api.node.NodeAddress;
-import scraper.api.node.impl.NodeAddressImpl;
+import scraper.api.node.Address;
+import scraper.api.node.impl.NodeAddress;
 
 import java.io.IOException;
 
-public class NodeAddressDeserializer extends StdDeserializer<NodeAddress> {
+public class NodeAddressDeserializer extends StdDeserializer<Address> {
  
     public NodeAddressDeserializer() {
         this(null); 
@@ -21,12 +21,12 @@ public class NodeAddressDeserializer extends StdDeserializer<NodeAddress> {
     }
  
     @Override
-    public NodeAddress deserialize(JsonParser jp, DeserializationContext ctxt)
+    public Address deserialize(JsonParser jp, DeserializationContext ctxt)
       throws IOException {
         JsonNode node = jp.getCodec().readTree(jp);
 
         if ((node.getNodeType().compareTo(JsonNodeType.STRING) == 0)) {
-            return new NodeAddressImpl(node.asText());
+            return new NodeAddress(node.asText());
         } else {
             throw new IOException("Expected string, got " + node.getNodeType());
         }

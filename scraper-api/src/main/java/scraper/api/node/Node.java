@@ -35,7 +35,7 @@ public interface Node extends NodeConsumer, ControlFlow {
     // ==================
 
     /** Sets the node configuration (key value pairs) and the graph its contained in */
-    void setNodeConfiguration(@NotNull final Map<String, Object> nodeConfiguration, @NotNull final NodeAddress graphKey);
+    void setNodeConfiguration(@NotNull final Map<String, Object> nodeConfiguration, @NotNull final Address graphKey);
 
     /** Returns the node spec */
     @NotNull Map<String, Object> getNodeConfiguration();
@@ -44,13 +44,16 @@ public interface Node extends NodeConsumer, ControlFlow {
     @Nullable Object getKeySpec(@NotNull String key);
 
     /** Graph this node is contained in */
-    @NotNull NodeAddress getGraphKey();
+    @NotNull
+    Address getGraphKey();
 
     /** Job-Unique node address used for control flow */
-    @NotNull NodeAddress getAddress();
+    @NotNull
+    Address getAddress();
 
     /** Job-Unique target forward node address. Defaults to the next node in the specification */
-    @Nullable NodeAddress getGoTo();
+    @Nullable
+    Address getGoTo();
 
     // ============
     // Control Flow
@@ -72,7 +75,7 @@ public interface Node extends NodeConsumer, ControlFlow {
      * Either next node, or the node specified by a target address given
      * Is not controlled by the forward flag
      */
-    @NotNull FlowMap eval(@NotNull final FlowMap o, @NotNull final NodeAddress target) throws NodeException;
+    @NotNull FlowMap eval(@NotNull final FlowMap o, @NotNull final Address target) throws NodeException;
 
     //-----------
     // Concurrent
@@ -83,13 +86,13 @@ public interface Node extends NodeConsumer, ControlFlow {
      * Returns a future which can be used to get the output flow of the dispatched flow.
      * This call only returns if the service pool has available space for another flow.
      */
-    @NotNull CompletableFuture<FlowMap> forkDepend(@NotNull final FlowMap o, @NotNull final NodeAddress target);
+    @NotNull CompletableFuture<FlowMap> forkDepend(@NotNull final FlowMap o, @NotNull final Address target);
 
     /**
      * Copies and dispatches a flow to another target address.
      * Does not wait for the other flow to finish.
      * This call only returns if the service pool has available space for another flow.
      */
-    void forkDispatch(@NotNull final FlowMap o, @NotNull final NodeAddress target);
+    void forkDispatch(@NotNull final FlowMap o, @NotNull final Address target);
 
 }

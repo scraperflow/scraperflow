@@ -3,22 +3,22 @@ package scraper.api.flow.impl;
 
 import scraper.annotations.NotNull;
 import scraper.api.flow.ControlFlowEdge;
-import scraper.api.node.NodeAddress;
+import scraper.api.node.Address;
 
 /**
  * @since 1.0.0
  */
 public class ControlFlowEdgeImpl implements ControlFlowEdge {
-    @NotNull private final NodeAddress fromAddress;
-    @NotNull private final NodeAddress toAddress;
+    @NotNull private final Address fromAddress;
+    @NotNull private final Address toAddress;
     @NotNull private final String displayLabel;
 
     private final boolean multiple;
     private final boolean dispatched;
 
     public ControlFlowEdgeImpl(
-            @NotNull final NodeAddress from,
-            @NotNull final NodeAddress to,
+            @NotNull final Address from,
+            @NotNull final Address to,
             @NotNull String displayName,
             boolean multiple,
             boolean dispatched
@@ -32,12 +32,12 @@ public class ControlFlowEdgeImpl implements ControlFlowEdge {
     }
 
     @NotNull @Override public String getDisplayLabel() { return displayLabel; }
-    @NotNull @Override public NodeAddress getFromAddress() { return fromAddress; }
-    @NotNull @Override public NodeAddress getToAddress() { return toAddress; }
+    @NotNull @Override public Address getFromAddress() { return fromAddress; }
+    @NotNull @Override public Address getToAddress() { return toAddress; }
     @Override public boolean isMultiple() { return multiple; }
     @Override public boolean isDispatched() { return dispatched; }
 
-    public static ControlFlowEdge edge(@NotNull final NodeAddress from, @NotNull final NodeAddress to, @NotNull String displayLabel) {
+    public static ControlFlowEdge edge(@NotNull final Address from, @NotNull final Address to, @NotNull String displayLabel) {
         return new ControlFlowEdgeImpl(from, to, displayLabel, false, false);
     }
 

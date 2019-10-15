@@ -1,5 +1,5 @@
 configure( subprojects.findAll {
-    it.name in ['scraper-api', 'scraper-annotations', 'scraper-app', 'scraper-core', 'scraper-utils']
+    it.name in ['scraper-api', 'scraper-annotations', 'scraper-app', 'scraper-core', 'scraper-utils', 'scraper-nodes', 'scraper-plugins']
 }) {
     // repository configuration
     repositories {
@@ -28,7 +28,7 @@ apply from: 'gradle/idea-clean.gradle'
 // fix resource finding problem for idea
 apply from: 'gradle/idea-fix.gradle'
 
-// all possible bundles (bundleAll, bundleApi, bundleCore, bundleNodes,
+// all possible bundles (bundleAll, bundleFatJar, bundleApi, bundleCore, bundleNodes,
 //                       bundleNodesOnly, bundleNodesDependencies,
 //                       bundleAddonsOnly, bundleAddonsDependencies
 apply from: 'gradle/scraper-bundle.gradle'

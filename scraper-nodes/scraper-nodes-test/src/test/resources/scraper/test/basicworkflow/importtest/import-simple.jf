@@ -1,0 +1,13 @@
+{
+    "name" : "import",
+  "imports": {
+    "part.jf": ["other"]
+  },
+    "graphs" : {
+      "start":
+      [
+        { "type": "SimplestNode", "goTo": "other", "log": "goto other" },
+        { "type": "ExceptionNode", "exception": "NODE" }
+      ]
+    }
+}

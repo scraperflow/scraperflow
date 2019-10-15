@@ -10,13 +10,21 @@ subprojects.each {
 
 subprojects {
     apply plugin: 'java-library'
+    sourceCompatibility = 1.11
+
+    // repository configuration
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
 
     apply from: '../gradle/gradle-module-fix.gradle'
     apply from: '../../gradle/gradle-test-resources-fix.gradle'
 
-    tasks.withType(Jar) {
-        destinationDir = file("$rootDir/build/artifacts/nodes")
-    }
+//    tasks.withType(Jar) {
+//        destinationDir = file("$rootDir/build/artifacts/nodes")
+//    }
 
     configurations {
         provided
@@ -29,8 +37,8 @@ subprojects {
         implementation project(':scraper-utils')
     }
 
-    task bundleDependencies(type: Jar) {
-        from { configurations.provided.collect { it.isDirectory() ? it : zipTree(it) } }
-        with jar
-    }
+//    task bundleDependencies(type: Jar) {
+//        from { configurations.provided.collect { it.isDirectory() ? it : zipTree(it) } }
+//        with jar
+//    }
 }
