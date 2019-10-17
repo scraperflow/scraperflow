@@ -2,8 +2,10 @@ package scraper.api.specification;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
+import scraper.api.node.GraphAddress;
 import scraper.api.node.Node;
 import scraper.api.node.Address;
+import scraper.api.node.NodeAddress;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
@@ -32,16 +34,16 @@ public interface ScrapeInstance {
     @NotNull Node getNode(@NotNull Address target);
 
     @Nullable
-    Address getForwardTarget(@NotNull Address origin);
+    Address getForwardTarget(@NotNull NodeAddress origin);
 
     /** ? */
-    @NotNull Map<Address, List<Node>> getGraphs();
+    @NotNull Map<GraphAddress, List<Node>> getGraphs();
 
     /** ? */
     @NotNull List<Node> getEntryGraph();
 
     /** ? */
-    @NotNull List<Node> getGraph(@NotNull Address label);
+    @NotNull List<Node> getGraph(@NotNull GraphAddress label);
 
     // Cross-cutting concerns services
     @NotNull ExecutorsService getExecutors();

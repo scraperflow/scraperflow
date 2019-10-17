@@ -7,7 +7,11 @@ import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.Address;
-import scraper.api.node.impl.NodeAddress;
+import scraper.api.node.GraphAddress;
+import scraper.api.node.NodeAddress;
+import scraper.api.node.impl.AddressImpl;
+import scraper.api.node.impl.GraphAddressImpl;
+import scraper.api.node.impl.NodeAddressImpl;
 import scraper.core.Template;
 
 import java.lang.reflect.InvocationTargetException;
@@ -58,7 +62,11 @@ public final class NodeUtil {
     }
 
     public static Address addressOf(String label) {
-        return new NodeAddress(label);
+        return new AddressImpl(label);
+    }
+
+    public static GraphAddress graphAddressOf(String label) {
+        return new GraphAddressImpl(label);
     }
 
     public static Object getValueForField(final Class<?> fieldType, final Object fieldValue,
@@ -157,10 +165,12 @@ public final class NodeUtil {
             else //noinspection StatementWithEmptyBody readability
                 if (fieldType.isAssignableFrom(value.getClass())) {
                 // value is correct
-            } // check if field type is an Address
-            else if (String.class.isAssignableFrom(value.getClass()) && Address.class.isAssignableFrom(fieldType)) {
-                    System.err.println("ADDRESS");
-                value = NodeUtil.addressOf(String.valueOf(value));
+            } // check if field type is an NodeAddress
+            else if (String.class.isAssignableFrom(value.getClass()) && NodeAddress.class.isAssignableFrom(fieldType)) {
+                value = new NodeAddressImpl((String) value);
+            } // check if field type is an GraphAddress
+            else if (String.class.isAssignableFrom(value.getClass()) && GraphAddress.class.isAssignableFrom(fieldType)) {
+                value = new GraphAddressImpl((String) value);
             } // try converting as a last resort
             else { // TODO #23 test this branch for full coverage
                 value = StringToClassConverter.convert(String.valueOf(value), fieldType);
@@ -241,4 +251,5 @@ public final class NodeUtil {
             }
         }
     }
+
 }

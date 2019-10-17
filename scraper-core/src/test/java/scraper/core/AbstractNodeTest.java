@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
-import static scraper.util.NodeUtil.addressOf;
+import static scraper.util.NodeUtil.graphAddressOf;
 
 public class AbstractNodeTest {
 
@@ -42,12 +42,12 @@ public class AbstractNodeTest {
     public void simpleControlFlowTest() throws Exception {
         ScrapeInstaceImpl instance = getInstance("jobfactory/simplecontrolflow", "job1.jf");
 
-        ControlFlow startNode = instance.getGraph(addressOf("start")).get(0);
+        ControlFlow startNode = instance.getGraph(graphAddressOf("start")).get(0);
         assertEquals(1, startNode.getOutput().size());
         assertEquals(0, startNode.getInput().size());
-        assertEquals("hello\\nSimpleNode@0", startNode.getDisplayName());
+        assertEquals("<hello@0>\\nSimpleNode", startNode.getDisplayName());
 
-        ControlFlow endNode = instance.getGraph(addressOf("start")).get(1);
+        ControlFlow endNode = instance.getGraph(graphAddressOf("start")).get(1);
         assertEquals(0, endNode.getOutput().size());
         assertEquals(1, endNode.getInput().size());
 

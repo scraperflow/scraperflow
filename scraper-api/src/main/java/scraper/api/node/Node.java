@@ -35,7 +35,7 @@ public interface Node extends NodeConsumer, ControlFlow {
     // ==================
 
     /** Sets the node configuration (key value pairs) and the graph its contained in */
-    void setNodeConfiguration(@NotNull final Map<String, Object> nodeConfiguration, @NotNull final Address graphKey);
+    void setNodeConfiguration(@NotNull final Map<String, Object> nodeConfiguration, @NotNull final GraphAddress graphKey);
 
     /** Returns the node spec */
     @NotNull Map<String, Object> getNodeConfiguration();
@@ -45,13 +45,13 @@ public interface Node extends NodeConsumer, ControlFlow {
 
     /** Graph this node is contained in */
     @NotNull
-    Address getGraphKey();
+    GraphAddress getGraphKey();
 
     /** Job-Unique node address used for control flow */
     @NotNull
-    Address getAddress();
+    NodeAddress getAddress();
 
-    /** Job-Unique target forward node address. Defaults to the next node in the specification */
+    /** Job-Unique target forward address. Defaults to the next node in the specification */
     @Nullable
     Address getGoTo();
 

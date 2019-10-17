@@ -4,9 +4,7 @@ import org.slf4j.Logger;
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.exceptions.ValidationException;
-import scraper.api.node.Node;
-import scraper.api.node.Address;
-import scraper.api.node.NodeInitializable;
+import scraper.api.node.*;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
@@ -23,11 +21,10 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     /** Name of the jobPojo */
     private @NotNull String name = "NoName";
 
-    private @NotNull
-    Address entry = NodeUtil.addressOf("start");
+    private @NotNull GraphAddress entry = NodeUtil.graphAddressOf("start");
 
     /** Generated nodes of the jobPojo */
-    private @NotNull Map<Address, List<Node>> graphs = new HashMap<>();
+    private @NotNull Map<GraphAddress, List<Node>> graphs = new HashMap<>();
 
     /** Initial input arguments */
     private @NotNull Map<String, Object> initialArguments = new HashMap<>();
@@ -47,13 +44,13 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     @Override
     public @NotNull Node getNode(@NotNull Address target) {
 
-        for (Address k : graphs.keySet()) {
-            if(k.equals(target)) {
+        for (GraphAddress k : graphs.keySet()) {
+            if(k.equalsTo(target)) {
                 return graphs.get(k).get(0);
             }
 
             for (Node node : graphs.get(k)) {
-                if(node.getAddress().equals(target))
+                if(node.getAddress().equalsTo(target))
                     return node;
             }
         }
@@ -62,17 +59,12 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     }
 
     @Override
-    public @Nullable
-    Address getForwardTarget(@NotNull Address origin) {
-        for (Address k : graphs.keySet()) {
-            if(k.equals(origin)) {
-                return graphs.get(k).get(0).getAddress();
-            }
-
+    public @Nullable Address getForwardTarget(@NotNull NodeAddress origin) {
+        for (GraphAddress k : graphs.keySet()) {
             Iterator<Node> it = graphs.get(k).iterator();
             while(it.hasNext()) {
                 Node node = it.next();
-                if(node.getAddress().equals(origin)){
+                if(node.getAddress().equalsTo(origin)){
                     if(it.hasNext()) {
                         return it.next().getAddress();
                     } else {
@@ -82,11 +74,11 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
             }
         }
 
-        throw new IllegalStateException("Origin node address not found in any graph");
+        throw new IllegalStateException("Origin node address not found in any graph: " + origin.getRepresentation());
     }
 
     @Override
-    public @NotNull Map<Address, List<Node>> getGraphs() {
+    public @NotNull Map<GraphAddress, List<Node>> getGraphs() {
         return graphs;
     }
 
@@ -96,7 +88,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     }
 
     @Override
-    public @NotNull List<Node> getGraph(@NotNull final Address address) {
+    public @NotNull List<Node> getGraph(@NotNull final GraphAddress address) {
         getGraphs().putIfAbsent(address, new ArrayList<>());
         return getGraphs().get(address);
     }
@@ -109,7 +101,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
 
     public void init() throws ValidationException {
         log.info("Initializing graphs '{}'", getName());
-        for (Address k : getGraphs().keySet()) {
+        for (GraphAddress k : getGraphs().keySet()) {
             for (Node node : getGraph(k)) {
                 if (node instanceof NodeInitializable) ((NodeInitializable) node).init(this);
             }
@@ -142,7 +134,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         this.name = name;
     }
 
-    public void setEntry(@NotNull Address entryGraph) {
+    public void setEntry(@NotNull GraphAddress entryGraph) {
         this.entry = entryGraph;
     }
 

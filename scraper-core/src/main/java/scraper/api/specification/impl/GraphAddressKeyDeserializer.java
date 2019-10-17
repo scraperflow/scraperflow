@@ -3,16 +3,16 @@ package scraper.api.specification.impl;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.KeyDeserializer;
 import scraper.api.node.Address;
-import scraper.api.node.NodeAddress;
+import scraper.api.node.GraphAddress;
 import scraper.api.node.impl.AddressImpl;
-import scraper.api.node.impl.NodeAddressImpl;
+import scraper.api.node.impl.GraphAddressImpl;
 
-public class NodeAddressKeyDeserializer extends KeyDeserializer {
+public class GraphAddressKeyDeserializer extends KeyDeserializer {
  
   @Override
-  public NodeAddress deserializeKey(
+  public GraphAddress deserializeKey(
     String key, 
     DeserializationContext ctxt) {
-      return new NodeAddressImpl(key);
+      return new GraphAddressImpl(key);
     }
 }

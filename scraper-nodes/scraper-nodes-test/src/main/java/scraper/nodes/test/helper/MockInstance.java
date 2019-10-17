@@ -1,7 +1,9 @@
 package scraper.nodes.test.helper;
 
+import scraper.api.node.GraphAddress;
 import scraper.api.node.Node;
 import scraper.api.node.Address;
+import scraper.api.node.NodeAddress;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
@@ -29,9 +31,9 @@ public class MockInstance implements ScrapeInstance {
     @Override public String getName() { return "mock"; }
     @Override public List<Node> getEntryGraph() { return List.of(node); }
 
-    @Override public List<Node> getGraph(Address label) { return getEntryGraph(); }
-    @Override public Address getForwardTarget(Address origin) { throw new IllegalStateException(); }
-    @Override public Map<Address, List<Node>> getGraphs() { return Map.of(NodeUtil.addressOf("start"), getEntryGraph()); }
+    @Override public List<Node> getGraph(GraphAddress label) { return getEntryGraph(); }
+    @Override public Address getForwardTarget(NodeAddress origin) { throw new IllegalStateException(); }
+    @Override public Map<GraphAddress, List<Node>> getGraphs() { return Map.of(NodeUtil.graphAddressOf("start"), getEntryGraph()); }
 
     @Override public ExecutorsService getExecutors() { throw new IllegalStateException("Functional node called service"); }
     @Override public HttpService getHttpService() { throw new IllegalStateException("Functional node called service"); }

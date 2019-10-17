@@ -35,7 +35,7 @@ public abstract class FunctionalTest {
         node = (Node) nodeUnderTest.getDeclaredConstructor().newInstance();
         Map<String,Object> specs = new HashMap<>(spec);
         specs.put("type", nodeUnderTest.getSimpleName());
-        node.setNodeConfiguration(specs, NodeUtil.addressOf("start"));
+        node.setNodeConfiguration(specs, NodeUtil.graphAddressOf("start"));
 
         try {
 

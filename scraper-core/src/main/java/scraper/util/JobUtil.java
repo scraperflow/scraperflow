@@ -7,7 +7,11 @@ import org.slf4j.Logger;
 import scraper.annotations.ArgsCommand;
 import scraper.annotations.NotNull;
 import scraper.api.node.Address;
+import scraper.api.node.GraphAddress;
+import scraper.api.node.NodeAddress;
 import scraper.api.specification.ScrapeSpecification;
+import scraper.api.specification.impl.AddressDeserializer;
+import scraper.api.specification.impl.GraphAddressDeserializer;
 import scraper.api.specification.impl.NodeAddressDeserializer;
 import scraper.api.specification.impl.ScrapeSpecificationImpl;
 import scraper.api.exceptions.ValidationException;
@@ -56,9 +60,11 @@ public final class JobUtil {
     private static final ObjectMapper ymlMapper = new ObjectMapper(new YAMLFactory());
     static {
         SimpleModule module = new SimpleModule();
-        module.addDeserializer(Address.class, new NodeAddressDeserializer());
-        ymlMapper.registerModule(module);
+        module.addDeserializer(NodeAddress.class, new NodeAddressDeserializer());
+        module.addDeserializer(GraphAddress.class, new GraphAddressDeserializer());
+        module.addDeserializer(Address.class, new AddressDeserializer());
         jsonMapper.registerModule(module);
+        ymlMapper.registerModule(module);
     }
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(JobUtil.class);

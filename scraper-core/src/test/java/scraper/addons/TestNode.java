@@ -1,8 +1,10 @@
 package scraper.addons;
 
 import scraper.annotations.NotNull;
+import scraper.api.node.GraphAddress;
 import scraper.api.node.Node;
 import scraper.api.node.Address;
+import scraper.api.node.NodeAddress;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
@@ -23,10 +25,10 @@ public abstract class TestNode extends AbstractNode {
             @NotNull
             @Override public String getName() { return null; }
             @NotNull @Override public Node getNode(@NotNull Address target) { return null; }
-            @Override public Address getForwardTarget(@NotNull Address origin) { return null; }
-            @NotNull @Override public Map<Address, List<Node>> getGraphs() { return null; }
+            @Override public Address getForwardTarget(@NotNull NodeAddress origin) { return null; }
+            @NotNull @Override public Map<GraphAddress, List<Node>> getGraphs() { return null; }
             @NotNull @Override public List<Node> getEntryGraph() { return null; }
-            @NotNull @Override public List<Node> getGraph(@NotNull Address graph) { return null; }
+            @NotNull @Override public List<Node> getGraph(@NotNull GraphAddress graph) { return null; }
             @NotNull
             @Override public ExecutorsService getExecutors() { return null; }
             @NotNull

@@ -6,6 +6,7 @@ import org.springframework.plugin.metadata.PluginMetadata;
 import org.springframework.plugin.metadata.SimplePluginMetadata;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
+import scraper.api.node.GraphAddress;
 import scraper.api.node.Node;
 import scraper.api.node.Address;
 import scraper.api.service.ExecutorsService;
@@ -168,7 +169,7 @@ public class JobFactory {
         // ===
         // Process nodes and instantiate actual matching implementations
         // ===
-        for (Address graphKey : jobDefinition.getGraphs().keySet()) {
+        for (GraphAddress graphKey : jobDefinition.getGraphs().keySet()) {
             List<Map<String, Object>> graph = jobDefinition.getGraphs().get(graphKey);
 
             for (Map<String, Object> nodeConfiguration : graph) {
