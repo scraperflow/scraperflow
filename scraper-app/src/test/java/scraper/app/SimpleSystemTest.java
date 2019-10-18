@@ -67,15 +67,16 @@ public class SimpleSystemTest {
         Assert.assertEquals("true", System.getProperty("noprehook"));
     }
 
-    @Test
+    @Test(timeout = 10000)
     public void loadJobTest() throws Exception {
         URL f = Scraper.class.getResource("t.jf");
         File ff = new File(f.toURI());
         Assert.assertTrue(ff.exists());
         Scraper.main(new String[]{ff.getAbsolutePath()});
 
-        Thread.sleep(50);
-        Assert.assertEquals("true", System.getProperty("done"));
+        while(!System.getProperty("done", "false").equalsIgnoreCase("true")) {
+            Thread.sleep(10);
+        }
     }
 
     @Test
