@@ -29,10 +29,19 @@ task bundleFatJar(type: Jar) { t ->
     destinationDirectory = file("$rootDir/build/libs")
 }
 
-task bundleCore(type: Jar, dependsOn: [':scraper-app:jar']) {
+task bundleCore(type: Jar, dependsOn: [':scraper-app:jar', ':scraper-core:jar']) {
     manifest { attributes 'Main-Class': 'scraper.app.Scraper' }
-    from { project(":scraper-app").sourceSets.main.output }
-    from { project(":scraper-app").configurations.compileClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) } }
+    subprojects.each {s ->
+        // should be a better way to exclude sub projects
+        if(!s.toString().contains('scraper-nodes') && !s.toString().contains('scraper-plugins')) {
+            from {
+                s.configurations.compileClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+            }
+            from {
+                s.sourceSets.main.output
+            }
+        }
+    }
 
     archiveFileName = "Scraper-${version}-core.jar"
     destinationDirectory = file("$rootDir/build/libs")

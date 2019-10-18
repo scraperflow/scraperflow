@@ -26,6 +26,7 @@ public class AddressImpl implements Address {
         return "<"+label+">";
     }
 
+    @NotNull
     @Override
     public String getRepresentation() {
         return toString().substring(1,toString().length()-1);
