@@ -5,7 +5,6 @@ arguments:
   - extended.args
 imports:
   imported-graph.scrape:
-    - import
 entry: start
 graphs:
   start:

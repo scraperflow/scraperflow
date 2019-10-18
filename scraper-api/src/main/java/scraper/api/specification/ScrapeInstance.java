@@ -2,15 +2,14 @@ package scraper.api.specification;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
-import scraper.api.node.GraphAddress;
-import scraper.api.node.Node;
-import scraper.api.node.Address;
-import scraper.api.node.NodeAddress;
+import scraper.api.exceptions.ValidationException;
+import scraper.api.node.*;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
 import scraper.api.service.ProxyReservation;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -33,8 +32,7 @@ public interface ScrapeInstance {
     /** Returns instantiated node in the flow. main flow has precedence over fragment flows. Throws a runtime exception if address is not found */
     @NotNull Node getNode(@NotNull Address target);
 
-    @Nullable
-    Address getForwardTarget(@NotNull NodeAddress origin);
+    @Nullable Address getForwardTarget(@NotNull NodeAddress origin);
 
     /** ? */
     @NotNull Map<GraphAddress, List<Node>> getGraphs();
@@ -44,6 +42,11 @@ public interface ScrapeInstance {
 
     /** ? */
     @NotNull List<Node> getGraph(@NotNull GraphAddress label);
+
+    /** Imported instances */
+    @NotNull Map<InstanceAddress, ScrapeInstance> getImportedInstances();
+
+    void init() throws ValidationException;
 
     // Cross-cutting concerns services
     @NotNull ExecutorsService getExecutors();

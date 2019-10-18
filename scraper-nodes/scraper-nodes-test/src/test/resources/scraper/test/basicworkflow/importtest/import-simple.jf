@@ -1,12 +1,12 @@
 {
     "name" : "import",
   "imports": {
-    "part.jf": ["other"]
+    "part.jf": {}
   },
     "graphs" : {
       "start":
       [
-        { "type": "SimplestNode", "goTo": "other", "log": "goto other" },
+        { "type": "SimplestNode", "goTo": "part", "log": "goto part" },
         { "type": "ExceptionNode", "exception": "NODE" }
       ]
     }

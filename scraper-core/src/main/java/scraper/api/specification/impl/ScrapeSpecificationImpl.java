@@ -6,6 +6,7 @@ import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.node.Address;
 import scraper.api.node.GraphAddress;
+import scraper.api.specification.ScrapeImportSpecification;
 import scraper.api.specification.ScrapeSpecification;
 import scraper.util.NodeUtil;
 
@@ -21,7 +22,7 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
     private List<Path> paths = new ArrayList<>();
     private String dependencies;
     private List<String> arguments = List.of();
-    private Map<String, List<Address>> imports = Map.of();
+    private Map<String, ScrapeImportSpecification> imports = Map.of();
     private GraphAddress entry = NodeUtil.graphAddressOf("start");
     private Map<GraphAddress, List<Map<String, Object>>> graphs;
     private Map<String, Map<String, Object>> globalNodeConfigurations = new HashMap<>();
@@ -42,7 +43,7 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
     @NotNull
     @Override public List<String> getArguments() { return arguments; }
     @NotNull
-    @Override public Map<String, List<Address>> getImports() { return imports; }
+    @Override public Map<String, ScrapeImportSpecification> getImports() { return imports; }
     @NotNull
     @Override public GraphAddress getEntry() { return entry; }
 
@@ -55,7 +56,7 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
     public void setPaths(List<Path> paths) { this.paths = paths; }
     public void setDependencies(String dependencies) { this.dependencies = dependencies; }
     public void setArguments(List<String> arguments) { this.arguments = arguments; }
-    public void setImports(Map<String, List<Address>> imports) { this.imports = imports; }
+    public void setImports(Map<String, ScrapeImportSpecification> imports) { this.imports = imports; }
     public void setEntry(GraphAddress entry) { this.entry = entry; }
     public void setGraphs(Map<GraphAddress, List<Map<String, Object>>> graphs) { this.graphs = graphs; }
 

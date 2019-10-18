@@ -25,6 +25,7 @@ import scraper.utils.ClassUtil;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -198,7 +199,8 @@ public abstract class AbstractNode implements Node, NodeInitializable {
 
     public void initLogger(int indexLength) {
         String loggerName =
-                String.format("%s%"+indexLength+"s | %s",
+                String.format("%s > %s%"+indexLength+"s | %s",
+                        getJobPojo().getName(),
                         getAddress().getLabel() + " @ ",
                         getAddress().getIndex(),
                         getClass().getSimpleName().substring(0, getClass().getSimpleName().length()-4));

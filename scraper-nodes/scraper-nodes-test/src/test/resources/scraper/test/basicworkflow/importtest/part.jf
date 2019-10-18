@@ -1,5 +1,6 @@
 {
     "name" : "part",
+  "entry": "other",
     "graphs" : {
       "other": [
         { "type": "SimplestNode", "log": "went to other"}

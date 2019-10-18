@@ -1,6 +1,7 @@
 package scraper.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.slf4j.Logger;
@@ -9,11 +10,9 @@ import scraper.annotations.NotNull;
 import scraper.api.node.Address;
 import scraper.api.node.GraphAddress;
 import scraper.api.node.NodeAddress;
+import scraper.api.specification.ScrapeImportSpecification;
 import scraper.api.specification.ScrapeSpecification;
-import scraper.api.specification.impl.AddressDeserializer;
-import scraper.api.specification.impl.GraphAddressDeserializer;
-import scraper.api.specification.impl.NodeAddressDeserializer;
-import scraper.api.specification.impl.ScrapeSpecificationImpl;
+import scraper.api.specification.impl.*;
 import scraper.api.exceptions.ValidationException;
 import scraper.utils.FileUtil;
 import scraper.utils.StringUtil;
@@ -60,9 +59,14 @@ public final class JobUtil {
     private static final ObjectMapper ymlMapper = new ObjectMapper(new YAMLFactory());
     static {
         SimpleModule module = new SimpleModule();
+
         module.addDeserializer(NodeAddress.class, new NodeAddressDeserializer());
         module.addDeserializer(GraphAddress.class, new GraphAddressDeserializer());
         module.addDeserializer(Address.class, new AddressDeserializer());
+        SimpleAbstractTypeResolver resolver = new SimpleAbstractTypeResolver();
+        resolver.addMapping(ScrapeImportSpecification.class, ScraperImportSpecificationImpl.class);
+        module.setAbstractTypes(resolver);
+
         jsonMapper.registerModule(module);
         ymlMapper.registerModule(module);
     }

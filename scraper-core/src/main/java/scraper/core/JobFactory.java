@@ -1,20 +1,28 @@
 package scraper.core;
 
+import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.slf4j.Logger;
 import org.springframework.plugin.metadata.PluginMetadata;
 import org.springframework.plugin.metadata.SimplePluginMetadata;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.GraphAddress;
+import scraper.api.node.InstanceAddress;
 import scraper.api.node.Node;
 import scraper.api.node.Address;
+import scraper.api.node.impl.InstanceAddressImpl;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
 import scraper.api.service.ProxyReservation;
+import scraper.api.specification.ScrapeImportSpecification;
+import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
 import scraper.api.specification.impl.ScrapeInstaceImpl;
+import scraper.api.specification.impl.ScraperImportSpecificationImpl;
 import scraper.util.JobUtil;
 import scraper.utils.FileUtil;
 import scraper.utils.StringUtil;
@@ -22,9 +30,11 @@ import scraper.utils.StringUtil;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static scraper.utils.FileUtil.getFirstExistingPaths;
 
@@ -101,13 +111,19 @@ public class JobFactory {
         // ===
         // Imports
         // ===
-        ScrapeSpecification old = null;
+        Map<InstanceAddress, ScrapeInstance> parsedImports = new HashMap<>();
         for (String job : jobDefinition.getImports().keySet()) {
-            List<Address> exportedAddresses = jobDefinition.getImports().get(job);
-            log.info("Importing '{}' with labels {}", job, exportedAddresses);
-            ScrapeSpecification importedJob = JobUtil.parseJobsP(new String[]{job}, jobDefinition.getPaths()).get(0);
-            if(old != null) JobUtil.merge(old, importedJob);
-            if(old == null) old = importedJob;
+//            List<Address> exportedAddresses = jobDefinition.getImports().get(job);
+            log.info("Importing '{}' into '{}'", job, jobDefinition.getName());
+            List<ScrapeSpecification> importedJob = JobUtil.parseJobs(new String[]{job}, jobDefinition.getPaths().stream().map(Path::toString).collect(Collectors.toSet()));
+            if(importedJob.size() > 1) throw new ValidationException("Imported job is ambiguous: " + importedJob.size());
+            ScrapeSpecification newJob = importedJob.get(0);
+
+            // overwrite global configuration of imported job
+            newJob.getGlobalNodeConfigurations().putAll(jobDefinition.getGlobalNodeConfigurations());
+
+            ScrapeInstaceImpl parsedJob = convertScrapeJob(newJob);
+            parsedImports.put(new InstanceAddressImpl(newJob.getName()), parsedJob);
         }
 
         // ===
@@ -129,7 +145,6 @@ public class JobFactory {
         // Job Pojo
         // ===
         log.info("Parsing {}",jobDefinition.getScrapeFile());
-        if(old != null) JobUtil.merge(jobDefinition, old);
         ScrapeInstaceImpl job = parseJob(jobDefinition);
 
         // ===
@@ -187,6 +202,11 @@ public class JobFactory {
                 job.getGraphs().putIfAbsent(graphKey, new ArrayList<>());
                 job.getGraph(graphKey).add(n);
             }
+        }
+
+        job.getImportedInstances().putAll(parsedImports);
+        for (InstanceAddress address : parsedImports.keySet()) {
+            parsedImports.get(address).init();
         }
 
         job.init();

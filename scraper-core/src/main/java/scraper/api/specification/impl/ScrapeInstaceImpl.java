@@ -9,6 +9,7 @@ import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
 import scraper.api.service.ProxyReservation;
+import scraper.api.specification.ScrapeImportSpecification;
 import scraper.api.specification.ScrapeInstance;
 import scraper.util.NodeUtil;
 
@@ -32,6 +33,9 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     /** Arguments applied to all nodes of given type */
     private @NotNull Map<String, Map<String, Object>> globalNodeConfigurations = new HashMap<>();
 
+    /** Addressable instances */
+    private @NotNull Map<InstanceAddress, ScrapeInstance> importedInstances = new HashMap<>();
+
     /**
      * Gets the next node specified by {@code o}. If o is parsable as an integer, it is used as the next stage index.
      * Otherwise, its used as a goTo label.
@@ -43,6 +47,15 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
 
     @Override
     public @NotNull Node getNode(@NotNull Address target) {
+        for (InstanceAddress instanceAddress : importedInstances.keySet()) {
+            if (target.equalsTo(instanceAddress)) {
+                return importedInstances.get(instanceAddress).getEntryGraph().get(0);
+            }
+
+            // can only resolve if instance address is correct
+            Address insideTarget = target.resolve(instanceAddress);
+            if(insideTarget != null) return importedInstances.get(instanceAddress).getNode(insideTarget);
+        }
 
         for (GraphAddress k : graphs.keySet()) {
             if(k.equalsTo(target)) {
@@ -94,6 +107,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     }
 
 
+
     private ExecutorsService executors;
     private HttpService httpService;
     private ProxyReservation proxyReservation;
@@ -108,6 +122,15 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         }
     }
 
+
+    @Override
+    public Map<InstanceAddress, ScrapeInstance> getImportedInstances() {
+        return this.importedInstances;
+    }
+
+    public void setImportedInstances(Map<InstanceAddress, ScrapeInstance> spec) {
+        this.importedInstances = spec;
+    }
 
     @NotNull
     public String getName() {
