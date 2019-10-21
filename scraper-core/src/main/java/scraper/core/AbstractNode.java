@@ -474,8 +474,8 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         dispatch(() -> {
             try {
                 return eval(o, target);
-            } catch (NodeException e) {
-                log(ERROR, "Fork dispatch to goTo '{}' terminated exceptionally. {}", target, e);
+            } catch (Exception e) {
+                log(ERROR, "Fork dispatch to goTo '{}' terminated exceptionally.", target, e);
                 throw new RuntimeException(e);
             }
         });
@@ -487,8 +487,8 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         return dispatch(() -> {
             try {
                 return eval(o, target);
-            } catch (NodeException e) {
-                log(ERROR, "Fork depend to goTo '{}' terminated exceptionally. {}", target, e);
+            } catch (Exception e) {
+                log(ERROR, "Fork depend to goTo '{}' terminated exceptionally.", target, e);
                 throw new RuntimeException(e);
             }
         });
