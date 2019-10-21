@@ -2,6 +2,7 @@ package scraper.app;
 
 import org.junit.Assert;
 import org.junit.Test;
+import scraper.api.exceptions.NodeException;
 import scraper.utils.ClassUtil;
 
 import java.io.File;
@@ -79,7 +80,7 @@ public class SimpleSystemTest {
         }
     }
 
-    @Test
+    @Test(expected = Exception.class)
     public void exceptionTest() throws Exception {
         URL f = Scraper.class.getResource("fail.jf");
         File ff = new File(f.toURI());
@@ -88,4 +89,19 @@ public class SimpleSystemTest {
 
     }
 
+    @Test
+    public void importTest() throws Exception {
+        URL f = Scraper.class.getResource("complex.yf");
+        File ff = new File(f.toURI());
+        Assert.assertTrue(ff.exists());
+        Scraper.main(new String[]{ff.getAbsolutePath()});
+    }
+
+    @Test
+    public void import2Test() throws Exception {
+        URL f = Scraper.class.getResource("complex2.yf");
+        File ff = new File(f.toURI());
+        Assert.assertTrue(ff.exists());
+        Scraper.main(new String[]{ff.getAbsolutePath()});
+    }
 }

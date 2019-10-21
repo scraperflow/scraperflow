@@ -1,0 +1,16 @@
+---
+name: sock
+
+imports:
+  complex-import.yf:
+
+globalNodeConfigurations:
+  NoNode:
+    fail: false
+
+graphs:
+  start:
+    - type: NoNode
+      log: "what"
+      goTo: imp.top.test2
+

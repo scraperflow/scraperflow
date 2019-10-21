@@ -114,6 +114,7 @@ public class Scraper {
     	log.info("--------------------------------------------------------");
     	log.info("--- Starting Main Threads");
 		log.info("--------------------------------------------------------");
+		List<CompletableFuture>  futures = new ArrayList<>();
 		jobs.forEach((definition, job) -> {
             CompletableFuture<FlowMap> future = CompletableFuture.supplyAsync(() -> {
                 try {
@@ -122,7 +123,7 @@ public class Scraper {
                     job.getNode(definition.getEntry()).accept(initial);
 
                     return initial;
-                } catch (NodeException e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }, executorsService.getService(definition.getName(), "main"));
@@ -131,7 +132,11 @@ public class Scraper {
                 log.error("'{}' failed", job.getName(), e);
                 return null;
             });
+
+            futures.add(future);
 		});
+
+		futures.forEach(CompletableFuture::join);
     }
 
 

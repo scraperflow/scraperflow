@@ -1,0 +1,6 @@
+---
+name: top
+graphs:
+  test2:
+    - type: NoNode
+      log: "hello"
