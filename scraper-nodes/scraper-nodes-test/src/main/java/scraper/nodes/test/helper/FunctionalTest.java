@@ -25,6 +25,7 @@ public abstract class FunctionalTest {
     @Test
     @Parameters
     public void functionalTests(
+            String testCase,
             Class<?> nodeUnderTest,
             Class<?> expectException,
             Map<String, Object> spec,
@@ -56,9 +57,11 @@ public abstract class FunctionalTest {
         catch (Exception e) {
             if(!expectException.isAssignableFrom(void.class)) {
                 if(!e.getClass().isAssignableFrom(expectException)) {
+                    System.err.println(testCase + " failed");
                     throw e;
                 }
             } else {
+                System.err.println(testCase + " failed");
                 throw e;
             }
         }
@@ -76,6 +79,7 @@ public abstract class FunctionalTest {
 
                 // add goTo node class
                 List<Object> merge = new LinkedList<>();
+                merge.add(method.getName());
                 merge.add(method.getAnnotation(Functional.class).value());
                 merge.add(method.getAnnotation(Functional.class).expectException());
                 merge.addAll(List.of(params));

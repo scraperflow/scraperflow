@@ -7,6 +7,7 @@ import scraper.api.node.Node;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * A map-like data structure which 'flows' through nodes in the control flow order.
@@ -48,4 +49,6 @@ public interface FlowMap {
 
     /** State of this flow. Useful for debugging purposes. Amount of tracking increases with log level of the nodes accessed in the flow. */
     @NotNull FlowHistory getFlowHistory();
+
+    @NotNull UUID getId();
 }

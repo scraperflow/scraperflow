@@ -13,6 +13,7 @@ public class FlowMapImpl implements FlowMap {
 
     private @NotNull final ConcurrentMap<String, Object> privateMap;
     private @NotNull final FlowHistory flowHistory = new FlowHistoryImpl();
+    private @NotNull final UUID uuid = UUID.randomUUID();
 
     public FlowMapImpl(@NotNull ConcurrentMap<String, Object> privateMap) { this.privateMap = privateMap; }
 
@@ -75,6 +76,8 @@ public class FlowMapImpl implements FlowMap {
     }
 
     @NotNull @Override public FlowHistory getFlowHistory() { return flowHistory; }
+
+    @Override public UUID getId() { return uuid; }
 
     private boolean descendMap(@NotNull final Map<?,?> currentMap, @NotNull final Map<?,?> otherMap) {
         for (Object s : otherMap.keySet()) {

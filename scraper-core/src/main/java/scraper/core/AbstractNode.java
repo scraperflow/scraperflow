@@ -72,7 +72,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     protected NodeLogLevel logLevel;
     /** Log statement to be printed */
     @FlowKey
-    protected Template<String> log = new Template<>(){};
+    protected Template<Object> log = new Template<>(){};
 
     /** Label of a node which can be used as a goto reference */
     @FlowKey
@@ -275,8 +275,8 @@ public abstract class AbstractNode implements Node, NodeInitializable {
 
         // evaluate and write log message if any
         try {
-            String logString = log.eval(map);
-            if(logString != null) log(logLevel, logString);
+            Object logString = log.eval(map);
+            if(logString != null) log(logLevel, logString.toString());
         } catch (Exception e) {
             log(ERROR, "Could not evaluate log template: {}", e.getMessage());
         }
