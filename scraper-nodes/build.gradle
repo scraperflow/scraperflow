@@ -22,9 +22,9 @@ subprojects {
     apply from: '../gradle/gradle-module-fix.gradle'
     apply from: '../../gradle/gradle-test-resources-fix.gradle'
 
-//    tasks.withType(Jar) {
-//        destinationDir = file("$rootDir/build/artifacts/nodes")
-//    }
+    tasks.withType(Jar) {
+        destinationDirectory = file("$rootDir/build/libs/nodes-only")
+    }
 
     configurations {
         provided
@@ -37,8 +37,15 @@ subprojects {
         implementation project(':scraper-utils')
     }
 
-//    task bundleDependencies(type: Jar) {
-//        from { configurations.provided.collect { it.isDirectory() ? it : zipTree(it) } }
+    task bundleDependenciesOnly(type: Jar) {
+        from { configurations.provided.collect { it.isDirectory() ? it : zipTree(it) } }
+        destinationDirectory = file("$rootDir/build/libs/nodes-dependencies")
 //        with jar
-//    }
+    }
+
+    task bundleNode(type: Jar) {
+        from { configurations.provided.collect { it.isDirectory() ? it : zipTree(it) } }
+        destinationDirectory = file("$rootDir/build/libs/nodes-bundled")
+        with jar
+    }
 }
