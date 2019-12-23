@@ -23,4 +23,9 @@ public class FlowHistoryImpl implements FlowHistory {
         this.firstAcceptingNode = firstAcceptingNode;
         this.jobName = jobName;
     }
+
+    @Override
+    public String toString() {
+        return firstAcceptingNode+ "\n"+getFlowHistory();
+    }
 }

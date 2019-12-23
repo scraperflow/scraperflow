@@ -7,7 +7,6 @@ import scraper.annotations.ArgsCommands;
 import scraper.annotations.NotNull;
 import scraper.annotations.di.DITarget;
 import scraper.api.di.DIContainer;
-import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.plugin.Addon;
 import scraper.api.plugin.Hook;

@@ -171,6 +171,9 @@ public final class NodeUtil {
             } // check if field type is an GraphAddress
             else if (String.class.isAssignableFrom(value.getClass()) && GraphAddress.class.isAssignableFrom(fieldType)) {
                 value = new GraphAddressImpl((String) value);
+            } // check if field type is an GraphAddress
+            else if (String.class.isAssignableFrom(value.getClass()) && Address.class.isAssignableFrom(fieldType)) {
+                value = NodeUtil.addressOf((String) value);
             } // try converting as a last resort
             else { // TODO #23 test this branch for full coverage
                 value = StringToClassConverter.convert(String.valueOf(value), fieldType);
