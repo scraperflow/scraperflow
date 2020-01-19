@@ -26,7 +26,7 @@ import static scraper.util.NodeUtil.flowOf;
 public final class IfThenElseNode extends AbstractNode {
 
     @FlowKey(mandatory = true) @NotNull
-    private Template<Boolean> condition;
+    private Template<Boolean> condition = new Template<>(){};
 
     @FlowKey @Nullable
     private Address trueTarget;
@@ -43,7 +43,7 @@ public final class IfThenElseNode extends AbstractNode {
                 return forward(eval(o, trueTarget));
         } else {
             if(falseTarget != null)
-                return forward(eval(o, trueTarget));
+                return forward(eval(o, falseTarget));
         }
 
         return forward(o);

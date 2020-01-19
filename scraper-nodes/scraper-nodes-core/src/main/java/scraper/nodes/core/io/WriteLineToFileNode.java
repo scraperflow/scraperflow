@@ -1,4 +1,4 @@
-package scraper.nodes.io;
+package scraper.nodes.core.io;
 
 import scraper.annotations.node.EnsureFile;
 
