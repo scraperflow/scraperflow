@@ -286,7 +286,7 @@ public class FieldTranslationTest {
         Class<?> converter = (ann != null ? ann.converter() : null);
 
         Object translatedValue = NodeUtil.getValueForField(field.getType(), field.get(this), jsonValue, globalValue,
-                flowKey.mandatory(), flowKey.defaultValue(),
+                flowKey.mandatory(), flowKey.defaultValue(), flowKey.output(),
                 isArgument, converter,
                 args
         );

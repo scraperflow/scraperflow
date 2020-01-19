@@ -111,4 +111,11 @@ public abstract class Template<T> {
         return parsedJson.toString();
     }
 
+    public String raw() { return parsedJson.toString(); }
+
+    public T input(FlowMap o) { return this.eval(o); }
+
+    public void output(FlowMap o, T object) {
+        o.put(parsedJson.toString(), object);
+    }
 }

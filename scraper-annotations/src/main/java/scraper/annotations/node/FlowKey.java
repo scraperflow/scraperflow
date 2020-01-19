@@ -19,4 +19,7 @@ public @interface FlowKey {
 
     /** The default value of a JSON flow key if no value is provided */
     @NotNull String defaultValue() default "null";
+
+    /** If enabled, the generic type of the flow key specifies the class to be put into a flow map instead of the class the template is going to evaluate to */
+    boolean output() default false;
 }

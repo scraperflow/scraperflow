@@ -25,7 +25,6 @@ import scraper.utils.ClassUtil;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,6 +32,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static scraper.api.flow.impl.ControlFlowEdgeImpl.edge;
@@ -108,6 +108,10 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     /** Set during init of node */
     @JsonIgnore
     private GraphAddress graphKey;
+
+    /** Target if a dispatched flow exception occurs */
+    @FlowKey
+    protected Address onForkException;
 
     /**
      * Initializes the {@link #stageIndex} and all fields marked with {@link FlowKey}. Evaluates
@@ -231,13 +235,35 @@ public abstract class AbstractNode implements Node, NodeInitializable {
 
         // this is the value which will get assigned to the field after evaluation
         Object value;
-        Map<String, Object> allFields;
+        Map<String, Object> allFields = null;
         Object jsonValue = spec.get(field.getName());
         Object globalValue = null;
 
         if(jobPojo != null && jobPojo.getGlobalNodeConfigurations() != null) {
-            allFields = jobPojo.getGlobalNodeConfigurations().get(getClass().getSimpleName());
+            String nodeName = getClass().getSimpleName();
 
+            //check if regex matches, and apply if valid
+            for (String maybeRegex : jobPojo.getGlobalNodeConfigurations().keySet()) {
+                if(maybeRegex.startsWith("/") && maybeRegex.endsWith("/")) {
+                    String regex = maybeRegex.substring(1, maybeRegex.length()-1);
+
+                    boolean result = Pattern.compile(regex).matcher(nodeName).results()
+                            .findAny().isPresent();
+
+                    if(result) allFields = jobPojo.getGlobalNodeConfigurations().get(maybeRegex);
+
+                    // fetch global value, if any
+                    if(allFields != null) {
+                        Object globalKey = allFields.get(field.getName());
+                        if (globalKey != null) {
+                            globalValue = globalKey;
+                        }
+                    }
+                }
+            }
+
+            allFields = jobPojo.getGlobalNodeConfigurations().get(nodeName);
+            
             // fetch global value, if any
             if(allFields != null) {
                 Object globalKey = allFields.get(field.getName());
@@ -250,7 +276,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         try {
             value = NodeUtil.getValueForField(
                     field.getType(), field.get(this), jsonValue, globalValue,
-                    flowKey.mandatory(), flowKey.defaultValue(),
+                    flowKey.mandatory(), flowKey.defaultValue(), flowKey.output(),
                     ann != null, (ann != null ? ann.converter() : null),
                     args);
         } catch (ValidationException e){
@@ -475,8 +501,18 @@ public abstract class AbstractNode implements Node, NodeInitializable {
             try {
                 return eval(o, target);
             } catch (Exception e) {
-                log(ERROR, "Fork dispatch to goTo '{}' terminated exceptionally.", target, e);
-                throw new RuntimeException(e);
+                log(ERROR, "Dispatch terminated exceptionally {}: {}", target, e);
+                if(onForkException != null) {
+                    try {
+                        return eval(o, onForkException);
+                    } catch (NodeException ex) {
+                        log(ERROR, "OnException fork target terminated exceptionally.", target, e);
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    log(ERROR, "Fork dispatch to goTo '{}' terminated exceptionally.", target, e);
+                    throw new RuntimeException(e);
+                }
             }
         });
     }

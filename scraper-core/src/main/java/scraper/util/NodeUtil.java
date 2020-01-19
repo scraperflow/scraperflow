@@ -74,6 +74,7 @@ public final class NodeUtil {
                                           final Object globalValue,
                                           final boolean mandatory,
                                           final String defaultAnnotationValue,
+                                          final boolean isOutput,
                                           final boolean isArgument,
                                           final Class<?> argumentConverter,
                                           final Map<String, Object> arguments
@@ -153,12 +154,18 @@ public final class NodeUtil {
             // value != null: parsed json object or field default (Template, MapKey)
             if(value == null) return null;
 
-            // check if template
-            if (Template.class.isAssignableFrom(fieldType)) {
+            // check if (input) template
+            if (Template.class.isAssignableFrom(fieldType) && !isOutput) {
                 Template<?> template = (Template<?>) fieldValue;
                 template.setParsedJson(convert(template.type, value));
                 return null;
-            } // if enum: try convert
+            } // check if (output) template
+            else if (Template.class.isAssignableFrom(fieldType) && isOutput) {
+                Template<?> template = (Template<?>) fieldValue;
+                template.setParsedJson(convert(new TypeToken<String>(){}, value)); // targets only raw String type for now, no evaluation
+                return null;
+            }
+            // if enum: try convert
             else if (Enum.class.isAssignableFrom(fieldType)) {
                 value = Enum.valueOf(fieldType.asSubclass(Enum.class), String.valueOf(value));
             } // type match
@@ -171,7 +178,7 @@ public final class NodeUtil {
             } // check if field type is an GraphAddress
             else if (String.class.isAssignableFrom(value.getClass()) && GraphAddress.class.isAssignableFrom(fieldType)) {
                 value = new GraphAddressImpl((String) value);
-            } // check if field type is an GraphAddress
+            } // check if field type is a general Address
             else if (String.class.isAssignableFrom(value.getClass()) && Address.class.isAssignableFrom(fieldType)) {
                 value = NodeUtil.addressOf((String) value);
             } // try converting as a last resort
