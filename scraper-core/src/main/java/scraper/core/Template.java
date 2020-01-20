@@ -4,6 +4,7 @@ import com.google.common.reflect.TypeToken;
 import org.slf4j.Logger;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
+import scraper.api.flow.impl.IdentityFlowMap;
 import scraper.core.template.TemplateExpression;
 
 import java.util.*;
@@ -19,6 +20,10 @@ public abstract class Template<T> {
 
     public T eval(final FlowMap o) {
         return eval(parsedJson, type, o);
+    }
+
+    public T evalWithIdentity() {
+        return eval(parsedJson, type, new IdentityFlowMap());
     }
 
     protected <C> C eval(Object jsonObject, TypeToken<C> currentType, FlowMap o) {
@@ -118,4 +123,5 @@ public abstract class Template<T> {
     public void output(FlowMap o, T object) {
         o.put(parsedJson.toString(), object);
     }
+
 }

@@ -1,6 +1,7 @@
 package scraper.nodes.core.functional;
 
 import scraper.annotations.NotNull;
+import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
@@ -13,7 +14,7 @@ import java.util.Map;
 /**
  * Can modify the current argument map.
  */
-@NodePlugin("1.0.0")
+@NodePlugin("1.1.0")
 public final class EchoNode extends AbstractFunctionalNode {
 
     /** Multiple put operations can be specified in this map at once */
@@ -21,13 +22,12 @@ public final class EchoNode extends AbstractFunctionalNode {
     private final Template<Map<String, Object>> puts = new Template<>(){};
 
     /** All keys specified in this list will be removed from the FlowMap */
-    @FlowKey(defaultValue = "[]") @NotNull
-    private final Template<List<String>> remove = new Template<>(){};
+    @FlowKey(defaultValue = "[]") @NotNull @Argument
+    private List<String> remove;
 
     @Override
     public void modify(@NotNull final FlowMap o) {
         Map<String, Object> puts = this.puts.eval(o);
-        List<String> remove = this.remove.eval(o);
 
         // put multiple objects/strings
         for (String key : puts.keySet()) {
@@ -38,5 +38,20 @@ public final class EchoNode extends AbstractFunctionalNode {
         for (String key : remove) {
             o.remove(key);
         }
+    }
+
+    @Override
+    public Map<String, String> getOutputData() {
+        Map<String, String> map = super.getOutputData();
+
+        for (String toPut : puts.evalWithIdentity().keySet()) {
+            map.put(toPut, "T<java.lang.Object>");
+        }
+
+        for (String toRemove : remove) {
+            map.put(toRemove, "void");
+        }
+
+        return map;
     }
 }

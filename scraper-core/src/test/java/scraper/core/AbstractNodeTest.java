@@ -7,6 +7,7 @@ import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.ControlFlow;
 import scraper.api.flow.ControlFlowEdge;
+import scraper.api.flow.DataFlow;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.Node;
@@ -36,6 +37,15 @@ public class AbstractNodeTest {
         URL base = getClass().getResource(basePath);
         ScrapeSpecificationImpl spec = (ScrapeSpecificationImpl) JobUtil.parseJobs(new String[]{scrapeFile}, Set.of(base.getFile())).get(0);
         return Objects.requireNonNull(deps.get(JobFactory.class)).convertScrapeJob(spec);
+    }
+
+    @Test
+    public void simpleDataFlowTest() throws Exception {
+        ScrapeInstaceImpl instance = getInstance("jobfactory/simpledataflow", "job1.jf");
+
+        DataFlow startNode = instance.getGraph(graphAddressOf("start")).get(0);
+        Assert.assertEquals("java.util.List<java.lang.String>", startNode.getInputData().get("input"));
+        Assert.assertEquals("java.lang.Integer", startNode.getOutputData().get("output"));
     }
 
     @Test

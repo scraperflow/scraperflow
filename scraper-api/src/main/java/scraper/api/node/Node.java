@@ -4,6 +4,7 @@ import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.ControlFlow;
+import scraper.api.flow.DataFlow;
 import scraper.api.flow.FlowMap;
 
 import java.util.Map;
@@ -28,7 +29,7 @@ import java.util.concurrent.CompletableFuture;
  *
  * @since 1.0.0
  */
-public interface Node extends NodeConsumer, ControlFlow {
+public interface Node extends NodeConsumer, ControlFlow, DataFlow {
 
     // ==================
     // Specification

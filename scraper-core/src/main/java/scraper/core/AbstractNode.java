@@ -426,6 +426,61 @@ public abstract class AbstractNode implements Node, NodeInitializable {
                 .collect(Collectors.toList());
     }
 
+    // ------------------------
+    // DATA FLOW FUNCTIONS
+    // ------------------------
+
+    // default implementation only is concerned with FlowKey input, output
+    // mixed usage of FlowKeys have to extend the input/output
+    @NotNull
+    @Override
+    public Map<String, String> getOutputData() {
+        List<Field> outputData = ClassUtil.getAllFields(new LinkedList<>(), getClass()).stream()
+                // only templates
+                .filter(field -> field.getType().isAssignableFrom(Template.class))
+                // only annotated by flow keys
+                .filter(field -> field.getAnnotation(FlowKey.class) != null)
+                // only output
+                .filter(field -> field.getAnnotation(FlowKey.class).output())
+                .collect(Collectors.toList());
+
+        return extractMapFromFields(outputData);
+    }
+
+    @NotNull
+    @Override
+    public Map<String, String> getInputData() {
+        List<Field> inputData = ClassUtil.getAllFields(new LinkedList<>(), getClass()).stream()
+                // only templates
+                .filter(field -> field.getType().isAssignableFrom(Template.class))
+                // only annotated by flow keys
+                .filter(field -> field.getAnnotation(FlowKey.class) != null)
+                // only input
+                .filter(field -> !field.getAnnotation(FlowKey.class).output())
+                .collect(Collectors.toList());
+
+
+        return extractMapFromFields(inputData);
+    }
+
+    private Map<String, String> extractMapFromFields(List<Field> outputData) {
+        Map<String, String> outputResult = new HashMap<>();
+        for (Field output : outputData) {
+            String name = output.getName();
+            output.setAccessible(true);
+            try {
+                String value = ((Template) output.get(this)).type.getType().getTypeName();
+
+                outputResult.put(name, value);
+            } catch (IllegalAccessException e) {
+                // TODO handle exception differently
+                throw new RuntimeException(e);
+            }
+        }
+
+        return outputResult;
+    }
+
     @NotNull
     @Override
     public String getDisplayName() {
