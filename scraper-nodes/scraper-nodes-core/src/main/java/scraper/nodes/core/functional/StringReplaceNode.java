@@ -13,7 +13,6 @@ import scraper.core.Template;
 @NodePlugin("1.0.0")
 public final class StringReplaceNode extends AbstractFunctionalNode {
 
-
     /** The content to apply the regex on */
     @FlowKey(defaultValue = "\"{content}\"") @NotNull
     private final Template<String> content = new Template<>(){};
@@ -23,13 +22,12 @@ public final class StringReplaceNode extends AbstractFunctionalNode {
     private final Template<String> output = new Template<>(){};
 
     /** This string occurrence will be replaced */
-    @FlowKey(mandatory = true) @NotNull
+    @FlowKey(mandatory = true)
     private String replace;
 
     /** This is the replacement */
-    @FlowKey(mandatory = true) @NotNull
+    @FlowKey(mandatory = true)
     private String with;
-
 
     @Override
     public void modify(@NotNull final FlowMap o) {

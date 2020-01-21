@@ -9,7 +9,6 @@ import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
 import scraper.api.service.ProxyReservation;
-import scraper.api.specification.ScrapeImportSpecification;
 import scraper.api.specification.ScrapeInstance;
 import scraper.util.NodeUtil;
 
@@ -47,47 +46,12 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
 
     @Override
     public @NotNull Node getNode(@NotNull Address target) {
-        for (InstanceAddress instanceAddress : importedInstances.keySet()) {
-            if (target.equalsTo(instanceAddress)) {
-                return importedInstances.get(instanceAddress).getEntryGraph().get(0);
-            }
-
-            // can only resolve if instance address is correct
-            Address insideTarget = target.resolve(instanceAddress);
-            if(insideTarget != null) return importedInstances.get(instanceAddress).getNode(insideTarget);
-        }
-
-        for (GraphAddress k : graphs.keySet()) {
-            if(k.equalsTo(target)) {
-                return graphs.get(k).get(0);
-            }
-
-            for (Node node : graphs.get(k)) {
-                if(node.getAddress().equalsTo(target))
-                    return node;
-            }
-        }
-
-        throw new IllegalArgumentException("Node address not existing! "+target);
+        return NodeUtil.getNode(target, graphs, importedInstances);
     }
 
     @Override
     public @Nullable Address getForwardTarget(@NotNull NodeAddress origin) {
-        for (GraphAddress k : graphs.keySet()) {
-            Iterator<Node> it = graphs.get(k).iterator();
-            while(it.hasNext()) {
-                Node node = it.next();
-                if(node.getAddress().equalsTo(origin)){
-                    if(it.hasNext()) {
-                        return it.next().getAddress();
-                    } else {
-                        return null;
-                    }
-                }
-            }
-        }
-
-        throw new IllegalStateException("Origin node address not found in any graph: " + origin.getRepresentation());
+        return NodeUtil.getForwardTarget(origin, graphs);
     }
 
     @Override

@@ -41,13 +41,14 @@ public final class StringGeneratorNode extends AbstractStreamNode {
     /** Target key in template to (String) expression map.
      * Expression currently supported: "KEY X TO Y", where X and Y are Integers.
      */
-    @FlowKey(mandatory = true) @NotNull
+    @FlowKey(mandatory = true)
     private String expression;
 
     /** Output list key */
     @FlowKey(defaultValue = "\"generated\"", output = true) @NotNull
     private Template<String> generatedElement = new Template<>(){};
 
+    @NotNull
     @Override
     public FlowMap process(final @NotNull FlowMap o) throws NodeException {
         // parse expression for goTo key
@@ -75,8 +76,4 @@ public final class StringGeneratorNode extends AbstractStreamNode {
 
         return forward(o);
     }
-
-
-
-
 }

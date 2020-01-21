@@ -89,8 +89,35 @@ public final class JobUtil {
         return jobs;
     }
 
+    public static ScrapeSpecification parseSingleSpecification(
+            @NotNull final File scrapeFile,
+            @NotNull final List<String> argsPaths
+    )
+            throws IOException, ValidationException {
 
-    private static ScrapeSpecification parseSingleSpecification(@NotNull final String[] args,
+        // try to parse JSON or YML
+        ScrapeSpecificationImpl spec;
+        if(scrapeFile.getName().endsWith("yf")) {
+            spec = ymlMapper.readValue(scrapeFile, ScrapeSpecificationImpl.class);
+        } else {
+            spec = jsonMapper.readValue(scrapeFile, ScrapeSpecificationImpl.class);
+        }
+
+        spec.setScrapeFile(scrapeFile.toPath());
+
+        validate(spec);
+
+        spec.setArguments(
+                Stream.concat(
+                        spec.getArguments().stream(),
+                        argsPaths.stream()
+                ).collect(Collectors.toList())
+        );
+
+        return spec;
+    }
+
+    public static ScrapeSpecification parseSingleSpecification(@NotNull final String[] args,
                                                                 @NotNull final Set<String> candidatePaths)
             throws IOException, ValidationException {
         String scrapePath;
@@ -160,26 +187,7 @@ public final class JobUtil {
         File scrapeFile = FileUtil.getFirstExisting(scrapePath, candidatePaths);
         if(!scrapeFile.exists() || !scrapeFile.isFile()) throw new IOException("scrape file is not a file or does not exist");
 
-        // try to parse JSON or YML
-        ScrapeSpecificationImpl spec;
-        if(scrapeFile.getName().endsWith("yf")) {
-            spec = ymlMapper.readValue(scrapeFile, ScrapeSpecificationImpl.class);
-        } else {
-            spec = jsonMapper.readValue(scrapeFile, ScrapeSpecificationImpl.class);
-        }
-
-        spec.setScrapeFile(scrapeFile.toPath());
-
-        validate(spec);
-
-        spec.setArguments(
-                Stream.concat(
-                        spec.getArguments().stream(),
-                        argsPaths.stream()
-                ).collect(Collectors.toList())
-        );
-
-        return spec;
+        return parseSingleSpecification(scrapeFile, argsPaths);
     }
 
     // separate check for null values since Jackson does not support mandatory keys

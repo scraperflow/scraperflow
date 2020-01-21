@@ -10,11 +10,6 @@ import scraper.api.node.Address;
 import scraper.core.AbstractNode;
 import scraper.core.Template;
 
-import static scraper.core.NodeLogLevel.ERROR;
-import static scraper.core.NodeLogLevel.INFO;
-import static scraper.util.NodeUtil.flowOf;
-
-
 /**
  * Provides if-then-else routing
  *
@@ -34,6 +29,7 @@ public final class IfThenElseNode extends AbstractNode {
     @FlowKey @Nullable
     private Address falseTarget;
 
+    @NotNull
     @Override
     public FlowMap process(@NotNull final FlowMap o) throws NodeException {
         Boolean condition = this.condition.eval(o);

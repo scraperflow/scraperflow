@@ -22,9 +22,10 @@ import static scraper.util.NodeUtil.flowOf;
 @NodePlugin("0.1.0")
 public final class RetryNode extends AbstractNode {
 
-    @FlowKey(defaultValue = "5") @NotNull
+    @FlowKey(defaultValue = "5")
     private Integer retry;
 
+    @NotNull
     @Override
     public FlowMap process(@NotNull final FlowMap o) throws NodeException {
         int current = 0;

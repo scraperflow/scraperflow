@@ -11,10 +11,7 @@ import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
-import scraper.api.flow.ControlFlow;
-import scraper.api.flow.ControlFlowEdge;
 import scraper.api.flow.FlowMap;
-import scraper.api.flow.impl.ControlFlowEdgeImpl;
 import scraper.api.flow.impl.FlowStateImpl;
 import scraper.api.node.*;
 import scraper.api.node.impl.NodeAddressImpl;
@@ -30,12 +27,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-import static scraper.api.flow.impl.ControlFlowEdgeImpl.edge;
 import static scraper.core.NodeLogLevel.*;
 
 
@@ -239,21 +233,23 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         Object jsonValue = spec.get(field.getName());
         Object globalValue = null;
 
+        // TODO why is second condition always true?
         if(jobPojo != null && jobPojo.getGlobalNodeConfigurations() != null) {
+            jobPojo.getGlobalNodeConfigurations();
             String nodeName = getClass().getSimpleName();
 
             //check if regex matches, and apply if valid
             for (String maybeRegex : jobPojo.getGlobalNodeConfigurations().keySet()) {
-                if(maybeRegex.startsWith("/") && maybeRegex.endsWith("/")) {
-                    String regex = maybeRegex.substring(1, maybeRegex.length()-1);
+                if (maybeRegex.startsWith("/") && maybeRegex.endsWith("/")) {
+                    String regex = maybeRegex.substring(1, maybeRegex.length() - 1);
 
                     boolean result = Pattern.compile(regex).matcher(nodeName).results()
                             .findAny().isPresent();
 
-                    if(result) allFields = jobPojo.getGlobalNodeConfigurations().get(maybeRegex);
+                    if (result) allFields = jobPojo.getGlobalNodeConfigurations().get(maybeRegex);
 
                     // fetch global value, if any
-                    if(allFields != null) {
+                    if (allFields != null) {
                         Object globalKey = allFields.get(field.getName());
                         if (globalKey != null) {
                             globalValue = globalKey;
@@ -263,9 +259,9 @@ public abstract class AbstractNode implements Node, NodeInitializable {
             }
 
             allFields = jobPojo.getGlobalNodeConfigurations().get(nodeName);
-            
+
             // fetch global value, if any
-            if(allFields != null) {
+            if (allFields != null) {
                 Object globalKey = allFields.get(field.getName());
                 if (globalKey != null) {
                     globalValue = globalKey;
@@ -355,7 +351,6 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         }
 
         FlowStateImpl state = new FlowStateImpl(phase);
-        state.log("node", getDisplayName());
         state.log("address", getAddress());
         state.log("graph", getGraphKey());
 
@@ -387,105 +382,6 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         return CompletableFuture.supplyAsync(o, getService());
     }
 
-    // ------------------------
-    // CONTROL FLOW FUNCTIONS
-    // ------------------------
-
-    // default implementation only is concerned with forward to next/goTo node
-    @NotNull
-    @Override
-    public List<ControlFlowEdge> getOutput() {
-        Address nextTarget = getGoTo();
-        if(nextTarget == null) return List.of();
-
-        Node nextNode = getJobPojo().getNode(nextTarget);
-        if(forward) {
-            if(goTo != null)
-                return List.of(edge(getAddress(), nextNode.getAddress(), "goTo"));
-            else
-                return List.of(edge(getAddress(), nextNode.getAddress(), "forward"));
-        }
-
-        return List.of();
-    }
-
-    @NotNull
-    @Override
-    public List<ControlFlowEdge> getInput() {
-        return getJobPojo().getGraph(getGraphKey())
-                .stream()
-                // every output of every node is checked
-                .map(ControlFlow::getOutput)
-                .flatMap(Collection::stream)
-                // if target address is included, then the input to this node is that node
-                .filter(edge -> edge.getToAddress().equals(getAddress()))
-                // flip the from/to addresses for every filtered edge
-                .map((Function<ControlFlowEdge, ControlFlowEdge>) origin ->
-                        new ControlFlowEdgeImpl(origin.getToAddress(), origin.getFromAddress(), origin.getDisplayLabel(),
-                                origin.isMultiple(), origin.isDispatched()))
-                .collect(Collectors.toList());
-    }
-
-    // ------------------------
-    // DATA FLOW FUNCTIONS
-    // ------------------------
-
-    // default implementation only is concerned with FlowKey input, output
-    // mixed usage of FlowKeys have to extend the input/output
-    @NotNull
-    @Override
-    public Map<String, String> getOutputData() {
-        List<Field> outputData = ClassUtil.getAllFields(new LinkedList<>(), getClass()).stream()
-                // only templates
-                .filter(field -> field.getType().isAssignableFrom(Template.class))
-                // only annotated by flow keys
-                .filter(field -> field.getAnnotation(FlowKey.class) != null)
-                // only output
-                .filter(field -> field.getAnnotation(FlowKey.class).output())
-                .collect(Collectors.toList());
-
-        return extractMapFromFields(outputData);
-    }
-
-    @NotNull
-    @Override
-    public Map<String, String> getInputData() {
-        List<Field> inputData = ClassUtil.getAllFields(new LinkedList<>(), getClass()).stream()
-                // only templates
-                .filter(field -> field.getType().isAssignableFrom(Template.class))
-                // only annotated by flow keys
-                .filter(field -> field.getAnnotation(FlowKey.class) != null)
-                // only input
-                .filter(field -> !field.getAnnotation(FlowKey.class).output())
-                .collect(Collectors.toList());
-
-
-        return extractMapFromFields(inputData);
-    }
-
-    private Map<String, String> extractMapFromFields(List<Field> outputData) {
-        Map<String, String> outputResult = new HashMap<>();
-        for (Field output : outputData) {
-            String name = output.getName();
-            output.setAccessible(true);
-            try {
-                String value = ((Template) output.get(this)).type.getType().getTypeName();
-
-                outputResult.put(name, value);
-            } catch (IllegalAccessException e) {
-                // TODO handle exception differently
-                throw new RuntimeException(e);
-            }
-        }
-
-        return outputResult;
-    }
-
-    @NotNull
-    @Override
-    public String getDisplayName() {
-        return toString()+"\\n"+getClass().getSimpleName();
-    }
 
     protected void log(NodeLogLevel debug, String msg, Object... args) {
         log(l, logLevel, debug, msg, args);
@@ -619,11 +515,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
 
     @Override
     public @Nullable Address getGoTo() {
-        if(goTo != null) {
-            return NodeUtil.addressOf(goTo);
-        } else {
-            return getJobPojo().getForwardTarget(getAddress());
-        }
+        return NodeUtil.getNextNode(getAddress(), NodeUtil.addressOf(goTo), getJobPojo().getGraphs());
     }
 
     @NotNull
@@ -644,4 +536,8 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         return Set.of(this::finish);
     }
 
+    @Override
+    public boolean isForward() {
+        return forward;
+    }
 }

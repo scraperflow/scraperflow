@@ -3,8 +3,6 @@ package scraper.api.node;
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.exceptions.NodeException;
-import scraper.api.flow.ControlFlow;
-import scraper.api.flow.DataFlow;
 import scraper.api.flow.FlowMap;
 
 import java.util.Map;
@@ -21,15 +19,10 @@ import java.util.concurrent.CompletableFuture;
  *     Most nodes are state-less. If stateful nodes are used in a specification,
  *     precautions have to be taken to avoid race conditions.
  * </p>
- * <p>
- *     Each node has to specify (implement) it's {@link ControlFlow} explicitly.
- *     The most basic control flow is forwarding the current {@code FlowMap} to
- *     the next node, but more complex control flows can be implemented.
- * </p>
  *
  * @since 1.0.0
  */
-public interface Node extends NodeConsumer, ControlFlow, DataFlow {
+public interface Node extends NodeConsumer {
 
     // ==================
     // Specification
@@ -52,13 +45,15 @@ public interface Node extends NodeConsumer, ControlFlow, DataFlow {
     @NotNull
     NodeAddress getAddress();
 
+    // ============
+    // Control Flow
+    // ============
+
     /** Job-Unique target forward address. Defaults to the next node in the specification */
     @Nullable
     Address getGoTo();
 
-    // ============
-    // Control Flow
-    // ============
+    boolean isForward();
 
     //-----------
     // Sequential

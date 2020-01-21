@@ -1,12 +1,11 @@
 package scraper.nodes.core.flow;
 
 
+import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
-import scraper.api.flow.ControlFlowEdge;
 import scraper.api.flow.FlowMap;
-import scraper.api.flow.impl.ControlFlowEdgeImpl;
 import scraper.core.AbstractNode;
 import scraper.core.NodeLogLevel;
 import scraper.util.NodeUtil;
@@ -16,9 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  *
@@ -34,8 +30,9 @@ public final class ForkJoinNode extends AbstractNode {
     @FlowKey(mandatory = true)
     private List<String> forkTargets;
 
+    @NotNull
     @Override
-    public FlowMap process(FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull final FlowMap o) throws NodeException {
         List<CompletableFuture<FlowMap>> forkedProcesses = new ArrayList<>();
         forkTargets.forEach(target -> {
             // dispatch new flow, expect future to return the modified flow map
@@ -77,14 +74,5 @@ public final class ForkJoinNode extends AbstractNode {
 
         // continue
         return forward(o);
-    }
-
-    @Override
-    public List<ControlFlowEdge> getOutput() {
-        return Stream.concat(
-                super.getOutput().stream(),
-                forkTargets.stream().map((Function<String, ControlFlowEdge>) target ->
-                        new ControlFlowEdgeImpl(getAddress(), getJobPojo().getNode(NodeUtil.addressOf(target)).getAddress(), "forkJoin", false, true))
-        ).collect(Collectors.toList());
     }
 }

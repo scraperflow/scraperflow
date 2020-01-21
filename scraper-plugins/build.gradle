@@ -1,9 +1,28 @@
+// add each plugin as a runtime dependency for the main app
 subprojects.each {
     def plugin = it.name
     project(':scraper-app') {
         dependencies {
             // for runtime
             runtimeOnly project(":scraper-plugins:${plugin}")
+        }
+    }
+}
+
+// add every node project as a test dependency for every plugin
+subprojects.each { itp ->
+    // for each plugin
+    def plugin = itp.name
+    // add every node project as dependency
+    project(":scraper-nodes").subprojects.each{ itn ->
+        def nodes = itn.name
+        project(":scraper-plugins:${plugin}") {
+            println "Configuring ${plugin} plugin to include ${nodes}"
+            afterEvaluate{
+                dependencies {
+                    testCompile project(":scraper-nodes:${nodes}")
+                }
+            }
         }
     }
 }

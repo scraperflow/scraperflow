@@ -13,7 +13,6 @@ import scraper.core.Template;
 @NodePlugin("1.0.0")
 public final class HashNode extends AbstractFunctionalNode {
 
-
     /** The content to apply the hash on */
     @FlowKey(defaultValue = "\"{input}\"") @NotNull
     private final Template<String> content = new Template<>(){};

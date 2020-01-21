@@ -3,6 +3,7 @@ package scraper.nodes.core.test.addons;
 
 
 import org.junit.Assert;
+import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
@@ -15,8 +16,9 @@ public class ExceptionNode extends AbstractNode {
 
     private @FlowKey(mandatory = true) String exception;
 
+    @NotNull
     @Override
-    public FlowMap process(FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull FlowMap o) throws NodeException {
         switch (exception) {
             case "NODE": {
                 throw new NodeException("Dummy Exception");

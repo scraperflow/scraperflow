@@ -2,24 +2,22 @@ package scraper.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.reflect.TypeToken;
+import scraper.annotations.Nullable;
 import scraper.api.converter.StringToClassConverter;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.node.Address;
-import scraper.api.node.GraphAddress;
-import scraper.api.node.NodeAddress;
+import scraper.api.node.*;
 import scraper.api.node.impl.AddressImpl;
 import scraper.api.node.impl.GraphAddressImpl;
 import scraper.api.node.impl.NodeAddressImpl;
+import scraper.api.specification.ScrapeInstance;
 import scraper.core.Template;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,7 +59,9 @@ public final class NodeUtil {
         return FlowMapImpl.copy(o);
     }
 
+    @Nullable
     public static Address addressOf(String label) {
+        if(label == null) return null;
         return new AddressImpl(label);
     }
 
@@ -262,4 +262,73 @@ public final class NodeUtil {
         }
     }
 
+
+    public static Address getNextNode(Address origin, Address goTo, Map<GraphAddress, List<Node>> graphs) {
+        if(goTo != null) {
+            return goTo;
+        } else {
+            return getForwardTarget(origin, graphs);
+        }
+    }
+
+    public static Address getForwardTarget(Address origin, Map<GraphAddress, List<Node>> graphs) {
+        for (GraphAddress k : graphs.keySet()) {
+            Iterator<Node> it = graphs.get(k).iterator();
+            while(it.hasNext()) {
+                Node node = it.next();
+                if(node.getAddress().equalsTo(origin)){
+                    if(it.hasNext()) {
+                        return it.next().getAddress();
+                    } else {
+                        return null;
+                    }
+                }
+            }
+        }
+
+        throw new IllegalStateException("Origin node address not found in any graph: " + origin.getRepresentation());
+    }
+
+    public static Node getNode(Address target, Map<GraphAddress, List<Node>> graphs, Map<InstanceAddress, ScrapeInstance> importedInstances) {
+        for (InstanceAddress instanceAddress : importedInstances.keySet()) {
+            if (target.equalsTo(instanceAddress)) {
+                return importedInstances.get(instanceAddress).getEntryGraph().get(0);
+            }
+
+            // can only resolve if instance address is correct
+            Address insideTarget = target.resolve(instanceAddress);
+            if(insideTarget != null) return importedInstances.get(instanceAddress).getNode(insideTarget);
+        }
+
+        for (GraphAddress k : graphs.keySet()) {
+            if(k.equalsTo(target)) {
+                return graphs.get(k).get(0);
+            }
+
+            for (Node node : graphs.get(k)) {
+                if(node.getAddress().equalsTo(target))
+                    return node;
+            }
+        }
+
+        throw new IllegalArgumentException("Node address not existing! "+target);
+    }
+
+    public static Map<String, String> extractMapFromFields(List<Field> outputData, Node target) {
+        Map<String, String> outputResult = new HashMap<>();
+        for (Field output : outputData) {
+            String name = output.getName();
+            output.setAccessible(true);
+            try {
+                String value = ((Template) output.get(target)).type.getType().getTypeName();
+
+                outputResult.put(name, value);
+            } catch (IllegalAccessException e) {
+                // TODO handle exception differently
+                throw new RuntimeException(e);
+            }
+        }
+
+        return outputResult;
+    }
 }

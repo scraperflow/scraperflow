@@ -1,5 +1,6 @@
 package scraper.nodes.core.test.addons;
 
+import scraper.annotations.NotNull;
 import scraper.annotations.node.NodePlugin;
 import scraper.annotations.node.FlowKey;
 import scraper.api.flow.FlowMap;
@@ -26,8 +27,9 @@ public final class PrintNode extends AbstractNode {
     @FlowKey
     private String key;
 
+    @NotNull
     @Override
-    public FlowMap process(final FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull final FlowMap o) throws NodeException {
         String arg = this.arg.eval(o);
         List<String> args = this.args.eval(o);
 

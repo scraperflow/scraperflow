@@ -15,14 +15,14 @@ import java.util.Map;
  * Can modify the current argument map.
  */
 @NodePlugin("1.1.0")
-public final class EchoNode extends AbstractFunctionalNode {
+public class EchoNode extends AbstractFunctionalNode {
 
     /** Multiple put operations can be specified in this map at once */
     @FlowKey(defaultValue = "{}") @NotNull
     private final Template<Map<String, Object>> puts = new Template<>(){};
 
     /** All keys specified in this list will be removed from the FlowMap */
-    @FlowKey(defaultValue = "[]") @NotNull @Argument
+    @FlowKey(defaultValue = "[]") @Argument
     private List<String> remove;
 
     @Override
@@ -38,20 +38,5 @@ public final class EchoNode extends AbstractFunctionalNode {
         for (String key : remove) {
             o.remove(key);
         }
-    }
-
-    @Override
-    public Map<String, String> getOutputData() {
-        Map<String, String> map = super.getOutputData();
-
-        for (String toPut : puts.evalWithIdentity().keySet()) {
-            map.put(toPut, "T<java.lang.Object>");
-        }
-
-        for (String toRemove : remove) {
-            map.put(toRemove, "void");
-        }
-
-        return map;
     }
 }

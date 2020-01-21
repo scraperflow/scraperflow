@@ -1,6 +1,7 @@
 package scraper.nodes.core.test.addons;
 
 
+import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
@@ -11,8 +12,9 @@ import scraper.api.exceptions.NodeException;
 public class SleepNode extends AbstractNode {
     private @FlowKey(mandatory = true) Integer sleep;
 
+    @NotNull
     @Override
-    public FlowMap process(FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull FlowMap o) throws NodeException {
         try {
             Thread.sleep(sleep);
         } catch (InterruptedException e) {

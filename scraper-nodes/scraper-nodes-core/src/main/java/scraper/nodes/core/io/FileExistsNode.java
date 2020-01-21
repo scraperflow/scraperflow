@@ -27,7 +27,7 @@ public final class FileExistsNode extends AbstractFunctionalNode {
     @FlowKey(defaultValue = "\"exists\"", output = true) @NotNull
     private final Template<Boolean> result = new Template<>(){};
 
-    @FlowKey(defaultValue = "true") @NotNull
+    @FlowKey(defaultValue = "true")
     private Boolean treatEmptyAsNonExisting;
 
     @Override

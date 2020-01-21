@@ -1,5 +1,6 @@
 package scraper.nodes.core.time;
 
+import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
@@ -59,7 +60,7 @@ public final class PeriodicNode extends AbstractNode {
     private TimerTask timerTask;
 
     @Override
-    public void init(final ScrapeInstance job) throws ValidationException {
+    public void init(@NotNull final ScrapeInstance job) throws ValidationException {
         super.init(job);
 
         o = flowOf(job.getInitialArguments());
@@ -86,8 +87,9 @@ public final class PeriodicNode extends AbstractNode {
         timer = new Timer(false);
     }
 
+    @NotNull
     @Override
-    public FlowMap process(final FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull final FlowMap o) throws NodeException {
         start(o);
 
         boolean flag = this.flag.eval(o);

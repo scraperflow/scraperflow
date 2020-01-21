@@ -21,16 +21,16 @@ import java.util.stream.Stream;
 public abstract class AbstractStreamNode extends AbstractNode implements StreamNode {
 
     @FlowKey(defaultValue = "\"true\"")
-    private @NotNull Boolean collect;
+    private Boolean collect;
 
     /** Where the stream is dispatched */
     @FlowKey(mandatory = true)
-    private @NotNull Address streamTarget;
+    private Address streamTarget;
 
     private final @NotNull Map<UUID, FlowMap> openStreams = new HashMap<>();
     private final @NotNull Map<UUID, Map<String, List<Object>>> collectors = new HashMap<>();
 
-    public void stream(FlowMap origin, FlowMap newMap, List<String> toCollect) {
+    public void stream(@NotNull FlowMap origin, @NotNull FlowMap newMap, @NotNull List<String> toCollect) {
         if(!collect) {
             // dispatch directly to stream target without collecting
             forkDispatch(newMap, streamTarget);
@@ -49,6 +49,7 @@ public abstract class AbstractStreamNode extends AbstractNode implements StreamN
         }
     }
 
+    @NotNull
     @Override
     public Collection<NodeHook> beforeHooks() {
         NodeHook initCollectForFlow = o -> {
@@ -65,6 +66,7 @@ public abstract class AbstractStreamNode extends AbstractNode implements StreamN
         ).collect(Collectors.toList());
     }
 
+    @NotNull
     @Override
     public Collection<NodeHook> afterHooks() {
         NodeHook finishCollectForFlow = o -> {

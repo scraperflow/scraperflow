@@ -1,5 +1,6 @@
 package scraper.nodes.core.test.addons;
 
+import scraper.annotations.NotNull;
 import scraper.annotations.node.NodePlugin;
 import scraper.annotations.node.FlowKey;
 import scraper.api.flow.FlowMap;
@@ -34,8 +35,9 @@ public class AssertNode extends AbstractNode {
 
     private @FlowKey Integer wait;
 
+    @NotNull
     @Override
-    public FlowMap process(FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull FlowMap o) throws NodeException {
         if(wait != null) { try { Thread.sleep(wait); } catch (InterruptedException ignored) {} }
 
         for (String key : assertMap.keySet()) {

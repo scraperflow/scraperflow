@@ -31,7 +31,7 @@ public final class ContainedInCollectionNode extends AbstractFunctionalNode {
     private Template<Boolean> flag = new Template<>(){};
 
     /** Determines if the contains or contains not operation is used */
-    @FlowKey(defaultValue = "false") @NotNull
+    @FlowKey(defaultValue = "false")
     private Boolean negate;
 
     @Override

@@ -24,14 +24,14 @@ import java.util.Date;
 public final class DateNode extends AbstractFunctionalNode {
 
     /** Format of the date */
-    @FlowKey(defaultValue = "\"yyyy-MM-dd'T'HH:mm:ss\"") @Argument @NotNull
+    @FlowKey(defaultValue = "\"yyyy-MM-dd'T'HH:mm:ss\"") @Argument
     private String dateFormat;
 
     /** Where to put the date */
     @FlowKey(defaultValue = "\"date\"", output = true) @NotNull
     private Template<String> put = new Template<>(){};
 
-    private @NotNull DateFormat parsedDateFormat;
+    private DateFormat parsedDateFormat;
 
     @Override
     public void init(@NotNull final ScrapeInstance job) throws ValidationException {

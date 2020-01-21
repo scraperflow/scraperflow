@@ -5,9 +5,6 @@ import org.junit.Test;
 import scraper.api.di.DIContainer;
 import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
-import scraper.api.flow.ControlFlow;
-import scraper.api.flow.ControlFlowEdge;
-import scraper.api.flow.DataFlow;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.Node;
@@ -27,7 +24,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
-import static scraper.util.NodeUtil.graphAddressOf;
 
 public class AbstractNodeTest {
 
@@ -37,53 +33,6 @@ public class AbstractNodeTest {
         URL base = getClass().getResource(basePath);
         ScrapeSpecificationImpl spec = (ScrapeSpecificationImpl) JobUtil.parseJobs(new String[]{scrapeFile}, Set.of(base.getFile())).get(0);
         return Objects.requireNonNull(deps.get(JobFactory.class)).convertScrapeJob(spec);
-    }
-
-    @Test
-    public void simpleDataFlowTest() throws Exception {
-        ScrapeInstaceImpl instance = getInstance("jobfactory/simpledataflow", "job1.jf");
-
-        DataFlow startNode = instance.getGraph(graphAddressOf("start")).get(0);
-        Assert.assertEquals("java.util.List<java.lang.String>", startNode.getInputData().get("input"));
-        Assert.assertEquals("java.lang.Integer", startNode.getOutputData().get("output"));
-    }
-
-    @Test
-    public void simpleControlFlowTest() throws Exception {
-        ScrapeInstaceImpl instance = getInstance("jobfactory/simplecontrolflow", "job1.jf");
-
-        ControlFlow startNode = instance.getGraph(graphAddressOf("start")).get(0);
-        assertEquals(1, startNode.getOutput().size());
-        assertEquals(0, startNode.getInput().size());
-        assertEquals("<hello@0>\\nSimpleNode", startNode.getDisplayName());
-
-        ControlFlow endNode = instance.getGraph(graphAddressOf("start")).get(1);
-        assertEquals(0, endNode.getOutput().size());
-        assertEquals(1, endNode.getInput().size());
-
-        // FIXME
-//        assertEquals("hello", instance.getGraph(addressOf("start")).get(0).getAddress().getLabel());
-    }
-
-    @Test
-    public void complexControlFlowTest() throws Exception {
-        ScrapeInstaceImpl instance = getInstance("cf", "job1.jf");
-
-        ControlFlow middleNode = instance.getEntryGraph().get(1);
-        assertEquals(3, middleNode.getOutput().size());
-        assertEquals(1, middleNode.getInput().size());
-
-        boolean oneDispatch = false;
-        boolean oneMulti = false;
-        for (ControlFlowEdge edge : middleNode.getOutput()) {
-            if(edge.isDispatched()) oneDispatch = true;
-            if(edge.isMultiple()) oneMulti = true;
-
-            Assert.assertTrue(edge.getDisplayLabel().contains("goTo") || edge.getDisplayLabel().contains("3"));
-        }
-
-        Assert.assertTrue(oneDispatch);
-        Assert.assertTrue(oneMulti);
     }
 
     @Test

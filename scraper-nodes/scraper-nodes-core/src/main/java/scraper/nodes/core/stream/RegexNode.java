@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 public final class RegexNode extends AbstractStreamNode {
 
     /** Regex as a Java String */
-    @FlowKey(mandatory = true) @NotNull
+    @FlowKey(mandatory = true)
     private String regex;
 
     /** The content to apply the regex on */
@@ -36,19 +36,19 @@ public final class RegexNode extends AbstractStreamNode {
     private final Template<String> content = new Template<>(){};
 
     /** Key: location of where to put the group; Value: Group number of the regex. */
-    @FlowKey(defaultValue = "{}") @NotNull
+    @FlowKey(defaultValue = "{}")
     private Map<String, Integer> groups;
 
     /** Where the output list will be put. If there's already a list at that key, it will be replaced. */
-    @FlowKey(defaultValue = "\"output\"") @NotNull
+    @FlowKey(defaultValue = "\"output\"")
     private String output;
 
     /** Pattern dotall option */
-    @FlowKey(defaultValue = "\"true\"") @NotNull
+    @FlowKey(defaultValue = "\"true\"")
     private Boolean dotAll;
 
     // compiles the regex pattern
-    private @NotNull Pattern p;
+    private Pattern p;
 
     @Override
     public void init(final @NotNull ScrapeInstance job) throws ValidationException {
@@ -60,6 +60,7 @@ public final class RegexNode extends AbstractStreamNode {
         }
     }
 
+    @NotNull
     @Override
     public FlowMap process(final @NotNull FlowMap o) throws NodeException {
         String content = this.content.eval(o);

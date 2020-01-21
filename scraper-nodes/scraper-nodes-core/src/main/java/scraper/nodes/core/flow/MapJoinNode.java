@@ -5,9 +5,7 @@ import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
-import scraper.api.flow.ControlFlowEdge;
 import scraper.api.flow.FlowMap;
-import scraper.api.flow.impl.ControlFlowEdgeImpl;
 import scraper.core.AbstractNode;
 import scraper.core.NodeLogLevel;
 import scraper.core.Template;
@@ -19,8 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  *
@@ -33,7 +29,7 @@ public final class MapJoinNode extends AbstractNode {
     private Map<String, String> keys;
 
     /** List to apply map to */
-    @FlowKey(mandatory = true)
+    @FlowKey(mandatory = true) @NotNull
     private Template<List<Object>> list = new Template<>(){};
 
     /** Label of goTo */
@@ -41,7 +37,7 @@ public final class MapJoinNode extends AbstractNode {
     private String mapTarget;
 
     /** At which key to put the element of the list into. */
-    @FlowKey(defaultValue = "\"element\"")
+    @FlowKey(defaultValue = "\"element\"") @NotNull
     private Template<Object> putElement = new Template<>(){};
 
     /** Only distinct elements */
@@ -49,6 +45,7 @@ public final class MapJoinNode extends AbstractNode {
     private Boolean distinct;
 
 
+    @NotNull
     @Override
     public FlowMap process(@NotNull final FlowMap o) throws NodeException {
         List<Object> list = this.list.eval(o);
@@ -98,11 +95,5 @@ public final class MapJoinNode extends AbstractNode {
 
         // continue
         return forward(o);
-    }
-
-    @Override
-    public List<ControlFlowEdge> getOutput() {
-        ControlFlowEdge e = new ControlFlowEdgeImpl(getAddress(), getJobPojo().getNode(NodeUtil.addressOf(mapTarget)).getAddress(),"mapJoin", true, true);
-        return Stream.concat(super.getOutput().stream(), List.of(e).stream()).collect(Collectors.toList());
     }
 }

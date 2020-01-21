@@ -1,5 +1,6 @@
 package scraper.nodes.core.io;
 
+import scraper.annotations.NotNull;
 import scraper.annotations.node.EnsureFile;
 
 import scraper.annotations.node.NodePlugin;
@@ -35,8 +36,9 @@ public final class WriteLineToFileNode extends AbstractNode {
     @FlowKey(defaultValue = "false")
     private Boolean overwrite;
 
+    @NotNull
     @Override
-    public FlowMap process(final FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull final FlowMap o) throws NodeException {
         String content = line.eval(o);
         String output = this.output.eval(o);
 
