@@ -1,0 +1,13 @@
+{
+  "name": "test",
+  "entry": "start",
+  "graphs": {
+    "start": [
+      { "type":"SimpleFlowTestNode" },
+      { "type":"SimpleFlowTestNode" }
+    ],
+    "other": [
+      { "type":"SimpleFlowTestNode", "goTo": "start" }
+    ]
+  }
+}

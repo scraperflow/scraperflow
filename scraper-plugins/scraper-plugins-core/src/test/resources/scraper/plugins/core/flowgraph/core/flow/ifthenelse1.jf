@@ -1,0 +1,16 @@
+{
+  "name": "test",
+  "entry": "start",
+  "graphs": {
+    "start": [
+      { "type":"IfThenElseNode", "condition": true, "trueTarget": "condition1", "falseTarget": "condition2" },
+      { "type":"SimpleFlowTestNode" }
+    ],
+    "condition1": [
+      { "type":"SimpleFlowTestNode" }
+    ],
+    "condition2": [
+      { "type":"SimpleFlowTestNode" }
+    ]
+  }
+}
