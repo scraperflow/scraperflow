@@ -43,6 +43,10 @@ public class ControlFlowEdgeImpl implements ControlFlowEdge {
         return new ControlFlowEdgeImpl(from, to, displayLabel, false, false);
     }
 
+    public static ControlFlowEdge edge(@NotNull final Address from, @NotNull final Address to, @NotNull String displayLabel, boolean multiple, boolean dispatched) {
+        return new ControlFlowEdgeImpl(from, to, displayLabel, multiple, dispatched);
+    }
+
     @Override
     public String toString() {
         return "<"+fromAddress +":" + displayLabel + ":" + toAddress+">";
