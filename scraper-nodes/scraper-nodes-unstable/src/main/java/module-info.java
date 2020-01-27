@@ -6,6 +6,7 @@ open module scraper.nodes.unstable {
     requires scraper.api;
     requires scraper.core;
     requires java.net.http;
+    requires com.fasterxml.jackson.databind;
 
     exports scraper.nodes.unstable.api.telegram;
 

@@ -3,11 +3,10 @@ package scraper.nodes.core.time;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.specification.ScrapeInstance;
-import scraper.core.AbstractNode;
+import scraper.core.AbstractFunctionalNode;
 import scraper.core.Template;
 import scraper.util.NodeUtil;
 
@@ -19,27 +18,11 @@ import static scraper.core.NodeLogLevel.DEBUG;
 import static scraper.util.NodeUtil.flowOf;
 
 /**
- * Executes a given node periodically. Exceptions are swallowed. Periodic execution can start at initialization or on first
- * accept call, controlled via the flag.
- *
- * <p>Example .scrape definition:
- *
- * <pre>
- * {
- *   "type": "PeriodicNode",
- *   "label" : "initPings",
- *   "period": "{status-ping-period}",
- *   "onPeriod": "ping",
- *   "forward" : false
- * }</pre>
- *
- * @see AbstractNode
- * @apiNote thread safe
- * @since 0.1
- * @author Albert Schimpf
+ * Executes a given node periodically.
+ * Periodic execution can start at initialization or on first accept call, controlled via the flag.
  */
-@NodePlugin(value = "0.1.0", stateful = true)
-public final class PeriodicNode extends AbstractNode {
+@NodePlugin(value = "1.0.0", stateful = true)
+public final class PeriodicNode extends AbstractFunctionalNode {
 
     /** Period time in ms */
     @FlowKey(mandatory = true)
@@ -71,15 +54,7 @@ public final class PeriodicNode extends AbstractNode {
                 if(started.get() && dispatch.get()) {
                     log(DEBUG,"Dispatching {}", onPeriod);
                     final FlowMap oCopy = o;
-                    dispatch(() -> {
-                        try {
-                            eval(oCopy, NodeUtil.addressOf(onPeriod));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    });
-
+                    forkDispatch(oCopy, NodeUtil.addressOf(onPeriod));
                 }
             }
         };
@@ -87,24 +62,15 @@ public final class PeriodicNode extends AbstractNode {
         timer = new Timer(false);
     }
 
-    @NotNull
     @Override
-    public FlowMap process(@NotNull final FlowMap o) throws NodeException {
-        start(o);
-
+    public void modify(@NotNull final FlowMap o) {
         boolean flag = this.flag.eval(o);
         dispatch.set(flag);
         this.o = flowOf(o);
 
-        synchronized (started) {
-            if(!started.get()) {
-                started.set(true);
-                timer.scheduleAtFixedRate(timerTask, 0 , period);
-            }
+        if (!started.getAndSet(true)) {
+            timer.scheduleAtFixedRate(timerTask, 0 , period);
         }
-
-
-        return forward(o);
     }
 
 }
