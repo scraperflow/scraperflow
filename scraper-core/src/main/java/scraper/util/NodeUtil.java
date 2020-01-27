@@ -2,6 +2,7 @@ package scraper.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.reflect.TypeToken;
+import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.converter.StringToClassConverter;
 import scraper.api.exceptions.ValidationException;
@@ -29,18 +30,17 @@ public final class NodeUtil {
     /**
      * Evaluates the base template with the given map. Does nothing if base is not of type String.
      */
-    public static Object replaceArguments(Object base, Map<String, Object> args){
-        if(base == null) return null;
+    private static Object replaceArguments(@NotNull Object base, Map<String, Object> o){
         if(!(base instanceof String)) return base;
 
         String replaced = (String) base;
 
-        for (String arg : args.keySet()) {
+        for (String arg : o.keySet()) {
             try {
-                String ik = String.valueOf(args.get(arg));
+                String ik = String.valueOf(o.get(arg));
                 Pattern argsPattern = Pattern.compile("\\{('(.*?)')?"+Pattern.quote(arg)+"('(.*?)')?}");
                 Matcher argsMatcher = argsPattern.matcher(replaced);
-                if(args.get(arg) == null) {
+                if(o.get(arg) == null) {
                     replaced = argsMatcher.replaceAll("");
                 } else {
                     replaced = argsMatcher.replaceAll("$2"+Matcher.quoteReplacement(ik)+"$4");

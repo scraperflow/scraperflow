@@ -40,6 +40,12 @@ public final class TemplateUtil {
             throw new TemplateException("Bad template syntax", e);
         }
     }
+
+    public static <C> TemplateExpression<C> parseTemplate(@NotNull final String term) {
+        log.trace("Converting term to template expression: '{}'", term);
+        TypeToken<C> targetType = new TypeToken<C>(){};
+        return parseTemplate(term, targetType);
+    }
 }
 
 class ThrowingErrorListener extends BaseErrorListener {

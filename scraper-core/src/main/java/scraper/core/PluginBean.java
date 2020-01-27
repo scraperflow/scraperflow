@@ -66,6 +66,7 @@ public class PluginBean {
         // construct human readable plugins string
         StringBuilder sb = new StringBuilder("[");
         for (AbstractMetadata metadata : getPlugins()) {
+            if(metadata.isDeprecated()) continue;
             if(sb.length() != 1) sb.append(", ");
             sb.append(metadata.getMetadata().getName()).append(" [").append(metadata.getMetadata().getVersion()).append("]");
         }

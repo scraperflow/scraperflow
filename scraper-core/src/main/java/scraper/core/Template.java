@@ -26,6 +26,15 @@ public abstract class Template<T> {
         return eval(parsedJson, type, new IdentityFlowMap());
     }
 
+    public T evalOrDefault(FlowMap o, T defaultValue) {
+        try {
+            T eval = eval(o);
+            if(eval != null) return eval;
+        } catch (Exception ignore) {}
+
+        return defaultValue;
+    }
+
     protected <C> C eval(Object jsonObject, TypeToken<C> currentType, FlowMap o) {
         // if json null, return null regardless of currentType
         if(jsonObject == null) return null;
