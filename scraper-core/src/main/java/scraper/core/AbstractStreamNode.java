@@ -3,6 +3,7 @@ package scraper.core;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
+import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
 import scraper.api.node.NodeHook;
@@ -24,7 +25,7 @@ public abstract class AbstractStreamNode extends AbstractNode implements StreamN
     private Boolean collect;
 
     /** Where the stream is dispatched */
-    @FlowKey(mandatory = true)
+    @FlowKey
     private Address streamTarget;
 
     private final @NotNull Map<UUID, FlowMap> openStreams = new HashMap<>();
@@ -49,42 +50,33 @@ public abstract class AbstractStreamNode extends AbstractNode implements StreamN
         }
     }
 
-    @NotNull
-    @Override
-    public Collection<NodeHook> beforeHooks() {
-        NodeHook initCollectForFlow = o -> {
-            if(collect) {
-                log(NodeLogLevel.TRACE, "Collecting stream for map {}", o.getId());
-                openStreams.put(o.getId(), o);
-                collectors.put(o.getId(), new HashMap<>());
-            }
-        };
 
-        return Stream.concat(
-                super.beforeHooks().stream(),
-                Stream.of(initCollectForFlow)
-        ).collect(Collectors.toList());
+    @Override
+    public FlowMap process(FlowMap o) throws NodeException {
+
+        if(collect) {
+            log(NodeLogLevel.TRACE, "Collecting stream for map {}", o.getId());
+            openStreams.put(o.getId(), o);
+            collectors.put(o.getId(), new HashMap<>());
+        }
+
+        processStream(o);
+
+
+        if(!collect) {
+            return forward(o);
+        } else {
+            log(NodeLogLevel.TRACE, "Finish collection for map {}", o.getId());
+            FlowMap copy = NodeUtil.flowOf(openStreams.get(o.getId()));
+            Map<String, List<Object>> toCollect = collectors.get(o.getId());
+            toCollect.forEach(copy::put);
+
+            openStreams.remove(o.getId());
+            collectors.remove(o.getId());
+
+            return forward(copy);
+        }
     }
 
-    @NotNull
-    @Override
-    public Collection<NodeHook> afterHooks() {
-        NodeHook finishCollectForFlow = o -> {
-            if(collect) {
-                log(NodeLogLevel.TRACE, "Finish collection for map {}", o.getId());
-                FlowMap copy = NodeUtil.flowOf(openStreams.get(o.getId()));
-                Map<String, List<Object>> toCollect = collectors.get(o.getId());
-                toCollect.forEach(copy::put);
-                forkDispatch(copy, streamTarget);
-
-                openStreams.remove(o.getId());
-                collectors.remove(o.getId());
-            }
-        };
-
-        return Stream.concat(
-                super.afterHooks().stream(),
-                Stream.of(finishCollectForFlow)
-        ).collect(Collectors.toList());
-    }
+    public abstract void processStream(FlowMap o);
 }

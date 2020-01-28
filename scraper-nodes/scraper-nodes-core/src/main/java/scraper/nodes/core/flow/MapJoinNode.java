@@ -54,7 +54,7 @@ public final class MapJoinNode extends AbstractNode {
         List<CompletableFuture<FlowMap>> forkedProcesses = new ArrayList<>();
         list.forEach(element -> {
             FlowMap copy = NodeUtil.flowOf(o);
-            putElement.output(o, element);
+            putElement.output(copy, element);
             // dispatch new flow, expect future to return the modified flow map
             CompletableFuture<FlowMap> t = forkDepend(copy, NodeUtil.addressOf(mapTarget));
             forkedProcesses.add(t);

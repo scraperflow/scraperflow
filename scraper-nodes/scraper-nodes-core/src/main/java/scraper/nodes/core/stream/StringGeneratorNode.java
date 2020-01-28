@@ -50,7 +50,7 @@ public final class StringGeneratorNode extends AbstractStreamNode {
 
     @NotNull
     @Override
-    public FlowMap process(final @NotNull FlowMap o) throws NodeException {
+    public void processStream(final @NotNull FlowMap o) {
         // parse expression for goTo key
         // only one pattern 'X TO Y' supported, parse directly with regex
         String targetString = expression;
@@ -73,7 +73,5 @@ public final class StringGeneratorNode extends AbstractStreamNode {
 
             stream(o, copy, List.of(generatedElement.raw(), key));
         }
-
-        return forward(o);
     }
 }
