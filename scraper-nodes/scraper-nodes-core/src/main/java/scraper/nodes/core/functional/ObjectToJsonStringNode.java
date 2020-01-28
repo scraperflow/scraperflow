@@ -20,7 +20,7 @@ public final class ObjectToJsonStringNode extends AbstractFunctionalNode {
 
     /** Json object */
     @FlowKey(defaultValue = "\"object\"")
-    private final Template<Map<String, Object>> object = new Template<>(){};
+    private final Template<Object> object = new Template<>(){};
 
     /** Resulting string location */
     @FlowKey(defaultValue = "\"result\"", output = true)
@@ -31,7 +31,7 @@ public final class ObjectToJsonStringNode extends AbstractFunctionalNode {
 
     @Override
     public void modify(@NotNull final FlowMap o) throws NodeException {
-        Map<String, Object> object = this.object.eval(o);
+        Object object = this.object.eval(o);
 
         try {
             // read object at argument location
