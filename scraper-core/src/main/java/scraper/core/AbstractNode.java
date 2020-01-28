@@ -57,13 +57,11 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     /** Node type. Is used once to create an instance of an actual node implementation. */
     @FlowKey(mandatory = true)
     protected String type;
-//    /** Comment is only used in the .scrape file to describe what the intent of the node is */
-//    @FlowKey
-//    protected String __comment;
 
     /** Decide log level threshold for this node */
     @FlowKey(defaultValue = "\"INFO\"")
     protected NodeLogLevel logLevel;
+
     /** Log statement to be printed */
     @FlowKey
     protected Template<Object> log = new Template<>(){};
@@ -75,13 +73,15 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     /** Indicates if forward has any effect or not. */
     @FlowKey(defaultValue = "true")
     protected Boolean forward;
+
     /** Target label */
     @FlowKey
-    protected String goTo;
+    protected Address goTo;
 
     /** Reference to its parent job */
     @JsonIgnore
     protected ScrapeInstance jobPojo;
+
     /** Index of the node in the process list. Is set on init. */
     protected int stageIndex;
 
@@ -515,7 +515,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
 
     @Override
     public @Nullable Address getGoTo() {
-        return NodeUtil.getNextNode(getAddress(), NodeUtil.addressOf(goTo), getJobPojo().getGraphs());
+        return NodeUtil.getNextNode(getAddress(), goTo, getJobPojo().getGraphs());
     }
 
     @NotNull
