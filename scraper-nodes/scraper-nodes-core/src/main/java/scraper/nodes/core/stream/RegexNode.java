@@ -67,6 +67,8 @@ public final class RegexNode extends AbstractStreamNode {
     @NotNull
     @Override
     public void processStream(final @NotNull FlowMap o) {
+        collect(o, List.of(output));
+    
         String content = this.content.eval(o);
 
         Matcher m = p.matcher(content);
@@ -81,14 +83,14 @@ public final class RegexNode extends AbstractStreamNode {
 
             FlowMap copy = NodeUtil.flowOf(o);
             copy.put(output, singleCapture);
-            stream(o, copy, List.of(output));
+            stream(o, copy);
         }
 
         Map<String, Object> evalDefault = noMatchDefaultOutput.evalOrDefault(o, null);
         if(evalDefault != null && m.reset().results().findAny().isEmpty()) {
             FlowMap copy = NodeUtil.flowOf(o);
             copy.put(output, evalDefault);
-            stream(o, copy, List.of(output));
+            stream(o, copy);
         }
     }
 }

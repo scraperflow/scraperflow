@@ -30,19 +30,30 @@ public abstract class AbstractStreamNode extends AbstractNode implements StreamN
 
     private final @NotNull Map<UUID, FlowMap> openStreams = new HashMap<>();
     private final @NotNull Map<UUID, Map<String, List<Object>>> collectors = new HashMap<>();
+    private final @NotNull Map<UUID, List<String>> collectKeys = new HashMap<>();
 
-    public void stream(@NotNull FlowMap origin, @NotNull FlowMap newMap, @NotNull List<String> toCollect) {
+    public void collect(@NotNull FlowMap o, @NotNull List<String> toCollect) {
+        if(collect) {
+            collectKeys.put(o.getId(), toCollect);
+            // get collector list for origin ID and key to be collected
+            collectors.put(origin.getId(), new HashMap<>());
+            
+            // create collector for origin ID
+            openStreams.put(origin.getId(), NodeUtil.flowOf(origin));
+
+            // create empty list as default
+            collectKeys.get(origin.getId()).forEach(key -> {
+                collectors.get(origin.getId()).put(key, new LinkedList<>());
+            }
+        }
+    }
+
+    public void stream(@NotNull FlowMap origin, @NotNull FlowMap newMap) {
         if(!collect) {
             // dispatch directly to stream target without collecting
             forkDispatch(newMap, streamTarget);
         } else {
-            // create collector for origin ID
-            openStreams.putIfAbsent(origin.getId(), NodeUtil.flowOf(origin));
-            collectors.putIfAbsent(origin.getId(), new HashMap<>());
-
-            toCollect.forEach(key -> {
-                // get collector list for origin ID and key to be collected
-                collectors.get(origin.getId()).putIfAbsent(key, new LinkedList<>());
+            collectKeys.get(origin.getId()).forEach(key -> {
                 Map<String, List<Object>> collectorForId = collectors.get(origin.getId());
                 // collect to list
                 collectorForId.get(key).add(newMap.get(key));
@@ -73,6 +84,7 @@ public abstract class AbstractStreamNode extends AbstractNode implements StreamN
 
             openStreams.remove(o.getId());
             collectors.remove(o.getId());
+            collectKeys.remove(o.getId());
 
             return forward(copy);
         }

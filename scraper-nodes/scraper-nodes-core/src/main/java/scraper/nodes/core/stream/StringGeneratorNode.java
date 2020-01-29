@@ -63,6 +63,8 @@ public final class StringGeneratorNode extends AbstractStreamNode {
         Integer from = Integer.valueOf(m.group(2));
         Integer to = Integer.valueOf(m.group(3));
 
+        collect(o, List.of(generatedElement.raw(), key));
+
         for (int i = from; i <= to; i++) {
             FlowMap copy = NodeUtil.flowOf(o);
             // used to evaluate generator template
@@ -71,7 +73,7 @@ public final class StringGeneratorNode extends AbstractStreamNode {
             String generatedString = generator.eval(copy);
             generatedElement.output(copy, generatedString);
 
-            stream(o, copy, List.of(generatedElement.raw(), key));
+            stream(o, copy);
         }
     }
 }
