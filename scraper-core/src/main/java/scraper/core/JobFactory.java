@@ -1,28 +1,26 @@
 package scraper.core;
 
-import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.slf4j.Logger;
 import org.springframework.plugin.metadata.PluginMetadata;
 import org.springframework.plugin.metadata.SimplePluginMetadata;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
+import scraper.api.node.Address;
 import scraper.api.node.GraphAddress;
 import scraper.api.node.InstanceAddress;
-import scraper.api.node.Node;
-import scraper.api.node.Address;
+import scraper.api.node.container.NodeContainer;
 import scraper.api.node.impl.InstanceAddressImpl;
+import scraper.api.node.type.FunctionalNode;
+import scraper.api.node.type.Node;
+import scraper.api.node.type.StreamNode;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
 import scraper.api.service.ProxyReservation;
-import scraper.api.specification.ScrapeImportSpecification;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
 import scraper.api.specification.impl.ScrapeInstaceImpl;
-import scraper.api.specification.impl.ScraperImportSpecificationImpl;
 import scraper.util.JobUtil;
 import scraper.utils.FileUtil;
 import scraper.utils.StringUtil;
@@ -197,10 +195,12 @@ public class JobFactory {
 
                 List<? extends AbstractMetadata> processPlugins = plugins.getPlugins().getPluginsFor(metadata);
                 Node n = getHighestMatchingPlugin(processPlugins, metadata);
-                n.setNodeConfiguration(nodeConfiguration, graphKey);
+
+                NodeContainer<? extends Node> nn = getMatchingNodeContainer(n);
+                nn.setNodeConfiguration(nodeConfiguration, graphKey);
 
                 job.getGraphs().putIfAbsent(graphKey, new ArrayList<>());
-                job.getGraph(graphKey).add(n);
+                job.getGraph(graphKey).add(nn);
             }
         }
 
@@ -211,6 +211,18 @@ public class JobFactory {
 
         job.init();
         return job;
+    }
+
+    private NodeContainer<? extends Node> getMatchingNodeContainer(Node n) {
+        if(n instanceof FunctionalNode) {
+            return new AbstractFunctionalNode() { @Override public FunctionalNode getC() { return (FunctionalNode) n; } };
+        }
+        else if(n instanceof StreamNode) {
+            return new AbstractStreamNode() { @Override public StreamNode getC() { return (StreamNode) n; } };
+        } else {
+            // default, generic node
+            return new GenericNode() { @Override public Node getC() { return n; } };
+        }
     }
 
 

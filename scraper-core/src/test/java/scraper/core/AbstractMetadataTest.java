@@ -3,7 +3,7 @@ package scraper.core;
 import org.junit.Assert;
 import org.junit.Test;
 import scraper.annotations.NotNull;
-import scraper.api.node.Node;
+import scraper.api.node.type.Node;
 
 public class AbstractMetadataTest {
     @Test

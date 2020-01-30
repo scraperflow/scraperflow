@@ -4,6 +4,7 @@ import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.flow.FlowHistory;
 import scraper.api.flow.FlowMap;
+import scraper.api.reflect.T;
 
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +20,11 @@ public class IdentityFlowMap implements FlowMap {
     @Override public void clear() { throw new IllegalStateException(); }
     @Override public @NotNull Set<String> keySet() { throw new IllegalStateException(); }
     @NotNull @Override public FlowHistory getFlowHistory() { throw new IllegalStateException(); }
-    @Override public UUID getId() { throw new IllegalStateException(); }
+    @NotNull @Override public UUID getId() { throw new IllegalStateException(); }
+    @Override public <A> A eval(T<A> template) { throw new IllegalStateException(); }
+    @Override public <A> A evalOrDefault(T<A> template, A object) { throw new IllegalStateException(); }
+    @Override public <A> A input(T<A> template) { throw new IllegalStateException(); }
+    @Override public <A> void output(T<A> locationAndType, A object) { throw new IllegalStateException(); }
     public @NotNull ConcurrentMap<String, Object> getMap() { throw new IllegalStateException(); }
     public boolean containsElements(@NotNull final FlowMap expectedOutput) { throw new IllegalStateException(); }
 

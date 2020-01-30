@@ -5,9 +5,10 @@ import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
-import scraper.core.AbstractFunctionalNode;
+import scraper.api.node.container.FunctionalNodeContainer;
+import scraper.api.node.type.FunctionalNode;
+import scraper.api.reflect.T;
 import scraper.core.AbstractNode;
-import scraper.core.Template;
 
 
 /**
@@ -18,24 +19,24 @@ import scraper.core.Template;
  * @author Albert Schimpf
  */
 @NodePlugin("0.1.0")
-public final class TimestampDifferenceNode extends AbstractFunctionalNode {
+public final class TimestampDifferenceNode implements FunctionalNode {
 
     /** Long timestamp in string format */
     @FlowKey(mandatory = true)
-    private Template<String> timestamp = new Template<>() {};
+    private T<String> timestamp = new T<>() {};
 
     /** time difference in ms */
     @FlowKey(mandatory = true) @Argument
     private Integer differenceMs;
 
     @FlowKey(mandatory = true, output = true)
-    private Template<Boolean> put = new Template<>(){};
+    private T<Boolean> put = new T<>(){};
 
     @Override
-    public void modify(@NotNull final FlowMap o) {
-        Long thatTimestampMs = Long.valueOf(timestamp.eval(o));
+    public void modify(FunctionalNodeContainer n, @NotNull final FlowMap o) {
+        Long thatTimestampMs = Long.valueOf(o.eval(timestamp));
         long currentTimestampMs = System.currentTimeMillis();
 
-        put.output(o, thatTimestampMs + differenceMs > currentTimestampMs);
+        o.output(put, thatTimestampMs + differenceMs > currentTimestampMs);
     }
 }

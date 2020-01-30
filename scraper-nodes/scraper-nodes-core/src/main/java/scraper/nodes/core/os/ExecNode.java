@@ -5,8 +5,10 @@ import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
-import scraper.core.AbstractFunctionalNode;
-import scraper.core.Template;
+import scraper.api.node.container.FunctionalNodeContainer;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.FunctionalNode;
+import scraper.api.reflect.T;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,11 +17,11 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
-import static scraper.core.NodeLogLevel.DEBUG;
-import static scraper.core.NodeLogLevel.ERROR;
+import static scraper.api.node.container.NodeLogLevel.DEBUG;
+import static scraper.api.node.container.NodeLogLevel.ERROR;
 
 /**
- * Executes a command defined in the .scrape file. Parameters can be templates.
+ * Executes a command defined in the .scrape file. Parameters can be Ts.
  *
  * <ol>
  *     <li>Executes the command <tt>exec</tt></li>
@@ -42,14 +44,14 @@ import static scraper.core.NodeLogLevel.ERROR;
  * </pre>
  */
 @NodePlugin("0.2.0")
-public final class ExecNode extends AbstractFunctionalNode {
+public final class ExecNode implements FunctionalNode {
 
     /** Command to execute. Every element is handled as one argument. Argument strings are evaluated. */
     @FlowKey
-    private final Template<List<String>> exec = new Template<>(){};
+    private final T<List<String>> exec = new T<>(){};
 
     @FlowKey
-    private final Template<String> execStr = new Template<>(){};
+    private final T<String> execStr = new T<>(){};
 
     /** If the process fails, this node can throw an exception if this field is specified. */
     @FlowKey(defaultValue = "false")
@@ -64,22 +66,22 @@ public final class ExecNode extends AbstractFunctionalNode {
     private String putErr;
 
     @Override
-    public void modify(@NotNull final FlowMap o) throws NodeException {
-        List<String> exec = this.exec.eval(o);
-        String execStr = this.execStr.eval(o);
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) throws NodeException {
+        List<String> exec = o.eval(this.exec);
+        String execStr = o.eval(this.execStr);
 
-        if(exec != null) exec(exec, o);
-        else if(execStr != null) exec(Arrays.asList(execStr.split("\\s")), o);
+        if(exec != null) exec(n, exec, o);
+        else if(execStr != null) exec(n, Arrays.asList(execStr.split("\\s")), o);
     }
 
-    private void exec(List<String> exec, FlowMap o) throws NodeException {
+    private void exec(NodeContainer n, List<String> exec, FlowMap o) throws NodeException {
         try {
-            log(DEBUG,"Executing {}", exec);
+            n.log(DEBUG,"Executing {}", exec);
 
             ProcessBuilder pb = new ProcessBuilder(exec);
             Process b = pb.start();
             b.waitFor();
-            if(b.exitValue() != 0) log(ERROR,"{} finished with non-zero exit code: {}", exec, b.exitValue());
+            if(b.exitValue() != 0) n.log(ERROR,"{} finished with non-zero exit code: {}", exec, b.exitValue());
 
             String stdOut = readStream(b.getInputStream());
             String stdErr = readStream(b.getErrorStream());
@@ -89,7 +91,7 @@ public final class ExecNode extends AbstractFunctionalNode {
             b.destroy();
             b.waitFor();
         } catch (IOException | InterruptedException e) {
-            log(ERROR,"'{}' could not be executed:", exec, e.getMessage());
+            n.log(ERROR,"'{}' could not be executed:", exec, e.getMessage());
             if (failOnException) throw new NodeException(e, "Internal process execution error");
         }
     }

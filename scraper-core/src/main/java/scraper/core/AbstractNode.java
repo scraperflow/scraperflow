@@ -14,10 +14,13 @@ import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowStateImpl;
 import scraper.api.node.*;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.impl.NodeAddressImpl;
+import scraper.api.node.type.Node;
+import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
 import scraper.util.NodeUtil;
-import scraper.utils.ClassUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,9 +31,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 
-import static scraper.core.NodeLogLevel.*;
+import static scraper.api.node.container.NodeLogLevel.*;
+import static scraper.util.NodeUtil.initFields;
+import static scraper.utils.ClassUtil.getAllFields;
 
 
 /**
@@ -50,7 +54,7 @@ import static scraper.core.NodeLogLevel.*;
  */
 @SuppressWarnings({"WeakerAccess", "unused"}) // abstract implementation
 @NodePlugin("1.0.1")
-public abstract class AbstractNode implements Node, NodeInitializable {
+public abstract class AbstractNode<NODE extends Node> implements NodeContainer<NODE> {
     /** Logger with the actual class name */
     protected Logger l = LoggerFactory.getLogger(getClass());
 
@@ -64,7 +68,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
 
     /** Log statement to be printed */
     @FlowKey
-    protected Template<Object> log = new Template<>(){};
+    protected T<Object> log = new T<>(){};
 
     /** Label of a node which can be used as a goto reference */
     @FlowKey
@@ -137,7 +141,15 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         log(TRACE,"Start init {}", this);
 
         // initialize fields with arguments
-        Set<String> expectedFields = initFields(getNodeConfiguration(), job.getInitialArguments());
+        Set<String> expectedFields = initFields(this, getNodeConfiguration(), job.getInitialArguments(), job.getGlobalNodeConfigurations());
+        Set<String> expectedField = initFields(getC(), getNodeConfiguration(), job.getInitialArguments(), job.getGlobalNodeConfigurations());
+
+        // get ensure fields
+        List<Field> test = getAllFields(new LinkedList<>(), getC().getClass());
+        test.forEach(f -> {
+                EnsureFile ensureFile = f.getAnnotation(EnsureFile.class);
+                if(ensureFile != null) ensureFileFields.put(f, ensureFile);
+        });
 
         // check actual fields against expected fields
         for (String actualField : getNodeConfiguration().keySet()) {
@@ -147,43 +159,11 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         }
 
         log(TRACE,"Finished init {}", this);
+
+        // init node
+        getC().init(this, job);
     }
 
-    private Set<String> initFields(Map<String, Object> spec, Map<String,Object> initialArguments) throws ValidationException {
-        // collect expected fields to check against
-        Set<String> expectedFields = new HashSet<>();
-
-        try { // ensure templated arguments
-            List<Field> allFields = ClassUtil.getAllFields(new LinkedList<>(), getClass());
-
-            for (Field field : allFields) {
-                log(TRACE,"Initializing field {} of {}", field.getName(), this);
-
-                FlowKey flowKey = field.getAnnotation(FlowKey.class);
-                Argument ann = field.getAnnotation(Argument.class);
-
-                if (flowKey != null) {
-                    EnsureFile ensureFile = field.getAnnotation(EnsureFile.class);
-                    if(ensureFile != null) ensureFileFields.put(field, ensureFile);
-
-                    // save name for actual<->expected field comparison
-                    expectedFields.add(field.getName());
-
-                    // initialize field
-                    initField(field, flowKey, ann, spec, initialArguments);
-                }
-
-            }
-
-
-            log(TRACE,"Finished initializing fields for {}", this);
-        }
-        catch (IllegalAccessException e) {
-            throw new ValidationException("Reflection not implemented correctly", e);
-        }
-
-        return expectedFields;
-    }
 
     @NotNull
     public Map<String, Object> getNodeConfiguration() {
@@ -197,91 +177,27 @@ public abstract class AbstractNode implements Node, NodeInitializable {
 
     public void initLogger(int indexLength) {
         String loggerName =
-                String.format("%s > %s%"+indexLength+"s | %s",
+                String.format("%s > %s%"+indexLength+"s",
                         getJobPojo().getName(),
                         getAddress().getLabel() + " @ ",
-                        getAddress().getIndex(),
-                        getClass().getSimpleName().substring(0, getClass().getSimpleName().length()-4));
+                        getAddress().getIndex()
+                );
+//                        getClass().getSimpleName().substring(0, getClass().getSimpleName().length()-4));
+//        String loggerName =
+//                String.format("%s > %s%"+indexLength+"s | %s",
+//                        getJobPojo().getName(),
+//                        getAddress().getLabel() + " @ ",
+//                        getAddress().getIndex(),
+//                        getClass().getSimpleName().substring(0, getClass().getSimpleName().length()-4));
 
         l = LoggerFactory.getLogger(loggerName);
     }
 
-    protected ExecutorService getService() {
+    @Override
+    public ExecutorService getService() {
         return getJobPojo().getExecutors().getService(getJobPojo().getName(),service, threads);
     }
 
-    /**
-     * Initializes a field with its actual value. If it is a template, its value is evaluated with the given map.
-     * @param field Field of the node to initialize
-     * @param flowKey indicates optional value
-     * @param ann Indicates a template field
-     * @param args The input map
-     * @throws ValidationException If there is a class mismatch between JSON and node definition
-     * @throws IllegalAccessException If reflection is implemented incorrectly
-     */
-    private void initField(Field field,
-                           FlowKey flowKey, Argument ann,
-                           Map<String, Object> spec,
-                           Map<String, Object> args)
-            throws ValidationException, IllegalAccessException {
-        // enable reflective access
-        field.setAccessible(true);
-
-        // this is the value which will get assigned to the field after evaluation
-        Object value;
-        Map<String, Object> allFields = null;
-        Object jsonValue = spec.get(field.getName());
-        Object globalValue = null;
-
-        // TODO why is second condition always true?
-        if(jobPojo != null && jobPojo.getGlobalNodeConfigurations() != null) {
-            jobPojo.getGlobalNodeConfigurations();
-            String nodeName = getClass().getSimpleName();
-
-            //check if regex matches, and apply if valid
-            for (String maybeRegex : jobPojo.getGlobalNodeConfigurations().keySet()) {
-                if (maybeRegex.startsWith("/") && maybeRegex.endsWith("/")) {
-                    String regex = maybeRegex.substring(1, maybeRegex.length() - 1);
-
-                    boolean result = Pattern.compile(regex).matcher(nodeName).results()
-                            .findAny().isPresent();
-
-                    if (result) allFields = jobPojo.getGlobalNodeConfigurations().get(maybeRegex);
-
-                    // fetch global value, if any
-                    if (allFields != null) {
-                        Object globalKey = allFields.get(field.getName());
-                        if (globalKey != null) {
-                            globalValue = globalKey;
-                        }
-                    }
-                }
-            }
-
-            allFields = jobPojo.getGlobalNodeConfigurations().get(nodeName);
-
-            // fetch global value, if any
-            if (allFields != null) {
-                Object globalKey = allFields.get(field.getName());
-                if (globalKey != null) {
-                    globalValue = globalKey;
-                }
-            }
-        }
-
-        try {
-            value = NodeUtil.getValueForField(
-                    field.getType(), field.get(this), jsonValue, globalValue,
-                    flowKey.mandatory(), flowKey.defaultValue(), flowKey.output(),
-                    ann != null, (ann != null ? ann.converter() : null),
-                    args);
-        } catch (ValidationException e){
-            log(ERROR, "Bad field definition: '{}'", field.getName());
-            throw e;
-        }
-
-        if(value != null) field.set(this, value);
-    }
 
     /**
      * <ul>
@@ -297,23 +213,25 @@ public abstract class AbstractNode implements Node, NodeInitializable {
 
         // evaluate and write log message if any
         try {
-            Object logString = log.eval(map);
+            Object logString = Template.eval(log, map);
             if(logString != null) log(logLevel, logString.toString());
         } catch (Exception e) {
             log(ERROR, "Could not evaluate log template: {}", e.getMessage());
         }
 
+
+        // FIXME re-implement
         // ensure files exist
         try {
             for (Field ensureFileField : ensureFileFields.keySet()) {
                 ensureFileField.setAccessible(true);
 
                 String path;
-                if(Template.class.isAssignableFrom(ensureFileField.getType())) {
-                    Template<?> templ = (Template) ensureFileField.get(this);
-                    path = (String) templ.eval(map);
+                if(T.class.isAssignableFrom(ensureFileField.getType())) {
+                    T<?> templ = (T) ensureFileField.get(getC());
+                    path = (String) map.eval(templ);
                 } else {
-                    path = (String) ensureFileField.get(this);
+                    path = (String) ensureFileField.get(getC());
                 }
 
                 if (path == null) continue; //TODO check if optional // TODO what does the TODO mean
@@ -383,7 +301,7 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     }
 
 
-    protected void log(NodeLogLevel debug, String msg, Object... args) {
+    public void log(NodeLogLevel debug, String msg, Object... args) {
         log(l, logLevel, debug, msg, args);
     }
 
@@ -434,7 +352,8 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         // do nothing
         if(!getForward()) return o;
         if(getGoTo() != null) {
-            return jobPojo.getNode(getGoTo()).accept(o);
+            NodeContainer<? extends Node> targetNode = jobPojo.getNode(getGoTo());
+            return targetNode.getC().accept(targetNode, o);
         }
 
         return o;
@@ -443,7 +362,8 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     @NotNull
     @Override
     public FlowMap eval(@NotNull final FlowMap o, @NotNull final Address target) throws NodeException {
-        return jobPojo.getNode(target).accept(o);
+        NodeContainer<? extends Node> targetNode = jobPojo.getNode(target);
+        return targetNode.getC().accept(targetNode, o);
     }
 
     @Override
@@ -509,6 +429,11 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         return this.jobPojo;
     }
 
+    @Override
+    public ScrapeInstance getJobInstance() {
+        return getJobPojo();
+    }
+
     public int getStageIndex() {
         return this.stageIndex;
     }
@@ -524,14 +449,14 @@ public abstract class AbstractNode implements Node, NodeInitializable {
         return this.graphKey;
     }
 
-    @NotNull
     @Override
+    @NotNull
     public Collection<NodeHook> beforeHooks() {
         return Set.of(this::start);
     }
 
-    @NotNull
     @Override
+    @NotNull
     public Collection<NodeHook> afterHooks() {
         return Set.of(this::finish);
     }
@@ -540,4 +465,5 @@ public abstract class AbstractNode implements Node, NodeInitializable {
     public boolean isForward() {
         return forward;
     }
+
 }

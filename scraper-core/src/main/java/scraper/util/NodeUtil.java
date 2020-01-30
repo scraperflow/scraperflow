@@ -4,16 +4,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.reflect.TypeToken;
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
+import scraper.annotations.node.Argument;
+import scraper.annotations.node.FlowKey;
 import scraper.api.converter.StringToClassConverter;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.node.*;
+import scraper.api.node.Address;
+import scraper.api.node.GraphAddress;
+import scraper.api.node.InstanceAddress;
+import scraper.api.node.NodeAddress;
+import scraper.api.node.container.NodeContainer;
 import scraper.api.node.impl.AddressImpl;
 import scraper.api.node.impl.GraphAddressImpl;
 import scraper.api.node.impl.NodeAddressImpl;
+import scraper.api.node.type.Node;
+import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
-import scraper.core.Template;
+import scraper.utils.ClassUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -69,6 +77,113 @@ public final class NodeUtil {
         return new GraphAddressImpl(label);
     }
 
+
+    public static Set<String> initFields(Object instance, Map<String, Object> spec, Map<String,Object> initialArguments, Map<String, Map<String, Object>> globalConfigurations) throws ValidationException {
+        // collect expected fields to check against
+        Set<String> expectedFields = new HashSet<>();
+
+        try { // ensure templated arguments
+            List<Field> allFields = ClassUtil.getAllFields(new LinkedList<>(), instance.getClass());
+
+            for (Field field : allFields) {
+//                log(TRACE,"Initializing field {} of {}", field.getName(), this);
+
+                FlowKey flowKey = field.getAnnotation(FlowKey.class);
+                Argument ann = field.getAnnotation(Argument.class);
+
+                if (flowKey != null) {
+                    // save name for actual<->expected field comparison
+                    expectedFields.add(field.getName());
+
+                    // initialize field
+                    initField(instance, field, flowKey, ann, spec, initialArguments, globalConfigurations);
+                }
+
+            }
+//            log(TRACE,"Finished initializing fields for {}", this);
+        }
+        catch (IllegalAccessException e) {
+            throw new ValidationException(e, "Reflection not implemented correctly");
+        }
+
+        return expectedFields;
+    }
+    /**
+     * Initializes a field with its actual value. If it is a template, its value is evaluated with the given map.
+     * @param field Field of the node to initialize
+     * @param flowKey indicates optional value
+     * @param ann Indicates a template field
+     * @param args The input map
+     * @throws ValidationException If there is a class mismatch between JSON and node definition
+     * @throws IllegalAccessException If reflection is implemented incorrectly
+     */
+    private static void initField(
+            Object instance,
+            Field field,
+            FlowKey flowKey, Argument ann,
+            Map<String, Object> spec,
+            Map<String, Object> args,
+            Map<String, Map<String, Object>> globalConfigurations
+    )
+            throws ValidationException, IllegalAccessException {
+        // enable reflective access
+        field.setAccessible(true);
+
+        // this is the value which will get assigned to the field after evaluation
+        Object value;
+        Map<String, Object> allFields = null;
+        Object jsonValue = spec.get(field.getName());
+        Object globalValue = null;
+
+        // TODO why is second condition always true?
+        if(globalConfigurations != null) {
+            String nodeName = instance.getClass().getSimpleName();
+
+            //check if regex matches, and apply if valid
+            for (String maybeRegex : globalConfigurations.keySet()) {
+                if (maybeRegex.startsWith("/") && maybeRegex.endsWith("/")) {
+                    String regex = maybeRegex.substring(1, maybeRegex.length() - 1);
+
+                    boolean result = Pattern.compile(regex).matcher(nodeName).results()
+                            .findAny().isPresent();
+
+                    if (result) allFields = globalConfigurations.get(maybeRegex);
+
+                    // fetch global value, if any
+                    if (allFields != null) {
+                        Object globalKey = allFields.get(field.getName());
+                        if (globalKey != null) {
+                            globalValue = globalKey;
+                        }
+                    }
+                }
+            }
+
+            allFields = globalConfigurations.get(nodeName);
+
+            // fetch global value, if any
+            if (allFields != null) {
+                Object globalKey = allFields.get(field.getName());
+                if (globalKey != null) {
+                    globalValue = globalKey;
+                }
+            }
+        }
+
+        try {
+            value = NodeUtil.getValueForField(
+                    field.getType(), field.get(instance), jsonValue, globalValue,
+                    flowKey.mandatory(), flowKey.defaultValue(), flowKey.output(),
+                    ann != null, (ann != null ? ann.converter() : null),
+                    args);
+        } catch (ValidationException e){
+//            log(ERROR, "Bad field definition: '{}'", field.getName());
+            throw e;
+        }
+
+        if(value != null) field.set(instance, value);
+    }
+
     public static Object getValueForField(final Class<?> fieldType, final Object fieldValue,
                                           final Object jsonValue,
                                           final Object globalValue,
@@ -99,7 +214,7 @@ public final class NodeUtil {
             if(!mandatory && value == null) {
                 Object converted;
                 // TODO document what this code block does
-                if(Template.class.isAssignableFrom(fieldType)) {
+                if(T.class.isAssignableFrom(fieldType)) {
                     converted = mapper.readValue(defaultAnnotationValue, Object.class);
                     value = converted;
                 } else if (Enum.class.isAssignableFrom(fieldType)) {
@@ -155,13 +270,13 @@ public final class NodeUtil {
             if(value == null) return null;
 
             // check if (input) template
-            if (Template.class.isAssignableFrom(fieldType) && !isOutput) {
-                Template<?> template = (Template<?>) fieldValue;
-                template.setParsedJson(convert(template.type, value));
+            if (T.class.isAssignableFrom(fieldType) && !isOutput) {
+                T<?> template = (T<?>) fieldValue;
+                template.setParsedJson(convert(TypeToken.of(template.get()), value));
                 return null;
             } // check if (output) template
-            else if (Template.class.isAssignableFrom(fieldType) && isOutput) {
-                Template<?> template = (Template<?>) fieldValue;
+            else if (T.class.isAssignableFrom(fieldType) && isOutput) {
+                T<?> template = (T<?>) fieldValue;
                 template.setParsedJson(convert(new TypeToken<String>(){}, value)); // targets only raw String type for now, no evaluation
                 return null;
             }
@@ -190,7 +305,7 @@ public final class NodeUtil {
 
             return value;
         } catch (Exception e) {
-            throw new ValidationException("Could not get value for field ", e);
+            throw new ValidationException(e, "Could not get value for field ");
         }
     }
 
@@ -209,7 +324,12 @@ public final class NodeUtil {
         }
     }
 
+    public static Object convert(T<?> token, Object value) throws ValidationException {
+        TypeToken<?> templ = TypeToken.of(token.get());
+        return convert(templ, value);
+    }
     public static Object convert(TypeToken<?> templ, Object value) throws ValidationException {
+
         //null: return null
         if(value == null) return null;
 
@@ -263,7 +383,7 @@ public final class NodeUtil {
     }
 
 
-    public static Address getNextNode(Address origin, Address goTo, Map<GraphAddress, List<Node>> graphs) {
+    public static Address getNextNode(Address origin, Address goTo, Map<GraphAddress, List<NodeContainer<? extends Node>>> graphs) {
         if(goTo != null) {
             return goTo;
         } else {
@@ -271,11 +391,11 @@ public final class NodeUtil {
         }
     }
 
-    public static Address getForwardTarget(Address origin, Map<GraphAddress, List<Node>> graphs) {
+    public static Address getForwardTarget(Address origin, Map<GraphAddress, List<NodeContainer<? extends Node>>> graphs) {
         for (GraphAddress k : graphs.keySet()) {
-            Iterator<Node> it = graphs.get(k).iterator();
+            Iterator<NodeContainer<? extends Node>> it = graphs.get(k).iterator();
             while(it.hasNext()) {
-                Node node = it.next();
+                NodeContainer node = it.next();
                 if(node.getAddress().equalsTo(origin)){
                     if(it.hasNext()) {
                         return it.next().getAddress();
@@ -289,7 +409,7 @@ public final class NodeUtil {
         throw new IllegalStateException("Origin node address not found in any graph: " + origin.getRepresentation());
     }
 
-    public static Node getNode(Address target, Map<GraphAddress, List<Node>> graphs, Map<InstanceAddress, ScrapeInstance> importedInstances) {
+    public static NodeContainer getNode(Address target, Map<GraphAddress, List<NodeContainer<? extends Node>>> graphs, Map<InstanceAddress, ScrapeInstance> importedInstances) {
         for (InstanceAddress instanceAddress : importedInstances.keySet()) {
             if (target.equalsTo(instanceAddress)) {
                 return importedInstances.get(instanceAddress).getEntryGraph().get(0);
@@ -305,7 +425,7 @@ public final class NodeUtil {
                 return graphs.get(k).get(0);
             }
 
-            for (Node node : graphs.get(k)) {
+            for (NodeContainer node : graphs.get(k)) {
                 if(node.getAddress().equalsTo(target))
                     return node;
             }
@@ -314,13 +434,13 @@ public final class NodeUtil {
         throw new IllegalArgumentException("Node address not existing! "+target);
     }
 
-    public static Map<String, String> extractMapFromFields(List<Field> outputData, Node target) {
+    public static Map<String, String> extractMapFromFields(List<Field> outputData, NodeContainer target) {
         Map<String, String> outputResult = new HashMap<>();
         for (Field output : outputData) {
             String name = output.getName();
             output.setAccessible(true);
             try {
-                String value = ((Template) output.get(target)).type.getType().getTypeName();
+                String value = ((T) output.get(target)).get().getTypeName();
 
                 outputResult.put(name, value);
             } catch (IllegalAccessException e) {

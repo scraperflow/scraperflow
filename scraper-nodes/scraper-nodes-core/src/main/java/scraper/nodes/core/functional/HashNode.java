@@ -4,29 +4,30 @@ import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
-import scraper.core.AbstractFunctionalNode;
-import scraper.core.Template;
+import scraper.api.node.container.FunctionalNodeContainer;
+import scraper.api.node.type.FunctionalNode;
+import scraper.api.reflect.T;
 
 /**
  * Hashes a values
  */
 @NodePlugin("1.0.0")
-public final class HashNode extends AbstractFunctionalNode {
+public final class HashNode implements FunctionalNode {
 
     /** The content to apply the hash on */
     @FlowKey(defaultValue = "\"{input}\"") @NotNull
-    private final Template<String> content = new Template<>(){};
+    private final T<String> content = new T<>(){};
 
     /** Where the output hash is stored */
     @FlowKey(defaultValue = "\"output\"", output = true) @NotNull
-    private Template<String> output = new Template<>(){};
+    private T<String> output = new T<>(){};
 
     @Override
-    public void modify(@NotNull final FlowMap o) {
-        String content = this.content.input(o);
+    public void modify(FunctionalNodeContainer n, @NotNull final FlowMap o) {
+        String content = o.input(this.content);
 
         int hash = content.hashCode();
 
-        this.output.output(o, String.valueOf(hash));
+        o.output(output, String.valueOf(hash));
     }
 }

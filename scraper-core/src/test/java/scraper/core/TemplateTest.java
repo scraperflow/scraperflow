@@ -7,6 +7,7 @@ import org.junit.Test;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
+import scraper.api.reflect.T;
 import scraper.util.NodeUtil;
 
 import java.io.IOException;
@@ -30,75 +31,75 @@ public class TemplateTest {
 
     @Test // "hello"
     public void simpleTemplateNoKeys() {
-        Template<String> simpleString = new Template<>(){};
+        T<String> simpleString = new T<>(){};
         simpleString.setParsedJson("hello");
-        String eval = simpleString.eval(o);
+        String eval = o.eval(simpleString);
         Assert.assertEquals("hello", eval);
         Assert.assertNotNull(simpleString.toString());
     }
 
     @Test // ""
-    public void simpleTemplateEmpty() throws ValidationException {
-        Template<String> str = new Template<>(){};
-        str.setParsedJson(convert(str.type, ""));
-        Assert.assertEquals("", str.eval(o));
+    public void simpleTEmpty() throws ValidationException {
+        T<String> str = new T<>(){};
+        str.setParsedJson(convert(str, ""));
+        Assert.assertEquals("", o.eval(str));
     }
 
     @Test // "{hello}" // hello
-    public void simpleTemplateSingle() throws Exception {
-        Template<String> str = new Template<>(){};
-        str.setParsedJson(convert(str.type, "{hello}"));
+    public void simpleTSingle() throws Exception {
+        T<String> str = new T<>(){};
+        str.setParsedJson(convert(str, "{hello}"));
         o.put("hello", "eval-value");
-        String eval = str.eval(o);
+        String eval = o.eval(str);
         Assert.assertEquals("eval-value", eval);
     }
 
     @Test // "{int}" // hello
-    public void simpleTemplateSingleInt() throws Exception {
-        Template<Integer> str = new Template<>(){};
-        str.setParsedJson(convert(str.type, "{int}"));
+    public void simpleTSingleInt() throws Exception {
+        T<Integer> str = new T<>(){};
+        str.setParsedJson(convert(str, "{int}"));
         o.put("int", 1);
-        Integer eval = str.eval(o);
+        Integer eval = o.eval(str);
         Assert.assertEquals((Integer) 1, eval);
     }
 
     @Test // "{hello}{hello}hello // hello
-    public void simpleTemplateDouble() throws Exception {
-        Template<String> str = new Template<>(){};
-        str.setParsedJson(convert(str.type, "{hello}{hello}hello"));
+    public void simpleTDouble() throws Exception {
+        T<String> str = new T<>(){};
+        str.setParsedJson(convert(str, "{hello}{hello}hello"));
         o.put("hello", "eval-value");
-        String eval = str.eval(o);
+        String eval = o.eval(str);
         Assert.assertEquals("eval-valueeval-valuehello", eval);
         Assert.assertNotNull(str.toString());
     }
 
     @Test // "{hello}hello{hello}hello // hello
-    public void simpleTemplateMixed() throws Exception {
-        Template<String> str = new Template<>(){};
-        str.setParsedJson(convert(str.type, "{hello}hello{hello}hello"));
+    public void simpleTMixed() throws Exception {
+        T<String> str = new T<>(){};
+        str.setParsedJson(convert(str, "{hello}hello{hello}hello"));
         o.put("hello", "eval-value");
-        String eval = str.eval(o);
+        String eval = o.eval(str);
         Assert.assertEquals("eval-valuehelloeval-valuehello", eval);
         Assert.assertNotNull(str.toString());
     }
 
     @Test // "[1,2,\"{template-int}\"]" // template-int
-    public void simpleTemplateNestedInList() throws Exception {
-        Template<List<Integer>> str = new Template<>(){};
-        str.setParsedJson(convert(str.type, mapper.readValue("[1,2,\"{template-int}\"]", List.class)));
+    public void simpleTNestedInList() throws Exception {
+        T<List<Integer>> str = new T<>(){};
+        str.setParsedJson(convert(str, mapper.readValue("[1,2,\"{template-int}\"]", List.class)));
         o.put("template-int",3);
-        List<Integer> eval = str.eval(o);
+        List<Integer> eval = o.eval(str);
         Assert.assertEquals((Integer) 1, eval.get(0));
         Assert.assertEquals((Integer) 2, eval.get(1));
         Assert.assertEquals((Integer) 3, eval.get(2));
     }
 
     @Test // "{\"1\": 2, \"other\": \"{template-int}\"}" // template-int
-    public void simpleTemplateNestedInMap() throws Exception {
-        Template<Map<String, Integer>> str = new Template<>(){};
-        str.setParsedJson(convert(str.type, mapper.readValue("{\"1\": 2, \"other\": \"{template-int}\"}", Map.class)));
+    public void simpleTNestedInMap() throws Exception {
+        T<Map<String, Integer>> str = new T<>(){};
+        str.setParsedJson(convert(str, mapper.readValue("{\"1\": 2, \"other\": \"{template-int}\"}", Map.class)));
         o.put("template-int",3);
-        Map<String, Integer> eval = str.eval(o);
+        Map<String, Integer> eval = o.eval(str);
         Assert.assertEquals((Integer) 2, eval.get("1"));
         Assert.assertEquals((Integer) 3, eval.get("other"));
     }
@@ -106,51 +107,51 @@ public class TemplateTest {
     // == Bad
 
     @Test(expected = TemplateException.class)
-    public void simpleTemplateMissingKey() throws Exception {
-        Template<String> str = new Template<>(){};
-        str.setParsedJson(convert(str.type, "{hello}"));
-        str.eval(o);
+    public void simpleTMissingKey() throws Exception {
+        T<String> str = new T<>(){};
+        str.setParsedJson(convert(str, "{hello}"));
+        o.eval(str);
     }
 
     @Test(expected = TemplateException.class)
-    public void simpleTemplateBadKeyType() throws Exception {
-        Template<Map<String, Integer>> str = new Template<>(){};
-        str.setParsedJson(convert(str.type, mapper.readValue("{\"other\": \"{template-int}\"}", Map.class)));
+    public void simpleTBadKeyType() throws Exception {
+        T<Map<String, Integer>> str = new T<>(){};
+        str.setParsedJson(convert(str, mapper.readValue("{\"other\": \"{template-int}\"}", Map.class)));
         o.put("template-int","3b");
-        Map<String, Integer> eval = str.eval(o);
+        Map<String, Integer> eval = o.eval(str);
         Assert.assertEquals((Integer) 3, eval.get("other"));
     }
 
     // == Get keys
 
     @Test // "{hello}{ok2}" -> hello, ok2
-    public void simpleTemplateGetKeys() throws ValidationException {
+    public void simpleTGetKeys() throws ValidationException {
         Collection<String> expected = Set.of("hello", "ok2");
-        Template<String> str = new Template<>(){};
-        str.setParsedJson(convert(str.type, "{hello}{ok2}"));
-        Assert.assertEquals((Integer) 2, (Integer) str.getKeysInTemplate(o).size());
-        str.getKeysInTemplate(o).forEach(key -> Assert.assertTrue(expected.contains(key)));
-        expected.forEach(key -> Assert.assertTrue(str.getKeysInTemplate(o).contains(key)));
+        T<String> str = new T<>(){};
+        str.setParsedJson(convert(str, "{hello}{ok2}"));
+        Assert.assertEquals((Integer) 2, (Integer) Template.getKeysInTemplate(str, o).size());
+        Template.getKeysInTemplate(str, o).forEach(key -> Assert.assertTrue(expected.contains(key)));
+        expected.forEach(key -> Assert.assertTrue(Template.getKeysInTemplate(str, o).contains(key)));
     }
 
     @Test // "[1,2,\"{template-int}\"]" -> template-int
-    public void simpleTemplateNestedInListGetKeys() throws ValidationException, IOException {
+    public void simpleTNestedInListGetKeys() throws ValidationException, IOException {
         Collection<String> expected = Set.of("template-int");
-        Template<List<Integer>> str = new Template<>(){};
-        str.setParsedJson(convert(str.type, mapper.readValue("[1,2,\"{template-int}\"]", List.class)));
-        Assert.assertEquals((Integer) 1, (Integer) str.getKeysInTemplate(o).size());
-        str.getKeysInTemplate(o).forEach(key -> Assert.assertTrue(expected.contains(key)));
-        expected.forEach(key -> Assert.assertTrue(str.getKeysInTemplate(o).contains(key)));
+        T<List<Integer>> str = new T<>(){};
+        str.setParsedJson(convert(str, mapper.readValue("[1,2,\"{template-int}\"]", List.class)));
+        Assert.assertEquals((Integer) 1, (Integer) Template.getKeysInTemplate(str, o).size());
+        Template.getKeysInTemplate(str, o).forEach(key -> Assert.assertTrue(expected.contains(key)));
+        expected.forEach(key -> Assert.assertTrue(Template.getKeysInTemplate(str, o).contains(key)));
     }
 
     @Test // "{\"1\": 2, \"other\": \"{template-int}\"}" -> template-int
-    public void simpleTemplateNestedInMapGetKeys() throws ValidationException, IOException {
+    public void simpleTNestedInMapGetKeys() throws ValidationException, IOException {
         Collection<String> expected = Set.of("template-int");
-        Template<Map<String, Integer>> str = new Template<>(){};
-        str.setParsedJson(convert(str.type, mapper.readValue("{\"1\": 2, \"other\": \"{template-int}\"}", Map.class)));
-        Assert.assertEquals((Integer) 1, (Integer) str.getKeysInTemplate(o).size());
-        str.getKeysInTemplate(o).forEach(key -> Assert.assertTrue(expected.contains(key)));
-        expected.forEach(key -> Assert.assertTrue(str.getKeysInTemplate(o).contains(key)));
+        T<Map<String, Integer>> str = new T<>(){};
+        str.setParsedJson(convert(str, mapper.readValue("{\"1\": 2, \"other\": \"{template-int}\"}", Map.class)));
+        Assert.assertEquals((Integer) 1, (Integer) Template.getKeysInTemplate(str, o).size());
+        Template.getKeysInTemplate(str, o).forEach(key -> Assert.assertTrue(expected.contains(key)));
+        expected.forEach(key -> Assert.assertTrue(Template.getKeysInTemplate(str, o).contains(key)));
     }
 
 
@@ -160,12 +161,12 @@ public class TemplateTest {
 //    // FM Lookup
 //    // ===============
 
-//    @Test(expected = TemplateException.class)
+//    @Test(expected = TException.class)
 //    public void badConversionTest() {
-//        class TemplateNotImplemented implements Serializable {}
-//        Template<String> str = new Template<>(){};
-//        str.setParsedJson(new TemplateNotImplemented());
-//        str.eval(o);
+//        class TNotImplemented implements Serializable {}
+//        T<String> str = new T<>(){};
+//        str.setParsedJson(new TNotImplemented());
+//        o.eval(str);
 //    }
 //
 //
@@ -175,47 +176,47 @@ public class TemplateTest {
 //
     @Test(expected = TemplateException.class)
     public void nestedKeyLookupFail() throws Exception {
-        Template<String> str = new Template<>(){};
-        str.setParsedJson(convert(str.type, mapper.readValue("\"{list}\"}", String.class)));
+        T<String> str = new T<>(){};
+        str.setParsedJson(convert(str, mapper.readValue("\"{list}\"}", String.class)));
         o.put("list", List.of("hello"));
-        String evaled = str.eval(o);
+        String evaled = o.eval(str);
         System.out.println(evaled);
     }
 
 //    @Test
 //    public void nestedKeyLookup() throws Exception {
-//        Template<String> str = new Template<>(){};
-//        str.setParsedJson(convert(str.type, mapper.readValue("\"@{list}[0]\"}", String.class)));
+//        T<String> str = new T<>(){};
+//        str.setParsedJson(convert(str, mapper.readValue("\"@{list}[0]\"}", String.class)));
 //        o.put("list", List.of("hello"));
 //        o.put("hello", "1");
-//        String eval = str.eval(o);
+//        String eval = o.eval(str);
 //        Assert.assertEquals("1", eval);
 //    }
 //
-//    @Test(expected = TemplateException.class)
+//    @Test(expected = TException.class)
 //    public void outOfBoundsArrayLookup() throws Exception {
-//        Template<String> str = new Template<>(){};
-//        str.setParsedJson(convert(str.type, mapper.readValue("\"@{list}[1]\"}", String.class)));
+//        T<String> str = new T<>(){};
+//        str.setParsedJson(convert(str, mapper.readValue("\"@{list}[1]\"}", String.class)));
 //        o.put("list", List.of("hello"));
-//        str.eval(o);
+//        o.eval(str);
 //    }
 //
 //    @Test
 //    public void arrayNegativeLookup() throws Exception {
-//        Template<String> str = new Template<>(){};
-//        str.setParsedJson(convert(str.type, mapper.readValue("\"{list}[-1]\"}", String.class)));
+//        T<String> str = new T<>(){};
+//        str.setParsedJson(convert(str, mapper.readValue("\"{list}[-1]\"}", String.class)));
 //        o.put("list", List.of("hello", "world"));
-//        String eval = str.eval(o);
+//        String eval = o.eval(str);
 //        Assert.assertEquals("world", eval);
 //    }
 //
     @Test
     public void nestedMapEvalTest() throws Exception {
-        Template<Map<String, Integer>> str = new Template<>(){};
-        str.setParsedJson(convert(str.type, mapper.readValue("{\"other\": \"{{template-int}}\"}", Map.class)));
+        T<Map<String, Integer>> str = new T<>(){};
+        str.setParsedJson(convert(str, mapper.readValue("{\"other\": \"{{template-int}}\"}", Map.class)));
         o.put("template-int","3b");
         o.put("3b",3);
-        Map<String, Integer> eval = str.eval(o);
+        Map<String, Integer> eval = o.eval(str);
         Assert.assertEquals((Integer) 3, eval.get("other"));
     }
 }

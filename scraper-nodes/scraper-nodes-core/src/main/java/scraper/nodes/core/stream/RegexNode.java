@@ -6,9 +6,11 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.container.StreamNodeContainer;
+import scraper.api.node.type.StreamNode;
+import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
-import scraper.core.AbstractStreamNode;
-import scraper.core.Template;
 import scraper.util.NodeUtil;
 
 import java.util.HashMap;
@@ -25,7 +27,7 @@ import java.util.regex.Pattern;
  * If groups are empty, the map is empty and the list is populated with empty maps.
  */
 @NodePlugin("1.0.0")
-public final class RegexNode extends AbstractStreamNode {
+public final class RegexNode implements StreamNode {
 
     /** Regex as a Java String */
     @FlowKey(mandatory = true)
@@ -33,7 +35,7 @@ public final class RegexNode extends AbstractStreamNode {
 
     /** The content to apply the regex on */
     @FlowKey(defaultValue = "\"{content}\"") @NotNull
-    private final Template<String> content = new Template<>(){};
+    private final T<String> content = new T<>(){};
 
     /** Key: location of where to put the group; Value: Group number of the regex. */
     @FlowKey(defaultValue = "{}")
@@ -45,7 +47,7 @@ public final class RegexNode extends AbstractStreamNode {
 
     /** Default output if no matches are present */
     @FlowKey
-    private Template<Map<String, Object>> noMatchDefaultOutput = new Template<>(){};
+    private T<Map<String, Object>> noMatchDefaultOutput = new T<>(){};
 
     /** Pattern dotall option */
     @FlowKey(defaultValue = "\"true\"")
@@ -55,21 +57,17 @@ public final class RegexNode extends AbstractStreamNode {
     private Pattern p;
 
     @Override
-    public void init(final @NotNull ScrapeInstance job) throws ValidationException {
-        super.init(job);
-        if(dotAll) {
-            p = Pattern.compile(regex, Pattern.DOTALL);
-        } else {
-            p = Pattern.compile(regex);
-        }
+    public void init(@NotNull NodeContainer n, final @NotNull ScrapeInstance job) throws ValidationException {
+        try {
+            if(dotAll) p = Pattern.compile(regex, Pattern.DOTALL);
+            else p = Pattern.compile(regex);
+        } catch (Exception e) { throw new ValidationException(e, "Failed to compile pattern."); }
     }
 
-    @NotNull
     @Override
-    public void processStream(final @NotNull FlowMap o) {
-        collect(o, List.of(output));
-    
-        String content = this.content.eval(o);
+    public void process(StreamNodeContainer n, FlowMap o) throws NodeException {
+        n.collect(o, List.of(output));
+        String content = o.eval(this.content);
 
         Matcher m = p.matcher(content);
 
@@ -83,14 +81,14 @@ public final class RegexNode extends AbstractStreamNode {
 
             FlowMap copy = NodeUtil.flowOf(o);
             copy.put(output, singleCapture);
-            stream(o, copy);
+            n.stream(o, copy);
         }
 
-        Map<String, Object> evalDefault = noMatchDefaultOutput.evalOrDefault(o, null);
+        Map<String, Object> evalDefault = o.evalOrDefault(noMatchDefaultOutput, null);
         if(evalDefault != null && m.reset().results().findAny().isEmpty()) {
             FlowMap copy = NodeUtil.flowOf(o);
             copy.put(output, evalDefault);
-            stream(o, copy);
+            n.stream(o, copy);
         }
     }
 }

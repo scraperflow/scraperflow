@@ -9,5 +9,5 @@ import scraper.annotations.NotNull;
  */
 public class ValidationException extends Exception {
     public ValidationException(@NotNull String message) { super(message); }
-    public ValidationException(@NotNull String message, @NotNull Exception reason) { super(message, reason); }
+    public ValidationException(@NotNull Exception reason, @NotNull String message) { super(message, reason); }
 }

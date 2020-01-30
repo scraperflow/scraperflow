@@ -4,38 +4,33 @@ import com.google.common.reflect.TypeToken;
 import org.slf4j.Logger;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
-import scraper.api.flow.impl.IdentityFlowMap;
+import scraper.api.reflect.T;
 import scraper.core.template.TemplateExpression;
 
 import java.util.*;
 
-public abstract class Template<T> {
+public class Template {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(Template.class);
-    public final TypeToken<T> type = new TypeToken<>(getClass()){};
 
-    // parsed JSON object
-    private Object parsedJson;
-
-
-    public T eval(final FlowMap o) {
-        return eval(parsedJson, type, o);
+    public static <C> C eval(T<C> type, final FlowMap o) {
+        return eval(type.getParsedJson(), TypeToken.of(type.get()), o);
     }
+//
+//    public T evalWithIdentity() {
+//        return eval(parsedJson, type, new IdentityFlowMap());
+//    }
+//
+//    public T evalOrDefault(FlowMap o, T defaultValue) {
+//        try {
+//            T eval = eval(o);
+//            if(eval != null) return eval;
+//        } catch (Exception ignore) {}
+//
+//        return defaultValue;
+//    }
 
-    public T evalWithIdentity() {
-        return eval(parsedJson, type, new IdentityFlowMap());
-    }
-
-    public T evalOrDefault(FlowMap o, T defaultValue) {
-        try {
-            T eval = eval(o);
-            if(eval != null) return eval;
-        } catch (Exception ignore) {}
-
-        return defaultValue;
-    }
-
-    protected <C> C eval(Object jsonObject, TypeToken<C> currentType, FlowMap o) {
+    protected static <C> C eval(Object jsonObject, TypeToken<?> currentType, FlowMap o) {
         // if json null, return null regardless of currentType
         if(jsonObject == null) return null;
 
@@ -99,11 +94,8 @@ public abstract class Template<T> {
         }
     }
 
-    public void setParsedJson(Object convertedTemplateObject) {
-        this.parsedJson = convertedTemplateObject;
-    }
 
-    private Collection<String> getKeysDescend(Object toDescend, FlowMap o) {
+    private static Collection<String> getKeysDescend(Object toDescend, FlowMap o) {
         Collection<String> allKeys = new HashSet<>();
         if(toDescend instanceof TemplateExpression) {
             return ((TemplateExpression<?>) toDescend).getKeysInTemplate(o);
@@ -116,21 +108,15 @@ public abstract class Template<T> {
         return allKeys;
     }
 
-    public Collection<String> getKeysInTemplate(FlowMap o) {
-        return getKeysDescend(parsedJson, o);
+    public static Collection<String> getKeysInTemplate(T<?> t, FlowMap o) {
+        return getKeysDescend(t.getParsedJson(), o);
     }
 
-    @Override
-    public String toString() {
-        return parsedJson.toString();
-    }
 
-    public String raw() { return parsedJson.toString(); }
-
-    public T input(FlowMap o) { return this.eval(o); }
-
-    public void output(FlowMap o, T object) {
-        o.put(parsedJson.toString(), object);
-    }
+//    public T input(FlowMap o) { return this.eval(o); }
+//
+//    public void output(FlowMap o, T object) {
+//        o.put(parsedJson.toString(), object);
+//    }
 
 }

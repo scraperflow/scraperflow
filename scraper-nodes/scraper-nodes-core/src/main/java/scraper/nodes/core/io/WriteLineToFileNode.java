@@ -2,19 +2,19 @@ package scraper.nodes.core.io;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.node.EnsureFile;
-
-import scraper.annotations.node.NodePlugin;
 import scraper.annotations.node.FlowKey;
-import scraper.api.flow.FlowMap;
-import scraper.core.Template;
-import scraper.core.AbstractNode;
+import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
+import scraper.api.flow.FlowMap;
+import scraper.api.node.container.FunctionalNodeContainer;
+import scraper.api.node.type.FunctionalNode;
+import scraper.api.reflect.T;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static scraper.core.NodeLogLevel.ERROR;
+import static scraper.api.node.container.NodeLogLevel.ERROR;
 
 /**
  * Appends or writes a line to a file.
@@ -22,34 +22,31 @@ import static scraper.core.NodeLogLevel.ERROR;
  * @author Albert Schimpf
  */
 @NodePlugin("1.0.0")
-public final class WriteLineToFileNode extends AbstractNode {
+public final class WriteLineToFileNode implements FunctionalNode {
 
     /** Output file path */
     @FlowKey(mandatory = true) @EnsureFile
-    private final Template<String> output = new Template<>(){};
+    private final T<String> output = new T<>(){};
 
     /** Line to be written to the file */
     @FlowKey(mandatory = true)
-    private final Template<String> line = new Template<>(){};
+    private final T<String> line = new T<>(){};
 
     /** Overwrite output file or append */
     @FlowKey(defaultValue = "false")
     private Boolean overwrite;
 
-    @NotNull
     @Override
-    public FlowMap process(@NotNull final FlowMap o) throws NodeException {
-        String content = line.eval(o);
-        String output = this.output.eval(o);
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) throws NodeException {
+        String content = o.eval(line);
+        String output = o.eval(this.output);
 
         // TODO use file service instead
         try (PrintWriter fos = new PrintWriter(new FileOutputStream(output, !overwrite))){
             if(!content.isEmpty()) fos.println(content);
         } catch (IOException e) {
-            log(ERROR,"IO read error: {}", e.getMessage());
+            n.log(ERROR,"IO read error: {}", e.getMessage());
             throw new NodeException(e, "IO read error, check system");
         }
-
-        return forward(o);
     }
 }

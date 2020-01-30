@@ -6,10 +6,11 @@ import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
-import scraper.core.AbstractFunctionalNode;
+import scraper.api.node.container.FunctionalNodeContainer;
+import scraper.api.node.container.NodeLogLevel;
+import scraper.api.node.type.FunctionalNode;
+import scraper.api.reflect.T;
 import scraper.core.AbstractNode;
-import scraper.core.NodeLogLevel;
-import scraper.core.Template;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -23,15 +24,14 @@ import java.util.List;
  * Message something to a Telegram account
  *
  * @see AbstractNode
- * @since 0.1
  * @author Albert Schimpf
  */
-@NodePlugin("0.1.0")
-public final class TelegramNode extends AbstractFunctionalNode {
+@NodePlugin("1.0.0")
+public final class TelegramNode implements FunctionalNode {
 
     /** Message */
     @FlowKey(defaultValue = "\"{message}\"")
-    private final Template<String> message = new Template<>(){};
+    private final T<String> message = new T<>(){};
 
     /** Bot token */
     @FlowKey(defaultValue = "\"{bot-token}\"") @Argument
@@ -39,7 +39,7 @@ public final class TelegramNode extends AbstractFunctionalNode {
 
     /** Message recipient. User or group chat id */
     @FlowKey(mandatory = true)
-    private Template<List<Integer>> recipients = new Template<>(){};
+    private T<List<Integer>> recipients = new T<>(){};
 
     /** Telegram bot api link */
     @FlowKey(defaultValue = "\"https://api.telegram.org/bot\"") @Argument
@@ -48,31 +48,30 @@ public final class TelegramNode extends AbstractFunctionalNode {
     private ObjectMapper mapper = new ObjectMapper();
     private final HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build();
 
-    @Override
-    public void modify(@NotNull final FlowMap o) {
-        for (Integer id : recipients.eval(o)) {
-            trySend(message.eval(o), id);
-        }
+    private void trySend(String msg, Integer id) throws IOException, InterruptedException {
+        /// Create Http POST method and set correct headers
+        String url = api + botToken + "/sendmessage";
+        String jsonString = mapper.writeValueAsString(new SendMessage("/sendmessage", String.valueOf(id), msg));
+
+        HttpRequest request = HttpRequest
+                .newBuilder(URI.create(url))
+                .header("User-Agent", "telegram-bot")
+                .header("Content-type", "application/json")
+                .header("charset", "UTF-8")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonString))
+                .build();
+
+        client.send(request, HttpResponse.BodyHandlers.discarding());
     }
 
-    private void trySend(String msg, Integer id) {
-        try {
-            /// Create Http POST method and set correct headers
-            String url = api + botToken + "/sendmessage";
-            String jsonString = mapper.writeValueAsString(new SendMessage("/sendmessage", String.valueOf(id), msg));
-
-            HttpRequest request = HttpRequest
-                    .newBuilder(URI.create(url))
-                    .header("User-Agent", "telegram-bot")
-                    .header("Content-type", "application/json")
-                    .header("charset", "UTF-8")
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonString))
-                    .build();
-
-            client.send(request, HttpResponse.BodyHandlers.discarding());
-
-        } catch (IOException | InterruptedException e) {
-            log(NodeLogLevel.ERROR, "Could not send message to {}: {}", id, e);
+    @Override
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) {
+        for (Integer id : o.eval(recipients)) {
+            try {
+                trySend(o.eval(message), id);
+            } catch (IOException | InterruptedException e) {
+                n.log(NodeLogLevel.ERROR, "Could not send message to {}: {}", id, e);
+            }
         }
     }
 

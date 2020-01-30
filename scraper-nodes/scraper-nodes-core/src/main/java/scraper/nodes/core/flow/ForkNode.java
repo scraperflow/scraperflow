@@ -6,7 +6,8 @@ import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
-import scraper.core.AbstractNode;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.Node;
 import scraper.util.NodeUtil;
 
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
  *
  */
 @NodePlugin("0.1.0")
-public final class ForkNode extends AbstractNode {
+public final class ForkNode implements Node {
 
     /** All nodes to fork the current flow map to */
     @FlowKey(mandatory = true)
@@ -23,13 +24,13 @@ public final class ForkNode extends AbstractNode {
 
     @NotNull
     @Override
-    public FlowMap process(@NotNull FlowMap o) throws NodeException {
+    public FlowMap process(NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
         forkTargets.forEach(target -> {
             // dispatch new flow for every goTo
             FlowMap copy = NodeUtil.flowOf(o);
-            forkDispatch(copy, NodeUtil.addressOf(target));
+            n.forkDispatch(copy, NodeUtil.addressOf(target));
         });
 
-        return forward(o);
+        return n.forward(o);
     }
 }

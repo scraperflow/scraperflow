@@ -1,14 +1,15 @@
 package scraper.nodes.core.io;
 
 
-
 import scraper.annotations.NotNull;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
-import scraper.core.AbstractFunctionalNode;
-import scraper.core.Template;
+import scraper.api.node.container.FunctionalNodeContainer;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.FunctionalNode;
+import scraper.api.reflect.T;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -22,7 +23,7 @@ import java.util.concurrent.TimeoutException;
  * Pings a given hostname on the given port.
  */
 @NodePlugin("1.0.0")
-public final class PingNode extends AbstractFunctionalNode {
+public final class PingNode implements FunctionalNode {
 
     /** Argument ping address */
     @FlowKey(mandatory = true) @Argument
@@ -34,7 +35,7 @@ public final class PingNode extends AbstractFunctionalNode {
 
     /** List of targets with additional parameters */
     @FlowKey(output = true)
-    private Template<Boolean> result = new Template<>(){};
+    private T<Boolean> result = new T<>(){};
 
     /** Enforced ping timeout time in ms. Default: 500 */
     @FlowKey(defaultValue = "500") @Argument
@@ -42,9 +43,9 @@ public final class PingNode extends AbstractFunctionalNode {
 
 
     @Override
-    public void modify(@NotNull final FlowMap o) {
-        boolean ping = isReachable(address, port, timeout);
-        result.output(o, ping);
+    public void modify(FunctionalNodeContainer n, @NotNull final FlowMap o) {
+        boolean ping = isReachable(n, address, port, timeout);
+        o.output(result, ping);
     }
 
     /**
@@ -53,8 +54,8 @@ public final class PingNode extends AbstractFunctionalNode {
      * @param timeOutMillis timeout for the ping
      * @return true if target is reachable; false otherwise
      */
-    private boolean isReachable(String addr, int openPort, int timeOutMillis) {
-        Future<Boolean> future = getService().submit(() -> {
+    private boolean isReachable(NodeContainer n, String addr, int openPort, int timeOutMillis) {
+        Future<Boolean> future = n.getService().submit(() -> {
             try {
                 try (Socket soc = new Socket()) {
                     soc.setSoTimeout(timeOutMillis);

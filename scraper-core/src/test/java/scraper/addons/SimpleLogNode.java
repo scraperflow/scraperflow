@@ -4,21 +4,22 @@ import scraper.annotations.NotNull;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
-import scraper.core.AbstractNode;
-import scraper.core.NodeLogLevel;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.Node;
 
-import static scraper.core.NodeLogLevel.*;
+import static scraper.api.node.container.NodeLogLevel.*;
 
 @NodePlugin(value = "0.1.0", deprecated = true)
-public final class SimpleLogNode extends TestNode {
+public final class SimpleLogNode implements Node {
+
     @NotNull
     @Override
-    public FlowMap process(@NotNull final FlowMap o) throws NodeException {
-        log(TRACE, "1");
-        log(DEBUG, "2");
-        log(INFO, "3");
-        log(WARN, "4");
-        log(ERROR, "5");
-        return forward(o);
+    public FlowMap process(NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
+        n.log(TRACE, "1");
+        n.log(DEBUG, "2");
+        n.log(INFO, "3");
+        n.log(WARN, "4");
+        n.log(ERROR, "5");
+        return n.forward(o);
     }
 }

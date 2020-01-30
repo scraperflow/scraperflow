@@ -5,11 +5,12 @@ import scraper.annotations.node.EnsureFile;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
-import scraper.core.AbstractFunctionalNode;
-import scraper.core.Template;
+import scraper.api.node.container.FunctionalNodeContainer;
+import scraper.api.node.type.FunctionalNode;
+import scraper.api.reflect.T;
 
 @NodePlugin(value = "0.1.0", deprecated = true)
-public final class FileNode extends AbstractFunctionalNode {
+public final class FileNode implements FunctionalNode {
 
     @EnsureFile
     @FlowKey(defaultValue = "\"/tmp/test-scraper-file\"")
@@ -25,8 +26,8 @@ public final class FileNode extends AbstractFunctionalNode {
 
     @EnsureFile
     @FlowKey
-    private Template<String> filet = new Template<>() {};
+    private T<String> filet = new T<>() {};
 
     @Override
-    public void modify(@NotNull final FlowMap o) {}
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) {}
 }

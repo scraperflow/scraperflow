@@ -5,8 +5,9 @@ import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
-import scraper.core.AbstractStreamNode;
-import scraper.core.Template;
+import scraper.api.node.container.StreamNodeContainer;
+import scraper.api.node.type.StreamNode;
+import scraper.api.reflect.T;
 import scraper.util.NodeUtil;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Generate strings based on a generator string and a map which specifies expressions to apply to template parts.
+ * Generate strings based on a generator string and a map which specifies expressions to apply to T parts.
  *
  * Currently only one key expression is supported. A map with size greater than 1 will throw a RuntimeException.
  *
@@ -32,13 +33,13 @@ import java.util.regex.Pattern;
  * @author Albert Schimpf
  */
 @NodePlugin("1.0.0")
-public final class StringGeneratorNode extends AbstractStreamNode {
+public final class StringGeneratorNode implements StreamNode {
 
     /** String used to generate a list of more strings */
     @FlowKey(mandatory = true) @NotNull
-    private final Template<String> generator = new Template<>(){};
+    private final T<String> generator = new T<>(){};
 
-    /** Target key in template to (String) expression map.
+    /** Target key in T to (String) expression map.
      * Expression currently supported: "KEY X TO Y", where X and Y are Integers.
      */
     @FlowKey(mandatory = true)
@@ -46,11 +47,10 @@ public final class StringGeneratorNode extends AbstractStreamNode {
 
     /** Output list key */
     @FlowKey(defaultValue = "\"generated\"", output = true) @NotNull
-    private Template<String> generatedElement = new Template<>(){};
+    private T<String> generatedElement = new T<>(){};
 
-    @NotNull
     @Override
-    public void processStream(final @NotNull FlowMap o) {
+    public void process(StreamNodeContainer n, FlowMap o) throws NodeException {
         // parse expression for goTo key
         // only one pattern 'X TO Y' supported, parse directly with regex
         String targetString = expression;
@@ -63,17 +63,17 @@ public final class StringGeneratorNode extends AbstractStreamNode {
         Integer from = Integer.valueOf(m.group(2));
         Integer to = Integer.valueOf(m.group(3));
 
-        collect(o, List.of(generatedElement.raw(), key));
+        n.collect(o, List.of(generatedElement.getRawJson(), key));
 
         for (int i = from; i <= to; i++) {
             FlowMap copy = NodeUtil.flowOf(o);
-            // used to evaluate generator template
+            // used to evaluate generator T
             copy.put(key, i);
 
-            String generatedString = generator.eval(copy);
-            generatedElement.output(copy, generatedString);
+            String generatedString = copy.eval(generator);
+            copy.output(generatedElement, generatedString);
 
-            stream(o, copy);
+            n.stream(o, copy);
         }
     }
 }

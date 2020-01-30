@@ -6,8 +6,9 @@ import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
-import scraper.core.AbstractNode;
-import scraper.core.Template;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.Node;
+import scraper.api.reflect.T;
 import scraper.util.NodeUtil;
 
 import java.util.List;
@@ -23,11 +24,11 @@ import static scraper.util.NodeUtil.flowOf;
  * @author Albert Schimpf
  */
 @NodePlugin("1.0.0")
-public final class MapNode extends AbstractNode {
+public final class MapNode implements Node {
 
     /** The expected list is located to fork on */
     @FlowKey(mandatory = true)
-    private Template<List<?>> list = new Template<>(){};
+    private T<List<?>> list = new T<>(){};
 
     /** At which key to put the element of the list into. */
     @FlowKey(defaultValue = "\"element\"")
@@ -38,15 +39,15 @@ public final class MapNode extends AbstractNode {
 
     @NotNull
     @Override
-    public FlowMap process(@NotNull final FlowMap o) throws NodeException {
-        List<?> targetList = list.eval(o);
+    public FlowMap process(NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
+        List<?> targetList = o.eval(list);
 
         targetList.forEach(t -> {
             FlowMap finalCopy = flowOf(o);
             finalCopy.put(putElement, t);
-            forkDispatch(finalCopy, NodeUtil.addressOf(mapTarget));
+            n.forkDispatch(finalCopy, NodeUtil.addressOf(mapTarget));
         });
 
-        return forward(o);
+        return n.forward(o);
     }
 }

@@ -1,9 +1,11 @@
+import scraper.api.node.type.Node;
 import scraper.core.AbstractMetadata;
-import scraper.api.node.Node;
+import scraper.api.node.container.NodeContainer;
 
 open module scraper.core {
     uses AbstractMetadata;
     uses scraper.api.plugin.Addon;
+    uses NodeContainer;
     uses Node;
 
     exports scraper.core;

@@ -124,6 +124,12 @@ public class StringToClassConverterTest {
             try {
                 StringToClassConverter.convert(generatedString, targetClass);
             } catch (ValidationException ignored) {}
+            catch (Exception e){
+                System.err.println("Exception with generated String and target class");
+                System.err.println(generatedString);
+                System.err.println(targetClass);
+                throw new IllegalStateException(e);
+            }
         }
     }
 

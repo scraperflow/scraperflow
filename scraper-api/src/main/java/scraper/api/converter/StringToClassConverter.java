@@ -51,21 +51,21 @@ public final class StringToClassConverter {
             try {
                 return Double.valueOf(s);
             } catch (NumberFormatException e) {
-                throw new ValidationException("Could not convert string to Double", e);
+                throw new ValidationException(e, "Could not convert string to Double");
             }
 
         if(Long.class.isAssignableFrom(target))
             try {
                 return Long.valueOf(s);
             } catch (NumberFormatException e) {
-                throw new ValidationException("Could not convert string to Long", e);
+                throw new ValidationException(e, "Could not convert string to Long");
             }
 
         if(Integer.class.isAssignableFrom(target))
             try {
                 return Integer.valueOf(s);
             } catch (NumberFormatException e) {
-                throw new ValidationException("Could not convert string to Integer", e);
+                throw new ValidationException(e, "Could not convert string to Integer");
             }
 
         if(Boolean.class.isAssignableFrom(target)) {
@@ -82,7 +82,7 @@ public final class StringToClassConverter {
                 Enum<?> t = Enum.valueOf(e, s);
                 return t;
             } catch (IllegalArgumentException | NullPointerException ex) {
-                throw new ValidationException("Could not convert string to Enum", ex);
+                throw new ValidationException(ex, "Could not convert string to Enum");
             }
         }
 

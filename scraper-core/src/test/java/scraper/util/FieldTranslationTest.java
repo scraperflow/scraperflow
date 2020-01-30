@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
-import scraper.core.Template;
+import scraper.api.reflect.T;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -116,22 +116,22 @@ public class FieldTranslationTest {
     // simple string template
     @FlowKey(mandatory = true)
     @TranslationInput(jsonValue = "\"static\"")
-    private Template<String> simpleTemplate = new Template<>(){};
+    private T<String> simpleTemplate = new T<>(){};
     private String simpleTemplateEval = "static";
 
 
     // expect to fail string template
     @FlowKey(mandatory = true)
     @TranslationInput(jsonValue = "\"fail\"", fail = true)
-    private Template<String> failTemplate = new Template<>(){};
+    private T<String> failTemplate = new T<>(){};
     private String failTemplateEval = "static";
 
 
     // template map static eval
     @FlowKey(mandatory = true)
     @TranslationInput(jsonValue = "{\"key\":\"value\"}")
-    private Template<Map<String, String>> mapTemplate = new Template<>(){};
-    private Consumer<Map<String, String>> mapTemplateCheck = o -> {
+    private T<Map<String, String>> mapTemplate = new T<>(){};
+    private Consumer<Map<String, String>> mapTCheck = o -> {
         if(!"value".equalsIgnoreCase(o.get("key"))) throw new IllegalStateException("Bad template evaluation");
     };
 
@@ -139,7 +139,7 @@ public class FieldTranslationTest {
     // template map args eval
     @FlowKey(mandatory = true)
     @TranslationInput(jsonValue = "{\"key\":\"{valFromArgs}\"}")
-    private Template<Map<String, String>> mapArgsTemplate = new Template<>(){};
+    private T<Map<String, String>> mapArgsTemplate = new T<>(){};
     private Map<String, Object> mapArgsTemplateArgs = Map.of("valFromArgs", "evalKey");
     private Consumer<Map<String, String>> mapArgsTemplateCheck = o -> {
         if(!"evalKey".equalsIgnoreCase(o.get("key"))) throw new IllegalStateException("Bad template evaluation");
@@ -148,7 +148,7 @@ public class FieldTranslationTest {
     // template eval object with objects
     @FlowKey
     @TranslationInput(jsonValue = "{\"aList\":\"{evalToListObject}\"}")
-    private Template<Object> evalToList = new Template<>(){};
+    private T<Object> evalToList = new T<>(){};
     private Map<String, Object> evalToListArgs = Map.of("evalToListObject", List.of("e1","e1"));
     private Consumer<Map<String, Object>> evalToListCheck = o -> {
         if(!(o.get("aList") instanceof List)) throw new IllegalStateException("Evaluated object is not a list anymore: " + o.get("aList").getClass());
@@ -191,7 +191,7 @@ public class FieldTranslationTest {
     // optional template evaluation
     @FlowKey(defaultValue = "\"{optTemplate}\"")
     @TranslationInput
-    private Template<String> optionalBaseTemplateEval = new Template<>(){};
+    private T<String> optionalBaseTemplateEval = new T<>(){};
     private Map<String, Object> optionalBaseTemplateEvalArgs = Map.of("optTemplate", "output");
     private String optionalBaseTemplateEvalEval = "output";
 
@@ -199,22 +199,22 @@ public class FieldTranslationTest {
     // optional null template evaluation
     @FlowKey
     @TranslationInput
-    private Template<String> nullTemplate = new Template<>(){};
+    private T<String> nullTemplate = new T<>(){};
     private String nullTemplateEval = null;
 
 
     // optional missing template args
     @FlowKey(defaultValue = "\"{missingTemplate}\"")
     @TranslationInput(fail = true)
-    private Template<String> missingTemplate = new Template<>(){};
+    private T<String> missingTemplate = new T<>(){};
 
 
     // map with template and actual type are mixed
     @FlowKey(defaultValue = "{\"actual\": 4, \"replaced\": \"{id}\"}")
     @TranslationInput
-    private Template<Map<String, Integer>> multiTemplate = new Template<>(){};
+    private T<Map<String, Integer>> multiTemplate = new T<>(){};
     private Map<String, Object> multiTemplateArgs = Map.of("id", 2);
-    private Consumer<Map<String, Integer>> multiTemplateCheck = o -> {
+    private Consumer<Map<String, Integer>> multiTCheck = o -> {
         Integer actual = 4;
         if(!actual.equals(o.get("actual"))) throw new IllegalStateException("Bad template evaluation");
         Integer replaced = 2;
@@ -225,7 +225,7 @@ public class FieldTranslationTest {
     // map bad complex type evaluation
     @FlowKey(defaultValue = "{\"actual\": 4, \"replaced\": \"{id}\"}")
     @TranslationInput(fail = true)
-    private Template<Map<String, Integer>> badMultiTemplate = new Template<>(){};
+    private T<Map<String, Integer>> badMultiTemplate = new T<>(){};
     private Map<String, Object> badMultiTemplateArgs = Map.of("id", "test");
 
 
@@ -295,9 +295,9 @@ public class FieldTranslationTest {
         if((expectedReturnValue != null || translatedValue != null) && !expectedReturnValue.equals(translatedValue))
             throw new IllegalStateException("Failed equality check");
 
-        if(field.getType().isAssignableFrom(Template.class)) {
-            Template<?> template = (Template<?>) field.get(this);
-            Object templateEvaluation = template.eval(NodeUtil.flowOf(args));
+        if(field.getType().isAssignableFrom(T.class)) {
+            T<?> template = (T<?>) field.get(this);
+            Object templateEvaluation = NodeUtil.flowOf(args).eval(template);
 
             // static convention check for simple cases
             if(expectedTemplateEval != null && !expectedTemplateEval.equals(templateEvaluation)) {

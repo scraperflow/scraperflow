@@ -5,8 +5,9 @@ import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
-import scraper.core.AbstractFunctionalNode;
-import scraper.core.Template;
+import scraper.api.node.container.FunctionalNodeContainer;
+import scraper.api.node.type.FunctionalNode;
+import scraper.api.reflect.T;
 
 import java.util.Collection;
 
@@ -16,28 +17,28 @@ import java.util.Collection;
  * @author Albert Schimpf
  */
 @NodePlugin("1.0.0")
-public final class ContainedInCollectionNode extends AbstractFunctionalNode {
+public final class ContainedInCollectionNode implements FunctionalNode {
 
     /** Collection to be checked if the object is contained */
     @FlowKey(defaultValue = "\"{collection}\"") @NotNull
-    private final Template<Collection> collection = new Template<>(){};
+    private final T<Collection> collection = new T<>(){};
 
     /** This evaluated object is used for checking */
     @FlowKey(defaultValue = "\"{object}\"") @NotNull
-    private final Template<Object> object = new Template<>(){};
+    private final T<Object> object = new T<>(){};
 
     /** Key where the result flag will be written to */
     @FlowKey(defaultValue = "\"flag\"", output = true) @NotNull
-    private Template<Boolean> flag = new Template<>(){};
+    private T<Boolean> flag = new T<>(){};
 
     /** Determines if the contains or contains not operation is used */
     @FlowKey(defaultValue = "false")
     private Boolean negate;
 
     @Override
-    public void modify(@NotNull final FlowMap o) {
-        Object     object     = this.object.input(o);
-        Collection collection = this.collection.input(o);
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
+        Object     object     = o.input(this.object);
+        Collection collection = o.input(this.collection);
 
         // cont negate output
         // 0    0      0
@@ -46,6 +47,6 @@ public final class ContainedInCollectionNode extends AbstractFunctionalNode {
         // 1    1      0
         Boolean result = collection.contains(object) ^ negate;
 
-        flag.output(o, result);
+        o.output(flag, result);
     }
 }

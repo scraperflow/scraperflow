@@ -5,26 +5,27 @@ import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
-import scraper.core.AbstractNode;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.Node;
 
-import static scraper.core.NodeLogLevel.ERROR;
+import static scraper.api.node.container.NodeLogLevel.ERROR;
 
 
 /**
  * @author Albert Schimpf
  */
 @NodePlugin(value = "0.0.1")
-public final class NoNode extends AbstractNode {
+public final class NoNode implements Node {
 
     @FlowKey(defaultValue = "false")
     private Boolean fail;
 
     @NotNull
     @Override
-    public FlowMap process(@NotNull final FlowMap o) throws NodeException {
+    public FlowMap process(NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
         System.setProperty("done", "true");
         if(fail) {
-            log(ERROR,"EXP");
+            n.log(ERROR,"EXP");
             throw new NodeException("abc");
         }
 

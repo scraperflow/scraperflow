@@ -37,7 +37,7 @@ public final class TemplateUtil {
             log.trace("Converted term: '{}'", convertedTerm);
             return convertedTerm;
         } catch (Exception e) {
-            throw new TemplateException("Bad template syntax", e);
+            throw new TemplateException(e, "Bad template syntax");
         }
     }
 

@@ -4,11 +4,12 @@ import scraper.annotations.NotNull;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.container.FunctionalNodeContainer;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.FunctionalNode;
+import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
-import scraper.core.AbstractFunctionalNode;
-import scraper.core.Template;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -21,7 +22,7 @@ import java.util.Date;
  * @author Albert Schimpf
  */
 @NodePlugin("1.0.0")
-public final class DateNode extends AbstractFunctionalNode {
+public final class DateNode implements FunctionalNode {
 
     /** Format of the date */
     @FlowKey(defaultValue = "\"yyyy-MM-dd'T'HH:mm:ss\"") @Argument
@@ -29,20 +30,19 @@ public final class DateNode extends AbstractFunctionalNode {
 
     /** Where to put the date */
     @FlowKey(defaultValue = "\"date\"", output = true) @NotNull
-    private Template<String> put = new Template<>(){};
+    private T<String> put = new T<>(){};
 
     private DateFormat parsedDateFormat;
 
     @Override
-    public void init(@NotNull final ScrapeInstance job) throws ValidationException {
-        super.init(job);
+    public void init(@NotNull NodeContainer n, @NotNull final ScrapeInstance job) {
         parsedDateFormat = new SimpleDateFormat(dateFormat);
     }
 
     @Override
-    public void modify(@NotNull final FlowMap o) {
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         String date = parsedDateFormat.format(new Date());
 
-        put.output(o, date);
+        o.output(put, date);
     }
 }

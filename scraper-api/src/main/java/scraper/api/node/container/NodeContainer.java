@@ -1,12 +1,16 @@
-package scraper.api.node;
+package scraper.api.node.container;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.*;
+import scraper.api.specification.ScrapeInstance;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 /**
  * The main component in a Scraper workflow specification.
@@ -22,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
  *
  * @since 1.0.0
  */
-public interface Node extends NodeConsumer {
+public interface NodeContainer<NODE> extends NodeInitializable {
 
     // ==================
     // Specification
@@ -49,9 +53,16 @@ public interface Node extends NodeConsumer {
     // Control Flow
     // ============
 
+
     /** Job-Unique target forward address. Defaults to the next node in the specification */
     @Nullable
     Address getGoTo();
+
+    @NotNull
+    Collection<NodeHook> beforeHooks();
+
+    @NotNull
+    Collection<NodeHook> afterHooks();
 
     boolean isForward();
 
@@ -91,4 +102,11 @@ public interface Node extends NodeConsumer {
      */
     void forkDispatch(@NotNull final FlowMap o, @NotNull final Address target);
 
+    NODE getC();
+
+    void log(NodeLogLevel trace, String s, Object... args);
+
+    ScrapeInstance getJobInstance();
+
+    ExecutorService getService();
 }

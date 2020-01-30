@@ -1,11 +1,12 @@
 package scraper.nodes.core.test.addons;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.node.NodePlugin;
 import scraper.annotations.node.FlowKey;
-import scraper.api.flow.FlowMap;
-import scraper.core.AbstractNode;
+import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
+import scraper.api.flow.FlowMap;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.Node;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static java.lang.String.valueOf;
 
 @NodePlugin
-public class AssertNode extends AbstractNode {
+public class AssertNode implements Node {
 
     private @FlowKey(defaultValue = "{}") Map<String, Object> assertMap;
     private @FlowKey(defaultValue = "{}") Map<String, List<String>> containsMap;
@@ -37,7 +38,7 @@ public class AssertNode extends AbstractNode {
 
     @NotNull
     @Override
-    public FlowMap process(@NotNull FlowMap o) throws NodeException {
+    public FlowMap process(NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
         if(wait != null) { try { Thread.sleep(wait); } catch (InterruptedException ignored) {} }
 
         for (String key : assertMap.keySet()) {
@@ -120,7 +121,7 @@ public class AssertNode extends AbstractNode {
 
         if (failOnError && !success.get()) throw new NodeException("Assertion error!");
 
-        return forward(o);
+        return n.forward(o);
     }
 
     private String clip(String o) {
@@ -175,5 +176,4 @@ public class AssertNode extends AbstractNode {
             }
         }
     }
-
 }

@@ -4,9 +4,10 @@ import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
-import scraper.core.AbstractFunctionalNode;
+import scraper.api.node.container.FunctionalNodeContainer;
+import scraper.api.node.type.FunctionalNode;
+import scraper.api.reflect.T;
 import scraper.core.AbstractNode;
-import scraper.core.Template;
 
 import java.io.File;
 
@@ -18,21 +19,21 @@ import java.io.File;
  * @author Albert Schimpf
  */
 @NodePlugin("0.1.0")
-public final class FileExistsNode extends AbstractFunctionalNode {
+public final class FileExistsNode implements FunctionalNode {
 
     /** Path of the file to be cleared */
     @FlowKey(mandatory = true) @NotNull
-    private final Template<String> path = new Template<>(){};
+    private final T<String> path = new T<>(){};
 
     @FlowKey(defaultValue = "\"exists\"", output = true) @NotNull
-    private final Template<Boolean> result = new Template<>(){};
+    private final T<Boolean> result = new T<>(){};
 
     @FlowKey(defaultValue = "true")
     private Boolean treatEmptyAsNonExisting;
 
     @Override
-    public void modify(final @NotNull FlowMap o) {
-        String path = this.path.eval(o);
+    public void modify(@NotNull FunctionalNodeContainer n, final @NotNull FlowMap o) {
+        String path = o.eval(this.path);
 
         File check = new File(path);
 
@@ -44,6 +45,6 @@ public final class FileExistsNode extends AbstractFunctionalNode {
             exists = false;
         }
 
-        this.result.output(o, exists);
+        o.output(result, exists);
     }
 }

@@ -5,9 +5,10 @@ import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
-import scraper.core.AbstractFunctionalNode;
+import scraper.api.node.container.FunctionalNodeContainer;
+import scraper.api.node.type.FunctionalNode;
+import scraper.api.reflect.T;
 import scraper.core.AbstractNode;
-import scraper.core.Template;
 
 import java.util.Arrays;
 import java.util.List;
@@ -40,11 +41,11 @@ import java.util.Map;
  */
 // TODO api doc; | descends into maps, [] descends into arrays
 @NodePlugin("0.1.0")
-public final class CleanJsonObjectNode extends AbstractFunctionalNode {
+public final class CleanJsonObjectNode implements FunctionalNode {
 
     /** JSON object */
     @FlowKey(mandatory = true)
-    private final Template<Map<String, Object>> jsonObject = new Template<>(){};
+    private final T<Map<String, Object>> jsonObject = new T<>(){};
 
     /** Clean operations */
     @FlowKey(mandatory = true)
@@ -52,11 +53,11 @@ public final class CleanJsonObjectNode extends AbstractFunctionalNode {
 
     /** cleaned JSON object location */
     @FlowKey(defaultValue = "output", output = true)
-    private final Template<Map<String, Object>> cleanedObject = new Template<>(){};
+    private final T<Map<String, Object>> cleanedObject = new T<>(){};
 
     @Override
-    public void modify(@NotNull final FlowMap o) throws NodeException {
-        Map<String, Object> json = jsonObject.eval(o);
+    public void modify(FunctionalNodeContainer n, @NotNull final FlowMap o) throws NodeException {
+        Map<String, Object> json = o.eval(jsonObject);
 
         for (String parts : clean) {
             try {
@@ -67,7 +68,7 @@ public final class CleanJsonObjectNode extends AbstractFunctionalNode {
         }
 
         // put cleaned object
-        cleanedObject.output(o, json);
+        o.output(cleanedObject, json);
     }
 
     private void cleanObject(Map obj, String[] parts) {

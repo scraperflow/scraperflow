@@ -7,8 +7,10 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.Node;
+import scraper.api.reflect.T;
 import scraper.core.AbstractNode;
-import scraper.core.Template;
 
 /**
  * Provides if-then-else routing
@@ -18,10 +20,10 @@ import scraper.core.Template;
  * @author Albert Schimpf
  */
 @NodePlugin("0.1.0")
-public final class IfThenElseNode extends AbstractNode {
+public final class IfThenElseNode implements Node {
 
     @FlowKey(mandatory = true) @NotNull
-    private Template<Boolean> condition = new Template<>(){};
+    private T<Boolean> condition = new T<>(){};
 
     @FlowKey @Nullable
     private Address trueTarget;
@@ -31,17 +33,17 @@ public final class IfThenElseNode extends AbstractNode {
 
     @NotNull
     @Override
-    public FlowMap process(@NotNull final FlowMap o) throws NodeException {
-        Boolean condition = this.condition.eval(o);
+    public FlowMap process(NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
+        Boolean condition = o.eval(this.condition);
 
         if(condition) {
             if(trueTarget != null)
-                return forward(eval(o, trueTarget));
+                return n.forward(n.eval(o, trueTarget));
         } else {
             if(falseTarget != null)
-                return forward(eval(o, falseTarget));
+                return n.forward(n.eval(o, falseTarget));
         }
 
-        return forward(o);
+        return n.forward(o);
     }
 }

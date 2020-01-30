@@ -5,13 +5,15 @@ import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
-import scraper.core.AbstractFunctionalNode;
-import scraper.core.Template;
+import scraper.api.node.container.FunctionalNodeContainer;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.FunctionalNode;
+import scraper.api.reflect.T;
 import scraper.util.NodeUtil;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static scraper.core.NodeLogLevel.*;
+import static scraper.api.node.container.NodeLogLevel.*;
 import static scraper.util.NodeUtil.flowOf;
 
 /**
@@ -36,11 +38,11 @@ import static scraper.util.NodeUtil.flowOf;
  *
  */
 @NodePlugin(value = "0.1.1", stateful = true)
-public final class TimerNode extends AbstractFunctionalNode {
+public final class TimerNode implements FunctionalNode {
 
     /** timeout in ms for this node */
     @FlowKey(mandatory = true)
-    private final Template<Integer> timeout = new Template<>(){};
+    private final T<Integer> timeout = new T<>(){};
 
     /** go to node if timeout occurs */
     @FlowKey(mandatory = true)
@@ -52,7 +54,7 @@ public final class TimerNode extends AbstractFunctionalNode {
 
     /** action to be taken when this node accepts a call */
     @FlowKey(defaultValue = "\"NoOP\"")
-    private final Template<Action> action = new Template<>(){};
+    private final T<Action> action = new T<>(){};
 
     /** time location */
     @FlowKey(mandatory = true)
@@ -69,12 +71,12 @@ public final class TimerNode extends AbstractFunctionalNode {
     private Action lastReceivedAction = null;
 
     @Override
-    public void modify(@NotNull final FlowMap o) {
-        Action action = this.action.eval(o);
-        processAction(action, o);
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
+        Action action = o.eval(this.action);
+        processAction(n, action, o);
     }
 
-    private synchronized void processAction(Action action, FlowMap o) {
+    private synchronized void processAction(NodeContainer n, Action action, FlowMap o) {
         switch (action) {
             case TIME_ELAPSED: {
                 checkState(o);
@@ -85,28 +87,28 @@ public final class TimerNode extends AbstractFunctionalNode {
                 break;
             }
             case START: {
-                log(DEBUG, "[{}] Starting timer action received", name);
+                n.log(DEBUG, "[{}] Starting timer action received", name);
                 startElapsed();
                 startTimeout(o);
-                startThread(o, false);
+                startThread(n, o, false);
                 break;
             }
             case FORCE_START: {
-                log(DEBUG, "[{}] Force starting timer action received", name);
+                n.log(DEBUG, "[{}] Force starting timer action received", name);
                 startElapsed();
                 startTimeout(o);
-                startThread(o, true);
+                startThread(n, o, true);
                 break;
             }
             case STOP: {
-                if(lastReceivedAction != Action.STOP) log(DEBUG, "[{}] Stop timer action received", name);
+                if(lastReceivedAction != Action.STOP) n.log(DEBUG, "[{}] Stop timer action received", name);
                 stopElapsed();
                 stopTimeout();
                 stopThread();
                 break;
             }
             case NoOP: {
-                log(TRACE,"[{}] No op timer action", name);
+                n.log(TRACE,"[{}] No op timer action", name);
             }
         }
 
@@ -121,7 +123,7 @@ public final class TimerNode extends AbstractFunctionalNode {
     private void startTimeout(FlowMap o) {
         if(timeoutTimestamp == null) {
             timeoutTimestamp = System.nanoTime()/1000000;
-            lastTimeout = timeout.eval(o);
+            lastTimeout = o.eval(timeout);
         }
     }
 
@@ -141,26 +143,26 @@ public final class TimerNode extends AbstractFunctionalNode {
         }
     }
 
-    private void startThread(final FlowMap o, boolean force) {
+    private void startThread(NodeContainer n, final FlowMap o, boolean force) {
         forceWait.set(force);
-        Integer timeout = this.timeout.eval(o);
+        Integer timeout = o.eval(this.timeout);
 
         if(timeoutThread == null) {
-            log(INFO,"Starting alarm, {} ms!", timeout);
+            n.log(INFO,"Starting alarm, {} ms!", timeout);
 
             // create new timer and start it
-            timeoutThread = getThread(o, timeout);
+            timeoutThread = getThread(n, o, timeout);
             timeoutThread.start();
         } else {
             if(force) {
                 // force interrupt and recreate + start timer
-                log(INFO,"Force starting alarm, {} ms!", timeout);
+                n.log(INFO,"Force starting alarm, {} ms!", timeout);
                 timeoutThread.interrupt();
-                timeoutThread = getThread(o, timeout);
+                timeoutThread = getThread(n, o, timeout);
                 timeoutThread.start();
             } else {
                 // do nothing if timer already started, let it finish
-                log(DEBUG,"[{}] Timer already running, {} ms left", name, getTimeLeft());
+                n.log(DEBUG,"[{}] Timer already running, {} ms left", name, getTimeLeft());
             }
         }
     }
@@ -191,20 +193,20 @@ public final class TimerNode extends AbstractFunctionalNode {
         }
     }
 
-    private Thread getThread(final FlowMap o, Integer timeout) {
+    private Thread getThread(NodeContainer n, final FlowMap o, Integer timeout) {
         return new Thread(() -> {
-            log(TRACE,"Make a local copy of the current input map");
+            n.log(TRACE,"Make a local copy of the current input map");
             final FlowMap oCopy = flowOf(o);
 
             while(!Thread.interrupted()) {
-                log(INFO,"'{}' alarm in {}", name, timeout);
+                n.log(INFO,"'{}' alarm in {}", name, timeout);
 
                 try {
                     Thread.sleep(timeout);
-                    log(INFO,"Executing alarm: {}", toString());
-                    forkDispatch(oCopy, NodeUtil.addressOf(onTimeout));
+                    n.log(INFO,"Executing alarm: {}", toString());
+                    n.forkDispatch(oCopy, NodeUtil.addressOf(onTimeout));
                 } catch (InterruptedException e) {
-                    log(INFO,"'{}' stopped", name);
+                    n.log(INFO,"'{}' stopped", name);
                 } finally {
                     Thread.currentThread().interrupt();
                     stopTimeout();

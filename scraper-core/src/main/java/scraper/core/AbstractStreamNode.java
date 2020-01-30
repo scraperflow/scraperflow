@@ -4,29 +4,35 @@ import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
+import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
-import scraper.api.node.NodeHook;
+import scraper.api.node.container.NodeLogLevel;
+import scraper.api.node.container.StreamNodeContainer;
 import scraper.api.node.type.StreamNode;
+import scraper.api.specification.ScrapeInstance;
 import scraper.util.NodeUtil;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 /**
  * Fixes accept method for functional nodes
  */
 @NodePlugin("1.0.0")
-public abstract class AbstractStreamNode extends AbstractNode implements StreamNode {
+public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implements StreamNodeContainer {
+    @Override
+    public void init(@NotNull ScrapeInstance job) throws ValidationException {
+        super.init(job);
+        if(!collect)
+            if(streamTarget == null) throw new ValidationException("Stream target has to be set for streaming mode");
+    }
 
     @FlowKey(defaultValue = "\"true\"")
     private Boolean collect;
 
     /** Where the stream is dispatched */
-    @FlowKey
-    private Address streamTarget;
+    @FlowKey private Address streamTarget;
 
     private final @NotNull Map<UUID, FlowMap> openStreams = new HashMap<>();
     private final @NotNull Map<UUID, Map<String, List<Object>>> collectors = new HashMap<>();
@@ -36,15 +42,13 @@ public abstract class AbstractStreamNode extends AbstractNode implements StreamN
         if(collect) {
             collectKeys.put(o.getId(), toCollect);
             // get collector list for origin ID and key to be collected
-            collectors.put(origin.getId(), new HashMap<>());
+            collectors.put(o.getId(), new HashMap<>());
             
-            // create collector for origin ID
-            openStreams.put(origin.getId(), NodeUtil.flowOf(origin));
+            // create collector for o ID
+            openStreams.put(o.getId(), NodeUtil.flowOf(o));
 
             // create empty list as default
-            collectKeys.get(origin.getId()).forEach(key -> {
-                collectors.get(origin.getId()).put(key, new LinkedList<>());
-            }
+            collectKeys.get(o.getId()).forEach(key -> collectors.get(o.getId()).put(key, new LinkedList<>()));
         }
     }
 
@@ -61,18 +65,15 @@ public abstract class AbstractStreamNode extends AbstractNode implements StreamN
         }
     }
 
-
     @Override
-    public FlowMap process(FlowMap o) throws NodeException {
-
+    public FlowMap processStream(FlowMap o) throws NodeException {
         if(collect) {
             log(NodeLogLevel.TRACE, "Collecting stream for map {}", o.getId());
             openStreams.put(o.getId(), o);
             collectors.put(o.getId(), new HashMap<>());
         }
 
-        processStream(o);
-
+        getC().process(this, o);
 
         if(!collect) {
             return forward(o);
@@ -89,6 +90,4 @@ public abstract class AbstractStreamNode extends AbstractNode implements StreamN
             return forward(copy);
         }
     }
-
-    public abstract void processStream(FlowMap o);
 }

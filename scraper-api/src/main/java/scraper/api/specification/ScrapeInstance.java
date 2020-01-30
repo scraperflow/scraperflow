@@ -3,13 +3,17 @@ package scraper.api.specification;
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.exceptions.ValidationException;
-import scraper.api.node.*;
+import scraper.api.node.Address;
+import scraper.api.node.GraphAddress;
+import scraper.api.node.InstanceAddress;
+import scraper.api.node.NodeAddress;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.Node;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
 import scraper.api.service.ProxyReservation;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -30,18 +34,18 @@ public interface ScrapeInstance {
     @NotNull String getName();
 
     /** Returns instantiated node in the flow. main flow has precedence over fragment flows. Throws a runtime exception if address is not found */
-    @NotNull Node getNode(@NotNull Address target);
+    @NotNull NodeContainer<? extends Node> getNode(@NotNull Address target);
 
     @Nullable Address getForwardTarget(@NotNull NodeAddress origin);
 
     /** ? */
-    @NotNull Map<GraphAddress, List<Node>> getGraphs();
+    @NotNull Map<GraphAddress, List<NodeContainer<? extends Node>>> getGraphs();
 
     /** ? */
-    @NotNull List<Node> getEntryGraph();
+    @NotNull List<NodeContainer<? extends Node>> getEntryGraph();
 
     /** ? */
-    @NotNull List<Node> getGraph(@NotNull GraphAddress label);
+    @NotNull List<NodeContainer<? extends Node>> getGraph(@NotNull GraphAddress label);
 
     /** Imported instances */
     @NotNull Map<InstanceAddress, ScrapeInstance> getImportedInstances();

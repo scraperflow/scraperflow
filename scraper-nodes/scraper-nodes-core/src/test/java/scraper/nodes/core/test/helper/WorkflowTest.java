@@ -4,6 +4,8 @@ import junitparams.Parameters;
 import org.junit.Test;
 import scraper.api.di.DIContainer;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.Node;
 import scraper.api.specification.impl.ScrapeInstaceImpl;
 import scraper.api.specification.impl.ScrapeSpecificationImpl;
 import scraper.core.JobFactory;
@@ -53,7 +55,8 @@ public abstract class WorkflowTest {
 
         // feed input
         try {
-            convJob.getEntryGraph().get(0).accept(initialFlow);
+            NodeContainer<? extends Node> n = convJob.getEntryGraph().get(0);
+            n.getC().accept(n, initialFlow);
 
             TestUtil.assertSuccess(convJob.getEntryGraph());
         } catch (Exception e) {

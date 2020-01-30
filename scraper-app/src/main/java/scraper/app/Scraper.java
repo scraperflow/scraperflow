@@ -8,6 +8,8 @@ import scraper.annotations.NotNull;
 import scraper.annotations.di.DITarget;
 import scraper.api.di.DIContainer;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.Node;
 import scraper.api.plugin.Addon;
 import scraper.api.plugin.Hook;
 import scraper.api.plugin.PreHook;
@@ -119,7 +121,8 @@ public class Scraper {
                 try {
                     FlowMap initial = flowOf(job.getInitialArguments());
 
-                    job.getNode(definition.getEntry()).accept(initial);
+                    NodeContainer<? extends Node> initialNode = job.getNode(definition.getEntry());
+                    initialNode.getC().accept(initialNode, initial);
 
                     return initial;
                 } catch (Exception e) {

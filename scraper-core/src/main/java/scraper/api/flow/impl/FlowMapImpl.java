@@ -4,6 +4,8 @@ import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.flow.FlowHistory;
 import scraper.api.flow.FlowMap;
+import scraper.api.reflect.T;
+import scraper.core.Template;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -78,6 +80,33 @@ public class FlowMapImpl implements FlowMap {
     @NotNull @Override public FlowHistory getFlowHistory() { return flowHistory; }
 
     @Override public UUID getId() { return uuid; }
+
+    @Override
+    public <A> A eval(T<A> template) {
+        return Template.eval(template, this);
+    }
+
+    @Override
+    public <A> A evalOrDefault(T<A> template, A object) {
+        try {
+            A eval = this.eval(template);
+            if(eval != null) return eval;
+        } catch (Exception ignore) {}
+
+        return object;
+    }
+
+    @Override
+    public <A> A input(T<A> template) {
+        return eval(template);
+    }
+
+    @Override
+    public <A> void output(T<A> locationAndType, A object) {
+        // for now output templates are only strings
+        String json = locationAndType.getRawJson();
+        put(json, object);
+    }
 
     private boolean descendMap(@NotNull final Map<?,?> currentMap, @NotNull final Map<?,?> otherMap) {
         for (Object s : otherMap.keySet()) {

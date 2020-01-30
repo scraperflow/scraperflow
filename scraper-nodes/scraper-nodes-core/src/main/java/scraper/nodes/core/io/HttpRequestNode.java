@@ -9,13 +9,14 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.Node;
+import scraper.api.reflect.T;
 import scraper.api.service.HttpService;
 import scraper.api.service.HttpService.RequestType;
 import scraper.api.service.proxy.ProxyMode;
 import scraper.api.service.proxy.ReservationToken;
 import scraper.api.specification.ScrapeInstance;
-import scraper.core.AbstractNode;
-import scraper.core.Template;
 import scraper.utils.StringUtil;
 
 import java.io.File;
@@ -33,7 +34,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import static java.time.temporal.ChronoUnit.MILLIS;
-import static scraper.core.NodeLogLevel.*;
+import static scraper.api.node.container.NodeLogLevel.*;
 
 /**
  * Provides html functions (see RequestType):
@@ -47,7 +48,7 @@ import static scraper.core.NodeLogLevel.*;
  * @author Albert Schimpf
  */
 @NodePlugin("1.0.1")
-public final class HttpRequestNode extends AbstractNode {
+public final class HttpRequestNode implements Node {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -59,7 +60,7 @@ public final class HttpRequestNode extends AbstractNode {
     // --------------
     /** Target URL */
     @FlowKey(defaultValue = "\"{url}\"")
-    private final Template<String> url = new Template<>(){};
+    private final T<String> url = new T<>(){};
     /** Default schema if url starts with // */
     @FlowKey(defaultValue = "\"https:\"")
     private String defaultSchema;
@@ -71,7 +72,7 @@ public final class HttpRequestNode extends AbstractNode {
     private RequestType requestType;
     /** Inserts name value pair request headers */
     @FlowKey(defaultValue = "{}")
-    private final Template<Map<String, String>> requestHeaders = new Template<>(){};
+    private final T<Map<String, String>> requestHeaders = new T<>(){};
     /** Timeout for every HTTP request */
     @FlowKey(defaultValue = "5000") @Argument
     private Integer timeout;
@@ -101,9 +102,9 @@ public final class HttpRequestNode extends AbstractNode {
     // --------------
     // COOKIES
     // --------------
-    /** Cookie templates to use for HTTP request */
+    /** Cookie Ts to use for HTTP request */
     @FlowKey(defaultValue = "{}")
-    private final Template<Map<String, String>> cookies = new Template<>(){};
+    private final T<Map<String, String>> cookies = new T<>(){};
 //    /** Cookie domain. Mandatory, if cookies are used! */
 //    @FlowKey @Argument
 //    private String cookieDomain;
@@ -125,59 +126,55 @@ public final class HttpRequestNode extends AbstractNode {
     // --------------
     /** Save path in case of file download */
     @FlowKey
-    private Template<String> path = new Template<>(){};
+    private T<String> path = new T<>(){};
 
     // --------------
     // POST SPECIFIC
     // --------------
     /** Payload of a POST request */
     @FlowKey
-    private Template<Object> payload = new Template<>(){};
+    private T<Object> payload = new T<>(){};
 
     @Override
-    public void init(@NotNull final ScrapeInstance job) throws ValidationException {
-        super.init(job);
-
+    public void init(@NotNull NodeContainer n, @NotNull final ScrapeInstance job) throws ValidationException {
         if (proxyFile != null) {
             try {
-                getJobPojo().getProxyReservation().addProxies(proxyFile, proxyGroup);
+                n.getJobInstance().getProxyReservation().addProxies(proxyFile, proxyGroup);
             } catch (Exception e) {
-                log(ERROR,"IO proxy read error: {}", proxyFile);
+                n.log(ERROR,"IO proxy read error: {}", proxyFile);
                 throw new ValidationException("Could not read file at "+proxyFile+". "+e);
             }
         }
     }
 
     @Override @NotNull
-    public FlowMap process(@NotNull final FlowMap o) throws NodeException {
-        // evaluate templates
-        String url = this.url.eval(o);
+    public FlowMap process(NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException {
+        // evaluate Ts
+        String url = o.eval(this.url);
 
         // check if file already downloaded
-        if(checkFileDownloaded(o)) {
-            log(TRACE, "File already downloaded: {}", url);
-            finish(o);
-            return forward(o);
+        if(checkFileDownloaded(n, o)) {
+            n.log(TRACE, "File already downloaded: {}", url);
+            return n.forward(o);
         }
 
         // check if response is cached
-        if(cached(o, url)) {
-            log(TRACE, "Request cached: {}", url);
-            finish(o);
-            return forward(o);
+        if(cached(n, o, url)) {
+            n.log(TRACE, "Request cached: {}", url);
+            return n.forward(o);
         }
 
         ReservationToken token;
         try {
-            token = getJobPojo().getProxyReservation().reserveToken(proxyGroup, proxyMode,0, holdOnReservation);
+            token = n.getJobInstance().getProxyReservation().reserveToken(proxyGroup, proxyMode,0, holdOnReservation);
         } catch (InterruptedException | TimeoutException e) {
-            log(ERROR, "Interrupted while waiting for proxy");
+            n.log(ERROR, "Interrupted while waiting for proxy");
             throw new NodeException(e, "Interrupted while waiting for proxy");
         }
 
         try {
             // build request
-            HttpRequest request = buildRequest(o, url);
+            HttpRequest request = buildRequest(n, o, url);
             HttpResponse.BodyHandler handler = null;
 
             switch (expectedResponse) {
@@ -187,12 +184,12 @@ public final class HttpRequestNode extends AbstractNode {
                     break;
 
                 case FILE:
-                    Path download = Paths.get(path.eval(o));
+                    Path download = Paths.get(o.eval(path));
                     handler = HttpResponse.BodyHandlers.ofFile(download);
                     break;
             }
 
-            HttpService service = getJobPojo().getHttpService();
+            HttpService service = n.getJobInstance().getHttpService();
 
             HttpResponse response = service.send(request, handler, token);
 
@@ -202,7 +199,7 @@ public final class HttpRequestNode extends AbstractNode {
 
             // cache if content not empty
             if(cache != null && body instanceof String)
-                cacheResponse(cache, url, (String) body);
+                cacheResponse(n, cache, url, (String) body);
 
             // convert to JSON if specified
             if(expectedResponse.equals(ResponseType.JSON) && (body instanceof String))
@@ -211,34 +208,34 @@ public final class HttpRequestNode extends AbstractNode {
             o.put(put, body);
 
         } catch (InterruptedException e) {
-            log(WARN, "Interrupted while waiting for token: {}", url);
+            n.log(WARN, "Interrupted while waiting for token: {}", url);
             throw new NodeException(e, "Interrupted while waiting for token");
         } catch (IOException e) {
             token.bad();
-            log(INFO, "IOException for request {}: {}", url, e.getMessage());
+            n.log(INFO, "IOException for request {}: {}", url, e.getMessage());
             throw new NodeException(e, "IOException");
         } catch (ExecutionException e) {
-            log(WARN, "Execution exception: {} | {}", e.getMessage(), url);
+            n.log(WARN, "Execution exception: {} | {}", e.getMessage(), url);
             token.bad();
             throw new NodeException(e, "Bad Execution");
         } catch (TimeoutException e) {
             token.bad();
-            log(INFO, "Token timeout bad: {} | {}", token, url);
+            n.log(INFO, "Token timeout bad: {} | {}", token, url);
             throw new NodeException(e, "Timeout");
         } finally {
             token.close();
         }
 
-        log(INFO,"[✔] {}", url);
+        n.log(INFO,"[✔] {}", url);
 
         try {
             Thread.sleep(holdOnForward);
         } catch (InterruptedException e) {
-            log(ERROR, "Hold on forward interrupted");
+            n.log(ERROR, "Hold on forward interrupted");
             throw new NodeException(e, "Hold on forward interrupted");
         }
 
-        return forward(o);
+        return n.forward(o);
     }
 
     private void validateBody(Object body) throws IOException {
@@ -253,7 +250,7 @@ public final class HttpRequestNode extends AbstractNode {
         }
     }
 
-    private HttpRequest buildRequest(FlowMap o, String url) throws NodeException {
+    private HttpRequest buildRequest(NodeContainer n, FlowMap o, String url) throws NodeException {
         try {
             // set url
             if(url.startsWith("//")) url = defaultSchema+url;
@@ -267,7 +264,7 @@ public final class HttpRequestNode extends AbstractNode {
                     request.GET();
                     break;
                 case POST:
-                    payload = mapper.writeValueAsString(this.payload.eval(o));
+                    payload = mapper.writeValueAsString(o.eval(this.payload));
                     request.POST(HttpRequest.BodyPublishers.ofString(payload));
                     break;
                 case DELETE:
@@ -275,18 +272,18 @@ public final class HttpRequestNode extends AbstractNode {
                     request.DELETE();
                     break;
                 case PUT:
-                    payload = mapper.writeValueAsString(this.payload.eval(o));
+                    payload = mapper.writeValueAsString(o.eval(this.payload));
                     request.PUT(HttpRequest.BodyPublishers.ofString(payload));
                     break;
                 default:
-                    log(ERROR, "Using legacy request type for new HTTP node: {}", requestType);
+                    n.log(ERROR, "Using legacy request type for new HTTP node: {}", requestType);
                     throw new RuntimeException();
             }
 
             // set headers
-            requestHeaders.eval(o).forEach(request::header);
+            o.eval(requestHeaders).forEach(request::header);
 
-            Map<String, String> cookies = this.cookies.eval(o);
+            Map<String, String> cookies = o.eval(this.cookies);
             String cookieString = getCookieString(cookies);
             if(!cookieString.isEmpty()) request.header("Cookie", cookieString);
 
@@ -297,7 +294,7 @@ public final class HttpRequestNode extends AbstractNode {
 
             return request.build();
         } catch (Exception e) {
-            log(ERROR, "Could not build http request, {}: {}", e, url);
+            n.log(ERROR, "Could not build http request, {}: {}", e, url);
             throw new NodeException(e, "Could not build http request "+url);
         }
     }
@@ -317,13 +314,13 @@ public final class HttpRequestNode extends AbstractNode {
         return cookie;
     }
 
-    private void cacheResponse(String cache, String url, String content) {
+    private void cacheResponse(NodeContainer n, String cache, String url, String content) {
         String file = urlToCachedFilename(url);
         try {
-            getJobPojo().getFileService().ensureFile(cache+file);
-            getJobPojo().getFileService().replaceFile(cache+file, content);
+            n.getJobInstance().getFileService().ensureFile(cache+file);
+            n.getJobInstance().getFileService().replaceFile(cache+file, content);
         } catch (IOException e) {
-            log(ERROR,"Could not cache content: {}", e.getMessage());
+            n.log(ERROR,"Could not cache content: {}", e.getMessage());
         }
     }
 
@@ -336,13 +333,13 @@ public final class HttpRequestNode extends AbstractNode {
     }
 
     /** Checks if file is already downloaded at expected location (for RequestType.FILE) */
-    private boolean checkFileDownloaded(FlowMap o) {
+    private boolean checkFileDownloaded(NodeContainer n, FlowMap o) {
         if(expectedResponse.equals(ResponseType.FILE)) {
-            String path = this.path.eval(o);
+            String path = o.eval(this.path);
             File f = new File(path);
             if(f.exists() && f.length() == 0) {
-                log(INFO,"Found empty downloaded file, deleting file '{}'", path);
-                if(!f.delete()) log(WARN,"Could not delete empty downloaded file: {}", f.getPath());
+                n.log(INFO,"Found empty downloaded file, deleting file '{}'", path);
+                if(!f.delete()) n.log(WARN,"Could not delete empty downloaded file: {}", f.getPath());
                 return false;
             }
 
@@ -353,11 +350,11 @@ public final class HttpRequestNode extends AbstractNode {
     }
 
     /** If cached try to get cached value first */
-    private boolean cached(FlowMap o, String url) {
+    private boolean cached(NodeContainer n, FlowMap o, String url) {
         if (cache != null) {
-            String cachedContent = getCached(cache, url);
+            String cachedContent = getCached(n, cache, url);
             if (cachedContent != null) {
-                log(DEBUG,"[\uD83D\uDCBE] {}", url);
+                n.log(DEBUG,"[\uD83D\uDCBE] {}", url);
 
                 o.put(put, cachedContent);
                 return true;
@@ -367,7 +364,7 @@ public final class HttpRequestNode extends AbstractNode {
         return false;
     }
 
-    private String getCached(String cache, String url) {
+    private String getCached(NodeContainer n, String cache, String url) {
         String filename = urlToCachedFilename(url);
         File f = Paths.get(cache, filename).toFile();
         if(!f.exists()) return null;
@@ -381,7 +378,7 @@ public final class HttpRequestNode extends AbstractNode {
             if ((cacheMs - diff) <= 0) {
                 // TTL exceeded
                 boolean delete = f.delete();
-                if(!delete) log(WARN,"Could not delete cached file: {}", url);
+                if(!delete) n.log(WARN,"Could not delete cached file: {}", url);
                 return null;
             }
         }
@@ -390,21 +387,21 @@ public final class HttpRequestNode extends AbstractNode {
         try {
             String cached = StringUtil.readBody(f);
             if(cached.isEmpty()) {
-                log(INFO,"Found empty cache file, deleting cache for '{}'", url);
-                if(!f.delete()) log(WARN,"Could not delete empty cache file: {}", f.getPath());
+                n.log(INFO,"Found empty cache file, deleting cache for '{}'", url);
+                if(!f.delete()) n.log(WARN,"Could not delete empty cache file: {}", f.getPath());
                 return null;
             }
 
             try {
                 validateBody(cached);
             } catch (Exception e) {
-                log(WARN,"Invalidating cache file with invalid content: {}", e.getMessage());
-                if(!f.delete()) log(WARN,"Could not delete invalid cache file: {}", f.getPath());
+                n.log(WARN,"Invalidating cache file with invalid content: {}", e.getMessage());
+                if(!f.delete()) n.log(WARN,"Could not delete invalid cache file: {}", f.getPath());
                 return null;
             }
             return cached;
         } catch (IOException e) {
-            log(WARN,"Could not read cached file content: {}", e);
+            n.log(WARN,"Could not read cached file content: {}", e);
             return null;
         }
     }

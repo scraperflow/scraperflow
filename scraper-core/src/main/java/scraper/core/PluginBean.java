@@ -10,7 +10,7 @@ import org.springframework.plugin.metadata.PluginMetadata;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.ValidationException;
-import scraper.api.node.Node;
+import scraper.api.node.type.Node;
 import scraper.utils.ClassUtil;
 
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public class PluginBean {
                         try {
                             return (Node) Class.forName(className).getDeclaredConstructor().newInstance();
                         } catch (Exception e) {
-                            throw new ValidationException("Could not instantiate node", e);
+                            throw new ValidationException(e, "Could not instantiate node");
                         }
                     }
                 };

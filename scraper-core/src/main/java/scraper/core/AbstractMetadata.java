@@ -4,7 +4,7 @@ import org.springframework.plugin.metadata.AbstractMetadataBasedPlugin;
 import org.springframework.plugin.metadata.PluginMetadata;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
-import scraper.api.node.Node;
+import scraper.api.node.type.Node;
 
 /**
  * This class holds the metadata needed for node instantiation and node versioning.
@@ -49,7 +49,8 @@ public abstract class AbstractMetadata extends AbstractMetadataBasedPlugin {
     }
 
     /** Each actual implementation for a node should be able to instantiate the node implementation */
-    public abstract @NotNull Node getNode() throws ValidationException;
+    public abstract @NotNull
+    Node getNode() throws ValidationException;
 
     /**
      * Checks if this node is backwards compatible with another node

@@ -2,7 +2,6 @@ package scraper.app;
 
 import org.junit.Assert;
 import org.junit.Test;
-import scraper.api.exceptions.NodeException;
 import scraper.utils.ClassUtil;
 
 import java.io.File;

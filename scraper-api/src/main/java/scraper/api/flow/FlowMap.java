@@ -3,18 +3,17 @@ package scraper.api.flow;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
-import scraper.api.node.Node;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.reflect.T;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A map-like data structure which 'flows' through nodes in the control flow order.
  * <p>
  *     A FlowMap can be modified by each node and either passed on or be copied to other nodes.
  *
- * @see Node
+ * @see NodeContainer
  * @see Map
  * @since 1.0.0
  */
@@ -51,4 +50,10 @@ public interface FlowMap {
     @NotNull FlowHistory getFlowHistory();
 
     @NotNull UUID getId();
+
+    <A> A eval(T<A> template);
+    <A> A evalOrDefault(T<A> template, A object);
+
+    <A> A input(T<A> template);
+    <A> void output(T<A> locationAndType, A object);
 }

@@ -5,6 +5,8 @@ import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.*;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.Node;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
@@ -12,7 +14,10 @@ import scraper.api.service.ProxyReservation;
 import scraper.api.specification.ScrapeInstance;
 import scraper.util.NodeUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ScrapeInstaceImpl implements ScrapeInstance {
 
@@ -24,7 +29,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     private @NotNull GraphAddress entry = NodeUtil.graphAddressOf("start");
 
     /** Generated nodes of the jobPojo */
-    private @NotNull Map<GraphAddress, List<Node>> graphs = new HashMap<>();
+    private @NotNull Map<GraphAddress, List<NodeContainer<? extends Node>>> graphs = new HashMap<>();
 
     /** Initial input arguments */
     private @NotNull Map<String, Object> initialArguments = new HashMap<>();
@@ -45,7 +50,8 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
      */
 
     @Override
-    public @NotNull Node getNode(@NotNull Address target) {
+    public @NotNull
+    NodeContainer getNode(@NotNull Address target) {
         return NodeUtil.getNode(target, graphs, importedInstances);
     }
 
@@ -55,17 +61,17 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     }
 
     @Override
-    public @NotNull Map<GraphAddress, List<Node>> getGraphs() {
+    public @NotNull Map<GraphAddress, List<NodeContainer<? extends Node>>> getGraphs() {
         return graphs;
     }
 
     @Override
-    public @NotNull List<Node> getEntryGraph() {
+    public @NotNull List<NodeContainer<? extends Node>> getEntryGraph() {
         return getGraph(entry);
     }
 
     @Override
-    public @NotNull List<Node> getGraph(@NotNull final GraphAddress address) {
+    public @NotNull List<NodeContainer<? extends Node>> getGraph(@NotNull final GraphAddress address) {
         getGraphs().putIfAbsent(address, new ArrayList<>());
         return getGraphs().get(address);
     }
@@ -80,13 +86,14 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     public void init() throws ValidationException {
         log.info("Initializing graphs '{}'", getName());
         for (GraphAddress k : getGraphs().keySet()) {
-            for (Node node : getGraph(k)) {
+            for (NodeContainer node : getGraph(k)) {
                 if (node instanceof NodeInitializable) ((NodeInitializable) node).init(this);
             }
         }
     }
 
 
+    @NotNull
     @Override
     public Map<InstanceAddress, ScrapeInstance> getImportedInstances() {
         return this.importedInstances;

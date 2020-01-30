@@ -3,11 +3,9 @@ package scraper.nodes.core.test.helper;
 import junitparams.Parameters;
 import org.junit.Test;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
-import scraper.api.node.Node;
-import scraper.core.AbstractNode;
 import scraper.nodes.core.test.annotations.Functional;
-import scraper.util.NodeUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -17,10 +15,11 @@ import java.util.List;
 import java.util.Map;
 
 import static scraper.util.NodeUtil.flowOf;
+import static scraper.util.NodeUtil.initFields;
 
 public abstract class FunctionalTest {
 
-    protected Node node;
+    protected FunctionalNode node;
 
     @Test
     @Parameters
@@ -33,19 +32,25 @@ public abstract class FunctionalTest {
             Map<String, Object> output
     ) throws Exception {
         // instantiate new node
-        node = (Node) nodeUnderTest.getDeclaredConstructor().newInstance();
+        node = (FunctionalNode) nodeUnderTest.getDeclaredConstructor().newInstance();
+
+
         Map<String,Object> specs = new HashMap<>(spec);
         specs.put("type", nodeUnderTest.getSimpleName());
-        node.setNodeConfiguration(specs, NodeUtil.graphAddressOf("start"));
+
+        FunctionalNodeContainer mockContainer = new MockContainer(node, specs);
+        MockInstance mockInstance = new MockInstance(mockContainer, spec);
+//        node.setNodeConfiguration(specs, NodeUtil.graphAddressOf("start"));
 
         try {
+            initFields(node, specs, input, Map.of());
 
             // initialize node with mock scrape job instance
-            ((AbstractNode) node).init(new MockInstance(node, specs));
+            node.init(mockContainer, mockInstance);
 
             // feed input
             FlowMap actualOutput = flowOf(input);
-            ((FunctionalNode) node).modify(actualOutput);
+            node.modify(mockContainer, actualOutput);
 
             FlowMap expectedOutput = flowOf(output);
 

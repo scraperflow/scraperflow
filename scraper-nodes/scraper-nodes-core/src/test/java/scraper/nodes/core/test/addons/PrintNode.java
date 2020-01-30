@@ -1,13 +1,14 @@
 package scraper.nodes.core.test.addons;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.node.NodePlugin;
 import scraper.annotations.node.FlowKey;
-import scraper.api.flow.FlowMap;
-import scraper.core.AbstractNode;
-import scraper.core.NodeLogLevel;
-import scraper.core.Template;
+import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
+import scraper.api.flow.FlowMap;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.container.NodeLogLevel;
+import scraper.api.node.type.Node;
+import scraper.api.reflect.T;
 
 import java.util.List;
 
@@ -16,32 +17,32 @@ import java.util.List;
  * Logs specific arguments in the current flow map. Useful for debugging.
  */
 @NodePlugin(value = "0.1.1")
-public final class PrintNode extends AbstractNode {
+public final class PrintNode implements Node {
 
     @FlowKey
-    private Template<String> arg = new Template<>(){};
+    private T<String> arg = new T<>(){};
 
     @FlowKey
-    private Template<List<String>> args = new Template<>(){};
+    private T<List<String>> args = new T<>(){};
 
     @FlowKey
     private String key;
 
     @NotNull
     @Override
-    public FlowMap process(@NotNull final FlowMap o) throws NodeException {
-        String arg = this.arg.eval(o);
-        List<String> args = this.args.eval(o);
+    public FlowMap process(NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
+        String arg = o.eval(this.arg);
+        List<String> args = o.eval(this.args);
 
         if(arg != null)
-            log(NodeLogLevel.INFO, arg);
+            n.log(NodeLogLevel.INFO, arg);
 
         if(args != null)
-            args.forEach(e->log(NodeLogLevel.INFO, e));
+            args.forEach(e->n.log(NodeLogLevel.INFO, e));
 
         if(key != null)
-            log(NodeLogLevel.INFO, String.valueOf(o.get(key)));
+            n.log(NodeLogLevel.INFO, String.valueOf(o.get(key)));
 
-        return forward(o);
+        return n.forward(o);
     }
 }

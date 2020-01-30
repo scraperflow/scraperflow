@@ -1,4 +1,4 @@
-package scraper.core;
+package scraper.api.node.container;
 
 public enum NodeLogLevel {
     // do not change the order of these enums

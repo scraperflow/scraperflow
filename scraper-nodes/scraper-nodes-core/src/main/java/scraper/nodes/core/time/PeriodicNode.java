@@ -3,18 +3,19 @@ package scraper.nodes.core.time;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.container.FunctionalNodeContainer;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.FunctionalNode;
+import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
-import scraper.core.AbstractFunctionalNode;
-import scraper.core.Template;
 import scraper.util.NodeUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static scraper.core.NodeLogLevel.DEBUG;
+import static scraper.api.node.container.NodeLogLevel.DEBUG;
 import static scraper.util.NodeUtil.flowOf;
 
 /**
@@ -22,7 +23,7 @@ import static scraper.util.NodeUtil.flowOf;
  * Periodic execution can start at initialization or on first accept call, controlled via the flag.
  */
 @NodePlugin(value = "1.0.0", stateful = true)
-public final class PeriodicNode extends AbstractFunctionalNode {
+public final class PeriodicNode implements FunctionalNode {
 
     /** Period time in ms */
     @FlowKey(mandatory = true)
@@ -34,7 +35,7 @@ public final class PeriodicNode extends AbstractFunctionalNode {
 
     /** If true, enables dispatch of the periodic task. If false, stops dispatch of the periodic task */
     @FlowKey(defaultValue = "true")
-    private Template<Boolean> flag = new Template<>(){};
+    private T<Boolean> flag = new T<>(){};
 
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicBoolean dispatch = new AtomicBoolean(false);
@@ -43,18 +44,16 @@ public final class PeriodicNode extends AbstractFunctionalNode {
     private TimerTask timerTask;
 
     @Override
-    public void init(@NotNull final ScrapeInstance job) throws ValidationException {
-        super.init(job);
-
+    public void init(@NotNull NodeContainer n, @NotNull final ScrapeInstance job) {
         o = flowOf(job.getInitialArguments());
 
         timerTask = new TimerTask() {
             @Override
             public void run() {
                 if(started.get() && dispatch.get()) {
-                    log(DEBUG,"Dispatching {}", onPeriod);
+                    n.log(DEBUG,"Dispatching {}", onPeriod);
                     final FlowMap oCopy = o;
-                    forkDispatch(oCopy, NodeUtil.addressOf(onPeriod));
+                    n.forkDispatch(oCopy, NodeUtil.addressOf(onPeriod));
                 }
             }
         };
@@ -63,8 +62,8 @@ public final class PeriodicNode extends AbstractFunctionalNode {
     }
 
     @Override
-    public void modify(@NotNull final FlowMap o) {
-        boolean flag = this.flag.eval(o);
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
+        boolean flag = o.eval(this.flag);
         dispatch.set(flag);
         this.o = flowOf(o);
 

@@ -1,12 +1,18 @@
 package scraper.nodes.core.example;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.node.*;
-import scraper.api.flow.FlowMap;
-import scraper.core.*;
+import scraper.annotations.node.Argument;
+import scraper.annotations.node.FlowKey;
+import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
+import scraper.api.flow.FlowMap;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.Node;
+import scraper.api.reflect.T;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -15,7 +21,7 @@ import java.util.*;
  * See the test case for this node.
  */
 @NodePlugin(deprecated = true) // only used for tests and showcasing
-public class AnnotationsExampleNode extends AbstractNode {
+public class AnnotationsExampleNode implements Node {
 
     // simple mandatory usage
     @FlowKey(mandatory = true)
@@ -24,21 +30,21 @@ public class AnnotationsExampleNode extends AbstractNode {
     @FlowKey(mandatory = true)
     private SomeEnum mandatoryEnum;
 
-    // template usage
+    // T usage
     @FlowKey(mandatory = true) @Argument
-    private Integer templateInteger;
+    private Integer TInteger;
     @FlowKey(mandatory = true) @Argument
-    private Integer templateIntegerAsString;
+    private Integer TIntegerAsString;
     @FlowKey(mandatory = true) @Argument
-    private Integer templateIntegerAsStringInt;
+    private Integer TIntegerAsStringInt;
     @FlowKey(mandatory = true) @Argument
-    private SomeEnum templateEnum;
+    private SomeEnum TEnum;
 
-    // mutable template usage
+    // mutable T usage
     @FlowKey(mandatory = true)
-    private final Template<String> simpleTemplate = new Template<>(){};
+    private final T<String> simpleT = new T<>(){};
     @FlowKey(mandatory = true)
-    private final Template<Map<String, Integer>> mapTemplate = new Template<>(){};
+    private final T<Map<String, Integer>> mapT = new T<>(){};
 
     // optional
     @FlowKey
@@ -46,34 +52,34 @@ public class AnnotationsExampleNode extends AbstractNode {
     @FlowKey(defaultValue = "\"base42\"")
     private String optionalBase;
     @FlowKey
-    private Template<String> optionalNullTemplate = new Template<>(){};
+    private T<String> optionalNullT = new T<>(){};
     @FlowKey(defaultValue = "\"base42\"")
-    private Template<String> optionalBaseTemplate = new Template<>(){};
+    private T<String> optionalBaseT = new T<>(){};
     @FlowKey(defaultValue = "\"defaultValue\"")
-    private Template<String> optionalBaseTemplateEval = new Template<>(){};
+    private T<String> optionalBaseTEval = new T<>(){};
     @FlowKey(defaultValue = "\"{url}\"")
-    private Template<String> optionalDefaultTemplate = new Template<>(){};
-    // template optional complex
+    private T<String> optionalDefaultT = new T<>(){};
+    // T optional complex
     @FlowKey(defaultValue = "{\"key\": \"{url}\"}")
-    private Template<Map<String, String>> optionalDefaultTemplateComplex = new Template<>(){};
+    private T<Map<String, String>> optionalDefaultTComplex = new T<>(){};
 
-    // tests cases where templates and the actual type are mixed
+    // tests cases where Ts and the actual type are mixed
     @FlowKey(defaultValue = "{\"actual\": 1, \"replaced\": \"{id}\"}")
-    private Template<Map<String, Integer>> multiTemplate = new Template<>(){};
+    private T<Map<String, Integer>> multiT = new T<>(){};
 
-    // optional template
+    // optional T
     @FlowKey @Argument
     protected String emptyToNull;
 
-    // output templates
+    // output Ts
     // if only the raw type is important
     @FlowKey(mandatory = true, output = true)
-    private final Template<List> outputRaw = new Template<>(){};
+    private final T<List> outputRaw = new T<>(){};
 
     @Override @NotNull
-    public FlowMap process(@NotNull final FlowMap o) throws NodeException {
-        outputRaw.output(o, new LinkedList());
-        return forward(o);
+    public FlowMap process(NodeContainer n, @NotNull final FlowMap o) throws NodeException {
+        o.output(outputRaw, new LinkedList());
+        return n.forward(o);
     }
 
     enum SomeEnum {
