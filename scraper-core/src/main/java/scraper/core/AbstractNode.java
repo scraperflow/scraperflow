@@ -1,10 +1,8 @@
 package scraper.core;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraper.annotations.NotNull;
-import scraper.annotations.Nullable;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.EnsureFile;
 import scraper.annotations.node.FlowKey;
@@ -13,14 +11,17 @@ import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowStateImpl;
-import scraper.api.node.*;
+import scraper.api.node.Address;
+import scraper.api.node.GraphAddress;
+import scraper.api.node.NodeAddress;
+import scraper.api.node.NodeHook;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
+import scraper.api.node.impl.GraphAddressImpl;
 import scraper.api.node.impl.NodeAddressImpl;
 import scraper.api.node.type.Node;
 import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
-import scraper.util.NodeUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -104,9 +105,9 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     /** Set during init of node */
     private GraphAddress graphKey;
 
-    /** Target if a dispatched flow exception occurs */
-    @FlowKey
-    protected Address onForkException;
+//    /** Target if a dispatched flow exception occurs */
+//    @FlowKey
+//    protected Address onForkException;
 
     public AbstractNode(String instance, String graph, String node, int index) {
         this.address = new NodeAddressImpl(instance, graph, node, index);
@@ -160,9 +161,9 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
         return nodeConfiguration;
     }
 
-    public void setNodeConfiguration(@NotNull Map<String, Object> configuration, @NotNull GraphAddress graphKey) {
+    public void setNodeConfiguration(@NotNull Map<String, Object> configuration, @NotNull String instance, @NotNull String graphKey) {
         nodeConfiguration = configuration;
-        this.graphKey = graphKey;
+        this.graphKey = new GraphAddressImpl(instance, graphKey);
     }
 
     public void initLogger(int indexLength) {
@@ -336,9 +337,12 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     public FlowMap forward(@NotNull final FlowMap o) throws NodeException {
         // do nothing
         if(!getForward()) return o;
-        if(getGoTo() != null) {
-            NodeContainer<? extends Node> targetNode = jobPojo.getNode(getGoTo());
-            return targetNode.getC().accept(targetNode, o);
+        Optional<NodeAddress> forwardTarget = getGoTo();
+
+        if (forwardTarget.isPresent()) {
+            Optional<NodeContainer<? extends Node>> targetNode = jobPojo.getNodeAbsolute(forwardTarget.get());
+            // TODO
+            return targetNode.get().getC().accept(targetNode.get(), o);
         }
 
         return o;
@@ -346,36 +350,38 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
 
     @NotNull
     @Override
-    public FlowMap eval(@NotNull final FlowMap o, @NotNull final Address target) throws NodeException {
-        NodeContainer<? extends Node> targetNode = jobPojo.getNode(target);
-        return targetNode.getC().accept(targetNode, o);
+    public FlowMap eval(@NotNull final FlowMap o, @NotNull final NodeAddress target) throws NodeException {
+        Optional<NodeContainer<? extends Node>> targetNode = jobPojo.getNodeAbsolute(target);
+        // TODO optional
+        return targetNode.get().getC().accept(targetNode.get(), o);
     }
 
     @Override
-    public void forkDispatch(@NotNull final FlowMap o, @NotNull final Address target) {
+    public void forkDispatch(@NotNull final FlowMap o, @NotNull final NodeAddress target) {
         dispatch(() -> {
             try {
                 return eval(o, target);
             } catch (Exception e) {
                 log(ERROR, "Dispatch terminated exceptionally {}: {}", target, e);
-                if(onForkException != null) {
-                    try {
-                        return eval(o, onForkException);
-                    } catch (NodeException ex) {
-                        log(ERROR, "OnException fork target terminated exceptionally.", target, e);
-                        throw new RuntimeException(e);
-                    }
-                } else {
+                // TODO re-add exception feature
+//                if(onForkException != null) {
+//                    try {
+//                        return eval(o, onForkException);
+//                    } catch (NodeException ex) {
+//                        log(ERROR, "OnException fork target terminated exceptionally.", target, e);
+//                        throw new RuntimeException(e);
+//                    }
+//                } else {
                     log(ERROR, "Fork dispatch to goTo '{}' terminated exceptionally.", target, e);
                     throw new RuntimeException(e);
-                }
+//                }
             }
         });
     }
 
     @NotNull
     @Override
-    public CompletableFuture<FlowMap> forkDepend(@NotNull final FlowMap o, @NotNull final Address target) {
+    public CompletableFuture<FlowMap> forkDepend(@NotNull final FlowMap o, @NotNull final NodeAddress target) {
         return dispatch(() -> {
             try {
                 return eval(o, target);
@@ -424,8 +430,8 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     }
 
     @Override
-    public @Nullable Address getGoTo() {
-        return NodeUtil.getNextNode(getAddress(), goTo, getJobPojo().getGraphs());
+    public @NotNull Optional<NodeAddress> getGoTo() {
+        throw new IllegalStateException();
     }
 
     @NotNull

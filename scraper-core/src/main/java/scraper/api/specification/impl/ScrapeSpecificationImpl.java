@@ -1,14 +1,10 @@
 package scraper.api.specification.impl;
 
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
-import scraper.api.node.Address;
-import scraper.api.node.GraphAddress;
 import scraper.api.specification.ScrapeImportSpecification;
 import scraper.api.specification.ScrapeSpecification;
-import scraper.util.NodeUtil;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -23,8 +19,8 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
     private String dependencies;
     private List<String> arguments = List.of();
     private Map<String, ScrapeImportSpecification> imports = Map.of();
-    private GraphAddress entry = NodeUtil.graphAddressOf("start");
-    private Map<GraphAddress, List<Map<String, Object>>> graphs;
+    private String entry = "start";
+    private Map<String, List<Map<String, Object>>> graphs;
     private Map<String, Map<String, Object>> globalNodeConfigurations = new HashMap<>();
 
     @NotNull
@@ -45,11 +41,10 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
     @NotNull
     @Override public Map<String, ScrapeImportSpecification> getImports() { return imports; }
     @NotNull
-    @Override public GraphAddress getEntry() { return entry; }
+    @Override public String getEntry() { return entry; }
 
     @NotNull
-    @JsonDeserialize(keyUsing = GraphAddressKeyDeserializer.class)
-    @Override public Map<GraphAddress, List<Map<String, Object>>> getGraphs() { return graphs; }
+    @Override public Map<String, List<Map<String, Object>>> getGraphs() { return graphs; }
 
     public void setName(String name) { this.name = name; }
     public void setScrapeFile(Path scrapeFile) { this.scrapeFile = scrapeFile; }
@@ -57,8 +52,8 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
     public void setDependencies(String dependencies) { this.dependencies = dependencies; }
     public void setArguments(List<String> arguments) { this.arguments = arguments; }
     public void setImports(Map<String, ScrapeImportSpecification> imports) { this.imports = imports; }
-    public void setEntry(GraphAddress entry) { this.entry = entry; }
-    public void setGraphs(Map<GraphAddress, List<Map<String, Object>>> graphs) { this.graphs = graphs; }
+    public void setEntry(String entry) { this.entry = entry; }
+    public void setGraphs(Map<String, List<Map<String, Object>>> graphs) { this.graphs = graphs; }
 
     @NotNull
     @Override

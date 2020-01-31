@@ -23,12 +23,12 @@ public class MockContainer implements FunctionalNodeContainer {
 
     private FunctionalNode node;
     private Map<String, Object> spec;
-    private GraphAddress graphKey;
+    private String graphKey;
 
     public MockContainer(FunctionalNode node, Map<String, Object> spec) { this.node = node; this.spec = spec; }
 
     @Override
-    public void setNodeConfiguration(@NotNull Map<String, Object> nodeConfiguration, @NotNull GraphAddress graphKey) { spec = nodeConfiguration; this.graphKey = graphKey; }
+    public void setNodeConfiguration(@NotNull Map<String, Object> nodeConfiguration, @NotNull String graphKey) { spec = nodeConfiguration; this.graphKey = graphKey; }
 
     @NotNull @Override public Map<String, Object> getNodeConfiguration() { return spec; }
 
@@ -39,7 +39,7 @@ public class MockContainer implements FunctionalNodeContainer {
     @NotNull
     @Override
     public GraphAddress getGraphKey() {
-        return graphKey;
+        throw new IllegalStateException();
     }
 
     @NotNull

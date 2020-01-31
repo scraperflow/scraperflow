@@ -7,6 +7,7 @@ import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
+import scraper.api.node.NodeAddress;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.Node;
@@ -14,19 +15,19 @@ import scraper.api.specification.impl.ScrapeInstaceImpl;
 import scraper.api.specification.impl.ScrapeSpecificationImpl;
 import scraper.util.DependencyInjectionUtil;
 import scraper.util.JobUtil;
-import scraper.util.NodeUtil;
 import scraper.utils.ClassUtil;
 
 import java.lang.reflect.ReflectPermission;
 import java.net.URL;
 import java.security.Permission;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
+import static scraper.util.NodeUtil.addressOf;
+import static scraper.util.NodeUtil.flowOf;
 
 public class AbstractNodeTest {
 
@@ -131,7 +132,7 @@ public class AbstractNodeTest {
         ScrapeInstaceImpl instance = getInstance("abstract", "log-levels.jf");
 
         NodeContainer<? extends Node> node = instance.getEntryGraph().get(0);
-        FlowMap o = NodeUtil.flowOf((Map.of()));
+        FlowMap o = flowOf((Map.of()));
 
         //trace
         node.getC().accept(node, o);
@@ -144,7 +145,7 @@ public class AbstractNodeTest {
         ScrapeInstaceImpl instance = getInstance("abstract", "bad-goto.jf");
 
         AbstractNode node = (AbstractNode) instance.getEntryGraph().get(0);
-        FlowMap o = NodeUtil.flowOf((Map.of()));
+        FlowMap o = flowOf((Map.of()));
         node.forward(o);
     }
 
@@ -153,7 +154,7 @@ public class AbstractNodeTest {
         ScrapeInstaceImpl instance = getInstance("abstract", "bad-forward.jf");
 
         AbstractNode node = (AbstractNode) instance.getEntryGraph().get(0);
-        FlowMap o = NodeUtil.flowOf((Map.of()));
+        FlowMap o = flowOf((Map.of()));
         node.forward(o);
     }
 
@@ -162,10 +163,10 @@ public class AbstractNodeTest {
         ScrapeInstaceImpl instance = getInstance("abstract", "goto.jf");
 
         AbstractNode node = (AbstractNode) instance.getEntryGraph().get(0);
-        FlowMap o = NodeUtil.flowOf((Map.of()));
+        FlowMap o = flowOf((Map.of()));
         FlowMap o2 = node.forward(o);
 
-        FlowMap o3 = node.eval(o2, NodeUtil.addressOf("oor"));
+        FlowMap o3 = node.eval(o2, addressOf("oor"));
         assertNotNull(o3.get("y"));
     }
 
@@ -174,7 +175,7 @@ public class AbstractNodeTest {
         ScrapeInstaceImpl instance = getInstance("abstract", "implied-goto.jf");
 
         AbstractNode node = (AbstractNode) instance.getEntryGraph().get(0);
-        FlowMap o = NodeUtil.flowOf((Map.of()));
+        FlowMap o = flowOf((Map.of()));
         FlowMap o2 = node.forward(o);
 
         Assert.assertEquals(1, o2.size());
@@ -275,7 +276,7 @@ public class AbstractNodeTest {
     public void indexAndLabelTest() throws Exception {
         ScrapeInstaceImpl instance = getInstance("addressing", "debug.yf");
         NodeContainer<? extends Node> node = instance.getEntryGraph().get(0);
-        Assert.assertEquals("<debug.start.startingnode:1>", node.getAddress().toString());
+        Assert.assertEquals("<debug.start.startingnode:0>", node.getAddress().toString());
     }
 
     @Test
@@ -289,26 +290,82 @@ public class AbstractNodeTest {
     public void secondGraphMixedTest() throws Exception {
         ScrapeInstaceImpl instance = getInstance("addressing", "debug.yf");
         {
-            NodeContainer<? extends Node> node = instance.getGraphs().get(NodeUtil.graphAddressOf("testing")).get(0);
-            Assert.assertEquals("<debug.testing.0>", node.getAddress().getRepresentation());
+            NodeContainer<? extends Node> node = instance.getGraph(addressOf("debug", "testing")).get(0);
+            Assert.assertEquals("<debug.testing.0>", node.getAddress().toString());
         }
         {
-            NodeContainer<? extends Node> node = instance.getGraphs().get(NodeUtil.graphAddressOf("testing")).get(1);
-            Assert.assertEquals("<debug.testing.hellonode:1>", node.getAddress().getRepresentation());
+            NodeContainer<? extends Node> node = instance.getGraphs().get(addressOf("debug", "testing")).get(1);
+            Assert.assertEquals("<debug.testing.hellonode:1>", node.getAddress().toString());
         }
         {
-            NodeContainer<? extends Node> node = instance.getGraphs().get(NodeUtil.graphAddressOf("testing")).get(2);
-            Assert.assertEquals("<debug.testing.2>", node.getAddress().getRepresentation());
+            NodeContainer<? extends Node> node = instance.getGraphs().get(addressOf("debug","testing")).get(2);
+            Assert.assertEquals("<debug.testing.2>", node.getAddress().toString());
         }
     }
 
     @Test
     public void graphAddressTest() throws Exception {
         ScrapeInstaceImpl instance = getInstance("addressing", "debug.yf");
-        instance.getGraphs().forEach((k,v) -> Assert.assertTrue(
+        instance.getGraphs().forEach((k,v) -> Assert.assertTrue("Got: " + k.toString(),
                 k.toString().equalsIgnoreCase("<debug.start>") ||
                         k.toString().equalsIgnoreCase("<debug.testing>")
         ));
+    }
+
+    @Test
+    public void relativeGraphAddressEqualityTest() throws Exception {
+        ScrapeInstaceImpl instance = getInstance("addressing", "debug.yf");
+
+        NodeContainer n = instance.getEntryGraph().get(0);
+        NodeAddress address = n.getAddress();
+
+        NodeContainer<? extends Node> nn = instance.getNodeRelative(address, addressOf("debug.start"));
+        assertEquals(n, nn);
+    }
+
+    @Test
+    public void relativeInstanceAddressEqualityTest() throws Exception {
+        ScrapeInstaceImpl instance = getInstance("addressing", "debug.yf");
+
+        NodeContainer n = instance.getEntryGraph().get(0);
+        NodeAddress address = n.getAddress();
+
+        NodeContainer<? extends Node> nn = instance.getNodeRelative(address, addressOf("debug"));
+        assertEquals(n, nn);
+    }
+
+    @Test
+    public void relativeNodeAddressEqualityTest() throws Exception {
+        ScrapeInstaceImpl instance = getInstance("addressing", "debug.yf");
+
+        NodeContainer n = instance.getEntryGraph().get(0);
+        NodeAddress address = n.getAddress();
+
+        // how the node views the given address
+        {
+            NodeContainer<? extends Node> nn = instance.getNodeRelative(address, addressOf("debug.start.startingnode"));
+            assertEquals(n, nn);
+        }
+        {
+            NodeContainer<? extends Node> nn = instance.getNodeRelative(address, addressOf("debug.start.0"));
+            assertEquals(n, nn);
+        }
+        {
+            NodeContainer<? extends Node> nn = instance.getNodeRelative(address, addressOf("debug.start.startingnode:0"));
+            assertEquals(n, nn);
+        }
+        {
+            NodeContainer<? extends Node> nn = instance.getNodeRelative(address, addressOf("start.0"));
+            assertEquals(n, nn);
+        }
+        {
+            NodeContainer<? extends Node> nn = instance.getNodeRelative(address, addressOf("0"));
+            assertEquals(n, nn);
+        }
+        {
+            NodeContainer<? extends Node> nn = instance.getNodeRelative(address, addressOf("startingnode"));
+            assertEquals(n, nn);
+        }
     }
 
     @Test

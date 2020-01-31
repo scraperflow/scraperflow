@@ -1,7 +1,6 @@
 package scraper.api.node.impl;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.Nullable;
 import scraper.api.node.Address;
 
 import java.util.Objects;
@@ -32,22 +31,22 @@ public class AddressImpl implements Address {
         return toString().substring(1,toString().length()-1);
     }
 
-    @Override
-    public @Nullable Address resolve(@NotNull Address toResolve) {
-        // cant resolve
-        if(!getRepresentation().contains(toResolve.getRepresentation())) return null;
-
-        // no instance address
-        if(!getRepresentation().contains(".")) return null;
-
-        String resolved = getRepresentation().substring(0, getRepresentation().indexOf("."));
-        if(resolved.equalsIgnoreCase(toResolve.getRepresentation())) {
-            return new AddressImpl(getRepresentation().substring(resolved.length()+1));
-        }
-
-        // bad instance address
-        return null;
-    }
+//    @Override
+//    public @Nullable Address resolve(@NotNull Address toResolve) {
+//        // cant resolve
+//        if(!getRepresentation().contains(toResolve.getRepresentation())) return null;
+//
+//        // no instance address
+//        if(!getRepresentation().contains(".")) return null;
+//
+//        String resolved = getRepresentation().substring(0, getRepresentation().indexOf("."));
+//        if(resolved.equalsIgnoreCase(toResolve.getRepresentation())) {
+//            return new AddressImpl(getRepresentation().substring(resolved.length()+1));
+//        }
+//
+//        // bad instance address
+//        return null;
+//    }
 
     @Override
     public boolean equals(Object o) {

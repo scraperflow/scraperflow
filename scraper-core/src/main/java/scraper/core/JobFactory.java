@@ -6,10 +6,9 @@ import org.springframework.plugin.metadata.PluginMetadata;
 import org.springframework.plugin.metadata.SimplePluginMetadata;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
-import scraper.api.node.Address;
-import scraper.api.node.GraphAddress;
 import scraper.api.node.InstanceAddress;
 import scraper.api.node.container.NodeContainer;
+import scraper.api.node.impl.GraphAddressImpl;
 import scraper.api.node.impl.InstanceAddressImpl;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.node.type.Node;
@@ -63,7 +62,7 @@ public class JobFactory {
     private ScrapeInstaceImpl parseJob(ScrapeSpecification def) {
         ScrapeInstaceImpl job = new ScrapeInstaceImpl();
         job.setName(def.getName());
-        job.setEntry(def.getEntry());
+        job.setEntry(new GraphAddressImpl(job.getName(), def.getEntry()));
         job.setGlobalNodeConfigurations(def.getGlobalNodeConfigurations());
 
         job.setExecutors(executorsService);
@@ -106,6 +105,13 @@ public class JobFactory {
 
     private @NotNull ScrapeInstaceImpl convertJob(@NotNull final ScrapeSpecification jobDefinition,
                                          Function<String, Map<String, Object>> nodeSupplier) throws IOException, ValidationException {
+        // ===
+        // Resolve graph addresses
+        // TODO it seems jackson does not allow to read a parent/neighbor node value when deserializing
+        //      how to change this to not 'resolve' each GraphAddress manually?
+        // ===
+//        jobDefinition.getGraphs().forEach((g, v) -> g.resolve(jobDefinition.getName()));
+
         // ===
         // Imports
         // ===
@@ -175,14 +181,17 @@ public class JobFactory {
         // Pre-process fragments
         // ===
         log.info("Pre process fragments");
-        for (Address graph : jobDefinition.getGraphs().keySet()) {
+        for (String graph : jobDefinition.getGraphs().keySet()) {
             preprocessFragments(jobDefinition.getGraphs().get(graph), jobDefinition);
         }
+
+
+
 
         // ===
         // Process nodes and instantiate actual matching implementations
         // ===
-        for (GraphAddress graphKey : jobDefinition.getGraphs().keySet()) {
+        for (String graphKey : jobDefinition.getGraphs().keySet()) {
             List<Map<String, Object>> graph = jobDefinition.getGraphs().get(graphKey);
             int i = 0;
 
@@ -199,13 +208,14 @@ public class JobFactory {
                 Node n = getHighestMatchingPlugin(processPlugins, metadata);
 
                 NodeContainer<? extends Node> nn = getMatchingNodeContainer(
-                        job.getName(), graphKey.getRepresentation(), nodeAddress, i, n
+                        job.getName(), graphKey, nodeAddress, i, n
                 );
-                nn.setNodeConfiguration(nodeConfiguration, graphKey);
+                nn.setNodeConfiguration(nodeConfiguration, job.getName(), graphKey);
 
 
-                job.getGraphs().putIfAbsent(graphKey, new ArrayList<>());
-                job.getGraph(graphKey).add(nn);
+                GraphAddressImpl graphAddress = new GraphAddressImpl(jobDefinition.getName(), graphKey);
+                job.getGraphs().putIfAbsent(graphAddress, new ArrayList<>());
+                job.getGraph(graphAddress).add(nn);
 
                 i++;
             }

@@ -1,7 +1,6 @@
 package scraper.api.specification;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.Nullable;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.Address;
 import scraper.api.node.GraphAddress;
@@ -16,6 +15,7 @@ import scraper.api.service.ProxyReservation;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Provides scrape specification functions needed during runtime.
@@ -32,11 +32,6 @@ public interface ScrapeInstance {
 
     /** Returns the name of this workflow instance */
     @NotNull String getName();
-
-    /** Returns instantiated node in the flow. main flow has precedence over fragment flows. Throws a runtime exception if address is not found */
-    @NotNull NodeContainer<? extends Node> getNode(@NotNull Address target);
-
-    @Nullable Address getForwardTarget(@NotNull NodeAddress origin);
 
     /** ? */
     @NotNull Map<GraphAddress, List<NodeContainer<? extends Node>>> getGraphs();
@@ -58,4 +53,7 @@ public interface ScrapeInstance {
     @NotNull ProxyReservation getProxyReservation();
     @NotNull FileService getFileService();
 
+    /** Returns instantiated node in the flow. main flow has precedence over fragment flows. Throws a runtime exception if address is not found */
+    @NotNull Optional<NodeContainer<? extends Node>> getNodeAbsolute(@NotNull NodeAddress target);
+    @NotNull Optional<NodeContainer<? extends Node>> getNodeRelative(@NotNull NodeAddress address, @NotNull Address addressOf);
 }

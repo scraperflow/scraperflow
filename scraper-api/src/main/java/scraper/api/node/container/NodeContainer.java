@@ -9,6 +9,7 @@ import scraper.api.specification.ScrapeInstance;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
@@ -33,7 +34,7 @@ public interface NodeContainer<NODE> extends NodeInitializable {
     // ==================
 
     /** Sets the node configuration (key value pairs) and the graph its contained in */
-    void setNodeConfiguration(@NotNull final Map<String, Object> nodeConfiguration, @NotNull final GraphAddress graphKey);
+    void setNodeConfiguration(@NotNull final Map<String, Object> nodeConfiguration, @NotNull String instance, @NotNull final String graphKey);
 
     /** Returns the node spec */
     @NotNull Map<String, Object> getNodeConfiguration();
@@ -42,12 +43,10 @@ public interface NodeContainer<NODE> extends NodeInitializable {
     @Nullable Object getKeySpec(@NotNull String key);
 
     /** Graph this node is contained in */
-    @NotNull
-    GraphAddress getGraphKey();
+    @NotNull GraphAddress getGraphKey();
 
     /** Job-Unique node address used for control flow */
-    @NotNull
-    NodeAddress getAddress();
+    @NotNull NodeAddress getAddress();
 
     // ============
     // Control Flow
@@ -55,14 +54,11 @@ public interface NodeContainer<NODE> extends NodeInitializable {
 
 
     /** Job-Unique target forward address. Defaults to the next node in the specification */
-    @Nullable
-    Address getGoTo();
+    @NotNull Optional<NodeAddress> getGoTo();
 
-    @NotNull
-    Collection<NodeHook> beforeHooks();
+    @NotNull Collection<NodeHook> beforeHooks();
 
-    @NotNull
-    Collection<NodeHook> afterHooks();
+    @NotNull Collection<NodeHook> afterHooks();
 
     boolean isForward();
 
@@ -82,7 +78,7 @@ public interface NodeContainer<NODE> extends NodeInitializable {
      * Either next node, or the node specified by a target address given
      * Is not controlled by the forward flag
      */
-    @NotNull FlowMap eval(@NotNull final FlowMap o, @NotNull final Address target) throws NodeException;
+    @NotNull FlowMap eval(@NotNull final FlowMap o, @NotNull final NodeAddress target) throws NodeException;
 
     //-----------
     // Concurrent
@@ -93,14 +89,14 @@ public interface NodeContainer<NODE> extends NodeInitializable {
      * Returns a future which can be used to get the output flow of the dispatched flow.
      * This call only returns if the service pool has available space for another flow.
      */
-    @NotNull CompletableFuture<FlowMap> forkDepend(@NotNull final FlowMap o, @NotNull final Address target);
+    @NotNull CompletableFuture<FlowMap> forkDepend(@NotNull final FlowMap o, @NotNull final NodeAddress target);
 
     /**
      * Copies and dispatches a flow to another target address.
      * Does not wait for the other flow to finish.
      * This call only returns if the service pool has available space for another flow.
      */
-    void forkDispatch(@NotNull final FlowMap o, @NotNull final Address target);
+    void forkDispatch(@NotNull final FlowMap o, @NotNull final NodeAddress target);
 
     NODE getC();
 

@@ -7,13 +7,13 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.slf4j.Logger;
 import scraper.annotations.ArgsCommand;
 import scraper.annotations.NotNull;
+import scraper.api.exceptions.ValidationException;
 import scraper.api.node.Address;
-import scraper.api.node.GraphAddress;
-import scraper.api.node.NodeAddress;
 import scraper.api.specification.ScrapeImportSpecification;
 import scraper.api.specification.ScrapeSpecification;
-import scraper.api.specification.impl.*;
-import scraper.api.exceptions.ValidationException;
+import scraper.api.specification.impl.AddressDeserializer;
+import scraper.api.specification.impl.ScrapeSpecificationImpl;
+import scraper.api.specification.impl.ScraperImportSpecificationImpl;
 import scraper.utils.FileUtil;
 import scraper.utils.StringUtil;
 
@@ -60,7 +60,6 @@ public final class JobUtil {
     static {
         SimpleModule module = new SimpleModule();
 
-        module.addDeserializer(GraphAddress.class, new GraphAddressDeserializer());
         module.addDeserializer(Address.class, new AddressDeserializer());
         SimpleAbstractTypeResolver resolver = new SimpleAbstractTypeResolver();
         resolver.addMapping(ScrapeImportSpecification.class, ScraperImportSpecificationImpl.class);
@@ -199,7 +198,7 @@ public final class JobUtil {
 
     public static void merge(@NotNull ScrapeSpecification overwriteInto, @NotNull ScrapeSpecification newJob)
             throws ValidationException {
-        for (Address nodeAddress : overwriteInto.getGraphs().keySet()) {
+        for (String nodeAddress : overwriteInto.getGraphs().keySet()) {
             if (newJob.getGraphs().containsKey(nodeAddress)) {
                 throw new ValidationException("Imported scrape job has graph address conflict: " + nodeAddress);
             }

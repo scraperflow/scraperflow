@@ -3,7 +3,6 @@ package scraper.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.reflect.TypeToken;
 import scraper.annotations.NotNull;
-import scraper.annotations.Nullable;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
 import scraper.api.converter.StringToClassConverter;
@@ -67,14 +66,24 @@ public final class NodeUtil {
         return FlowMapImpl.copy(o);
     }
 
-    @Nullable
+    @NotNull
     public static Address addressOf(String label) {
-        if(label == null) return null;
         return new AddressImpl(label);
     }
 
-    public static GraphAddress graphAddressOf(String label) {
-        return new GraphAddressImpl(label);
+    @NotNull
+    public static GraphAddress addressOf(String instance, String graph) {
+        return new GraphAddressImpl(instance, graph);
+    }
+
+    @NotNull
+    public static NodeAddress addressOf(String instance, String graph, String node) {
+        return new NodeAddressImpl(instance, graph, node, null);
+    }
+
+    @NotNull
+    public static NodeAddress addressOf(String instance, String graph, Integer index) {
+        return new NodeAddressImpl(instance, graph, null, index);
     }
 
 
@@ -287,9 +296,6 @@ public final class NodeUtil {
             else //noinspection StatementWithEmptyBody readability
                 if (fieldType.isAssignableFrom(value.getClass())) {
                 // value is correct
-            } // check if field type is an GraphAddress
-            else if (String.class.isAssignableFrom(value.getClass()) && GraphAddress.class.isAssignableFrom(fieldType)) {
-                value = new GraphAddressImpl((String) value);
             } // check if field type is a general Address
             else if (String.class.isAssignableFrom(value.getClass()) && Address.class.isAssignableFrom(fieldType)) {
                 value = NodeUtil.addressOf((String) value);
@@ -380,53 +386,49 @@ public final class NodeUtil {
     }
 
 
-    public static Address getNextNode(Address origin, Address goTo, Map<GraphAddress, List<NodeContainer<? extends Node>>> graphs) {
-        if(goTo != null) {
-            return goTo;
-        } else {
-            return getForwardTarget(origin, graphs);
-        }
+    public static NodeAddress getNextNode(Address origin, Address goTo, Map<GraphAddress, List<NodeContainer<? extends Node>>> graphs) {
+        throw new IllegalStateException();
     }
 
     public static Address getForwardTarget(Address origin, Map<GraphAddress, List<NodeContainer<? extends Node>>> graphs) {
-        for (GraphAddress k : graphs.keySet()) {
-            Iterator<NodeContainer<? extends Node>> it = graphs.get(k).iterator();
-            while(it.hasNext()) {
-                NodeContainer node = it.next();
-                if(node.getAddress().equalsTo(origin)){
-                    if(it.hasNext()) {
-                        return it.next().getAddress();
-                    } else {
-                        return null;
-                    }
-                }
-            }
-        }
+//        for (GraphAddress k : graphs.keySet()) {
+//            Iterator<NodeContainer<? extends Node>> it = graphs.get(k).iterator();
+//            while(it.hasNext()) {
+//                NodeContainer node = it.next();
+//                if(node.getAddress().equalsTo(origin)){
+//                    if(it.hasNext()) {
+//                        return it.next().getAddress();
+//                    } else {
+//                        return null;
+//                    }
+//                }
+//            }
+//        }
 
         throw new IllegalStateException("Origin node address not found in any graph: " + origin.getRepresentation());
     }
 
-    public static NodeContainer getNode(Address target, Map<GraphAddress, List<NodeContainer<? extends Node>>> graphs, Map<InstanceAddress, ScrapeInstance> importedInstances) {
-        for (InstanceAddress instanceAddress : importedInstances.keySet()) {
-            if (target.equalsTo(instanceAddress)) {
-                return importedInstances.get(instanceAddress).getEntryGraph().get(0);
-            }
-
-            // can only resolve if instance address is correct
-            Address insideTarget = target.resolve(instanceAddress);
-            if(insideTarget != null) return importedInstances.get(instanceAddress).getNode(insideTarget);
-        }
-
-        for (GraphAddress k : graphs.keySet()) {
-            if(k.equalsTo(target)) {
-                return graphs.get(k).get(0);
-            }
-
-            for (NodeContainer node : graphs.get(k)) {
-                if(node.getAddress().equalsTo(target))
-                    return node;
-            }
-        }
+    public static Optional<NodeContainer<? extends Node>> getNode(Address target, Map<GraphAddress, List<NodeContainer<? extends Node>>> graphs, Map<InstanceAddress, ScrapeInstance> importedInstances) {
+//        for (InstanceAddress instanceAddress : importedInstances.keySet()) {
+//            if (target.equalsTo(instanceAddress)) {
+//                return importedInstances.get(instanceAddress).getEntryGraph().get(0);
+//            }
+//
+//            // can only resolve if instance address is correct
+//            Address insideTarget = target.resolve(instanceAddress);
+//            if(insideTarget != null) return importedInstances.get(instanceAddress).getNode(insideTarget);
+//        }
+//
+//        for (GraphAddress k : graphs.keySet()) {
+//            if(k.equalsTo(target)) {
+//                return graphs.get(k).get(0);
+//            }
+//
+//            for (NodeContainer node : graphs.get(k)) {
+//                if(node.getAddress().equalsTo(target))
+//                    return node;
+//            }
+//        }
 
         throw new IllegalArgumentException("Node address not existing! "+target);
     }

@@ -2,7 +2,6 @@ package scraper.api.specification;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
-import scraper.api.node.GraphAddress;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -22,7 +21,7 @@ public interface ScrapeSpecification {
     @NotNull Path getScrapeFile();
 
     /** label -> Graph definitions */
-    @NotNull Map<GraphAddress, List<Map<String, Object>>> getGraphs();
+    @NotNull Map<String, List<Map<String, Object>>> getGraphs();
 
     /** Any number of added base paths (with command line arguments) to search for arguments, dependencies, imports, fragments */
     @NotNull List<Path> getPaths();
@@ -36,8 +35,8 @@ public interface ScrapeSpecification {
     /** .scrape file reference -> exported labels */
     @NotNull Map<String, ScrapeImportSpecification> getImports();
 
-    /** Entry graph */
-    @NotNull GraphAddress getEntry();
+    /** Entry graph address */
+    @NotNull String getEntry();
 
     /** Global node configuration */
     @NotNull Map<String, Map<String, Object>> getGlobalNodeConfigurations();
