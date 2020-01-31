@@ -1,5 +1,6 @@
 package scraper.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.plugin.metadata.AbstractMetadataBasedPlugin;
 import org.springframework.plugin.metadata.PluginMetadata;
 import scraper.annotations.NotNull;

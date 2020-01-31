@@ -20,6 +20,7 @@ import scraper.utils.ClassUtil;
 import java.lang.reflect.ReflectPermission;
 import java.net.URL;
 import java.security.Permission;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -266,4 +267,53 @@ public class AbstractNodeTest {
     public void badNodeTest() throws Exception {
         getInstance("abstract", "bad-node-2.jf");
     }
+
+
+
+
+    @Test
+    public void indexAndLabelTest() throws Exception {
+        ScrapeInstaceImpl instance = getInstance("addressing", "debug.yf");
+        NodeContainer<? extends Node> node = instance.getEntryGraph().get(0);
+        Assert.assertEquals("<debug.start.startingnode:1>", node.getAddress().toString());
+    }
+
+    @Test
+    public void onlyIndexTest() throws Exception {
+        ScrapeInstaceImpl instance = getInstance("addressing", "debug.yf");
+        NodeContainer<? extends Node> node = instance.getEntryGraph().get(1);
+        Assert.assertEquals("<debug.start.1>", node.getAddress().toString());
+    }
+
+    @Test
+    public void secondGraphMixedTest() throws Exception {
+        ScrapeInstaceImpl instance = getInstance("addressing", "debug.yf");
+        {
+            NodeContainer<? extends Node> node = instance.getGraphs().get(NodeUtil.graphAddressOf("testing")).get(0);
+            Assert.assertEquals("<debug.testing.0>", node.getAddress().getRepresentation());
+        }
+        {
+            NodeContainer<? extends Node> node = instance.getGraphs().get(NodeUtil.graphAddressOf("testing")).get(1);
+            Assert.assertEquals("<debug.testing.hellonode:1>", node.getAddress().getRepresentation());
+        }
+        {
+            NodeContainer<? extends Node> node = instance.getGraphs().get(NodeUtil.graphAddressOf("testing")).get(2);
+            Assert.assertEquals("<debug.testing.2>", node.getAddress().getRepresentation());
+        }
+    }
+
+    @Test
+    public void graphAddressTest() throws Exception {
+        ScrapeInstaceImpl instance = getInstance("addressing", "debug.yf");
+        instance.getGraphs().forEach((k,v) -> Assert.assertTrue(
+                k.toString().equalsIgnoreCase("<debug.start>") ||
+                        k.toString().equalsIgnoreCase("<debug.testing>")
+        ));
+    }
+
+    @Test
+    public void instanceAddressTest() {
+        // no op, not possible yet
+    }
+
 }

@@ -87,7 +87,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         log.info("Initializing graphs '{}'", getName());
         for (GraphAddress k : getGraphs().keySet()) {
             for (NodeContainer node : getGraph(k)) {
-                if (node instanceof NodeInitializable) ((NodeInitializable) node).init(this);
+                node.init(this);
             }
         }
     }

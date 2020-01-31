@@ -1,34 +1,42 @@
 package scraper.api.node.impl;
 
+import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
+import scraper.api.node.Address;
 import scraper.api.node.NodeAddress;
 
 import java.util.UUID;
 
-public class NodeAddressImpl extends AddressImpl implements NodeAddress {
+public class NodeAddressImpl implements NodeAddress {
+    @NotNull private final String instance;
+    @NotNull private final String graph;
+    @Nullable private final String label;
     /** Implementation detail of current workflows, used for debugging purposes and only available for NodeAddress of nodes, not for targeting */
-    private @Nullable Integer index;
+    private final int index;
 
-    public NodeAddressImpl() { this(null, null); }
-    public NodeAddressImpl(@Nullable String label) {
-        this(label, null);
-    }
-    public NodeAddressImpl(@Nullable String label, @Nullable Integer stageIndex) {
-        super(label == null ? UUID.randomUUID().toString() : label);
+    private UUID id = UUID.randomUUID();
+
+    public NodeAddressImpl(@NotNull String instance, @NotNull String graph, @Nullable String label, int stageIndex) {
+        this.instance = instance;
+        this.graph = graph;
+        this.label = label;
         index = stageIndex;
     }
 
     @Override
     public String toString() {
-        if(index == null) {
-            return "<"+getLabel()+">";
-        } else {
-            return "<"+getLabel()+"@"+index+">";
-        }
+        return "<"+getRepresentation()+">";
     }
 
     @Override
-    public int getIndex() {
-        return index;
+    public String getRepresentation() {
+        return instance +"." + graph+"."+
+                (label==null?index:label+":"+index)
+                ;
+    }
+
+    @Override
+    public Address resolve(Address toResolve) {
+        throw new IllegalStateException();
     }
 }

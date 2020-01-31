@@ -21,6 +21,8 @@ import java.util.*;
  */
 @NodePlugin("1.0.0")
 public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implements StreamNodeContainer {
+    public AbstractStreamNode(String instance, String graph, String node, int index) { super(instance, graph, node, index); }
+
     @Override
     public void init(@NotNull ScrapeInstance job) throws ValidationException {
         super.init(job);

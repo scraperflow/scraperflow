@@ -60,7 +60,6 @@ public final class JobUtil {
     static {
         SimpleModule module = new SimpleModule();
 
-        module.addDeserializer(NodeAddress.class, new NodeAddressDeserializer());
         module.addDeserializer(GraphAddress.class, new GraphAddressDeserializer());
         module.addDeserializer(Address.class, new AddressDeserializer());
         SimpleAbstractTypeResolver resolver = new SimpleAbstractTypeResolver();

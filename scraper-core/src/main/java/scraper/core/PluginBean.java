@@ -1,5 +1,6 @@
 package scraper.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.classgraph.AnnotationInfo;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;

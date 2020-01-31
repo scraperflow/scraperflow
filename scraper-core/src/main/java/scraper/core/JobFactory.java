@@ -184,9 +184,11 @@ public class JobFactory {
         // ===
         for (GraphAddress graphKey : jobDefinition.getGraphs().keySet()) {
             List<Map<String, Object>> graph = jobDefinition.getGraphs().get(graphKey);
+            int i = 0;
 
             for (Map<String, Object> nodeConfiguration : graph) {
                 String nodeType = (String) nodeConfiguration.get("type");
+                String nodeAddress = (String) nodeConfiguration.get("label");
 
                 String vers = jobNodeDependencies
                         .getOrDefault(jobDefinition, new LinkedHashMap<>())
@@ -196,11 +198,16 @@ public class JobFactory {
                 List<? extends AbstractMetadata> processPlugins = plugins.getPlugins().getPluginsFor(metadata);
                 Node n = getHighestMatchingPlugin(processPlugins, metadata);
 
-                NodeContainer<? extends Node> nn = getMatchingNodeContainer(n);
+                NodeContainer<? extends Node> nn = getMatchingNodeContainer(
+                        job.getName(), graphKey.getRepresentation(), nodeAddress, i, n
+                );
                 nn.setNodeConfiguration(nodeConfiguration, graphKey);
+
 
                 job.getGraphs().putIfAbsent(graphKey, new ArrayList<>());
                 job.getGraph(graphKey).add(nn);
+
+                i++;
             }
         }
 
@@ -213,15 +220,15 @@ public class JobFactory {
         return job;
     }
 
-    private NodeContainer<? extends Node> getMatchingNodeContainer(Node n) {
+    private NodeContainer<? extends Node> getMatchingNodeContainer(String instance, String graph, String node, int index, Node n) {
         if(n instanceof FunctionalNode) {
-            return new AbstractFunctionalNode() { @Override public FunctionalNode getC() { return (FunctionalNode) n; } };
+            return new AbstractFunctionalNode(instance, graph,node,index) { @Override public FunctionalNode getC() { return (FunctionalNode) n; } };
         }
         else if(n instanceof StreamNode) {
-            return new AbstractStreamNode() { @Override public StreamNode getC() { return (StreamNode) n; } };
+            return new AbstractStreamNode(instance, graph, node, index) { @Override public StreamNode getC() { return (StreamNode) n; } };
         } else {
             // default, generic node
-            return new GenericNode() { @Override public Node getC() { return n; } };
+            return new GenericNode(instance, graph, node, index) { @Override public Node getC() { return n; } };
         }
     }
 

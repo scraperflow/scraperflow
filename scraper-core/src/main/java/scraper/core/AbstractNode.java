@@ -72,7 +72,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
 
     /** Label of a node which can be used as a goto reference */
     @FlowKey
-    protected NodeAddress address = new NodeAddressImpl();
+    protected final NodeAddress address;
 
     /** Indicates if forward has any effect or not. */
     @FlowKey(defaultValue = "true")
@@ -83,7 +83,6 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     protected Address goTo;
 
     /** Reference to its parent job */
-    @JsonIgnore
     protected ScrapeInstance jobPojo;
 
     /** Index of the node in the process list. Is set on init. */
@@ -100,16 +99,18 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     private final ConcurrentMap<Field, EnsureFile> ensureFileFields = new ConcurrentHashMap<>();
 
     /** Current node configuration */
-    @JsonIgnore
     protected Map<String, Object> nodeConfiguration;
 
     /** Set during init of node */
-    @JsonIgnore
     private GraphAddress graphKey;
 
     /** Target if a dispatched flow exception occurs */
     @FlowKey
     protected Address onForkException;
+
+    public AbstractNode(String instance, String graph, String node, int index) {
+        this.address = new NodeAddressImpl(instance, graph, node, index);
+    }
 
     /**
      * Initializes the {@link #stageIndex} and all fields marked with {@link FlowKey}. Evaluates
@@ -121,18 +122,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     @Override
     public void init(@NotNull final ScrapeInstance job) throws ValidationException {
 //        Runtime.getRuntime().addShutdownHook(new Thread(this::nodeShutdown));
-
-        // set stage indices
         this.jobPojo = job;
-        job.getGraphs().forEach((k, graph) -> {
-            for (int i = 0; i < graph.size(); i++) {
-                if(job.getGraph(k).get(i) == this) {
-                    this.stageIndex = i;
-                    address = new NodeAddressImpl(address.getLabel(), stageIndex);
-                    break;
-                }
-            }
-        });
 
         // set logger name
         String number = String.valueOf(job.getGraph(getGraphKey()).size());
@@ -176,12 +166,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     }
 
     public void initLogger(int indexLength) {
-        String loggerName =
-                String.format("%s > %s%"+indexLength+"s",
-                        getJobPojo().getName(),
-                        getAddress().getLabel() + " @ ",
-                        getAddress().getIndex()
-                );
+        String loggerName = getAddress().toString();
 //                        getClass().getSimpleName().substring(0, getClass().getSimpleName().length()-4));
 //        String loggerName =
 //                String.format("%s > %s%"+indexLength+"s | %s",
@@ -309,7 +294,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     // GETTER AND UTILITY FUNCTIONS
     // ----------------------------
 
-    @Override public String toString(){ return "<"+getAddress().getLabel()+"@"+getStageIndex()+">"; }
+    @Override public String toString(){ return getAddress().toString(); }
 
     // node shutdown
 //    @Override

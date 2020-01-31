@@ -287,9 +287,6 @@ public final class NodeUtil {
             else //noinspection StatementWithEmptyBody readability
                 if (fieldType.isAssignableFrom(value.getClass())) {
                 // value is correct
-            } // check if field type is an NodeAddress
-            else if (String.class.isAssignableFrom(value.getClass()) && NodeAddress.class.isAssignableFrom(fieldType)) {
-                value = new NodeAddressImpl((String) value);
             } // check if field type is an GraphAddress
             else if (String.class.isAssignableFrom(value.getClass()) && GraphAddress.class.isAssignableFrom(fieldType)) {
                 value = new GraphAddressImpl((String) value);

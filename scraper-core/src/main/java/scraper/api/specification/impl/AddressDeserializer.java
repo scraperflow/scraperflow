@@ -2,6 +2,7 @@ package scraper.api.specification.impl;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
@@ -9,6 +10,7 @@ import scraper.api.node.Address;
 import scraper.api.node.impl.AddressImpl;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 public class AddressDeserializer extends StdDeserializer<Address> {
  
@@ -30,5 +32,11 @@ public class AddressDeserializer extends StdDeserializer<Address> {
         } else {
             throw new IOException("Expected string, got " + node.getNodeType());
         }
+    }
+
+    @Override
+    public Address getNullValue(DeserializationContext ctxt) throws JsonMappingException {
+
+        return null;
     }
 }
