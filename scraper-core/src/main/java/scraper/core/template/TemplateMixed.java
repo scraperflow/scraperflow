@@ -2,7 +2,7 @@ package scraper.core.template;
 
 import com.google.common.reflect.TypeToken;
 import scraper.annotations.NotNull;
-import scraper.api.converter.StringToClassConverter;
+import scraper.core.converter.StringToClassConverter;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
 

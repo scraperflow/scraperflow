@@ -12,7 +12,7 @@ public class TestUtil {
         for (NodeContainer<? extends Node> process : jobProcess) {
             if(AssertNode.class.isAssignableFrom(process.getC().getClass())) {
                 if(((AssertNode) process.getC()).isFinished()) {
-                    Assert.assertTrue(" failed "+process.getGoTo(),
+                    Assert.assertTrue("failed "+process.getAddress(),
                             ((AssertNode) process.getC()).getSuccess().get());
                 } else {
                     synchronized (((AssertNode) process.getC()).getSuccess()) {

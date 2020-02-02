@@ -7,7 +7,7 @@
           { "type" : "MapNode", "list": "{fork}", "mapTarget": "target", "forward": false },
           {
             "type": "AssertNode",
-            "address": "target",
+            "label": "target",
             "containedInMap": {
               "element": ["a","b"]
             }

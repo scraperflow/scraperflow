@@ -4,7 +4,7 @@
   "graphs"    :
   {"start":
   [
-    { "type":"SimpleNode", "address": "hello", "log":"Scrape job is running!" },
+    { "type":"SimpleNode", "label": "hello", "log":"Scrape job is running!" },
     { "type":"Fragment", "required":"other.fragment" }
   ]
   }

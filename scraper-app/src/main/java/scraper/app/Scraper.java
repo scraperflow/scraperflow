@@ -119,9 +119,9 @@ public class Scraper {
 		jobs.forEach((definition, job) -> {
             CompletableFuture<FlowMap> future = CompletableFuture.supplyAsync(() -> {
                 try {
-                    FlowMap initial = flowOf(job.getInitialArguments());
+                    FlowMap initial = flowOf(job.getEntryArguments());
 
-                    NodeContainer<? extends Node> initialNode = job.getNode(definition.getEntry());
+                    NodeContainer<? extends Node> initialNode = job.getEntry();
                     initialNode.getC().accept(initialNode, initial);
 
                     return initial;

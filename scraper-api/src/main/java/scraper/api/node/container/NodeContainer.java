@@ -5,6 +5,7 @@ import scraper.annotations.Nullable;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.*;
+import scraper.api.node.type.Node;
 import scraper.api.specification.ScrapeInstance;
 
 import java.util.Collection;
@@ -54,7 +55,7 @@ public interface NodeContainer<NODE> extends NodeInitializable {
 
 
     /** Job-Unique target forward address. Defaults to the next node in the specification */
-    @NotNull Optional<NodeAddress> getGoTo();
+    @NotNull Optional<NodeContainer<? extends Node>> getGoTo();
 
     @NotNull Collection<NodeHook> beforeHooks();
 
@@ -78,7 +79,7 @@ public interface NodeContainer<NODE> extends NodeInitializable {
      * Either next node, or the node specified by a target address given
      * Is not controlled by the forward flag
      */
-    @NotNull FlowMap eval(@NotNull final FlowMap o, @NotNull final NodeAddress target) throws NodeException;
+    @NotNull FlowMap eval(@NotNull final FlowMap o, @NotNull final Address target) throws NodeException;
 
     //-----------
     // Concurrent
@@ -89,14 +90,14 @@ public interface NodeContainer<NODE> extends NodeInitializable {
      * Returns a future which can be used to get the output flow of the dispatched flow.
      * This call only returns if the service pool has available space for another flow.
      */
-    @NotNull CompletableFuture<FlowMap> forkDepend(@NotNull final FlowMap o, @NotNull final NodeAddress target);
+    @NotNull CompletableFuture<FlowMap> forkDepend(@NotNull final FlowMap o, @NotNull final Address target);
 
     /**
      * Copies and dispatches a flow to another target address.
      * Does not wait for the other flow to finish.
      * This call only returns if the service pool has available space for another flow.
      */
-    void forkDispatch(@NotNull final FlowMap o, @NotNull final NodeAddress target);
+    void forkDispatch(@NotNull final FlowMap o, @NotNull final Address target);
 
     NODE getC();
 

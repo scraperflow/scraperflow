@@ -6,10 +6,16 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.slf4j.Logger;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.TemplateException;
+import scraper.api.flow.impl.IdentityFlowMap;
+import scraper.api.reflect.T;
 import scraper.core.exp.TemplateExpressionVisitor;
 import scraper.core.exp.TemplateLexer;
 import scraper.core.exp.TemplateParser;
 import scraper.core.template.TemplateExpression;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 
 public final class TemplateUtil {
@@ -45,6 +51,29 @@ public final class TemplateUtil {
         log.trace("Converting term to template expression: '{}'", term);
         TypeToken<C> targetType = new TypeToken<C>(){};
         return parseTemplate(term, targetType);
+    }
+
+    public static <Target> void accept(T<?> t, Class<Target> addressClass, Consumer<Target> o) {
+        Object parsedJson = t.getParsedJson();
+        if(parsedJson != null) descend(parsedJson, addressClass, o);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected static <Target> void descend(Object parsedJson, Class<Target> addressClass, Consumer<Target> o) {
+        if(parsedJson instanceof List) {
+            ((List) parsedJson).forEach(e -> descend(e, addressClass, o));
+        } else if(parsedJson instanceof Map) {
+            ((Map) parsedJson).forEach((k,v) -> descend(v, addressClass, o));
+        } else {
+            if(parsedJson instanceof TemplateExpression) {
+                if (((TemplateExpression) parsedJson).getType() == addressClass) {
+                    Target t = (Target) ((TemplateExpression) parsedJson).eval(new IdentityFlowMap());
+                    o.accept(t);
+                }
+            } else {
+                System.out.println("???");
+            }
+        }
     }
 }
 

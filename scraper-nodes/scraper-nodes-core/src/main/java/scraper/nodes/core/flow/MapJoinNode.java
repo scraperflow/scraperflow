@@ -6,6 +6,8 @@ import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.Address;
+import scraper.api.node.NodeAddress;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.Node;
@@ -35,7 +37,7 @@ public final class MapJoinNode implements Node {
 
     /** Label of goTo */
     @FlowKey(mandatory = true)
-    private String mapTarget;
+    private Address mapTarget;
 
     /** At which key to put the element of the list into. */
     @FlowKey(defaultValue = "\"element\"") @NotNull
@@ -56,7 +58,7 @@ public final class MapJoinNode implements Node {
             FlowMap copy = NodeUtil.flowOf(o);
             copy.output(putElement, element);
             // dispatch new flow, expect future to return the modified flow map
-            CompletableFuture<FlowMap> t = n.forkDepend(copy, NodeUtil.addressOf(mapTarget));
+            CompletableFuture<FlowMap> t = n.forkDepend(copy, mapTarget);
             forkedProcesses.add(t);
         });
 

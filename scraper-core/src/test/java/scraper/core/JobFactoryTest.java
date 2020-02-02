@@ -29,11 +29,9 @@ public class JobFactoryTest {
         ScrapeSpecificationImpl spec = (ScrapeSpecificationImpl) JobUtil.parseJobs(new String[]{"job1.jf", "level0.args", "level1.args"}, Set.of(base.getFile())).get(0);
         ScrapeInstaceImpl instance = deps.get(JobFactory.class).convertScrapeJob(spec);
 
-        assertEquals(2, instance.getInitialArguments().size());
-        assertEquals("ok", instance.getInitialArguments().get("arg1"));
-        assertEquals("42", instance.getInitialArguments().get("l1"));
-
-        assertEquals(2, instance.getEntryGraph().size());
+        assertEquals(2, instance.getEntryArguments().size());
+        assertEquals("ok", instance.getEntryArguments().get("arg1"));
+        assertEquals("42", instance.getEntryArguments().get("l1"));
     }
 
 //    @Test(expected = ValidationException.class)

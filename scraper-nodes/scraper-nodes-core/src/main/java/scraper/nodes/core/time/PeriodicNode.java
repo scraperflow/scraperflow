@@ -4,12 +4,12 @@ import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.Address;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
-import scraper.util.NodeUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -31,7 +31,7 @@ public final class PeriodicNode implements FunctionalNode {
 
     /** Target node label which is called on period */
     @FlowKey(mandatory = true)
-    private String onPeriod;
+    private Address onPeriod;
 
     /** If true, enables dispatch of the periodic task. If false, stops dispatch of the periodic task */
     @FlowKey(defaultValue = "true")
@@ -45,7 +45,7 @@ public final class PeriodicNode implements FunctionalNode {
 
     @Override
     public void init(@NotNull NodeContainer n, @NotNull final ScrapeInstance job) {
-        o = flowOf(job.getInitialArguments());
+        o = flowOf(job.getEntryArguments());
 
         timerTask = new TimerTask() {
             @Override
@@ -53,7 +53,7 @@ public final class PeriodicNode implements FunctionalNode {
                 if(started.get() && dispatch.get()) {
                     n.log(DEBUG,"Dispatching {}", onPeriod);
                     final FlowMap oCopy = o;
-                    n.forkDispatch(oCopy, NodeUtil.addressOf(onPeriod));
+                    n.forkDispatch(oCopy, onPeriod);
                 }
             }
         };

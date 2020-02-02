@@ -6,7 +6,9 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
+import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.Node;
+import scraper.api.reflect.T;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -14,14 +16,15 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.String.valueOf;
+import static scraper.api.node.container.NodeLogLevel.INFO;
 
 @NodePlugin
 public class AssertNode implements Node {
 
-    private @FlowKey(defaultValue = "{}") Map<String, Object> assertMap;
-    private @FlowKey(defaultValue = "{}") Map<String, List<String>> containsMap;
-    private @FlowKey(defaultValue = "{}") Map<String, List<String>> containedInMap;
-    private @FlowKey(defaultValue = "[]") List<List<String>> mathCompare;
+    private @FlowKey(defaultValue = "{}") T<Map<String, Object>> assertMap = new T<>(){};
+    private @FlowKey(defaultValue = "{}") T<Map<String, List<String>>> containsMap = new T<>(){};
+    private @FlowKey(defaultValue = "{}") T<Map<String, List<String>>> containedInMap = new T<>(){};
+    private @FlowKey(defaultValue = "[]") T<List<List<String>>> mathCompare = new T<>(){};
     private @FlowKey(defaultValue = "false") Boolean negate;
     private @FlowKey(defaultValue = "false") Boolean failOnError;
 
@@ -40,6 +43,11 @@ public class AssertNode implements Node {
     @Override
     public FlowMap process(NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
         if(wait != null) { try { Thread.sleep(wait); } catch (InterruptedException ignored) {} }
+
+        Map<String, Object> assertMap = o.evalIdentity(this.assertMap);
+        Map<String, List<String>> containsMap  = o.evalIdentity(this.containsMap);
+        Map<String, List<String>> containedInMap  = o.evalIdentity(this.containedInMap);
+        List<List<String>> mathCompare  = o.evalIdentity(this.mathCompare);
 
         for (String key : assertMap.keySet()) {
 //            l.info("Assert @{}: {}{}{}", (String) key, clip(valueOf(o.get(key))), (negate?" != ":" == "), assertMap.get(key));
@@ -73,7 +81,7 @@ public class AssertNode implements Node {
         }
 
         for (String key : containsMap.keySet()) {
-//            l.info("Assert contains: @{} contains {}", key, clip(valueOf(o.get(key))));
+//            n.log(NodeLogLevel.INFO,"Assert contains: @{} contains {}", key, clip(valueOf(o.get(key))));
             String actual = valueOf(o.get(key));
             List<String> expected = containsMap.get(key);
 
@@ -94,7 +102,7 @@ public class AssertNode implements Node {
 
         for (String key : containedInMap.keySet()) {
             String actual = valueOf(o.get(key));
-//            l.info("Assert contained in @{}: {}", key, actual);
+            n.log(INFO,"Assert contained in @{}: {}", key, actual);
             List<String> contained = containedInMap.get(key);
 
             if(!contained.contains(actual)) {

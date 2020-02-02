@@ -5,11 +5,11 @@ import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.Address;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.reflect.T;
-import scraper.util.NodeUtil;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -46,7 +46,7 @@ public final class TimerNode implements FunctionalNode {
 
     /** go to node if timeout occurs */
     @FlowKey(mandatory = true)
-    private String onTimeout;
+    private Address onTimeout;
 
     /** descriptive name of this timer */
     @FlowKey(mandatory = true)
@@ -204,7 +204,7 @@ public final class TimerNode implements FunctionalNode {
                 try {
                     Thread.sleep(timeout);
                     n.log(INFO,"Executing alarm: {}", toString());
-                    n.forkDispatch(oCopy, NodeUtil.addressOf(onTimeout));
+                    n.forkDispatch(oCopy, onTimeout);
                 } catch (InterruptedException e) {
                     n.log(INFO,"'{}' stopped", name);
                 } finally {

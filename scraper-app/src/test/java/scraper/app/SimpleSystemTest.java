@@ -2,6 +2,7 @@ package scraper.app;
 
 import org.junit.Assert;
 import org.junit.Test;
+import scraper.api.exceptions.ValidationException;
 import scraper.utils.ClassUtil;
 
 import java.io.File;
@@ -96,7 +97,8 @@ public class SimpleSystemTest {
         Scraper.main(new String[]{ff.getAbsolutePath()});
     }
 
-    @Test
+    // do not allow access of nested instances
+    @Test(expected = ValidationException.class)
     public void import2Test() throws Exception {
         URL f = Scraper.class.getResource("complex2.yf");
         File ff = new File(f.toURI());

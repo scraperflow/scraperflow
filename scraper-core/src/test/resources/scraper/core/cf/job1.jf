@@ -7,7 +7,7 @@
     [
       { "type":"SimpleNode"},
       { "type":"ComplexFlowNode", "goTo": "target" },
-      { "type":"SimpleNode", "address": "target", "log":"Finished!" }
+      { "type":"SimpleNode", "label": "target", "log":"Finished!" }
     ]
   }
 }

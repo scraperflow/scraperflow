@@ -1,7 +1,6 @@
 package scraper.nodes.core.flow;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.Nullable;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
@@ -25,10 +24,10 @@ public final class IfThenElseNode implements Node {
     @FlowKey(mandatory = true) @NotNull
     private T<Boolean> condition = new T<>(){};
 
-    @FlowKey @Nullable
+    @FlowKey
     private Address trueTarget;
 
-    @FlowKey @Nullable
+    @FlowKey
     private Address falseTarget;
 
     @NotNull

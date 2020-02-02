@@ -17,23 +17,30 @@ import scraper.api.node.NodeAddress;
 import scraper.api.node.NodeHook;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
+import scraper.api.node.impl.AddressImpl;
 import scraper.api.node.impl.GraphAddressImpl;
+import scraper.api.node.impl.InstanceAddressImpl;
 import scraper.api.node.impl.NodeAddressImpl;
 import scraper.api.node.type.Node;
 import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
+import scraper.util.NodeUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.time.OffsetTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static scraper.api.node.container.NodeLogLevel.*;
+import static scraper.util.NodeUtil.addressOf;
 import static scraper.util.NodeUtil.initFields;
 import static scraper.utils.ClassUtil.getAllFields;
 
@@ -71,17 +78,12 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     @FlowKey
     protected T<Object> log = new T<>(){};
 
-    /** Label of a node which can be used as a goto reference */
-    @FlowKey
-    protected final NodeAddress address;
-
     /** Indicates if forward has any effect or not. */
     @FlowKey(defaultValue = "true")
     protected Boolean forward;
 
     /** Target label */
-    @FlowKey
-    protected Address goTo;
+    @FlowKey protected Address goTo;
 
     /** Reference to its parent job */
     protected ScrapeInstance jobPojo;
@@ -96,6 +98,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     @FlowKey(defaultValue = "25") @Argument
     protected Integer threads;
 
+
     /** All ensureFile fields of this node */
     private final ConcurrentMap<Field, EnsureFile> ensureFileFields = new ConcurrentHashMap<>();
 
@@ -105,12 +108,18 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     /** Set during init of node */
     private GraphAddress graphKey;
 
-//    /** Target if a dispatched flow exception occurs */
+    /** Target if a dispatched flow exception occurs */
 //    @FlowKey
 //    protected Address onForkException;
 
+
+    @FlowKey // not used for anything at the moment
+    /** Label of a node which can be used as a goto reference */
+    private String label;
+    private NodeAddress absoluteAddress;
+
     public AbstractNode(String instance, String graph, String node, int index) {
-        this.address = new NodeAddressImpl(instance, graph, node, index);
+        this.absoluteAddress = new NodeAddressImpl(instance, graph, node, index);
     }
 
     /**
@@ -125,34 +134,37 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
 //        Runtime.getRuntime().addShutdownHook(new Thread(this::nodeShutdown));
         this.jobPojo = job;
 
-        // set logger name
-        String number = String.valueOf(job.getGraph(getGraphKey()).size());
-        int indexLength = number.toCharArray().length;
-        initLogger(indexLength);
+//        // set logger name
+//        String number = String.valueOf(job.getGraph(getGraphKey()).size());
+//        int indexLength = number.toCharArray().length;
+//        initLogger(indexLength);
+        initLogger();
         log(TRACE,"Start init {}", this);
 
         // initialize fields with arguments
-        Set<String> expectedFields = initFields(this, getNodeConfiguration(), job.getInitialArguments(), job.getGlobalNodeConfigurations());
-        Set<String> expectedField = initFields(getC(), getNodeConfiguration(), job.getInitialArguments(), job.getGlobalNodeConfigurations());
+        try {
+            initFields(this, getNodeConfiguration(),
+                    job.getSpecification().getInitialArguments(), job.getSpecification().getGlobalNodeConfigurations()
+                    );
+            initFields(getC(), getNodeConfiguration(),
+                    job.getSpecification().getInitialArguments(), job.getSpecification().getGlobalNodeConfigurations()
+                    );
 
-        // get ensure fields
-        List<Field> test = getAllFields(new LinkedList<>(), getC().getClass());
-        test.forEach(f -> {
+            // get ensure fields
+            List<Field> test = getAllFields(new LinkedList<>(), getC().getClass());
+            test.forEach(f -> {
                 EnsureFile ensureFile = f.getAnnotation(EnsureFile.class);
                 if(ensureFile != null) ensureFileFields.put(f, ensureFile);
-        });
+            });
 
-        // check actual fields against expected fields
-        for (String actualField : getNodeConfiguration().keySet()) {
-            if (!expectedFields.contains(actualField)) {
-                log(WARN,"Found field defined in flow, but not expected in implementation of node: {}", actualField);
-            }
+            log(TRACE,"Finished init {}", this);
+
+            // init node
+            getC().init(this, job);
+        } catch (Exception e) {
+            log(ERROR, "Could not initialize field: '{}'", e.getMessage());
+            throw new ValidationException(e, "Could not initialize fields for " + getAddress() +": " + e.getMessage());
         }
-
-        log(TRACE,"Finished init {}", this);
-
-        // init node
-        getC().init(this, job);
     }
 
 
@@ -166,7 +178,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
         this.graphKey = new GraphAddressImpl(instance, graphKey);
     }
 
-    public void initLogger(int indexLength) {
+    public void initLogger() {
         String loggerName = getAddress().toString();
 //                        getClass().getSimpleName().substring(0, getClass().getSimpleName().length()-4));
 //        String loggerName =
@@ -206,7 +218,6 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
         }
 
 
-        // FIXME re-implement
         // ensure files exist
         try {
             for (Field ensureFileField : ensureFileFields.keySet()) {
@@ -335,29 +346,23 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     @NotNull
     @Override
     public FlowMap forward(@NotNull final FlowMap o) throws NodeException {
-        // do nothing
-        if(!getForward()) return o;
-        Optional<NodeAddress> forwardTarget = getGoTo();
-
-        if (forwardTarget.isPresent()) {
-            Optional<NodeContainer<? extends Node>> targetNode = jobPojo.getNodeAbsolute(forwardTarget.get());
-            // TODO
-            return targetNode.get().getC().accept(targetNode.get(), o);
+        if (getGoTo().isPresent()) {
+            NodeContainer<? extends Node> targetNode = getGoTo().get();
+            return targetNode.getC().accept(targetNode, o);
+        } else {
+            return o;
         }
-
-        return o;
     }
 
     @NotNull
     @Override
-    public FlowMap eval(@NotNull final FlowMap o, @NotNull final NodeAddress target) throws NodeException {
-        Optional<NodeContainer<? extends Node>> targetNode = jobPojo.getNodeAbsolute(target);
-        // TODO optional
-        return targetNode.get().getC().accept(targetNode.get(), o);
+    public FlowMap eval(@NotNull final FlowMap o, @NotNull final Address target) throws NodeException {
+        NodeContainer<? extends Node> opt = NodeUtil.getTarget(getAddress(), target, getJobInstance());
+        return opt.getC().accept(opt, o);
     }
 
     @Override
-    public void forkDispatch(@NotNull final FlowMap o, @NotNull final NodeAddress target) {
+    public void forkDispatch(@NotNull final FlowMap o, @NotNull final Address target) {
         dispatch(() -> {
             try {
                 return eval(o, target);
@@ -372,7 +377,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
 //                        throw new RuntimeException(e);
 //                    }
 //                } else {
-                    log(ERROR, "Fork dispatch to goTo '{}' terminated exceptionally.", target, e);
+//                    log(ERROR, "Fork dispatch to goTo '{}' terminated exceptionally.", target, e);
                     throw new RuntimeException(e);
 //                }
             }
@@ -381,7 +386,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
 
     @NotNull
     @Override
-    public CompletableFuture<FlowMap> forkDepend(@NotNull final FlowMap o, @NotNull final NodeAddress target) {
+    public CompletableFuture<FlowMap> forkDepend(@NotNull final FlowMap o, @NotNull final Address target) {
         return dispatch(() -> {
             try {
                 return eval(o, target);
@@ -408,7 +413,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     @NotNull
     @Override
     public NodeAddress getAddress() {
-        return address;
+        return absoluteAddress;
     }
 
     public Boolean getForward() {
@@ -430,8 +435,18 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     }
 
     @Override
-    public @NotNull Optional<NodeAddress> getGoTo() {
-        throw new IllegalStateException();
+    public @NotNull Optional<NodeContainer<? extends Node>> getGoTo() {
+        if(goTo == null) {
+            if(isForward()) {
+                // get forward, only forward can create optional.empty?
+                Address nextNode = getAddress().nextIndex();
+                return getJobInstance().getNode(nextNode);
+            } else {
+                return Optional.empty();
+            }
+        } else {
+            return Optional.of(NodeUtil.getTarget( getAddress(), goTo, getJobInstance() ));
+        }
     }
 
     @NotNull

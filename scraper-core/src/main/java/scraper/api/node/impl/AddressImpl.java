@@ -2,6 +2,7 @@ package scraper.api.node.impl;
 
 import scraper.annotations.NotNull;
 import scraper.api.node.Address;
+import scraper.util.NodeUtil;
 
 import java.util.Objects;
 
@@ -51,13 +52,17 @@ public class AddressImpl implements Address {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AddressImpl address = (AddressImpl) o;
-        return label.equals(address.label);
+        if (o == null) return false;
+        if(o instanceof Address) {
+            Address that = (Address) o;
+            return NodeUtil.representationEquals(getRepresentation(), that.getRepresentation());
+        } else {
+            return false;
+        }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(label);
+        return NodeUtil.representationHashCode(getRepresentation());
     }
 }

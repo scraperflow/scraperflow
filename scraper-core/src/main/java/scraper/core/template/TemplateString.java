@@ -9,7 +9,7 @@ import scraper.api.flow.FlowMap;
 import java.util.Collection;
 import java.util.Set;
 
-import static scraper.api.converter.StringToClassConverter.convert;
+import static scraper.core.converter.StringToClassConverter.convert;
 
 public class TemplateString<T> extends TemplateExpression<T>{
     private StringBuilder stringContent = new StringBuilder();

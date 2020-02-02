@@ -60,10 +60,8 @@ public class JobFactory {
 
 
     private ScrapeInstaceImpl parseJob(ScrapeSpecification def) {
-        ScrapeInstaceImpl job = new ScrapeInstaceImpl();
+        ScrapeInstaceImpl job = new ScrapeInstaceImpl(def);
         job.setName(def.getName());
-        job.setEntry(new GraphAddressImpl(job.getName(), def.getEntry()));
-        job.setGlobalNodeConfigurations(def.getGlobalNodeConfigurations());
 
         job.setExecutors(executorsService);
         job.setFileService(fileService);
@@ -156,7 +154,7 @@ public class JobFactory {
         // ===
 
         // first args from definition
-        Map<String, Object> combinedArgs = new HashMap<>(job.getInitialArguments());
+        Map<String, Object> combinedArgs = new HashMap<>(job.getSpecification().getInitialArguments());
 
         // implied args
         try {
@@ -175,7 +173,7 @@ public class JobFactory {
             log.info("Parsed args file: {}", arg);
         }
 
-        job.setInitialArguments(combinedArgs);
+        job.getEntryArguments().putAll(combinedArgs);
 
         // ===
         // Pre-process fragments
@@ -214,8 +212,19 @@ public class JobFactory {
 
 
                 GraphAddressImpl graphAddress = new GraphAddressImpl(jobDefinition.getName(), graphKey);
-                job.getGraphs().putIfAbsent(graphAddress, new ArrayList<>());
-                job.getGraph(graphAddress).add(nn);
+
+                // instance address if entry and first node
+                if(job.getSpecification().getEntry().equalsIgnoreCase(graphKey) && i == 0)
+                   job.addRoute(new InstanceAddressImpl(job.getName()), nn);
+
+                // graph address if first node
+                if(i == 0) job.addRoute(graphAddress, nn);
+
+                // absolute address
+                job.addRoute(nn.getAddress(), nn);
+
+                // set entry
+                if(i == 0 && graphKey.equalsIgnoreCase(jobDefinition.getEntry())) job.setEntry(graphAddress, nn);
 
                 i++;
             }
@@ -227,6 +236,8 @@ public class JobFactory {
         }
 
         job.init();
+
+        job.validate();
         return job;
     }
 
@@ -324,7 +335,7 @@ public class JobFactory {
                 fragments.addAll(generated);
             } else {
                 // not a fragment
-                node.put("fragment", fragmentName);
+//                node.put("fragment", fragmentName);
                 fragments.add(node);
             }
         }

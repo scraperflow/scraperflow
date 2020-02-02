@@ -6,12 +6,12 @@ import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
+import scraper.api.reflect.T;
 
 import java.util.List;
-
-import static scraper.util.NodeUtil.addressOf;
 
 /**
  * Pipe to goTo nodes and continue
@@ -22,15 +22,15 @@ public final class PipeNode implements Node {
 
     /** List of goTo labels */
     @FlowKey(mandatory = true)
-    private List<String> pipeTargets;
+    private T<List<Address>> pipeTargets = new T<>(){};
 
     @NotNull
     @Override
     public FlowMap process(NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
         FlowMap output = o;
 
-        for (String label : pipeTargets) {
-            output = n.eval(output, addressOf(label));
+        for (Address label : o.evalIdentity(pipeTargets)) {
+            output = n.eval(output, label);
         }
 
         return n.forward(output);

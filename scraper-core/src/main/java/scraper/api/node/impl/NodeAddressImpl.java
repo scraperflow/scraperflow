@@ -2,7 +2,9 @@ package scraper.api.node.impl;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
+import scraper.api.node.Address;
 import scraper.api.node.NodeAddress;
+import scraper.util.NodeUtil;
 
 import java.util.Objects;
 
@@ -39,16 +41,28 @@ public class NodeAddressImpl implements NodeAddress {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        NodeAddressImpl that = (NodeAddressImpl) o;
-        return instance.equals(that.instance) &&
-                graph.equals(that.graph) &&
-                Objects.equals(label, that.label) &&
-                Objects.equals(index, that.index);
+        if (o == null) return false;
+        if(o instanceof Address) {
+            Address that = (Address) o;
+            return NodeUtil.representationEquals(getRepresentation(), that.getRepresentation());
+        } else {
+            return false;
+        }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(instance, graph, label, index);
+        return NodeUtil.representationHashCode(getRepresentation());
+    }
+
+    @Override
+    public Address nextIndex() {
+        assert index != null;
+        return new AddressImpl(instance+"."+graph+"."+(index+1));
+    }
+
+    @Override
+    public Address replace(String representation) {
+        return new AddressImpl(instance+"."+graph+"."+representation);
     }
 }

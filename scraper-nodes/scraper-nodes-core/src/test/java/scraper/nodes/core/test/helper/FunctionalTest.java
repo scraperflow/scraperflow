@@ -9,10 +9,7 @@ import scraper.nodes.core.test.annotations.Functional;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static scraper.util.NodeUtil.flowOf;
 import static scraper.util.NodeUtil.initFields;

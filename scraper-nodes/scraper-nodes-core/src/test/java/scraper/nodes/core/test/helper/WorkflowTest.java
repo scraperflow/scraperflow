@@ -46,7 +46,7 @@ public abstract class WorkflowTest {
         // add fail safe to every test
         // i.e. redirect fork exceptions to the graph key 'fail', which triggers a System.setProperty set of workflow.fail = FAIL
         spec.getGlobalNodeConfigurations().put("/.*Node/", Map.of("onForkException", "fail"));
-        spec.getGraphs().put(graphAddressOf("fail"), List.of(Map.of("type", "ExceptionNode", "exception", "FAIL")));
+        spec.getGraphs().put("fail", List.of(Map.of("type", "ExceptionNode", "exception", "FAIL")));
 
         ScrapeInstaceImpl convJob = dibean.get(JobFactory.class).convertScrapeJob(spec);
 
@@ -55,10 +55,10 @@ public abstract class WorkflowTest {
 
         // feed input
         try {
-            NodeContainer<? extends Node> n = convJob.getEntryGraph().get(0);
+            NodeContainer<? extends Node> n = convJob.getEntry();
             n.getC().accept(n, initialFlow);
 
-            TestUtil.assertSuccess(convJob.getEntryGraph());
+            TestUtil.assertSuccess(convJob.getAllNodes());
         } catch (Exception e) {
             if(expectException.equals(e.getClass())) {
                 System.out.println("Excepted exception");

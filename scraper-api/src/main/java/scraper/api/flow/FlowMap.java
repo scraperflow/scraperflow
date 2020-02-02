@@ -3,6 +3,7 @@ package scraper.api.flow;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
+import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.reflect.T;
 
@@ -53,7 +54,9 @@ public interface FlowMap {
 
     <A> A eval(T<A> template);
     <A> A evalOrDefault(T<A> template, A object);
+    <A> A evalIdentity(T<A> t);
 
     <A> A input(T<A> template);
     <A> void output(T<A> locationAndType, A object);
+
 }

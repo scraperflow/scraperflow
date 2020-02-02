@@ -8,5 +8,7 @@ import scraper.annotations.NotNull;
 public interface Address {
     /** Unique string representation */
     @NotNull String getRepresentation();
+    default boolean isRelative() { return !getRepresentation().contains("."); }
+    default boolean isAbsolute() { return getRepresentation().split("\\.").length == 3; }
 
 }

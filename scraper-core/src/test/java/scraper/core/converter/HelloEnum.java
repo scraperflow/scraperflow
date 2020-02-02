@@ -1,4 +1,4 @@
-package scraper.api.converter;
+package scraper.core.converter;
 
 public enum HelloEnum {
     test

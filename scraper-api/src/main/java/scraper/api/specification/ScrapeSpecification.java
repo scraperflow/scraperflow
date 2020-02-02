@@ -40,4 +40,7 @@ public interface ScrapeSpecification {
 
     /** Global node configuration */
     @NotNull Map<String, Map<String, Object>> getGlobalNodeConfigurations();
+
+    @NotNull Map<String, Object> getInitialArguments();
+
 }

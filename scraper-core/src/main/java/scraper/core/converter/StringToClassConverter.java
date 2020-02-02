@@ -1,8 +1,10 @@
-package scraper.api.converter;
+package scraper.core.converter;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.exceptions.ValidationException;
+import scraper.api.node.Address;
+import scraper.api.node.impl.AddressImpl;
 
 /**
  * Converts string to target (primitive) type. Precedence is as follows:
@@ -67,6 +69,9 @@ public final class StringToClassConverter {
             } catch (NumberFormatException e) {
                 throw new ValidationException(e, "Could not convert string to Integer");
             }
+
+        if(Address.class.isAssignableFrom(target))
+            return new AddressImpl(o.toString());
 
         if(Boolean.class.isAssignableFrom(target)) {
             if(s.equalsIgnoreCase("false")) return false;

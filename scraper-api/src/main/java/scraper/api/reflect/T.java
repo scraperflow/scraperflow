@@ -1,8 +1,13 @@
 package scraper.api.reflect;
 
+import scraper.api.node.Address;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class T<TYPE> implements Supplier<Type> {
@@ -73,4 +78,5 @@ public abstract class T<TYPE> implements Supplier<Type> {
 	public String getRawJson() {
 		return parsedJson.toString();
 	}
+
 }

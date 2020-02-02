@@ -1,4 +1,4 @@
-package scraper.api.converter;
+package scraper.core.converter;
 
 import org.junit.Assert;
 import org.junit.Test;

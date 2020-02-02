@@ -97,6 +97,11 @@ public class FlowMapImpl implements FlowMap {
     }
 
     @Override
+    public <A> A evalIdentity(T<A> t) {
+        return Template.eval(t, new IdentityFlowMap());
+    }
+
+    @Override
     public <A> A input(T<A> template) {
         return eval(template);
     }

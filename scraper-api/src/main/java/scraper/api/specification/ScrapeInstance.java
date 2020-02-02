@@ -24,28 +24,16 @@ import java.util.Optional;
  */
 public interface ScrapeInstance {
 
-    /** Returns the initial arguments parsed from .args files */
-    @NotNull Map<String, Object> getInitialArguments();
+    void init() throws ValidationException;
 
-    /** 'all' configuration */
-    @NotNull Map<String, Map<String, Object>> getGlobalNodeConfigurations();
-
-    /** Returns the name of this workflow instance */
-    @NotNull String getName();
-
-    /** ? */
-    @NotNull Map<GraphAddress, List<NodeContainer<? extends Node>>> getGraphs();
-
-    /** ? */
-    @NotNull List<NodeContainer<? extends Node>> getEntryGraph();
-
-    /** ? */
-    @NotNull List<NodeContainer<? extends Node>> getGraph(@NotNull GraphAddress label);
+    /** Specification used for this instance */
+    @NotNull ScrapeSpecification getSpecification();
 
     /** Imported instances */
     @NotNull Map<InstanceAddress, ScrapeInstance> getImportedInstances();
 
-    void init() throws ValidationException;
+    /** Returns the name of this workflow instance */
+    @NotNull String getName();
 
     // Cross-cutting concerns services
     @NotNull ExecutorsService getExecutors();
@@ -53,7 +41,17 @@ public interface ScrapeInstance {
     @NotNull ProxyReservation getProxyReservation();
     @NotNull FileService getFileService();
 
-    /** Returns instantiated node in the flow. main flow has precedence over fragment flows. Throws a runtime exception if address is not found */
-    @NotNull Optional<NodeContainer<? extends Node>> getNodeAbsolute(@NotNull NodeAddress target);
-    @NotNull Optional<NodeContainer<? extends Node>> getNodeRelative(@NotNull NodeAddress address, @NotNull Address addressOf);
+    void setEntry(GraphAddress address, NodeContainer<? extends Node> nn);
+    /** Returns the entry node */
+    @NotNull NodeContainer<? extends Node> getEntry();
+
+    /** Gets a node at absolute target address (has to exist) */
+    @NotNull NodeContainer<? extends Node> getNode(@NotNull NodeAddress target);
+
+    /** Gets a node at a relative target address maybe */
+    @NotNull Optional<NodeContainer<? extends Node>> getNode(@NotNull Address target);
+
+    void addRoute(Address address, NodeContainer<? extends Node> node);
+
+    @NotNull Map<String, Object> getEntryArguments();
 }

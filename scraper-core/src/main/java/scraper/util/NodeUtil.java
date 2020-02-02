@@ -5,7 +5,7 @@ import com.google.common.reflect.TypeToken;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
-import scraper.api.converter.StringToClassConverter;
+import scraper.core.converter.StringToClassConverter;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
@@ -16,6 +16,7 @@ import scraper.api.node.NodeAddress;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.impl.AddressImpl;
 import scraper.api.node.impl.GraphAddressImpl;
+import scraper.api.node.impl.InstanceAddressImpl;
 import scraper.api.node.impl.NodeAddressImpl;
 import scraper.api.node.type.Node;
 import scraper.api.reflect.T;
@@ -66,8 +67,42 @@ public final class NodeUtil {
         return FlowMapImpl.copy(o);
     }
 
+    public static boolean representationEquals(@NotNull String address1, @NotNull String address2) {
+        if(address1.equalsIgnoreCase(address2)) return true;
+
+        Pattern p = Pattern.compile("(\\w+\\.\\w+\\.)([\\w]+):(\\d+)");
+
+        boolean a1isAbsolute = p.matcher(address1).results().findFirst().isPresent();
+        boolean a2isAbsolute = p.matcher(address2).results().findFirst().isPresent();
+
+        if (a1isAbsolute && test(address1, address2, p)) return true;
+        if (a2isAbsolute && test(address2, address1, p)) return true;
+
+        return false;
+    }
+
+    private static boolean test(@NotNull String address1, @NotNull String address2, Pattern p) {
+        String onlyNodeRepresentation = p.matcher(address1).results().map(m -> m.group(1) + m.group(2)).findFirst().get();
+        if(representationEquals(onlyNodeRepresentation, address2)) return true;
+
+        String onlyIndexRepresentation = p.matcher(address1).results().map(m -> m.group(1) + m.group(3)).findFirst().get();
+        if(representationEquals(onlyIndexRepresentation, address2)) return true;
+
+        return false;
+    }
+
+    public static int representationHashCode(String representation) {
+        Pattern p = Pattern.compile("(\\w+)(\\.\\w+)?(\\..*+)?");
+        assert p.matcher(representation).results().findFirst().isPresent();
+
+        // only hash instance + graph or only instance
+        return Objects.hash(p.matcher(representation).results().findFirst().map(m -> m.group(1)).get());
+    }
+
     @NotNull
     public static Address addressOf(String label) {
+        if(label.contains(":")) throw new IllegalArgumentException("Forbidden to create absolute address");
+        // TODO address grammar necessary?
         return new AddressImpl(label);
     }
 
@@ -87,35 +122,32 @@ public final class NodeUtil {
     }
 
 
-    public static Set<String> initFields(Object instance, Map<String, Object> spec, Map<String,Object> initialArguments, Map<String, Map<String, Object>> globalConfigurations) throws ValidationException {
-        // collect expected fields to check against
-        Set<String> expectedFields = new HashSet<>();
+    public static void initFields(Object instance, Map<String, Object> spec, Map<String,Object> initialArguments, Map<String, Map<String, Object>> globalConfigurations) throws ValidationException {
+        List<Field> allFields = ClassUtil.getAllFields(new LinkedList<>(), instance.getClass());
 
-        try { // ensure templated arguments
-            List<Field> allFields = ClassUtil.getAllFields(new LinkedList<>(), instance.getClass());
-
-            for (Field field : allFields) {
+        for (Field field : allFields) {
 //                log(TRACE,"Initializing field {} of {}", field.getName(), this);
 
-                FlowKey flowKey = field.getAnnotation(FlowKey.class);
-                Argument ann = field.getAnnotation(Argument.class);
+            FlowKey flowKey = field.getAnnotation(FlowKey.class);
+            Argument ann = field.getAnnotation(Argument.class);
 
-                if (flowKey != null) {
-                    // save name for actual<->expected field comparison
-                    expectedFields.add(field.getName());
+            if (flowKey != null) {
+                // save name for actual<->expected field comparison
+                //noinspection unchecked
+                // TODO
+//                context.expectField(instance, field.getName());
+//                ((List) context.get("fields")).add(field.getName());
 
-                    // initialize field
+                // initialize field
+                try { // ensure templated arguments
                     initField(instance, field, flowKey, ann, spec, initialArguments, globalConfigurations);
                 }
-
+                catch (Exception e) {
+                    throw new ValidationException(e, "Could not initialize field " + field.getName()+": "+ e.getMessage() );
+                }
             }
-//            log(TRACE,"Finished initializing fields for {}", this);
-        }
-        catch (IllegalAccessException e) {
-            throw new ValidationException(e, "Reflection not implemented correctly");
-        }
 
-        return expectedFields;
+        }
     }
     /**
      * Initializes a field with its actual value. If it is a template, its value is evaluated with the given map.
@@ -179,18 +211,16 @@ public final class NodeUtil {
             }
         }
 
-        try {
-            value = NodeUtil.getValueForField(
-                    field.getType(), field.get(instance), jsonValue, globalValue,
-                    flowKey.mandatory(), flowKey.defaultValue(), flowKey.output(),
-                    ann != null, (ann != null ? ann.converter() : null),
-                    args);
-        } catch (ValidationException e){
-//            log(ERROR, "Bad field definition: '{}'", field.getName());
-            throw e;
-        }
+        value = NodeUtil.getValueForField(
+                field.getType(), field.get(instance), jsonValue, globalValue,
+                flowKey.mandatory(), flowKey.defaultValue(), flowKey.output(),
+                ann != null, (ann != null ? ann.converter() : null),
+                args
+        );
 
-        if(value != null) field.set(instance, value);
+        if(value != null) {
+            field.set(instance, value);
+        }
     }
 
     public static Object getValueForField(final Class<?> fieldType, final Object fieldValue,
@@ -293,9 +323,9 @@ public final class NodeUtil {
             else if (Enum.class.isAssignableFrom(fieldType)) {
                 value = Enum.valueOf(fieldType.asSubclass(Enum.class), String.valueOf(value));
             } // type match
-            else //noinspection StatementWithEmptyBody readability
                 if (fieldType.isAssignableFrom(value.getClass())) {
-                // value is correct
+                    // value is 'correct' only if no generics are used
+                    if(fieldType.getTypeParameters().length>0) throw new IllegalStateException("Generics are not supported by Java at runtime. Use T<> wrapper in implementation of the node.");
             } // check if field type is a general Address
             else if (String.class.isAssignableFrom(value.getClass()) && Address.class.isAssignableFrom(fieldType)) {
                 value = NodeUtil.addressOf((String) value);
@@ -308,7 +338,7 @@ public final class NodeUtil {
 
             return value;
         } catch (Exception e) {
-            throw new ValidationException(e, "Could not get value for field ");
+            throw new ValidationException(e,  e.getMessage());
         }
     }
 
@@ -449,5 +479,53 @@ public final class NodeUtil {
         }
 
         return outputResult;
+    }
+
+    public static NodeContainer<? extends Node> getTarget(NodeAddress origin, Address goTo, ScrapeInstance jobInstance) {
+        try {
+            Optional<NodeContainer<? extends Node>> localTarget;
+            if (goTo.isAbsolute()) {
+                return jobInstance.getNode(goTo).get();
+            } else if(goTo.isRelative()) {
+                // local graph node, not self
+                Address local = origin.replace(goTo.getRepresentation());
+                localTarget = jobInstance.getNode(local);
+                if(localTarget.isPresent()) return localTarget.get();
+
+                // graph relative
+                Address graph = new GraphAddressImpl(jobInstance.getName(), goTo.getRepresentation());
+                localTarget = jobInstance.getNode(graph);
+                if(localTarget.isPresent()) return localTarget.get();
+
+                // imported instance
+                ScrapeInstance importedInstance = jobInstance.getImportedInstances().get(new InstanceAddressImpl(goTo.getRepresentation()));
+                if(importedInstance == null)
+                    throw new IllegalStateException(origin+": Address is neither in local graph, relative graph, or imported instance: "+goTo);
+                return importedInstance.getEntry();
+            } else {
+                // graph relative
+                Address graph = addressOf(
+                        jobInstance.getName()+"."+
+                                goTo.getRepresentation().split("\\.")[0]+"."+
+                                goTo.getRepresentation().split("\\.")[1]
+                );
+
+                localTarget = jobInstance.getNode(graph);
+                if(localTarget.isPresent()) return localTarget.get();
+
+                // imported instance
+                String instanceTarget = goTo.getRepresentation().split("\\.")[0];
+
+                ScrapeInstance importedInstance = jobInstance.getImportedInstances().get(
+                        new InstanceAddressImpl(instanceTarget)
+                );
+                if(importedInstance == null)
+                    throw new IllegalStateException(origin+": Neither graph relative address nor imported instance found for " + goTo);
+                Optional<NodeContainer<? extends Node>> imported = importedInstance.getNode(addressOf(goTo.getRepresentation() + ".0"));
+                return imported.get();
+            }
+        } catch (NoSuchElementException e) {
+            throw new IllegalStateException("Address "+goTo+" not found");
+        }
     }
 }

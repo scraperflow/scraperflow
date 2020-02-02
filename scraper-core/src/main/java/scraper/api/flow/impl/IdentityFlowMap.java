@@ -23,6 +23,9 @@ public class IdentityFlowMap implements FlowMap {
     @NotNull @Override public UUID getId() { throw new IllegalStateException(); }
     @Override public <A> A eval(T<A> template) { throw new IllegalStateException(); }
     @Override public <A> A evalOrDefault(T<A> template, A object) { throw new IllegalStateException(); }
+
+    @Override public <A> A evalIdentity(T<A> t) { throw new IllegalStateException(); }
+
     @Override public <A> A input(T<A> template) { throw new IllegalStateException(); }
     @Override public <A> void output(T<A> locationAndType, A object) { throw new IllegalStateException(); }
     public @NotNull ConcurrentMap<String, Object> getMap() { throw new IllegalStateException(); }

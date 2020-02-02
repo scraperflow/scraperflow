@@ -10,12 +10,15 @@ import scraper.api.node.GraphAddress;
 import scraper.api.node.NodeAddress;
 import scraper.api.node.NodeHook;
 import scraper.api.node.container.FunctionalNodeContainer;
+import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.FunctionalNode;
+import scraper.api.node.type.Node;
 import scraper.api.specification.ScrapeInstance;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
@@ -28,7 +31,9 @@ public class MockContainer implements FunctionalNodeContainer {
     public MockContainer(FunctionalNode node, Map<String, Object> spec) { this.node = node; this.spec = spec; }
 
     @Override
-    public void setNodeConfiguration(@NotNull Map<String, Object> nodeConfiguration, @NotNull String graphKey) { spec = nodeConfiguration; this.graphKey = graphKey; }
+    public void setNodeConfiguration(Map<String, Object> nodeConfiguration, String instance, String graphKey) {
+        spec = nodeConfiguration;
+    }
 
     @NotNull @Override public Map<String, Object> getNodeConfiguration() { return spec; }
 
@@ -50,7 +55,7 @@ public class MockContainer implements FunctionalNodeContainer {
 
     @Nullable
     @Override
-    public Address getGoTo() {
+    public Optional<NodeContainer<? extends Node>> getGoTo() {
         throw new IllegalStateException();
     }
 

@@ -6,10 +6,10 @@ import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.reflect.T;
-import scraper.util.NodeUtil;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public final class MapNode implements Node {
     private String putElement;
 
     @FlowKey(mandatory = true)
-    private String mapTarget;
+    private Address mapTarget;
 
     @NotNull
     @Override
@@ -45,7 +45,7 @@ public final class MapNode implements Node {
         targetList.forEach(t -> {
             FlowMap finalCopy = flowOf(o);
             finalCopy.put(putElement, t);
-            n.forkDispatch(finalCopy, NodeUtil.addressOf(mapTarget));
+            n.forkDispatch(finalCopy, mapTarget);
         });
 
         return n.forward(o);

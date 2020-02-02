@@ -4,7 +4,6 @@ module scraper.api {
     requires java.net.http;
 
     exports scraper.api.exceptions;
-    exports scraper.api.converter;
     exports scraper.api.node;
     exports scraper.api.node.type;
     exports scraper.api.plugin;

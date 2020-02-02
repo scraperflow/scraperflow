@@ -6,10 +6,11 @@ import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.Node;
-import scraper.util.NodeUtil;
+import scraper.api.reflect.T;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,15 +30,15 @@ public final class ForkJoinNode implements Node {
 
     /** All processes to fork the current flow map to */
     @FlowKey(mandatory = true)
-    private List<String> forkTargets;
+    private T<List<Address>> forkTargets = new T<>(){};
 
     @NotNull
     @Override
     public FlowMap process(NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
         List<CompletableFuture<FlowMap>> forkedProcesses = new ArrayList<>();
-        forkTargets.forEach(target -> {
+        o.evalIdentity(forkTargets).forEach(target -> {
             // dispatch new flow, expect future to return the modified flow map
-            CompletableFuture<FlowMap> t = n.forkDepend(o, NodeUtil.addressOf(target));
+            CompletableFuture<FlowMap> t = n.forkDepend(o, target);
             forkedProcesses.add(t);
         });
 
