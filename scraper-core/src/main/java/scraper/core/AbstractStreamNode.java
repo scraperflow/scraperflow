@@ -57,8 +57,7 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
     public void stream(@NotNull FlowMap origin, @NotNull FlowMap newMap) {
         if(!collect) {
             // dispatch directly to stream target without collecting
-            throw new IllegalStateException();
-//            forkDispatch(newMap, streamTarget);
+            forkDispatch(newMap, streamTarget);
         } else {
             collectKeys.get(origin.getId()).forEach(key -> {
                 Map<String, List<Object>> collectorForId = collectors.get(origin.getId());

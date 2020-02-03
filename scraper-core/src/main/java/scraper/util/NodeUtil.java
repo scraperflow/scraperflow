@@ -325,7 +325,8 @@ public final class NodeUtil {
             } // type match
                 if (fieldType.isAssignableFrom(value.getClass())) {
                     // value is 'correct' only if no generics are used
-                    if(fieldType.getTypeParameters().length>0) throw new IllegalStateException("Generics are not supported by Java at runtime. Use T<> wrapper in implementation of the node.");
+                    if(fieldType.getTypeParameters().length>0)
+                        throw new IllegalStateException("Generics are not supported by Java at runtime. Use T<> wrapper in implementation of the node.");
             } // check if field type is a general Address
             else if (String.class.isAssignableFrom(value.getClass()) && Address.class.isAssignableFrom(fieldType)) {
                 value = NodeUtil.addressOf((String) value);

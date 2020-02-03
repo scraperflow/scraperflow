@@ -39,7 +39,7 @@ public final class RegexNode implements StreamNode {
 
     /** Key: location of where to put the group; Value: Group number of the regex. */
     @FlowKey(defaultValue = "{}")
-    private Map<String, Integer> groups;
+    private T<Map<String, Integer>> groups = new T<>(){};
 
     /** Where the output list will be put. If there's already a list at that key, it will be replaced. */
     @FlowKey(defaultValue = "\"output\"")
@@ -68,6 +68,7 @@ public final class RegexNode implements StreamNode {
     public void process(StreamNodeContainer n, FlowMap o) throws NodeException {
         n.collect(o, List.of(output));
         String content = o.eval(this.content);
+        Map<String, Integer> groups = o.evalIdentity(this.groups);
 
         Matcher m = p.matcher(content);
 
