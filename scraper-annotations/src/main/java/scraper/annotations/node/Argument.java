@@ -16,7 +16,7 @@ import java.lang.annotation.*;
 public @interface Argument {
     /**
      * Target class which provides a static Object convert(String, Class<?>) method.
-     * Default implementation can handle primitive types only.
+     * Default implementation can handle primitive types and Addresses only.
      */
     @NotNull Class<?> converter() default void.class;
 }
