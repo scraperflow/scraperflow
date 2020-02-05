@@ -20,7 +20,7 @@ public class Template {
         return eval(type.getParsedJson(), TypeToken.of(type.get()), o);
     }
 
-    protected static <C> C eval(@Nullable final Object jsonObject,
+    private static <C> C eval(@Nullable final Object jsonObject,
                                 @NotNull final TypeToken<?> currentType,
                                 @NotNull final FlowMap o) {
         // if json null, return null regardless of currentType
