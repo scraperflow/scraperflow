@@ -286,7 +286,7 @@ public class FieldTranslationTest {
         boolean isArgument = ann != null;
         Class<?> converter = (ann != null ? ann.converter() : null);
 
-        Object translatedValue = NodeUtil.getValueForField(field.getType(), field.get(this), jsonValue, globalValue,
+        Object translatedValue = NodeUtil.getValueForField(this, field, jsonValue, globalValue,
                 flowKey.mandatory(), flowKey.defaultValue(), flowKey.output(),
                 isArgument, converter,
                 args

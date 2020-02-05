@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static scraper.api.node.container.NodeLogLevel.DEBUG;
 import static scraper.api.node.container.NodeLogLevel.ERROR;
@@ -67,11 +68,11 @@ public final class ExecNode implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) throws NodeException {
-        List<String> exec = o.eval(this.exec);
-        String execStr = o.eval(this.execStr);
+        Optional<List<String>> exec = o.evalMaybe(this.exec);
+        Optional<String> execStr = o.evalMaybe(this.execStr);
 
-        if(exec != null) exec(n, exec, o);
-        else if(execStr != null) exec(n, Arrays.asList(execStr.split("\\s")), o);
+        if(exec.isPresent()) exec(n, exec.get(), o);
+        else if(execStr.isPresent()) exec(n, Arrays.asList(execStr.get().split("\\s")), o);
     }
 
     private void exec(NodeContainer n, List<String> exec, FlowMap o) throws NodeException {

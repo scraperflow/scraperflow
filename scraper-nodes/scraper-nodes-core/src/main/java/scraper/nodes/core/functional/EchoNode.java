@@ -1,7 +1,6 @@
 package scraper.nodes.core.functional;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
@@ -16,7 +15,7 @@ import java.util.Optional;
 /**
  * Can modify the current argument map.
  */
-@NodePlugin("1.1.1")
+@NodePlugin("1.1.2")
 public class EchoNode implements FunctionalNode {
 
     /** Multiple put operations can be specified in this map at once */
@@ -24,12 +23,13 @@ public class EchoNode implements FunctionalNode {
     private final T<Map<String, Object>> puts = new T<>(){};
 
     /** All keys specified in this list will be removed from the FlowMap */
-    @FlowKey(defaultValue = "[]") @Argument
-    private List<String> remove;
+    @FlowKey(defaultValue = "[]")
+    private T<List<String>> remove = new T<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         Optional<Map<String, Object>> puts = o.evalMaybe(this.puts);
+        List<String> remove = o.evalIdentity(this.remove);
 
         // put multiple objects/strings
         if(puts.isPresent()) for (String key : puts.get().keySet()) {

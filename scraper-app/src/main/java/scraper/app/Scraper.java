@@ -32,7 +32,7 @@ import static scraper.util.NodeUtil.flowOf;
 
 public class Scraper {
 
-    private @NotNull static final Logger log = org.slf4j.LoggerFactory.getLogger(Scraper.class);
+    private @NotNull static final Logger log = org.slf4j.LoggerFactory.getLogger("Scraper");
 
     // dependencies
     private @NotNull final JobFactory jobFactory;

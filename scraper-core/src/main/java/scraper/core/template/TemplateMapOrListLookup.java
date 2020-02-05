@@ -49,7 +49,11 @@ public class TemplateMapOrListLookup<T> extends TemplateExpression<T> {
             Map<String, T> m = map.eval(o);
             String k = key.eval(o);
 
-            return m.get(k);
+            T mapElement = m.get(k);
+
+            if(mapElement == null) throw new TemplateException("Key '"+k+"' does not exist for map access '" +toString() +"'. Map has only the keys " + m.keySet()+"");
+
+            return mapElement;
         } catch (Exception e) {
             throw new TemplateException("Could not evaluate array/map lookup template '"+toString()+"'. " + e.getMessage());
         }

@@ -203,7 +203,7 @@ public final class NodeUtil {
         }
 
         value = NodeUtil.getValueForField(
-                field.getType(), field.get(instance), jsonValue, globalValue,
+                instance, field, jsonValue, globalValue,
                 flowKey.mandatory(), flowKey.defaultValue(), flowKey.output(),
                 ann != null, (ann != null ? ann.converter() : null),
                 args
@@ -214,7 +214,8 @@ public final class NodeUtil {
         }
     }
 
-    public static Object getValueForField(final Class<?> fieldType, final Object fieldValue,
+    public static Object getValueForField(final Object instance,
+                                          final Field field,
                                           final Object jsonValue,
                                           final Object globalValue,
                                           final boolean mandatory,
@@ -225,6 +226,10 @@ public final class NodeUtil {
                                           final Map<String, Object> arguments
     ) throws ValidationException {
         try {
+            field.setAccessible(true);
+            Class<?> fieldType = field.getType();
+            Object fieldValue = field.get(instance);
+
             Object value;
 
             // use global value as least precedence
@@ -317,7 +322,8 @@ public final class NodeUtil {
                 if (fieldType.isAssignableFrom(value.getClass())) {
                     // value is 'correct' only if no generics are used
                     if(fieldType.getTypeParameters().length>0)
-                        throw new IllegalStateException("Generics are not supported by Java at runtime. Use T<> wrapper in implementation of the node.");
+                        throw new IllegalStateException("Generics are not supported by Java at runtime. " +
+                                "Use T<> wrapper for field '" + field.getName()+"' of " + instance.getClass());
             } // check if field type is a general Address
             else if (String.class.isAssignableFrom(value.getClass()) && Address.class.isAssignableFrom(fieldType)) {
                 value = NodeUtil.addressOf((String) value);

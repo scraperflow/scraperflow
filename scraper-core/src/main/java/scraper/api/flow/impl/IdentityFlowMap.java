@@ -13,21 +13,14 @@ import java.util.concurrent.ConcurrentMap;
 
 public class IdentityFlowMap implements FlowMap {
 
-    @NotNull
-    @Override
-    public Optional<Object> get(@NotNull String key) {
+    @NotNull @Override public Optional<Object> get(@NotNull String key) {
         return Optional.empty();
     }
 
-    @NotNull
-    @Override
-    public Object getOrDefault(@NotNull Object key, @NotNull Object defaultObjectValue) {
+    @NotNull @Override public Object getOrDefault(@NotNull Object key, @NotNull Object defaultObjectValue) {
         return defaultObjectValue;
     }
 
-    //    @Override public @Nullable Object put(@NotNull String location, @NotNull Object value) { throw new IllegalStateException(); }
-//    @Override public void putAll(@NotNull Map<String, Object> m) { throw new IllegalStateException(); }
-//    @Override public @Nullable Object remove(@NotNull String location) { throw new IllegalStateException(); }
     @Override public int size() { throw new IllegalStateException(); }
     @Override public void clear() { throw new IllegalStateException(); }
     @Override public @NotNull Set<String> keySet() { throw new IllegalStateException(); }
@@ -60,10 +53,14 @@ public class IdentityFlowMap implements FlowMap {
         return Optional.empty();
     }
 
-//    @Override public <A> A evalOrDefault(@NotNull T<A> template, A object) { throw new IllegalStateException(); }
-
     @NotNull
     @Override public <A> A evalIdentity(@NotNull T<A> t) { throw new IllegalStateException(); }
+
+    @NotNull
+    @Override
+    public <A> Optional<A> evalIdentityMaybe(@NotNull T<A> template) {
+        throw new IllegalStateException();
+    }
 
     @NotNull
     @Override

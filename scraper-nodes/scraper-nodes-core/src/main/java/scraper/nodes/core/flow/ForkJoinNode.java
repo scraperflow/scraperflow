@@ -26,7 +26,7 @@ public final class ForkJoinNode implements Node {
 
     /** Expected join for each key defined in this map after a forked flow terminates */
     @FlowKey(mandatory = true)
-    private Map<String, String> keys;
+    private T<Map<String, String>> keys = new T<>(){};
 
     /** All processes to fork the current flow map to */
     @FlowKey(mandatory = true)
@@ -35,6 +35,8 @@ public final class ForkJoinNode implements Node {
     //TODO nicer implementation
     @NotNull @Override
     public FlowMap process(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException {
+        Map<String, String> keys = o.evalIdentity(this.keys);
+
         List<CompletableFuture<FlowMap>> forkedProcesses = new ArrayList<>();
         o.evalIdentity(forkTargets).forEach(target -> {
             // dispatch new flow, expect future to return the modified flow map

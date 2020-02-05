@@ -10,7 +10,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ExecutorsServiceImpl implements ExecutorsService {
-    private @NotNull static final Logger log = org.slf4j.LoggerFactory.getLogger(ExecutorsServiceImpl.class);
+    private @NotNull static final Logger log = org.slf4j.LoggerFactory.getLogger("ExecutorsService");
     private @NotNull final Map<String, ExecutorService> executorServiceMap = new ConcurrentHashMap<>();
 
     @Override

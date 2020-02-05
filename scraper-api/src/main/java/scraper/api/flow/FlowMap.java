@@ -80,8 +80,10 @@ public interface FlowMap {
     @NotNull <A> A eval(@NotNull T<A> template);
     /** Evaluates the given template with this flowmap's content, returns empty optional if template is null */
     @NotNull <A> Optional<A> evalMaybe(@NotNull T<A> template);
-    /** Evaluates the given template where templates are replaced by their string identity, i.e. no evaluation at all */
+    /** Evaluates the given template where templates are replaced by their string identity, i.e. no evaluation at all. Enforces non-null return */
     @NotNull <A> A evalIdentity(@NotNull T<A> template);
+    /** Evaluates the given template where templates are replaced by their string identity, i.e. no evaluation at all */
+    @NotNull <A> Optional<A> evalIdentityMaybe(@NotNull T<A> template);
     /** Evaluates the given template with this flowmap's content, returns default eval if return would be null */
     @NotNull <A> A evalOrDefault(@NotNull T<A> template, @NotNull A defaultEval);
 

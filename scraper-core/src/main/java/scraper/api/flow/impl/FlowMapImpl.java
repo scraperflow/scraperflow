@@ -116,6 +116,11 @@ public class FlowMapImpl implements FlowMap {
         return evaluated;
     }
 
+    @NotNull @Override
+    public <A> Optional<A> evalIdentityMaybe(@NotNull T<A> template) {
+        return Optional.ofNullable(Template.eval(template, new IdentityFlowMap()));
+    }
+
     @Override
     public <A> void output(@NotNull T<A> locationAndType, A object) {
         // for now output templates are only strings
