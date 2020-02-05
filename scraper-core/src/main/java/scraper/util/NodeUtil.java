@@ -167,7 +167,6 @@ public final class NodeUtil {
         Object jsonValue = spec.get(field.getName());
         Object globalValue = null;
 
-        // TODO why is second condition always true?
         if(globalConfigurations != null) {
             String nodeName = instance.getClass().getSimpleName();
 

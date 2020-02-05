@@ -23,7 +23,7 @@ public class EchoNode implements FunctionalNode {
     private final T<Map<String, Object>> puts = new T<>(){};
 
     /** All keys specified in this list will be removed from the FlowMap */
-    @FlowKey(defaultValue = "[]")
+    @FlowKey(defaultValue = "[]") @NotNull
     private T<List<String>> remove = new T<>(){};
 
     @Override

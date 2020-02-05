@@ -1,6 +1,7 @@
 package scraper.app;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import scraper.api.exceptions.ValidationException;
 import scraper.utils.ClassUtil;
@@ -11,6 +12,11 @@ import java.net.URL;
 import java.security.Permission;
 
 public class SimpleSystemTest {
+
+    @BeforeClass
+    public static void enableExceptionExit() {
+        System.setProperty("exitWithException", "true");
+    }
 
     // app should work even though banner can't be loaded
     @Test
