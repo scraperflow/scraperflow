@@ -81,7 +81,11 @@ public class Scraper {
         Scraper main = pico.get(Scraper.class);
         requireNonNull(main).pico = pico;
 
-        main.run(args);
+//        try {
+            main.run(args);
+//        } catch (Exception e) {
+//            log.error("Could not run scrape job: {}", e.getMessage());
+//        }
     }
 
 

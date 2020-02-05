@@ -69,7 +69,7 @@ public final class JobUtil {
         ymlMapper.registerModule(module);
     }
 
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(JobUtil.class);
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger("JobUtil");
 
     public static List<ScrapeSpecification> parseJobsP(final String[] args, final Collection<Path> canditatePaths)
             throws IOException, ValidationException {

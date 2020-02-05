@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 import static scraper.utils.FileUtil.getFirstExistingPaths;
 
 public class JobFactory {
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(JobFactory.class);
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger("JobFactory");
 
     public JobFactory(@NotNull ProxyReservation proxyReservation, @NotNull HttpService httpService,
                       @NotNull ExecutorsService executorsService, @NotNull FileService fileService,

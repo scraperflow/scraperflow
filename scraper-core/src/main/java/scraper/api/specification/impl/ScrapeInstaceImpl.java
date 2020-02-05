@@ -29,7 +29,7 @@ import static scraper.utils.ClassUtil.getAllFields;
 
 public class ScrapeInstaceImpl implements ScrapeInstance {
 
-    private @NotNull static final Logger log = org.slf4j.LoggerFactory.getLogger(ScrapeInstaceImpl.class);
+    private @NotNull static final Logger log = org.slf4j.LoggerFactory.getLogger("ScraperInstance");
 
     /** Name of the jobPojo */
     private @NotNull String name = "NoName";

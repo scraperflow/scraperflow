@@ -66,7 +66,6 @@ public class AbstractNodeTest {
         FlowMap o = FlowMapImpl.of(Map.of());
         o = node.getC().accept(node, o);
 
-        System.out.println(o);
         assertTrue(o.get("simple").isEmpty());
         // local key overwrites all key
         assertTrue(o.get("overwritten").isPresent());
@@ -75,10 +74,6 @@ public class AbstractNodeTest {
         assertEquals(true, o.get("goTo").get());
     }
 
-    @Test(expected = ValidationException.class)
-    public void tooManyKeysTest() throws Exception {
-        getInstance("abstract", "field-missing-only-warning.jf");
-    }
 
     @Test
     public void getService() throws Exception {
@@ -144,25 +139,6 @@ public class AbstractNodeTest {
 
     }
 
-    @Test(expected = ValidationException.class)
-    public void badGoToTest() throws Exception {
-        getInstance("abstract", "bad-goto.jf");
-    }
-
-    @Test(expected = ValidationException.class)
-    public void badForwardTest() throws Exception {
-        getInstance("abstract", "bad-forward.jf");
-    }
-
-    @Test(expected = ValidationException.class)
-    public void badListGoToTest() throws Exception {
-        getInstance("abstract", "bad-list-goto.jf");
-    }
-
-    @Test(expected = ValidationException.class)
-    public void badFieldTest() throws Exception {
-        getInstance("abstract", "bad-field.jf");
-    }
 
     @Test
     public void goodListGoToTest() throws Exception {
@@ -282,8 +258,6 @@ public class AbstractNodeTest {
     }
 
 
-
-
     @Test
     public void indexAndLabelTest() throws Exception {
         ScrapeInstaceImpl instance = getInstance("addressing", "debug.yf");
@@ -337,5 +311,30 @@ public class AbstractNodeTest {
             Assert.assertTrue(instance.getNode(addressOf(target)).isPresent());
             Assert.assertEquals(expected, instance.getNode(addressOf(target)).get().toString());
         });
+    }
+
+    @Test(expected = ValidationException.class)
+    public void tooManyKeysTest() throws Exception {
+        getInstance("abstract", "field-missing-only-warning.jf");
+    }
+
+    @Test(expected = ValidationException.class)
+    public void badGoToTest() throws Exception {
+        getInstance("abstract", "bad-goto.jf");
+    }
+
+    @Test(expected = ValidationException.class)
+    public void badForwardTest() throws Exception {
+        getInstance("abstract", "bad-forward.jf");
+    }
+
+    @Test(expected = ValidationException.class)
+    public void badListGoToTest() throws Exception {
+        getInstance("abstract", "bad-list-goto.jf");
+    }
+
+    @Test(expected = ValidationException.class)
+    public void badFieldTest() throws Exception {
+        getInstance("abstract", "bad-field.jf");
     }
 }

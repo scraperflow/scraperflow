@@ -28,7 +28,7 @@ public final class MapJoinNode implements Node {
 
     /** Expected join for each key defined in this map after a forked flow terminates */
     @FlowKey(mandatory = true)
-    private Map<String, String> keys;
+    private T<Map<String, String>> keys = new T<>(){};
 
     /** List to apply map to */
     @FlowKey(mandatory = true) @NotNull
@@ -70,6 +70,7 @@ public final class MapJoinNode implements Node {
                 .allOf(forkedProcesses.toArray(new CompletableFuture[0]))
                 .join();
 
+        Map<String, String> keys = o.evalIdentity(this.keys);
 
         keys.forEach((joinKeyForked, joinKey) -> o.remove(joinKey));
         keys.forEach((joinKeyForked, joinKey) -> {
