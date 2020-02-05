@@ -6,7 +6,6 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
-import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.Node;
 import scraper.api.reflect.T;
 
@@ -16,7 +15,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.String.valueOf;
-import static scraper.api.node.container.NodeLogLevel.INFO;
 
 @NodePlugin
 public class AssertNode implements Node {
@@ -53,9 +51,9 @@ public class AssertNode implements Node {
 //            l.info("Assert @{}: {}{}{}", (String) key, clip(valueOf(o.get(key))), (negate?" != ":" == "), assertMap.get(key));
 
             // assert does not work for Numbers (e.g. 1 == 1L) , use BigDecimal wrapper
-            if(o.get(key) != null && Number.class.isAssignableFrom(o.get(key).getClass())
+            if(o.get(key).isPresent() && Number.class.isAssignableFrom(o.get(key).get().getClass())
                     && assertMap.get(key) != null && Number.class.isAssignableFrom(assertMap.get(key).getClass())) {
-                if(!(new BigDecimal(valueOf(assertMap.get(key))).equals(new BigDecimal(valueOf(o.get(key)))))) {
+                if(!(new BigDecimal(valueOf(assertMap.get(key))).equals(new BigDecimal(valueOf(o.get(key).get()))))) {
                     if(!negate) {
 //                        l.error("Assertion wrong: {} != {}", assertMap.get(key), clip(valueOf(o.get(key))));
                         success.set(false);
@@ -67,7 +65,7 @@ public class AssertNode implements Node {
                     }
                 }
             }
-            else if(!assertMap.get(key).equals(o.get(key))) {
+            else if(!assertMap.get(key).equals(o.get(key).get())) {
                 if(!negate) {
 //                    l.error("Assertion wrong: {} != {}", assertMap.get(key), clip(valueOf(o.get(key))));
                     success.set(false);
@@ -82,7 +80,7 @@ public class AssertNode implements Node {
 
         for (String key : containsMap.keySet()) {
 //            n.log(NodeLogLevel.INFO,"Assert contains: @{} contains {}", key, clip(valueOf(o.get(key))));
-            String actual = valueOf(o.get(key));
+            String actual = valueOf(o.get(key).get());
             List<String> expected = containsMap.get(key);
 
             for (String s : expected) {
@@ -101,8 +99,8 @@ public class AssertNode implements Node {
         }
 
         for (String key : containedInMap.keySet()) {
-            String actual = valueOf(o.get(key));
-            n.log(INFO,"Assert contained in @{}: {}", key, actual);
+            String actual = valueOf(o.get(key).get());
+//            n.log(INFO,"Assert contained in @{}: {}", key, actual);
             List<String> contained = containedInMap.get(key);
 
             if(!contained.contains(actual)) {
@@ -140,9 +138,9 @@ public class AssertNode implements Node {
 
     private void formula(List<String> eq, FlowMap o) {
         String left = eq.get(0);
-        if(left.startsWith("@")) left = valueOf(o.get(left.substring(1)));
+        if(left.startsWith("@")) left = valueOf(o.get(left.substring(1)).get());
         String right = eq.get(2);
-        if(right.startsWith("@")) right = valueOf(o.get(right.substring(1)));
+        if(right.startsWith("@")) right = valueOf(o.get(right.substring(1)).get());
 
         String op = eq.get(1);
 

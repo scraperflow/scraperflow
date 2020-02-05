@@ -82,6 +82,7 @@ public class AnnotationsExampleNode implements Node {
         return n.forward(o);
     }
 
+    @SuppressWarnings("unused") // used for enum parsing
     enum SomeEnum {
         VALUE_A, VALUE_B
     }

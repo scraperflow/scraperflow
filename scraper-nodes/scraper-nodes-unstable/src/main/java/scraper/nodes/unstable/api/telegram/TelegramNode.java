@@ -76,6 +76,7 @@ public final class TelegramNode implements FunctionalNode {
     }
 
 
+    @SuppressWarnings("unused") // used for serialization
     static class SendMessage implements Serializable {
         String chat_id;
         public String getChat_id() { return chat_id; }
@@ -89,7 +90,7 @@ public final class TelegramNode implements FunctionalNode {
         public String getMethod() { return method; }
         public void setMethod(String method) { this.method = method; }
 
-        public SendMessage(String s, String valueOf, String msg) {
+        SendMessage(String s, String valueOf, String msg) {
             method = s;
             text = msg;
             chat_id = valueOf;

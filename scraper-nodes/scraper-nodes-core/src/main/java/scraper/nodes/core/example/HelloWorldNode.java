@@ -22,6 +22,7 @@ import java.util.Map;
 import static scraper.api.node.container.NodeLogLevel.INFO;
 
 // AbstractNode provides all expected features
+@SuppressWarnings({"DefaultAnnotationParam", "RedundantThrows"}) // tutorial
 @NodePlugin(deprecated = true)
 public class HelloWorldNode implements Node {
 
@@ -90,7 +91,7 @@ public class HelloWorldNode implements Node {
         n.log(INFO,"The forward method will do the following:");
         n.log(INFO,"Forwarding enabled: {}", n.isForward());
         if (n.isForward()) {
-            n.log(INFO,"Goto: {}", (!n.getGoTo().isPresent() ? ("next node") : "node '" + n.getGoTo() + "'"));
+            n.log(INFO,"Goto: {}", (n.getGoTo().isEmpty() ? ("next node") : "node '" + n.getGoTo() + "'"));
         }
 
         // a node can eval to create sequential flows and modify control flow

@@ -11,11 +11,12 @@ import scraper.api.reflect.T;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Can modify the current argument map.
  */
-@NodePlugin("1.1.0")
+@NodePlugin("1.1.1")
 public class EchoNode implements FunctionalNode {
 
     /** Multiple put operations can be specified in this map at once */
@@ -28,11 +29,11 @@ public class EchoNode implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        Map<String, Object> puts = o.eval(this.puts);
+        Optional<Map<String, Object>> puts = o.evalMaybe(this.puts);
 
         // put multiple objects/strings
-        for (String key : puts.keySet()) {
-            o.put(key, puts.get(key));
+        if(puts.isPresent()) for (String key : puts.get().keySet()) {
+            o.put(key, puts.get().get(key));
         }
 
         // remove keys

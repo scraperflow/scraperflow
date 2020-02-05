@@ -32,9 +32,9 @@ public final class ForkJoinNode implements Node {
     @FlowKey(mandatory = true)
     private T<List<Address>> forkTargets = new T<>(){};
 
-    @NotNull
-    @Override
-    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
+    //TODO nicer implementation
+    @NotNull @Override
+    public FlowMap process(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException {
         List<CompletableFuture<FlowMap>> forkedProcesses = new ArrayList<>();
         o.evalIdentity(forkTargets).forEach(target -> {
             // dispatch new flow, expect future to return the modified flow map
@@ -55,13 +55,12 @@ public final class ForkJoinNode implements Node {
         keys.forEach((joinKeyForked, joinKey) -> {
             n.log(NodeLogLevel.DEBUG, "Joining {} -> {}", joinKeyForked, joinKey);
 
-            //noinspection unchecked TODO nicer implementation
             List<Object> joinResults = (List<Object>) o.getOrDefault(joinKey, new ArrayList<>());
 
             forkedProcesses.forEach(future -> {
                 try {
                     FlowMap fm = future.get();
-                    joinResults.add(fm.get(joinKeyForked));
+                    joinResults.add(fm.get(joinKeyForked).get());
                     o.put(joinKey, joinResults);
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();

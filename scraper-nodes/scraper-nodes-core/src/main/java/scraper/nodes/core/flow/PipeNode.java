@@ -14,7 +14,7 @@ import scraper.api.reflect.T;
 import java.util.List;
 
 /**
- * Pipe to goTo nodes and continue
+ * Pipe to nodes and continue with sequential result
  * @author Albert Schimpf
  */
 @NodePlugin("1.0.0")
@@ -26,13 +26,10 @@ public final class PipeNode implements Node {
 
     @NotNull
     @Override
-    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
-        FlowMap output = o;
+    public FlowMap process(@NotNull final NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
+        for (Address label : o.evalIdentity(pipeTargets))
+            o = n.eval(o, label);
 
-        for (Address label : o.evalIdentity(pipeTargets)) {
-            output = n.eval(output, label);
-        }
-
-        return n.forward(output);
+        return n.forward(o);
     }
 }

@@ -46,8 +46,8 @@ public final class MapJoinNode implements Node {
     @FlowKey(defaultValue = "false")
     private Boolean distinct;
 
-    @NotNull
-    @Override
+    // TODO nicer implementation
+    @NotNull @Override
     public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
         List<Object> list = o.eval(this.list);
         if(distinct) list = new ArrayList<>(new HashSet<>(list));
@@ -61,10 +61,10 @@ public final class MapJoinNode implements Node {
             forkedProcesses.add(t);
         });
 
-//        forkedProcesses.forEach(future ->
-//                future.whenComplete(
-//                (result, throwable) -> log(NodeLogLevel.INFO, "Map fork complete")
-//        ));
+        forkedProcesses.forEach(future ->
+                future.whenComplete(
+                (result, throwable) -> n.log(NodeLogLevel.DEBUG, "Map fork complete")
+        ));
 
         CompletableFuture
                 .allOf(forkedProcesses.toArray(new CompletableFuture[0]))
@@ -75,15 +75,14 @@ public final class MapJoinNode implements Node {
         keys.forEach((joinKeyForked, joinKey) -> {
             n.log(NodeLogLevel.TRACE, "Joining {} -> {}", joinKeyForked, joinKey);
 
-            //noinspection unchecked TODO nicer implementation
             List<Object> joinResults = (List<Object>) o.getOrDefault(joinKey, new ArrayList<>());
 
             forkedProcesses.forEach(future -> {
                 try {
                     FlowMap fm = future.get();
-                    if(fm.get(joinKeyForked)==null)
+                    if(fm.get(joinKeyForked).isEmpty())
                         throw new IllegalStateException("Missing value at join key: " + joinKeyForked);
-                    joinResults.add(fm.get(joinKeyForked));
+                    joinResults.add(fm.get(joinKeyForked).get());
                     o.put(joinKey, joinResults);
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();

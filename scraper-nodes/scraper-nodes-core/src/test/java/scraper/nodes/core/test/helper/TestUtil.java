@@ -10,15 +10,18 @@ import java.util.List;
 public class TestUtil {
     public static void assertSuccess(List<NodeContainer<? extends Node>> jobProcess) {
         for (NodeContainer<? extends Node> process : jobProcess) {
-            if(AssertNode.class.isAssignableFrom(process.getC().getClass())) {
-                if(((AssertNode) process.getC()).isFinished()) {
-                    Assert.assertTrue("failed "+process.getAddress(),
-                            ((AssertNode) process.getC()).getSuccess().get());
+            Node container = process.getC();
+
+            if(AssertNode.class.isAssignableFrom(container.getClass())) {
+                AssertNode assertNode = (AssertNode) container;
+
+                if(assertNode.isFinished()) {
+                    Assert.assertTrue("failed "+process.getAddress(), assertNode.getSuccess().get());
                 } else {
-                    synchronized (((AssertNode) process.getC()).getSuccess()) {
+                    synchronized (assertNode.getSuccess()) {
                         try {
-                            ((AssertNode) process.getC()).getSuccess().wait(1000);
-                            Assert.assertTrue(((AssertNode) process.getC()).getSuccess().get());
+                            assertNode.getSuccess().wait(1000);
+                            Assert.assertTrue(assertNode.getSuccess().get());
                         } catch (InterruptedException e) {
                             Assert.fail(e.getMessage());
                         }
