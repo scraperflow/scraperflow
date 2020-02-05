@@ -173,6 +173,10 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
                 // descend into template to get all Address.class targets
                 if(field.getType() == T.class) {
                     T<?> t = (T<?>) field.get(node);
+                    if(t == null)
+                        throw new ValidationException("Fix implementation, T<> " +
+                                "field was not created for " + node.getClass());
+
                     if(t.getParsedJson() != null) {
                         TemplateUtil.accept(t, Address.class, n -> {
                             if(n != null)

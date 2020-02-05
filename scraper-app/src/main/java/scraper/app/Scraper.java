@@ -136,7 +136,6 @@ public class Scraper {
             }, executorsService.getService(definition.getName(), "main", 1));
 
             future.exceptionally(e -> {
-                e.printStackTrace();
                 log.error("'{}' failed: {}", job.getName(), e.getMessage());
                 return null;
             });

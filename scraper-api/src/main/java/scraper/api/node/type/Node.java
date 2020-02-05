@@ -2,10 +2,12 @@ package scraper.api.node.type;
 
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.NodeException;
+import scraper.api.exceptions.TemplateException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.NodeHook;
+import scraper.api.node.container.NodeLogLevel;
 import scraper.api.specification.ScrapeInstance;
 
 /**
@@ -26,10 +28,15 @@ public interface Node {
      * @throws NodeException if there is a processing error during the function call
      */
     default @NotNull FlowMap accept(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException {
-        for (NodeHook hook : n.beforeHooks()) { hook.accept(o); }
-        FlowMap fm = process(n, o);
-        for (NodeHook hook : n.afterHooks()) { hook.accept(o); }
-        return fm;
+        try {
+            for (NodeHook hook : n.beforeHooks()) { hook.accept(o); }
+            FlowMap fm = process(n, o);
+            for (NodeHook hook : n.afterHooks()) { hook.accept(o); }
+            return fm;
+        } catch (TemplateException e) {
+            n.log(NodeLogLevel.ERROR, "Template type error for {}: {}", n.getAddress(), e.getMessage());
+            throw new IllegalStateException(e);
+        }
     }
 
     /** The process function which encapsulates the business logic of a node */
