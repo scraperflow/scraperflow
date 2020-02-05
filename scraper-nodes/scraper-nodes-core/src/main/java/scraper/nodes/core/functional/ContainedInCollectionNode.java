@@ -37,8 +37,8 @@ public final class ContainedInCollectionNode implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        Object     object     = o.input(this.object);
-        Collection collection = o.input(this.collection);
+        Object     object     = o.eval(this.object);
+        Collection collection = o.eval(this.collection);
 
         // cont negate output
         // 0    0      0

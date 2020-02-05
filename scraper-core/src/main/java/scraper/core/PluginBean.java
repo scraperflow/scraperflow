@@ -1,6 +1,5 @@
 package scraper.core;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.classgraph.AnnotationInfo;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
@@ -43,8 +42,7 @@ public class PluginBean {
                 String className = routeClassInfo.getName();
 
                 AbstractMetadata metadata = new AbstractMetadata(metadataName, metadataVersion, metadataCategory, metadataDeprecated) {
-                    @NotNull
-                    @Override
+                    @NotNull @Override
                     public Node getNode() throws ValidationException {
                         try {
                             return (Node) Class.forName(className).getDeclaredConstructor().newInstance();

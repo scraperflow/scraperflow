@@ -32,7 +32,7 @@ public final class IfThenElseNode implements Node {
 
     @NotNull
     @Override
-    public FlowMap process(NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
         Boolean condition = o.eval(this.condition);
 
         if(condition) {

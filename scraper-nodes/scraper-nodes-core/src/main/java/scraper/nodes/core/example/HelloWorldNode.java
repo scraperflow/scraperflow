@@ -59,7 +59,7 @@ public class HelloWorldNode implements Node {
 
     @NotNull
     @Override
-    public FlowMap process(NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
         // processes Ts and reserves keys in the map
         // ensures that the file and directory structure denoted by 'sourceFile' exists
         // takes the evaluated T of field 'hello' and reserves the corresponding key in the map 'o'

@@ -58,6 +58,6 @@ public class TemplateMapOrListLookup<T> extends TemplateExpression<T> {
 
     public @NotNull Collection<String> getKeysInTemplate(@NotNull FlowMap o) {
         // TODO implement
-        return null;
+        throw new IllegalStateException("Not implemented yet");
     }
 }

@@ -12,5 +12,5 @@ import scraper.api.di.DIContainer;
  */
 public interface PreHook {
     /** Executes the pre hook and provides command-line arguments and dependencies */
-    void execute(@NotNull final DIContainer dependencies, @NotNull final String[] args) throws Exception;
+    void execute(@NotNull DIContainer dependencies, @NotNull String[] args) throws Exception;
 }

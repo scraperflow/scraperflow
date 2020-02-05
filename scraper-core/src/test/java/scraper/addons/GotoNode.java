@@ -12,7 +12,7 @@ public final class GotoNode implements Node {
 
     @NotNull
     @Override
-    public FlowMap process(NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
         return n.forward(o);
     }
 }

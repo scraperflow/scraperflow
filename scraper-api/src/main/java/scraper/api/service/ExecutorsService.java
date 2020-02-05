@@ -17,10 +17,4 @@ public interface ExecutorsService {
      * creates a new ExecutorService with the specified limit of threads
      */
     @NotNull ExecutorService getService(@NotNull String jobName, @NotNull String group, @NotNull Integer count);
-
-    /**
-     * Gets the executor service for given group.
-     * If service was not instatiated yet, creates a new ExecutorService with the default limit of threads
-     */
-    @NotNull ExecutorService getService(@NotNull String jobName, @NotNull String group);
 }

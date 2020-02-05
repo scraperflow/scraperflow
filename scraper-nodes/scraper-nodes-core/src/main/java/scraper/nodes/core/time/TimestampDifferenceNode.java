@@ -33,7 +33,7 @@ public final class TimestampDifferenceNode implements FunctionalNode {
     private T<Boolean> put = new T<>(){};
 
     @Override
-    public void modify(FunctionalNodeContainer n, @NotNull final FlowMap o) {
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         Long thatTimestampMs = Long.valueOf(o.eval(timestamp));
         long currentTimestampMs = System.currentTimeMillis();
 

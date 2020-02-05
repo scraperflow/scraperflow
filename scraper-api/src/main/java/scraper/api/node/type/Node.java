@@ -25,14 +25,16 @@ public interface Node {
      * @param o The FlowMap to modifiy/use in the function
      * @throws NodeException if there is a processing error during the function call
      */
-    default @NotNull FlowMap accept(NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException {
+    default @NotNull FlowMap accept(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException {
         for (NodeHook hook : n.beforeHooks()) { hook.accept(o); }
         FlowMap fm = process(n, o);
         for (NodeHook hook : n.afterHooks()) { hook.accept(o); }
         return fm;
     }
 
-    @NotNull FlowMap process(NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException;
+    /** The process function which encapsulates the business logic of a node */
+    @NotNull FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException;
 
+    /** Initialization of a node, by default no-op */
     default void init(@NotNull NodeContainer<? extends Node> n, @NotNull ScrapeInstance instance) throws ValidationException {}
 }

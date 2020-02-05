@@ -26,7 +26,7 @@ public final class PipeNode implements Node {
 
     @NotNull
     @Override
-    public FlowMap process(NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
         FlowMap output = o;
 
         for (Address label : o.evalIdentity(pipeTargets)) {

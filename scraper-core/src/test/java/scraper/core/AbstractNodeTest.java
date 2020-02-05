@@ -1,6 +1,5 @@
 package scraper.core;
 
-import com.google.common.collect.MapDifference;
 import org.junit.Assert;
 import org.junit.Test;
 import scraper.api.di.DIContainer;
@@ -8,13 +7,8 @@ import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.node.Address;
-import scraper.api.node.NodeAddress;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
-import scraper.api.node.impl.GraphAddressImpl;
-import scraper.api.node.impl.InstanceAddressImpl;
-import scraper.api.node.impl.NodeAddressImpl;
 import scraper.api.node.type.Node;
 import scraper.api.specification.impl.ScrapeInstaceImpl;
 import scraper.api.specification.impl.ScrapeSpecificationImpl;
@@ -25,7 +19,10 @@ import scraper.utils.ClassUtil;
 import java.lang.reflect.ReflectPermission;
 import java.net.URL;
 import java.security.Permission;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -52,7 +49,8 @@ public class AbstractNodeTest {
         FlowMap o = FlowMapImpl.of(Map.of());
         o = node.getC().accept(node, o);
 
-        assertEquals(true, o.get("simple"));
+        assertTrue(o.get("simple").isPresent());
+        assertEquals(true, o.get("simple").get());
 
         AbstractNode abstractNode = ((AbstractNode) node);
         Assert.assertNotNull(abstractNode.getL());
@@ -69,10 +67,12 @@ public class AbstractNodeTest {
         o = node.getC().accept(node, o);
 
         System.out.println(o);
-        assertNull(o.get("simple"));
+        assertTrue(o.get("simple").isEmpty());
         // local key overwrites all key
-        assertEquals(true, o.get("overwritten"));
-        assertEquals(true, o.get("goTo"));
+        assertTrue(o.get("overwritten").isPresent());
+        assertTrue(o.get("goTo").isPresent());
+        assertEquals(true, o.get("overwritten").get());
+        assertEquals(true, o.get("goTo").get());
     }
 
     @Test(expected = ValidationException.class)
@@ -138,7 +138,9 @@ public class AbstractNodeTest {
 
         //trace
         node.getC().accept(node, o);
-        Assert.assertEquals("TRACE", node.getKeySpec("logLevel"));
+
+        Assert.assertTrue(node.getKeySpec("logLevel").isPresent());
+        Assert.assertEquals("TRACE", node.getKeySpec("logLevel").get());
 
     }
 
@@ -198,7 +200,8 @@ public class AbstractNodeTest {
         FlowMap o = FlowMapImpl.of(Map.of());
         o = node.forward(o);
 
-        assertEquals(true, o.get("simple"));
+        assertTrue(o.get("simple").isPresent());
+        assertEquals(true, o.get("simple").get());
     }
 
     // inject IllegalAccessException on reflection access to get code coverage

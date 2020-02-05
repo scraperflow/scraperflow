@@ -1,7 +1,6 @@
 package scraper.nodes.core.test.helper;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.Nullable;
 import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
@@ -25,21 +24,21 @@ import java.util.concurrent.ExecutorService;
 public class MockContainer implements FunctionalNodeContainer {
 
     private FunctionalNode node;
-    private Map<String, Object> spec;
+    private Map<String, ?> spec;
     private String graphKey;
 
     public MockContainer(FunctionalNode node, Map<String, Object> spec) { this.node = node; this.spec = spec; }
 
     @Override
-    public void setNodeConfiguration(Map<String, Object> nodeConfiguration, String instance, String graphKey) {
+    public void setNodeConfiguration(@NotNull Map<String, ?> nodeConfiguration, @NotNull String instance, @NotNull String graphKey) {
         spec = nodeConfiguration;
     }
 
-    @NotNull @Override public Map<String, Object> getNodeConfiguration() { return spec; }
+    @NotNull @Override public Map<String, ?> getNodeConfiguration() { return spec; }
 
-    @Nullable
+    @NotNull
     @Override
-    public Object getKeySpec(@NotNull String key) { return spec.get(key); }
+    public Optional<?> getKeySpec(@NotNull String key) { return Optional.ofNullable(spec.get(key)); }
 
     @NotNull
     @Override
@@ -53,7 +52,7 @@ public class MockContainer implements FunctionalNodeContainer {
         throw new IllegalStateException();
     }
 
-    @Nullable
+    @NotNull
     @Override
     public Optional<NodeContainer<? extends Node>> getGoTo() {
         throw new IllegalStateException();
@@ -99,21 +98,24 @@ public class MockContainer implements FunctionalNodeContainer {
 
     }
 
+    @NotNull
     @Override
     public FunctionalNode getC() {
         throw new IllegalStateException();
     }
 
     @Override
-    public void log(NodeLogLevel trace, String s, Object... args) {
+    public void log(@NotNull NodeLogLevel trace, @NotNull String s, @NotNull Object... args) {
 
     }
 
+    @NotNull
     @Override
     public ScrapeInstance getJobInstance() {
         throw new IllegalStateException();
     }
 
+    @NotNull
     @Override
     public ExecutorService getService() {
         throw new IllegalStateException();

@@ -9,6 +9,7 @@ import scraper.api.reflect.T;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 
@@ -297,10 +298,10 @@ public class FieldTranslationTest {
 
         if(field.getType().isAssignableFrom(T.class)) {
             T<?> template = (T<?>) field.get(this);
-            Object templateEvaluation = NodeUtil.flowOf(args).eval(template);
+            Optional<?> templateEvaluation = NodeUtil.flowOf(args).evalMaybe(template);
 
             // static convention check for simple cases
-            if(expectedTemplateEval != null && !expectedTemplateEval.equals(templateEvaluation)) {
+            if(expectedTemplateEval != null && (templateEvaluation.isEmpty() || !expectedTemplateEval.equals(templateEvaluation.get()))) {
                 throw new IllegalStateException("Expected template evaluation does not match actual template evaluation");
             }
 
@@ -311,7 +312,8 @@ public class FieldTranslationTest {
                 checkMethod = (Consumer<? super Object>) getClass().getDeclaredField(field.getName()+"Check").get(this);
             } catch (Exception ignored) {}
 
-            if(checkMethod != null) checkMethod.accept(templateEvaluation);
+            if(checkMethod != null) //noinspection OptionalGetWithoutIsPresent check method should check for null value
+                checkMethod.accept(templateEvaluation.get());
         }
     }
 }

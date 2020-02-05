@@ -20,6 +20,7 @@ public class TemplateString<T> extends TemplateExpression<T>{
 
     public T eval(@NotNull final FlowMap o) {
         try {
+            // TODO what is this
             return (T) convert(stringContent.toString(), targetType.getRawType());
         } catch (ValidationException e) {
             throw new TemplateException("Could not convert string content to " + targetType);

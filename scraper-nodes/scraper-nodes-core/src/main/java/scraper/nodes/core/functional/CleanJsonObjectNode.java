@@ -56,7 +56,7 @@ public final class CleanJsonObjectNode implements FunctionalNode {
     private final T<Map<String, Object>> cleanedObject = new T<>(){};
 
     @Override
-    public void modify(FunctionalNodeContainer n, @NotNull final FlowMap o) throws NodeException {
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) throws NodeException {
         Map<String, Object> json = o.eval(jsonObject);
 
         for (String parts : clean) {

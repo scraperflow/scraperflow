@@ -11,7 +11,7 @@ public final class SimpleNode implements Node {
 
     @NotNull
     @Override
-    public FlowMap process(NodeContainer<? extends Node> n, @NotNull FlowMap o) {
+    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
         return o;
     }
 }

@@ -3,6 +3,7 @@ package scraper.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraper.annotations.NotNull;
+import scraper.annotations.Nullable;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.EnsureFile;
 import scraper.annotations.node.FlowKey;
@@ -66,7 +67,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
 
     /** Decide log level threshold for this node */
     @FlowKey(defaultValue = "\"INFO\"")
-    protected NodeLogLevel logLevel;
+    protected NodeLogLevel logLevel = INFO;
 
     /** Log statement to be printed */
     @FlowKey
@@ -79,25 +80,30 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     /** Target label */
     @FlowKey protected Address goTo;
 
+    /** If set, returns a thread pool with given name and {@link #threads} */
+    @FlowKey(defaultValue = "\"main\"")
+    protected String service;
+
+    /** Number of worker threads for given executor service pool {@link #service} */
+    @FlowKey(defaultValue = "25") @Argument
+    protected Integer threads;
+
+    /** Label of a node which can be used as a goto reference */
+    @FlowKey // not used for anything at the moment
+    private String label;
+    private NodeAddress absoluteAddress;
+
     /** Reference to its parent job */
     protected ScrapeInstance jobPojo;
 
     /** Index of the node in the process list. Is set on init. */
     protected int stageIndex;
 
-    /** If set, returns a thread pool with given name and {@link #threads} */
-    @FlowKey(defaultValue = "\"main\"")
-    protected String service;
-    /** Number of worker threads for given executor service pool {@link #service} */
-    @FlowKey(defaultValue = "25") @Argument
-    protected Integer threads;
-
-
     /** All ensureFile fields of this node */
     private final ConcurrentMap<Field, EnsureFile> ensureFileFields = new ConcurrentHashMap<>();
 
     /** Current node configuration */
-    protected Map<String, Object> nodeConfiguration;
+    protected Map<String, ?> nodeConfiguration;
 
     /** Set during init of node */
     private GraphAddress graphKey;
@@ -106,13 +112,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
 //    @FlowKey
 //    protected Address onForkException;
 
-
-    @FlowKey // not used for anything at the moment
-    /** Label of a node which can be used as a goto reference */
-    private String label;
-    private NodeAddress absoluteAddress;
-
-    public AbstractNode(String instance, String graph, String node, int index) {
+    public AbstractNode(@NotNull String instance, @NotNull String graph, @Nullable String node, int index) {
         this.absoluteAddress = new NodeAddressImpl(instance, graph, node, index);
     }
 
@@ -162,12 +162,8 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     }
 
 
-    @NotNull
-    public Map<String, Object> getNodeConfiguration() {
-        return nodeConfiguration;
-    }
 
-    public void setNodeConfiguration(@NotNull Map<String, Object> configuration, @NotNull String instance, @NotNull String graphKey) {
+    public void setNodeConfiguration(@NotNull Map<String, ?> configuration, @NotNull String instance, @NotNull String graphKey) {
         nodeConfiguration = configuration;
         this.graphKey = new GraphAddressImpl(instance, graphKey);
     }
@@ -185,12 +181,6 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
         l = LoggerFactory.getLogger(loggerName);
     }
 
-    @Override
-    public ExecutorService getService() {
-        return getJobPojo().getExecutors().getService(getJobPojo().getName(),service, threads);
-    }
-
-
     /**
      * <ul>
      *     <li>Evaluates templates</li>
@@ -199,7 +189,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
      *
      * @param map The current forwarded map
      */
-    protected void start(FlowMap map) throws NodeException {
+    protected void start(@NotNull final FlowMap map) throws NodeException {
         // update FlowState
         updateFlowInfo(map, this, "start");
 
@@ -217,15 +207,17 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
             for (Field ensureFileField : ensureFileFields.keySet()) {
                 ensureFileField.setAccessible(true);
 
-                String path;
+                String path = null;
                 if(T.class.isAssignableFrom(ensureFileField.getType())) {
                     T<?> templ = (T) ensureFileField.get(getC());
-                    path = (String) map.eval(templ);
+                    //noinspection unchecked
+                    Optional<String> maybePath = (Optional<String>) map.evalMaybe(templ);
+                    if(maybePath.isPresent()) path = maybePath.get();
                 } else {
                     path = (String) ensureFileField.get(getC());
                 }
 
-                if (path == null) continue; //TODO check if optional // TODO what does the TODO mean
+                if (path == null) continue;
 
                 log(TRACE,"Ensure file of field {} at {}", ensureFileField.getName(), path);
                 if(ensureFileFields.get(ensureFileField).ensureDir())
@@ -238,7 +230,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
                 }
             }
 
-        } catch (IllegalAccessException e) {
+        } catch (IllegalAccessException | ClassCastException e) {
             throw new RuntimeException("Implemented reflection badly: ", e);
         } catch (IOException e) {
             log(ERROR,"Failed ensure file: {}", e.getMessage());
@@ -249,11 +241,11 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     /**
      * @param o The current map
      */
-    protected void finish(final FlowMap o) {
+    protected void finish(@NotNull final FlowMap o) {
         updateFlowInfo(o, this, "finish");
     }
 
-    private void updateFlowInfo(FlowMap map, AbstractNode abstractNode, String phase) {
+    private void updateFlowInfo(@NotNull final FlowMap map, @NotNull final AbstractNode abstractNode, @NotNull String phase) {
         if(logLevel.worseOrEqual(WARN)) {
             // only history of start is tracked
             if(phase.equalsIgnoreCase("start")) return;
@@ -270,29 +262,32 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
         if(logLevel.worseOrEqual(DEBUG)) {
             Map<String, Object> keyValues = new HashMap<>();
 
-            for (String key : map.keySet()) {
-                if(map.get(key) instanceof String) {
-                    // trim string
-                    keyValues.put(key, ((String) Objects.requireNonNull(map.get(key)))
-                            .substring(0, Math.min(100, ((String) Objects.requireNonNull(map.get(key))).length())));
-                } else {
-                    // else just put class name
-                    keyValues.put(key, Objects.requireNonNull(map.get(key)).getClass().getName());
-                }
-            }
+            // TODO re-implement
+//            for (String key : map.keySet()) {
+//                if(map.get(key) instanceof String) {
+//                    // trim string
+//                    keyValues.put(key, ((String) Objects.requireNonNull(map.get(key)))
+//                            .substring(0, Math.min(100, ((String) Objects.requireNonNull(map.get(key))).length())));
+//                } else {
+//                    // else just put class name
+//                    keyValues.put(key, Objects.requireNonNull(map.get(key)).getClass().getName());
+//                }
+//            }
             state.log("key-values", keyValues);
         }
 
         // TODO implement TRACE deep copy keys
     }
 
+
     /** Dispatches an action in an own thread, ignoring the result and possible exceptions. */
-    protected CompletableFuture<FlowMap> dispatch(Supplier<FlowMap> o) {
+    @NotNull
+    protected CompletableFuture<FlowMap> dispatch(@NotNull Supplier<FlowMap> o) {
         return CompletableFuture.supplyAsync(o, getService());
     }
 
 
-    public void log(NodeLogLevel debug, String msg, Object... args) {
+    public void log(@NotNull NodeLogLevel debug, @NotNull String msg, @NotNull Object... args) {
         log(l, logLevel, debug, msg, args);
     }
 
@@ -300,7 +295,6 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     // GETTER AND UTILITY FUNCTIONS
     // ----------------------------
 
-    @Override public String toString(){ return getAddress().toString(); }
 
     // node shutdown
 //    @Override
@@ -308,11 +302,9 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
 //        log(NodeLogLevel.DEBUG, "{}@{} stopped gracefully", getClass().getSimpleName(), stageIndex);
 //    }
 
-    public Logger getL() {
-        return l;
-    }
 
-    public static void log(Logger log, NodeLogLevel threshold, NodeLogLevel level, String msg, Object... args) {
+    public static void log(@NotNull Logger log, @NotNull NodeLogLevel threshold, @NotNull NodeLogLevel level,
+                           @NotNull String msg, @NotNull Object... args) {
         switch (level){
             case TRACE:
                 // only l if trace
@@ -337,8 +329,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     }
 
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public FlowMap forward(@NotNull final FlowMap o) throws NodeException {
         if (getGoTo().isPresent()) {
             NodeContainer<? extends Node> targetNode = getGoTo().get();
@@ -348,8 +339,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
         }
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public FlowMap eval(@NotNull final FlowMap o, @NotNull final Address target) throws NodeException {
         NodeContainer<? extends Node> opt = NodeUtil.getTarget(getAddress(), target, getJobInstance());
         return opt.getC().accept(opt, o);
@@ -378,8 +368,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
         });
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public CompletableFuture<FlowMap> forkDepend(@NotNull final FlowMap o, @NotNull final Address target) {
         return dispatch(() -> {
             try {
@@ -391,45 +380,8 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
         });
     }
 
-    @Override
-    public Object getKeySpec(@NotNull final String argument) {
-        return nodeConfiguration.get(argument);
-    }
-
-    public String getType() {
-        return this.type;
-    }
-
-    public NodeLogLevel getLogLevel() {
-        return this.logLevel;
-    }
-
-    @NotNull
-    @Override
-    public NodeAddress getAddress() {
-        return absoluteAddress;
-    }
-
-    public Boolean getForward() {
-        return this.forward;
-    }
-
-    public ScrapeInstance getJobPojo() {
-        if(jobPojo == null) throw new IllegalStateException("Node is not associated to a job");
-        return this.jobPojo;
-    }
-
-    @Override
-    public ScrapeInstance getJobInstance() {
-        return getJobPojo();
-    }
-
-    public int getStageIndex() {
-        return this.stageIndex;
-    }
-
-    @Override
-    public @NotNull Optional<NodeContainer<? extends Node>> getGoTo() {
+    @Override @NotNull
+    public Optional<NodeContainer<? extends Node>> getGoTo() {
         if(goTo == null) {
             if(isForward()) {
                 // get forward, only forward can create optional.empty?
@@ -443,27 +395,66 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
         }
     }
 
+
+    //===========
+    // getter
+    //===========
+
     @NotNull
-    @Override
-    public GraphAddress getGraphKey() {
-        return this.graphKey;
+    public ExecutorService getService() {
+        return getJobPojo().getExecutors().getService(getJobPojo().getName(), service, threads);
     }
 
-    @Override
     @NotNull
+    public ScrapeInstance getJobPojo() {
+        if(jobPojo == null) throw new IllegalStateException("Node is not associated to a job");
+        return this.jobPojo;
+    }
+
+    @NotNull @Override
+    public Optional<?> getKeySpec(@NotNull String argument) {
+        return Optional.ofNullable(nodeConfiguration.get(argument));
+    }
+
+    @NotNull
+    public Map<String, ?> getNodeConfiguration() { return nodeConfiguration; }
+
+    @NotNull @Override
+    public GraphAddress getGraphKey() { return this.graphKey; }
+
+    @Override @NotNull
     public Collection<NodeHook> beforeHooks() {
         return Set.of(this::start);
     }
 
-    @Override
-    @NotNull
+    @Override @NotNull
     public Collection<NodeHook> afterHooks() {
         return Set.of(this::finish);
     }
 
     @Override
-    public boolean isForward() {
-        return forward;
-    }
+    public boolean isForward() { return forward; }
 
+    @NotNull
+    public String getType() { return this.type; }
+
+    @NotNull
+    public NodeLogLevel getLogLevel() { return this.logLevel; }
+
+    @NotNull @Override
+    public NodeAddress getAddress() { return absoluteAddress; }
+
+    @NotNull
+    public Boolean getForward() { return this.forward; }
+
+    @NotNull @Override
+    public ScrapeInstance getJobInstance() { return getJobPojo(); }
+
+    @Override @NotNull
+    public String toString(){ return getAddress().toString(); }
+
+    @NotNull
+    public Logger getL() { return l; }
+
+    public int getStageIndex() { return this.stageIndex; }
 }

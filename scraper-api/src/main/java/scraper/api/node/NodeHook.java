@@ -4,9 +4,6 @@ import scraper.annotations.NotNull;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 
-import java.util.Collection;
-import java.util.Set;
-
 /**
  * Objects which implement this interface can consume and modify {@link FlowMap}s.
  *
@@ -14,5 +11,5 @@ import java.util.Set;
  */
 @FunctionalInterface
 public interface NodeHook {
-    void accept(@NotNull final FlowMap o) throws NodeException;
+    void accept(@NotNull FlowMap o) throws NodeException;
 }

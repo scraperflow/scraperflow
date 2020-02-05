@@ -2,12 +2,13 @@ package scraper.core.template;
 
 import com.google.common.reflect.TypeToken;
 import scraper.annotations.NotNull;
-import scraper.core.converter.StringToClassConverter;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
+import scraper.core.converter.StringToClassConverter;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 
 public class TemplateMapKey<T> extends TemplateExpression<T> {
     private TemplateExpression<String> keyLookup;
@@ -20,12 +21,13 @@ public class TemplateMapKey<T> extends TemplateExpression<T> {
     public T eval(@NotNull final FlowMap o) {
         try{
             String targetKey = keyLookup.eval(o);
-            if(!o.keySet().contains(targetKey))
+            Optional<?> targetValue = o.get(targetKey);
+
+            if(targetValue.isEmpty())
                 throw new IllegalStateException("FlowMap has no element at key " + targetKey);
 
-
-            Object targetValue = o.get(targetKey);
-            Object converted = StringToClassConverter.convert(targetValue, targetType.getRawType());
+            // TODO generic type checking may be missing here
+            Object converted = StringToClassConverter.convert(targetValue.get(), targetType.getRawType());
             T returnt = (T) targetType.getRawType().cast(converted);
 
             return returnt;

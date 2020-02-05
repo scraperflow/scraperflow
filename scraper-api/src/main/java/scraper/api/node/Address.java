@@ -10,5 +10,4 @@ public interface Address {
     @NotNull String getRepresentation();
     default boolean isRelative() { return !getRepresentation().contains("."); }
     default boolean isAbsolute() { return getRepresentation().split("\\.").length == 3; }
-
 }

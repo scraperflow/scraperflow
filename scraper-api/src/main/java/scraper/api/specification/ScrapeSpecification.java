@@ -1,11 +1,11 @@
 package scraper.api.specification;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Specification of a Scraper .scrape workflow.
@@ -27,7 +27,7 @@ public interface ScrapeSpecification {
     @NotNull List<Path> getPaths();
 
     /** Node dependency reference */
-    @Nullable String getDependencies();
+    @NotNull Optional<String> getDependencies();
 
     /** Arguments used */
     @NotNull List<String> getArguments();

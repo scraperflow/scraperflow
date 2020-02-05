@@ -18,6 +18,6 @@ import java.util.Map;
  */
 public interface Hook {
     /** Executes the hook and provides arguments, dependencies, and a ScrapeSpecification to ScrapeInstance map */
-    void execute(@NotNull final DIContainer dependencies, @NotNull final String[] args,
-                 @NotNull final Map<ScrapeSpecification, ScrapeInstance> scraper) throws Exception;
+    void execute(@NotNull DIContainer dependencies, @NotNull String[] args,
+                 @NotNull Map<ScrapeSpecification, ScrapeInstance> scraper) throws Exception;
 }

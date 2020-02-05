@@ -2,6 +2,8 @@ package scraper.core;
 
 import com.google.common.reflect.TypeToken;
 import org.slf4j.Logger;
+import scraper.annotations.NotNull;
+import scraper.annotations.Nullable;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
 import scraper.api.reflect.T;
@@ -13,29 +15,18 @@ public class Template {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(Template.class);
 
-    public static <C> C eval(T<C> type, final FlowMap o) {
+    @Nullable
+    public static <C> C eval(@NotNull T<C> type, @NotNull FlowMap o) {
         return eval(type.getParsedJson(), TypeToken.of(type.get()), o);
     }
-//
-//    public T evalWithIdentity() {
-//        return eval(parsedJson, type, new IdentityFlowMap());
-//    }
-//
-//    public T evalOrDefault(FlowMap o, T defaultValue) {
-//        try {
-//            T eval = eval(o);
-//            if(eval != null) return eval;
-//        } catch (Exception ignore) {}
-//
-//        return defaultValue;
-//    }
 
-    protected static <C> C eval(Object jsonObject, TypeToken<?> currentType, FlowMap o) {
+    protected static <C> C eval(@Nullable final Object jsonObject,
+                                @NotNull final TypeToken<?> currentType,
+                                @NotNull final FlowMap o) {
         // if json null, return null regardless of currentType
         if(jsonObject == null) return null;
 
         // jsonObject can be: List<C>, Map<String, C>, String, Number, true, false
-
 
         // if JSON list, currentType is also a List<C>
         // descend and evaluate list elements with type C
@@ -94,8 +85,9 @@ public class Template {
         }
     }
 
-
-    private static Collection<String> getKeysDescend(Object toDescend, FlowMap o) {
+    @NotNull
+    private static Collection<String> getKeysDescend(@NotNull final Object toDescend,
+                                                     @NotNull final FlowMap o) {
         Collection<String> allKeys = new HashSet<>();
         if(toDescend instanceof TemplateExpression) {
             return ((TemplateExpression<?>) toDescend).getKeysInTemplate(o);
@@ -108,15 +100,8 @@ public class Template {
         return allKeys;
     }
 
-    public static Collection<String> getKeysInTemplate(T<?> t, FlowMap o) {
+    @NotNull
+    public static Collection<String> getKeysInTemplate(@NotNull T<?> t, @NotNull FlowMap o) {
         return getKeysDescend(t.getParsedJson(), o);
     }
-
-
-//    public T input(FlowMap o) { return this.eval(o); }
-//
-//    public void output(FlowMap o, T object) {
-//        o.put(parsedJson.toString(), object);
-//    }
-
 }

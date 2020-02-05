@@ -8,5 +8,5 @@ import scraper.api.node.type.Node;
 
 @NodePlugin(value = "0.1.0", deprecated = true)
 public final class ComplexFlowNode implements Node {
-    @NotNull @Override public FlowMap process(NodeContainer<? extends Node> n, @NotNull FlowMap o) { return o; }
+    @NotNull @Override public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) { return o; }
 }

@@ -112,6 +112,8 @@ public final class JobUtil {
                 ).collect(Collectors.toList())
         );
 
+        if(spec.getGraphs().isEmpty()) throw new ValidationException("No graphs specified for this job: " + spec.getName());
+
         return spec;
     }
 

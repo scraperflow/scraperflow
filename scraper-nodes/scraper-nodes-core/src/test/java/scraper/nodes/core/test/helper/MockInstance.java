@@ -37,6 +37,7 @@ public class MockInstance implements ScrapeInstance {
     @NotNull @Override public Map<InstanceAddress, ScrapeInstance> getImportedInstances() { throw new IllegalStateException(); }
     @Override public void init() { }
 
+    @NotNull
     @Override
     public ScrapeSpecification getSpecification() {
         return null;
@@ -49,30 +50,34 @@ public class MockInstance implements ScrapeInstance {
     @NotNull @Override public FileService getFileService() { throw new IllegalStateException("Functional node called service"); }
 
     @Override
-    public void setEntry(GraphAddress address, NodeContainer<? extends Node> nn) {
+    public void setEntry(@NotNull GraphAddress address, @NotNull NodeContainer<? extends Node> nn) {
 
     }
 
+    @NotNull
     @Override
     public NodeContainer<? extends Node> getEntry() {
         return null;
     }
 
+    @NotNull
     @Override
-    public NodeContainer<? extends Node> getNode(NodeAddress target) {
+    public NodeContainer<? extends Node> getNode(@NotNull NodeAddress target) {
         return null;
     }
 
+    @NotNull
     @Override
-    public Optional<NodeContainer<? extends Node>> getNode(Address target) {
+    public Optional<NodeContainer<? extends Node>> getNode(@NotNull Address target) {
         return Optional.empty();
     }
 
     @Override
-    public void addRoute(Address address, NodeContainer<? extends Node> node) {
+    public void addRoute(@NotNull Address address, @NotNull NodeContainer<? extends Node> node) {
 
     }
 
+    @NotNull
     @Override
     public Map<String, Object> getEntryArguments() {
         return null;

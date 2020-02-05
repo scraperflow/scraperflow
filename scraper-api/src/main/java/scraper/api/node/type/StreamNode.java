@@ -12,13 +12,12 @@ import scraper.api.node.container.StreamNodeContainer;
  */
 public interface StreamNode extends Node {
     /** Default accept method should only modify and forward the modified map */
-    @NotNull
-    @Override
+    @NotNull @Override
     default FlowMap process(@NotNull NodeContainer n, @NotNull final FlowMap o) throws NodeException {
         assert n instanceof StreamNodeContainer;
         StreamNodeContainer sn = ((StreamNodeContainer) n);
         return sn.processStream(o);
     }
 
-    void process(StreamNodeContainer n, FlowMap o) throws NodeException;
+    void process(@NotNull StreamNodeContainer n, @NotNull FlowMap o) throws NodeException;
 }

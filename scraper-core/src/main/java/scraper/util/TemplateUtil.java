@@ -49,7 +49,7 @@ public final class TemplateUtil {
 
     public static <C> TemplateExpression<C> parseTemplate(@NotNull final String term) {
         log.trace("Converting term to template expression: '{}'", term);
-        TypeToken<C> targetType = new TypeToken<C>(){};
+        TypeToken<C> targetType = new TypeToken<>(){};
         return parseTemplate(term, targetType);
     }
 
@@ -59,7 +59,7 @@ public final class TemplateUtil {
     }
 
     @SuppressWarnings("unchecked")
-    protected static <Target> void descend(Object parsedJson, Class<Target> addressClass, Consumer<Target> o) {
+    private static <Target> void descend(Object parsedJson, Class<Target> addressClass, Consumer<Target> o) {
         if(parsedJson instanceof List) {
             ((List) parsedJson).forEach(e -> descend(e, addressClass, o));
         } else if(parsedJson instanceof Map) {
@@ -70,8 +70,10 @@ public final class TemplateUtil {
                     Target t = (Target) ((TemplateExpression) parsedJson).eval(new IdentityFlowMap());
                     o.accept(t);
                 }
-            } else {
-//                System.out.println("???");
+            }
+            if(parsedJson.getClass() == addressClass) {
+                    Target t = (Target) parsedJson;
+                    o.accept(t);
             }
         }
     }

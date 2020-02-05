@@ -63,6 +63,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
 
     private final ScrapeSpecification spec;
 
+    @NotNull
     @Override
     public ScrapeSpecification getSpecification() { return spec; }
 
@@ -78,34 +79,38 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     public void setName(@NotNull String name) { this.name = name; }
 
     @Override
-    public void setEntry(GraphAddress address, NodeContainer<? extends Node> nn) {
+    public void setEntry(@NotNull GraphAddress address, @NotNull NodeContainer<? extends Node> nn) {
         assert routes.containsKey(address);
         this.entry = address;
     }
 
+    @NotNull
     @Override
     public NodeContainer<? extends Node> getEntry() {
         return routes.get(entry);
     }
 
+    @NotNull
     @Override
-    public NodeContainer<? extends Node> getNode(NodeAddress target) {
+    public NodeContainer<? extends Node> getNode(@NotNull NodeAddress target) {
         return null;
     }
 
+    @NotNull
     @Override
-    public Optional<NodeContainer<? extends Node>> getNode(Address target) {
+    public Optional<NodeContainer<? extends Node>> getNode(@NotNull Address target) {
         NodeContainer<? extends Node> nn = routes.get(target);
         if(nn == null) return Optional.empty();
         else return Optional.of(nn);
     }
 
     @Override
-    public void addRoute(Address address, NodeContainer<? extends Node> nodeAbstractNode) {
+    public void addRoute(@NotNull Address address, @NotNull NodeContainer<? extends Node> nodeAbstractNode) {
         assert !routes.containsKey(address);
         routes.put(address, nodeAbstractNode);
     }
 
+    @NotNull
     @Override
     public Map<String, Object> getEntryArguments() {
         return initialArguments;

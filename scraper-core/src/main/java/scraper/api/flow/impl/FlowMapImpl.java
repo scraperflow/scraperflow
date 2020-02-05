@@ -2,6 +2,7 @@ package scraper.api.flow.impl;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
+import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowHistory;
 import scraper.api.flow.FlowMap;
 import scraper.api.reflect.T;
@@ -18,25 +19,23 @@ public class FlowMapImpl implements FlowMap {
     private @NotNull final UUID uuid = UUID.randomUUID();
 
     public FlowMapImpl(@NotNull ConcurrentMap<String, Object> privateMap) { this.privateMap = privateMap; }
-
     public FlowMapImpl() { privateMap = new ConcurrentHashMap<>(); }
 
-    @Override
-    public @Nullable Object put(@NotNull String location, @NotNull Object value) { return privateMap.put(location, value); }
+    @NotNull
+    @Override public Optional<Object> put(@NotNull String location, @NotNull Object value) { return Optional.ofNullable(privateMap.put(location, value)); }
 
     @Override
     public void putAll(@NotNull Map<String, Object> m) {
         privateMap.putAll(m);
     }
 
-    @Override
-    public @Nullable Object remove(@NotNull String location) {
-        return privateMap.remove(location);
-    }
+    @NotNull
+    @Override public Optional<Object> remove(@NotNull String location) { return Optional.ofNullable(privateMap.remove(location)); }
 
+    @NotNull
     @Override
-    public @Nullable Object get(@NotNull String expected) {
-        return privateMap.get(expected);
+    public Optional<Object> get(@NotNull String expected) {
+        return Optional.ofNullable(privateMap.get(expected));
     }
 
     @Override
@@ -71,7 +70,11 @@ public class FlowMapImpl implements FlowMap {
 
     public boolean containsElements(@NotNull final FlowMap expectedOutput) {
         for (String key : expectedOutput.keySet()) {
-            if(!compareElement(get(key), expectedOutput.get(key))) return false;
+            Optional<Object> thisElement = get(key);
+            Optional<Object> thatElement = expectedOutput.get(key);
+            if(thisElement.isPresent() && thatElement.isPresent()) {
+                if(!compareElement(thisElement.get(), thatElement.get())) return false;
+            } else if(thisElement.isEmpty() && thatElement.isPresent()) return false;
         }
 
         return true;
@@ -79,35 +82,42 @@ public class FlowMapImpl implements FlowMap {
 
     @NotNull @Override public FlowHistory getFlowHistory() { return flowHistory; }
 
+    @NotNull
     @Override public UUID getId() { return uuid; }
 
-    @Override
-    public <A> A eval(T<A> template) {
-        return Template.eval(template, this);
+    @NotNull @Override
+    public <A> A eval(@NotNull T<A> template) {
+        A evaluated = Template.eval(template, this);
+        if(evaluated == null)
+            throw new TemplateException("Template was evaluated to null but not expected, " +
+                    "either wrong node implementation/usage or type safety violated");
+        return evaluated;
+    }
+
+    @NotNull @Override
+    public <A> A evalOrDefault(@NotNull T<A> template, @NotNull A object) {
+        A eval = Template.eval(template, this);
+        if(eval == null) return object;
+        return eval;
+    }
+
+    @NotNull @Override
+    public <A> Optional<A> evalMaybe(@NotNull T<A> template) {
+        return Optional.ofNullable(Template.eval(template, this));
+    }
+
+
+    @NotNull @Override
+    public <A> A evalIdentity(@NotNull T<A> t) {
+        A evaluated = Template.eval(t, new IdentityFlowMap());
+        if(evaluated == null)
+            throw new TemplateException("Template was evaluated to null but not expected, " +
+                    "either wrong node implementation/usage or type safety violated");
+        return evaluated;
     }
 
     @Override
-    public <A> A evalOrDefault(T<A> template, A object) {
-        try {
-            A eval = this.eval(template);
-            if(eval != null) return eval;
-        } catch (Exception ignore) {}
-
-        return object;
-    }
-
-    @Override
-    public <A> A evalIdentity(T<A> t) {
-        return Template.eval(t, new IdentityFlowMap());
-    }
-
-    @Override
-    public <A> A input(T<A> template) {
-        return eval(template);
-    }
-
-    @Override
-    public <A> void output(T<A> locationAndType, A object) {
+    public <A> void output(@NotNull T<A> locationAndType, A object) {
         // for now output templates are only strings
         String json = locationAndType.getRawJson();
         put(json, object);

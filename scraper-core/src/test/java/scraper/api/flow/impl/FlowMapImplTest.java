@@ -3,7 +3,6 @@ package scraper.api.flow.impl;
 import org.junit.Assert;
 import org.junit.Test;
 import scraper.api.flow.FlowMap;
-import scraper.addons.SimpleNode;
 import scraper.util.NodeUtil;
 
 import java.util.HashMap;
@@ -27,7 +26,8 @@ public class FlowMapImplTest {
 
         // put and get
         flowMap.put("key1", 123);
-        Assert.assertEquals(123, flowMap.get("key1"));
+        Assert.assertTrue(flowMap.get("key1").isPresent());
+        Assert.assertEquals(123, flowMap.get("key1").get());
 
         // clear
         Assert.assertEquals(1, flowMap.size());
@@ -36,8 +36,10 @@ public class FlowMapImplTest {
 
         // putAll
         flowMap.putAll(Map.of("k1", 42, "k2", "hello"));
-        Assert.assertEquals(42, flowMap.get("k1"));
-        Assert.assertEquals("hello", flowMap.get("k2"));
+        Assert.assertTrue(flowMap.get("k1").isPresent());
+        Assert.assertTrue(flowMap.get("k2").isPresent());
+        Assert.assertEquals(42, flowMap.get("k1").get());
+        Assert.assertEquals("hello", flowMap.get("k2").get());
         Assert.assertEquals(2, flowMap.size());
         assertTrue(flowMap.keySet().contains("k1"));
         assertTrue(flowMap.keySet().contains("k2"));
@@ -47,7 +49,7 @@ public class FlowMapImplTest {
 
         // remove
         flowMap.remove("k2");
-        Assert.assertNull(flowMap.get("k2"));
+        Assert.assertTrue(flowMap.get("k2").isEmpty());
         Assert.assertEquals(1, flowMap.size());
     }
 

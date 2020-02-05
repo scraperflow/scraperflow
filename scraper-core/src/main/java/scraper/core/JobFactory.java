@@ -38,7 +38,9 @@ import static scraper.utils.FileUtil.getFirstExistingPaths;
 public class JobFactory {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(JobFactory.class);
 
-    public JobFactory(ProxyReservation proxyReservation, HttpService httpService, ExecutorsService executorsService, FileService fileService, PluginBean plugins) {
+    public JobFactory(@NotNull ProxyReservation proxyReservation, @NotNull HttpService httpService,
+                      @NotNull ExecutorsService executorsService, @NotNull FileService fileService,
+                      @NotNull PluginBean plugins) {
         this.proxyReservation = proxyReservation;
         this.httpService = httpService;
         this.executorsService = executorsService;
@@ -103,12 +105,6 @@ public class JobFactory {
 
     private @NotNull ScrapeInstaceImpl convertJob(@NotNull final ScrapeSpecification jobDefinition,
                                          Function<String, Map<String, Object>> nodeSupplier) throws IOException, ValidationException {
-        // ===
-        // Resolve graph addresses
-        // TODO it seems jackson does not allow to read a parent/neighbor node value when deserializing
-        //      how to change this to not 'resolve' each GraphAddress manually?
-        // ===
-//        jobDefinition.getGraphs().forEach((g, v) -> g.resolve(jobDefinition.getName()));
 
         // ===
         // Imports
@@ -131,7 +127,7 @@ public class JobFactory {
         // ===
         // Node dependencies
         // ===
-        if (jobDefinition.getDependencies() != null) {
+        if (jobDefinition.getDependencies().isPresent()) {
             try {
                 parseNodeDependencies(jobDefinition);
                 log.info("Using node dependency file for job '{}': {}",
@@ -182,8 +178,6 @@ public class JobFactory {
         for (String graph : jobDefinition.getGraphs().keySet()) {
             preprocessFragments(jobDefinition.getGraphs().get(graph), jobDefinition);
         }
-
-
 
 
         // ===
@@ -243,20 +237,23 @@ public class JobFactory {
 
     private NodeContainer<? extends Node> getMatchingNodeContainer(String instance, String graph, String node, int index, Node n) {
         if(n instanceof FunctionalNode) {
-            return new AbstractFunctionalNode(instance, graph,node,index) { @Override public FunctionalNode getC() { return (FunctionalNode) n; } };
+            return new AbstractFunctionalNode(instance, graph,node,index) { @NotNull
+            @Override public FunctionalNode getC() { return (FunctionalNode) n; } };
         }
         else if(n instanceof StreamNode) {
-            return new AbstractStreamNode(instance, graph, node, index) { @Override public StreamNode getC() { return (StreamNode) n; } };
+            return new AbstractStreamNode(instance, graph, node, index) { @NotNull
+            @Override public StreamNode getC() { return (StreamNode) n; } };
         } else {
             // default, generic node
-            return new GenericNode(instance, graph, node, index) { @Override public Node getC() { return n; } };
+            return new GenericNode(instance, graph, node, index) { @NotNull
+            @Override public Node getC() { return n; } };
         }
     }
 
 
     private void parseNodeDependencies(@NotNull final ScrapeSpecification jobDefinition) throws IOException {
-        if(jobDefinition.getDependencies() != null) {
-            File ndep = getFirstExistingPaths(jobDefinition.getDependencies(), jobDefinition.getPaths());
+        if(jobDefinition.getDependencies().isPresent()) {
+            File ndep = getFirstExistingPaths(jobDefinition.getDependencies().get(), jobDefinition.getPaths());
 
             Map<String, String> nodeDependencies = jobNodeDependencies.getOrDefault(jobDefinition, new LinkedHashMap<>());
             StringUtil.readBody(ndep, line -> {
@@ -343,6 +340,7 @@ public class JobFactory {
         return fragments;
     }
 
+    @NotNull
     public List<? extends AbstractMetadata> getPlugins() {
         return plugins.getPlugins().getPlugins();
     }

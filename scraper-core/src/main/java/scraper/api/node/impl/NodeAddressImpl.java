@@ -6,8 +6,6 @@ import scraper.api.node.Address;
 import scraper.api.node.NodeAddress;
 import scraper.util.NodeUtil;
 
-import java.util.Objects;
-
 public class NodeAddressImpl implements NodeAddress {
     @NotNull private final String instance;
     @NotNull private final String graph;
@@ -29,6 +27,7 @@ public class NodeAddressImpl implements NodeAddress {
         return "<"+getRepresentation()+">";
     }
 
+    @NotNull
     @Override
     public String getRepresentation() {
         return instance +"." + graph+"."+
@@ -55,14 +54,16 @@ public class NodeAddressImpl implements NodeAddress {
         return NodeUtil.representationHashCode(getRepresentation());
     }
 
+    @NotNull
     @Override
     public Address nextIndex() {
         assert index != null;
         return new AddressImpl(instance+"."+graph+"."+(index+1));
     }
 
+    @NotNull
     @Override
-    public Address replace(String representation) {
+    public Address replace(@NotNull String representation) {
         return new AddressImpl(instance+"."+graph+"."+representation);
     }
 }

@@ -16,6 +16,7 @@ import scraper.util.NodeUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,8 +43,8 @@ public final class RegexNode implements StreamNode {
     private T<Map<String, Integer>> groups = new T<>(){};
 
     /** Where the output list will be put. If there's already a list at that key, it will be replaced. */
-    @FlowKey(defaultValue = "\"output\"")
-    private String output;
+    @FlowKey(defaultValue = "\"output\"", output = true)
+    private T<Map<String, Object>> output = new T<>(){};
 
     /** Default output if no matches are present */
     @FlowKey
@@ -65,8 +66,9 @@ public final class RegexNode implements StreamNode {
     }
 
     @Override
-    public void process(StreamNodeContainer n, FlowMap o) throws NodeException {
-        n.collect(o, List.of(output));
+    public void process(@NotNull StreamNodeContainer n, @NotNull FlowMap o) throws NodeException {
+        n.collect(o, List.of(output.getRawJson()));
+
         String content = o.eval(this.content);
         Map<String, Integer> groups = o.evalIdentity(this.groups);
 
@@ -74,22 +76,22 @@ public final class RegexNode implements StreamNode {
 
         // match regex until no matches found
         while (m.find()) {
-            Map<String, String> singleCapture = new HashMap<>(groups.keySet().size());
+            Map<String, Object> singleCapture = new HashMap<>(groups.keySet().size());
             for (String name : groups.keySet()) {
                 Integer group = groups.get(name);
                 singleCapture.put(name, m.group(group));
             }
 
             FlowMap copy = NodeUtil.flowOf(o);
-            copy.put(output, singleCapture);
-            n.stream(o, copy);
+            copy.output(output, singleCapture);
+            n.streamFlowMap(o, copy);
         }
 
-        Map<String, Object> evalDefault = o.evalOrDefault(noMatchDefaultOutput, null);
-        if(evalDefault != null && m.reset().results().findAny().isEmpty()) {
+        Optional<Map<String, Object>> evalDefault = o.evalMaybe(noMatchDefaultOutput);
+        if(evalDefault.isPresent() && m.reset().results().findAny().isEmpty()) {
             FlowMap copy = NodeUtil.flowOf(o);
-            copy.put(output, evalDefault);
-            n.stream(o, copy);
+            copy.output(output, evalDefault.get());
+            n.streamFlowMap(o, copy);
         }
     }
 }

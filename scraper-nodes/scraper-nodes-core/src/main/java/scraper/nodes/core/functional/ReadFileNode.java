@@ -30,7 +30,7 @@ public final class ReadFileNode implements FunctionalNode {
     @FlowKey(defaultValue = "\"output\"", output = true)
     private T<String> output = new T<>(){};
 
-    public void modify(@NotNull FunctionalNodeContainer n, FlowMap o) throws NodeException {
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) throws NodeException {
         String file = o.eval(inputFile);
 
         try (Stream<String> stream = Files.lines(Paths.get(file), Charset.forName("ISO_8859_1"))) {

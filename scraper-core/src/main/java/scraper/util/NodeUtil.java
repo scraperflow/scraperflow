@@ -102,7 +102,6 @@ public final class NodeUtil {
     @NotNull
     public static Address addressOf(String label) {
         if(label.contains(":")) throw new IllegalArgumentException("Forbidden to create absolute address");
-        // TODO address grammar necessary?
         return new AddressImpl(label);
     }
 
@@ -122,22 +121,14 @@ public final class NodeUtil {
     }
 
 
-    public static void initFields(Object instance, Map<String, Object> spec, Map<String,Object> initialArguments, Map<String, Map<String, Object>> globalConfigurations) throws ValidationException {
+    public static void initFields(Object instance, Map<String, ?> spec, Map<String,Object> initialArguments, Map<String, Map<String, Object>> globalConfigurations) throws ValidationException {
         List<Field> allFields = ClassUtil.getAllFields(new LinkedList<>(), instance.getClass());
 
         for (Field field : allFields) {
-//                log(TRACE,"Initializing field {} of {}", field.getName(), this);
-
             FlowKey flowKey = field.getAnnotation(FlowKey.class);
             Argument ann = field.getAnnotation(Argument.class);
 
             if (flowKey != null) {
-                // save name for actual<->expected field comparison
-                //noinspection unchecked
-                // TODO
-//                context.expectField(instance, field.getName());
-//                ((List) context.get("fields")).add(field.getName());
-
                 // initialize field
                 try { // ensure templated arguments
                     initField(instance, field, flowKey, ann, spec, initialArguments, globalConfigurations);
@@ -162,7 +153,7 @@ public final class NodeUtil {
             Object instance,
             Field field,
             FlowKey flowKey, Argument ann,
-            Map<String, Object> spec,
+            Map<String, ?> spec,
             Map<String, Object> args,
             Map<String, Map<String, Object>> globalConfigurations
     )

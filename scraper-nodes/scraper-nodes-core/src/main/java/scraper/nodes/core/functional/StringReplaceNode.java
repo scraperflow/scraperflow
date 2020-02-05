@@ -31,7 +31,7 @@ public final class StringReplaceNode implements FunctionalNode {
     private String with;
 
     @Override
-    public void modify(FunctionalNodeContainer n, @NotNull final FlowMap o) {
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         String content = o.eval(this.content);
 
         String newContent = content.replaceAll(replace, with);

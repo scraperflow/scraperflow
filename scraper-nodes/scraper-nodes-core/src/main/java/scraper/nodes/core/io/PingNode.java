@@ -10,10 +10,12 @@ import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.reflect.T;
+import scraper.util.NodeUtil;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +45,7 @@ public final class PingNode implements FunctionalNode {
 
 
     @Override
-    public void modify(FunctionalNodeContainer n, @NotNull final FlowMap o) {
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         boolean ping = isReachable(n, address, port, timeout);
         o.output(result, ping);
     }

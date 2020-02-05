@@ -50,7 +50,7 @@ public final class StringGeneratorNode implements StreamNode {
     private T<String> generatedElement = new T<>(){};
 
     @Override
-    public void process(StreamNodeContainer n, FlowMap o) throws NodeException {
+    public void process(@NotNull StreamNodeContainer n, @NotNull FlowMap o) throws NodeException {
         // parse expression for goTo key
         // only one pattern 'X TO Y' supported, parse directly with regex
         String targetString = expression;
@@ -73,7 +73,7 @@ public final class StringGeneratorNode implements StreamNode {
             String generatedString = copy.eval(generator);
             copy.output(generatedElement, generatedString);
 
-            n.stream(o, copy);
+            n.streamFlowMap(o, copy);
         }
     }
 }

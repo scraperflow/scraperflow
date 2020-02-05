@@ -33,9 +33,9 @@ public class HttpServiceImpl implements HttpService {
     private @NotNull final ConcurrentHashMap<InetSocketAddress, HttpClient> clients = new ConcurrentHashMap<>();
 
     @Override
-    public @NotNull HttpResponse<?> send(
+    public @NotNull <A> HttpResponse<A> send(
             @NotNull final HttpRequest request,
-            @NotNull final HttpResponse.BodyHandler<?> handler,
+            @NotNull final HttpResponse.BodyHandler<A> handler,
             @NotNull final ReservationToken token
     ) throws IOException, InterruptedException, TimeoutException, ExecutionException {
         InetSocketAddress address = token.get();

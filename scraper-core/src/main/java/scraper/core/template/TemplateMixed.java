@@ -21,12 +21,13 @@ public class TemplateMixed<T> extends TemplateExpression<T>{
 
     public T eval(@NotNull final FlowMap o) {
         try{
+            // TODO use the string type token for template expressions
             TypeToken<String> stringTypeToken = TypeToken.of(String.class);
             StringBuilder lookup = new StringBuilder();
             for (Object t : concatTemplatesOrStrings) {
                 if (t instanceof TemplateExpression) {
                     Object evaled = ((TemplateExpression) t).eval(o);
-                    lookup.append(String.valueOf(evaled));
+                    lookup.append(evaled);
                 } else if (t instanceof String) {
                     lookup.append(t);
                 } else {
@@ -34,9 +35,8 @@ public class TemplateMixed<T> extends TemplateExpression<T>{
                 }
             }
 
-
+            // TODO same problem as TemplateMapKey, generics check maybe needed here
             return (T) targetType.getRawType().cast(StringToClassConverter.convert(lookup.toString(), targetType.getRawType()));
-            // TODO enable dynamic change of converter
         } catch (Exception e) {
             throw new TemplateException("Could not evaluate template string '"+toString()+"'. "+ e.toString());
         }

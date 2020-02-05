@@ -1,11 +1,8 @@
 package scraper.api.node;
 
-import scraper.api.specification.ScrapeInstance;
-
-import java.util.Optional;
+import scraper.annotations.NotNull;
 
 public interface NodeAddress extends Address {
-    Address nextIndex();
-    Address replace(String representation);
-//    Address getLabelRepresentation();
+    @NotNull Address nextIndex();
+    @NotNull Address replace(@NotNull String representation);
 }

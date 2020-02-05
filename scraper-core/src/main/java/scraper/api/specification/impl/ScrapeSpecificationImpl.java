@@ -1,26 +1,24 @@
 package scraper.api.specification.impl;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import scraper.annotations.NotNull;
-import scraper.annotations.Nullable;
 import scraper.api.specification.ScrapeImportSpecification;
 import scraper.api.specification.ScrapeSpecification;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ScrapeSpecificationImpl implements ScrapeSpecification {
     private String name;
     private Path scrapeFile;
     private List<Path> paths = new ArrayList<>();
+    @JsonProperty("dependencies")
     private String dependencies;
     private List<String> arguments = List.of();
     private Map<String, ScrapeImportSpecification> imports = Map.of();
     private String entry = "start";
-    private Map<String, List<Map<String, Object>>> graphs;
+    private Map<String, List<Map<String, Object>>> graphs = Map.of();
     private Map<String, Map<String, Object>> globalNodeConfigurations = new HashMap<>();
     private Map<String, Object> initialArguments = new HashMap<>();
 
@@ -36,8 +34,8 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
         }
         return this.paths;
     }
-    @Nullable
-    @Override public String getDependencies() { return dependencies; }
+    @NotNull
+    @Override public Optional<String> getDependencies() { return Optional.ofNullable(dependencies); }
     @NotNull
     @Override public List<String> getArguments() { return arguments; }
     @NotNull
@@ -64,6 +62,7 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
         return globalNodeConfigurations;
     }
 
+    @NotNull
     @Override
     public Map<String, Object> getInitialArguments() {
         return this.initialArguments;

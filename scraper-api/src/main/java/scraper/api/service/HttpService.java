@@ -18,7 +18,6 @@ import java.util.concurrent.TimeoutException;
  */
 public interface HttpService {
 
-    // TODO document exceptions
     /**
      * Enqueues a single HTTP request with a handler and a reservation token.
      *
@@ -27,27 +26,16 @@ public interface HttpService {
      * @param token Reservation token reserved from the {@link ProxyReservation} service
      *
      * @return HttpResponse
-     * @throws IOException
-     * @throws InterruptedException
-     * @throws TimeoutException
-     * @throws ExecutionException
      *
      * @see ProxyReservation
      * @see HttpRequest
      * @see java.net.http.HttpResponse.BodyHandler
      * @see HttpResponse
      */
-    HttpResponse<?> send(@NotNull final HttpRequest request,
-                         @NotNull final HttpResponse.BodyHandler<?> handler,
-                         @NotNull final ReservationToken token)
+    <A> HttpResponse<A> send(@NotNull HttpRequest request,
+                         @NotNull HttpResponse.BodyHandler<A> handler,
+                         @NotNull ReservationToken token)
             throws IOException, InterruptedException, TimeoutException, ExecutionException;
-
-    class RedirectToNode {
-        public @NotNull final String target;
-        public RedirectToNode(@NotNull String target) {
-            this.target = target;
-        }
-    }
 
     enum RequestType{
         GET, POST, DELETE, PUT

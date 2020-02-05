@@ -1,9 +1,11 @@
 package scraper.core;
 
 import scraper.annotations.NotNull;
+import scraper.annotations.Nullable;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
+import scraper.api.exceptions.TemplateException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
@@ -21,7 +23,7 @@ import java.util.*;
  */
 @NodePlugin("1.0.0")
 public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implements StreamNodeContainer {
-    public AbstractStreamNode(String instance, String graph, String node, int index) { super(instance, graph, node, index); }
+    AbstractStreamNode(@NotNull String instance, @NotNull String graph, @Nullable String node, int index) { super(instance, graph, node, index); }
 
     @Override
     public void init(@NotNull ScrapeInstance job) throws ValidationException {
@@ -40,7 +42,8 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
     private final @NotNull Map<UUID, Map<String, List<Object>>> collectors = new HashMap<>();
     private final @NotNull Map<UUID, List<String>> collectKeys = new HashMap<>();
 
-    public void collect(@NotNull FlowMap o, @NotNull List<String> toCollect) {
+    @Override
+    public void collect(@NotNull final FlowMap o, @NotNull final List<String> toCollect) {
         if(collect) {
             collectKeys.put(o.getId(), toCollect);
             // get collector list for origin ID and key to be collected
@@ -54,7 +57,8 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
         }
     }
 
-    public void stream(@NotNull FlowMap origin, @NotNull FlowMap newMap) {
+    @Override
+    public void streamFlowMap(@NotNull final FlowMap origin, @NotNull final FlowMap newMap) {
         if(!collect) {
             // dispatch directly to stream target without collecting
             forkDispatch(newMap, streamTarget);
@@ -62,13 +66,20 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
             collectKeys.get(origin.getId()).forEach(key -> {
                 Map<String, List<Object>> collectorForId = collectors.get(origin.getId());
                 // collect to list
-                collectorForId.get(key).add(newMap.get(key));
+                Optional<Object> element = newMap.get(key);
+                if(element.isEmpty()) {
+                    log(NodeLogLevel.ERROR, "Missing expected element at key {}, fix node implementation. Skipping", key);
+                    throw new TemplateException("Missing expected element at key " + key);
+                } else {
+                    collectorForId.get(key).add(element.get());
+                }
             });
         }
     }
 
+    @NotNull
     @Override
-    public FlowMap processStream(FlowMap o) throws NodeException {
+    public FlowMap processStream(@NotNull final FlowMap o) throws NodeException {
         if(collect) {
             log(NodeLogLevel.TRACE, "Collecting stream for map {}", o.getId());
             openStreams.put(o.getId(), o);

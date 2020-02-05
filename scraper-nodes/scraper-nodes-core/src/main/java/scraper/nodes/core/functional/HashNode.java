@@ -23,8 +23,8 @@ public final class HashNode implements FunctionalNode {
     private T<String> output = new T<>(){};
 
     @Override
-    public void modify(FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        String content = o.input(this.content);
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
+        String content = o.eval(this.content);
 
         int hash = content.hashCode();
 

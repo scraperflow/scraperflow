@@ -28,7 +28,7 @@ public class EchoNode implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        Map<String, Object> puts = o.input(this.puts);
+        Map<String, Object> puts = o.eval(this.puts);
 
         // put multiple objects/strings
         for (String key : puts.keySet()) {

@@ -13,5 +13,5 @@ import scraper.api.di.DIContainer;
  */
 public interface Addon {
     /** Loads and initializes the addon with already loaded dependencies */
-    void load(@NotNull final DIContainer loadedDependencies);
+    void load(@NotNull DIContainer loadedDependencies);
 }

@@ -1,6 +1,5 @@
 package scraper.core;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.plugin.metadata.AbstractMetadataBasedPlugin;
 import org.springframework.plugin.metadata.PluginMetadata;
 import scraper.annotations.NotNull;
@@ -50,8 +49,8 @@ public abstract class AbstractMetadata extends AbstractMetadataBasedPlugin {
     }
 
     /** Each actual implementation for a node should be able to instantiate the node implementation */
-    public abstract @NotNull
-    Node getNode() throws ValidationException;
+    @NotNull
+    public abstract Node getNode() throws ValidationException;
 
     /**
      * Checks if this node is backwards compatible with another node

@@ -77,7 +77,7 @@ public class AnnotationsExampleNode implements Node {
     private final T<List> outputRaw = new T<>(){};
 
     @Override @NotNull
-    public FlowMap process(NodeContainer n, @NotNull final FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull NodeContainer n, @NotNull final FlowMap o) throws NodeException {
         o.output(outputRaw, new LinkedList());
         return n.forward(o);
     }

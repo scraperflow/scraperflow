@@ -148,7 +148,7 @@ public final class HttpRequestNode implements Node {
     }
 
     @Override @NotNull
-    public FlowMap process(NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException {
         // evaluate Ts
         String url = o.eval(this.url);
 
@@ -191,6 +191,7 @@ public final class HttpRequestNode implements Node {
 
             HttpService service = n.getJobInstance().getHttpService();
 
+            // TODO use generics
             HttpResponse response = service.send(request, handler, token);
 
             Object body = response.body();

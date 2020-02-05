@@ -30,7 +30,7 @@ public final class PrintNode implements Node {
 
     @NotNull
     @Override
-    public FlowMap process(NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
         String arg = o.eval(this.arg);
         List<String> args = o.eval(this.args);
 

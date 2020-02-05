@@ -18,12 +18,6 @@ public class ExecutorsServiceImpl implements ExecutorsService {
         return getService(count, group, jobName);
     }
 
-    @Override
-    public synchronized @NotNull ExecutorService getService(@NotNull String jobName, @NotNull String group) {
-        return getService(5, group, jobName);
-    }
-
-
     private synchronized @NotNull ExecutorService getService(int count, @NotNull final String group, String jobName){
         String id = jobName+"-"+group;
 
