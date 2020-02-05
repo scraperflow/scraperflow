@@ -97,7 +97,7 @@ public final class HttpRequestNode implements Node {
     private Integer holdOnForward;
     /** Checks the response body of a string response for bad phrases, throwing an exception if one is found */
     @FlowKey(defaultValue = "[]")
-    private List<String> exceptionContaining;
+    private T<List<String>> exceptionContaining = new T<>(){};
 
     // --------------
     // COOKIES
@@ -151,6 +151,7 @@ public final class HttpRequestNode implements Node {
     public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException {
         // evaluate Ts
         String url = o.eval(this.url);
+        List<String> exceptionContaining = o.evalIdentity(this.exceptionContaining);
 
         // check if file already downloaded
         if(checkFileDownloaded(n, o)) {
@@ -159,7 +160,7 @@ public final class HttpRequestNode implements Node {
         }
 
         // check if response is cached
-        if(cached(n, o, url)) {
+        if(cached(n, o, url, exceptionContaining)) {
             n.log(TRACE, "Request cached: {}", url);
             return n.forward(o);
         }
@@ -196,7 +197,7 @@ public final class HttpRequestNode implements Node {
 
             Object body = response.body();
 
-            validateBody(body);
+            validateBody(body, exceptionContaining);
 
             // cache if content not empty
             if(cache != null && body instanceof String)
@@ -239,7 +240,7 @@ public final class HttpRequestNode implements Node {
         return n.forward(o);
     }
 
-    private void validateBody(Object body) throws IOException {
+    private void validateBody(Object body, List<String> exceptionContaining) throws IOException {
         if(body == null) throw new IOException("Null body");
         if(body instanceof String) {
             String content = (String) body;
@@ -351,9 +352,9 @@ public final class HttpRequestNode implements Node {
     }
 
     /** If cached try to get cached value first */
-    private boolean cached(NodeContainer n, FlowMap o, String url) {
+    private boolean cached(NodeContainer n, FlowMap o, String url, List<String> exceptionContaining) {
         if (cache != null) {
-            String cachedContent = getCached(n, cache, url);
+            String cachedContent = getCached(n, cache, url, exceptionContaining);
             if (cachedContent != null) {
                 n.log(DEBUG,"[\uD83D\uDCBE] {}", url);
 
@@ -365,7 +366,7 @@ public final class HttpRequestNode implements Node {
         return false;
     }
 
-    private String getCached(NodeContainer n, String cache, String url) {
+    private String getCached(NodeContainer n, String cache, String url, List<String> exceptionContaining) {
         String filename = urlToCachedFilename(url);
         File f = Paths.get(cache, filename).toFile();
         if(!f.exists()) return null;
@@ -394,7 +395,7 @@ public final class HttpRequestNode implements Node {
             }
 
             try {
-                validateBody(cached);
+                validateBody(cached, exceptionContaining);
             } catch (Exception e) {
                 n.log(WARN,"Invalidating cache file with invalid content: {}", e.getMessage());
                 if(!f.delete()) n.log(WARN,"Could not delete invalid cache file: {}", f.getPath());

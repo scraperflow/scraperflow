@@ -39,7 +39,11 @@ public class TemplateMapOrListLookup<T> extends TemplateExpression<T> {
             } else {
                 return l.get(index);
             }
-        } catch (Exception ignored) {}
+        }
+        catch (IndexOutOfBoundsException e) {
+            throw new TemplateException("Array index out of bounds for '"+toString()+"': "+ e.getMessage());
+        }
+        catch (Exception ignored) {}
 
         try {
             Map<String, T> m = map.eval(o);
