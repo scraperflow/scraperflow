@@ -2,7 +2,8 @@ package scraper.plugins.core.flowgraph;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
-import scraper.api.node.Node;
+import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.Node;
 import scraper.api.specification.ScrapeInstance;
 import scraper.core.Template;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
@@ -27,6 +28,7 @@ public class FlowUtil {
     public static ControlFlowGraph generateControlFlowGraph(ScrapeInstance instance) {
         ControlFlowGraphImpl cfg = new ControlFlowGraphImpl();
 
+
         instance.getGraphs().forEach(((graphAddress, nodes) ->
                 nodes.forEach(node -> handleNode(cfg, instance, node))
         ));
@@ -45,7 +47,7 @@ public class FlowUtil {
         return dfg;
     }
 
-    private static void handleNode(ControlFlowGraphImpl cfg, ScrapeInstance instance, Node node) {
+    private static void handleNode(ControlFlowGraphImpl cfg, ScrapeInstance instance, NodeContainer<? extends Node> node) {
         ControlFlowNode cfnode = new ControlFlowNodeImpl(node.getAddress());
         cfg.addNode(node.getAddress(), cfnode);
 
@@ -57,18 +59,18 @@ public class FlowUtil {
             String controlClass = "scraper.plugins.core.flowgraph.control."+nodeClass.getSimpleName()+"Control";
             try {
                 Class<?> control = Class.forName(controlClass);
-                Method method = control.getDeclaredMethod("getOutput", List.class, Node.class, ScrapeInstance.class);
+                Method method = control.getDeclaredMethod("getOutput", List.class, NodeContainer.class, ScrapeInstance.class);
                 //noinspection unchecked
                 output = (List<ControlFlowEdge>) method.invoke(null, output, node, instance);
             } catch (Exception ignored) {
-//                System.out.println("[Skip] Could not find control for " + nodeClass+": " + controlClass);
+                System.out.println("[Skip] Could not find control for " + nodeClass+": " + controlClass);
             }
         }
 
         output.forEach(cfg::addEdge);
     }
 
-    private static void handleNodeDfg(DataFlowGraphImpl dfg, ScrapeInstance instance, Node node) {
+    private static void handleNodeDfg(DataFlowGraphImpl dfg, ScrapeInstance instance, NodeContainer<? extends Node> node) {
         DataFlowNodeImpl cfnode = new DataFlowNodeImpl(node.getAddress());
         dfg.addNode(node.getAddress(), cfnode);
 
@@ -104,7 +106,7 @@ public class FlowUtil {
         dfg.addNode(node.getAddress(), cfnode);
     }
 
-    private static List<Class> getReverseOrderHierarchy(Node node) {
+    private static List<Class> getReverseOrderHierarchy(NodeContainer<? extends Node> node) {
         List<Class> result = new LinkedList<>();
         Class current = node.getClass();
         while(current.getSimpleName().toLowerCase().contains("node")) {
@@ -124,7 +126,7 @@ public class FlowUtil {
         return (T) f.get(instance);
     }
 
-    private static Map<String, String> getDefaultDataFlowOutput(Node node) {
+    private static Map<String, String> getDefaultDataFlowOutput(NodeContainer<? extends Node> node) {
         //noinspection RedundantOperationOnEmptyContainer what is this warning about???
         List<Field> outputData = ClassUtil.getAllFields(new LinkedList<>(), node.getClass()).stream()
                 // only templates
@@ -137,7 +139,7 @@ public class FlowUtil {
         return NodeUtil.extractMapFromFields(outputData, node);
     }
 
-    private static Map<String, String> getDefaultDataFlowInput(Node node) {
+    private static Map<String, String> getDefaultDataFlowInput(NodeContainer<? extends Node> node) {
         //noinspection RedundantOperationOnEmptyContainer what is this warning about???
         List<Field> inputData = ClassUtil.getAllFields(new LinkedList<>(), node.getClass()).stream()
                 // only templates

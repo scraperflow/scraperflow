@@ -93,15 +93,22 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     @NotNull
     @Override
     public NodeContainer<? extends Node> getNode(@NotNull NodeAddress target) {
-        return null;
+        NodeContainer<? extends Node> node = routes.get(target);
+        if(node == null) throw new IllegalStateException("Node address " + target + " should exist but does not.");
+        return node;
     }
 
     @NotNull
     @Override
     public Optional<NodeContainer<? extends Node>> getNode(@NotNull Address target) {
-        NodeContainer<? extends Node> nn = routes.get(target);
-        if(nn == null) return Optional.empty();
-        else return Optional.of(nn);
+        return Optional.ofNullable(routes.get(target));
+    }
+
+    @NotNull
+    @Override
+    public Map<GraphAddress, List<NodeContainer<? extends Node>>> getGraphs() {
+        return getAllNodes().stream().collect(Collectors.groupingBy(NodeContainer::getGraphKey));
+
     }
 
     @Override
