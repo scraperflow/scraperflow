@@ -57,7 +57,10 @@ public abstract class T<TYPE> implements Supplier<Type> {
 
 	@Override public int hashCode() { return Objects.hash(type, parsedJson); }
 
-	@Override public String toString() { return parsedJson.toString(); }
+	@Override public String toString() {
+		if(parsedJson == null) return get().toString();
+		return parsedJson.toString();
+	}
 
 	// Getter, setter
 	public void setParsedJson(Object convertedTemplateObject) { this.parsedJson = convertedTemplateObject; }
