@@ -2,10 +2,7 @@ package scraper.api.specification;
 
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
-import scraper.api.node.Address;
-import scraper.api.node.GraphAddress;
-import scraper.api.node.InstanceAddress;
-import scraper.api.node.NodeAddress;
+import scraper.api.node.*;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.service.ExecutorsService;
@@ -13,6 +10,7 @@ import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
 import scraper.api.service.ProxyReservation;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -49,6 +47,12 @@ public interface ScrapeInstance {
     /** Imported instances, if any. Routes can point to the names of these instances */
     @NotNull Map<InstanceAddress, ScrapeInstance> getImportedInstances();
 
+    /** Hooks before a flow map is accepted */
+    @NotNull Collection<NodeHook> getBeforeHooks();
+
+    /** Hooks after a flow map has been processed */
+    @NotNull Collection<NodeHook> getAfterHooks();
+
     /** Returns the entry node */
     @NotNull NodeContainer<? extends Node> getEntry();
 
@@ -67,4 +71,5 @@ public interface ScrapeInstance {
     @NotNull HttpService getHttpService();
     @NotNull ProxyReservation getProxyReservation();
     @NotNull FileService getFileService();
+
 }

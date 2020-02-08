@@ -4,10 +4,7 @@ import com.google.common.collect.Streams;
 import org.slf4j.Logger;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
-import scraper.api.node.Address;
-import scraper.api.node.GraphAddress;
-import scraper.api.node.InstanceAddress;
-import scraper.api.node.NodeAddress;
+import scraper.api.node.*;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.reflect.T;
@@ -49,6 +46,9 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     private FileService fileService;
 
     private GraphAddress entry;
+
+    private Collection<NodeHook> beforeHooks = new HashSet<>();
+    private Collection<NodeHook> afterHooks = new HashSet<>();
 
     public ScrapeInstaceImpl(ScrapeSpecification spec) {
         this.spec = spec;
@@ -125,6 +125,17 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     @NotNull public ProxyReservation getProxyReservation() { return proxyReservation; }
     public void setProxyReservation(ProxyReservation proxyReservation) { this.proxyReservation = proxyReservation; }
     @NotNull public FileService getFileService() { return fileService; }
+
+    @Override
+    public Collection<NodeHook> getBeforeHooks() {
+        return beforeHooks;
+    }
+
+    @Override
+    public Collection<NodeHook> getAfterHooks() {
+        return afterHooks;
+    }
+
     public void setFileService(FileService fileService) { this.fileService = fileService; }
 
     // TODO implement this in a better way
@@ -198,4 +209,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toList());
     }
+
+    public void addBeforeHook(NodeHook h) { beforeHooks.add(h); }
+    public void addAfterHook(NodeHook h) { afterHooks.add(h); }
 }

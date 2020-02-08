@@ -103,7 +103,7 @@ public class AbstractNodeTest {
         AbstractNode node = (AbstractNode) instance.getEntry();
         FlowMap o = FlowMapImpl.of(Map.of());
         // bad log should never stop the process
-        node.start(o);
+        node.start(node, o);
     }
 
     @Test
@@ -112,7 +112,7 @@ public class AbstractNodeTest {
 
         AbstractNode node = (AbstractNode) instance.getEntry();
         FlowMap o = FlowMapImpl.of(Map.of());
-        node.start(o);
+        node.start(node, o);
     }
 
     @Test
@@ -121,7 +121,7 @@ public class AbstractNodeTest {
 
         AbstractNode node = (AbstractNode) instance.getEntry();
         FlowMap o = FlowMapImpl.of(Map.of("path-template", "/tmp/scraper-ok"));
-        node.start(o);
+        node.start(node, o);
     }
 
     @Test
@@ -228,7 +228,7 @@ public class AbstractNodeTest {
 
             AbstractNode node = (AbstractNode) instance.getEntry();
             FlowMap o = FlowMapImpl.of(Map.of());
-            node.start(o);
+            node.start(node, o);
         } finally {
             System.setSecurityManager(sm);
         }
