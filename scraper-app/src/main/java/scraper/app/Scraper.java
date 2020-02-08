@@ -8,6 +8,7 @@ import scraper.annotations.NotNull;
 import scraper.annotations.di.DITarget;
 import scraper.api.di.DIContainer;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.NodeHook;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.plugin.Addon;
@@ -44,6 +45,8 @@ public class Scraper {
     private @NotNull final Collection<PreHook> prehooks;
     // hooks
     private @NotNull final Collection<Hook> hooks;
+    // node hooks
+    private @NotNull final Collection<NodeHook> nodeHooks;
 
     // DI container
     private DIContainer pico;
@@ -54,12 +57,14 @@ public class Scraper {
     public Scraper(@NotNull JobFactory jobFactory, @NotNull ExecutorsService executorsService,
                    @NotNull @DITarget(PreHook.class) Collection<PreHook> prehooks,
                    @NotNull @DITarget(Hook.class) Collection<Hook> hooks,
-                   @NotNull @DITarget(Addon.class) Collection<Addon> addons) {
+                   @NotNull @DITarget(Addon.class) Collection<Addon> addons,
+                   @NotNull @DITarget(NodeHook.class) Collection<NodeHook> nodeHooks) {
         this.jobFactory = jobFactory;
         this.executorsService = executorsService;
         this.prehooks = prehooks;
         this.hooks = hooks;
         this.addons = addons;
+        this.nodeHooks = nodeHooks;
     }
 
 
@@ -103,7 +108,7 @@ public class Scraper {
 
         log.debug("Converting scrape jobs");
         for (ScrapeSpecification jobDefinition : jobDefinitions)
-            jobs.put(jobDefinition, jobFactory.convertScrapeJob(jobDefinition));
+            jobs.put(jobDefinition, jobFactory.convertScrapeJob(jobDefinition, nodeHooks));
 
         log.info("Executing {} hooks", hooks.size());
         for (Hook hook : hooks) hook.execute(pico, args, jobs);
@@ -113,6 +118,7 @@ public class Scraper {
             return;
         }
 
+        log.info("Found {} node hooks", nodeHooks.size());
         startScrapeJobs();
     }
 

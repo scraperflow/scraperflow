@@ -6,6 +6,7 @@ import io.github.classgraph.ScanResult;
 import org.slf4j.Logger;
 import scraper.api.di.DIContainer;
 import scraper.api.di.impl.DIContainerImpl;
+import scraper.api.node.NodeHook;
 import scraper.api.plugin.Addon;
 import scraper.api.plugin.Hook;
 import scraper.api.plugin.PreHook;
@@ -58,6 +59,15 @@ public class DependencyInjectionUtil {
                     log.debug("Found pre-hook '{}'", hook.getSimpleName());
                 } catch (ClassNotFoundException e) {
                     log.error("Scan found pre-hook, but class not found", e);
+                }
+            }
+            for (ClassInfo routeClassInfo : scanResult.getClassesImplementing(NodeHook.class.getName())) {
+                try {
+                    Class<?> hook = Class.forName(routeClassInfo.getName());
+                    diContainer.addComponent(hook, true);
+                    log.debug("Found node hook '{}'", hook.getSimpleName());
+                } catch (ClassNotFoundException e) {
+                    log.error("Scan found node hook, but class not found", e);
                 }
             }
         }

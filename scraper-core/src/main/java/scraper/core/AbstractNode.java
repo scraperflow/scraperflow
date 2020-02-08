@@ -34,6 +34,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static scraper.api.node.container.NodeLogLevel.*;
 import static scraper.util.NodeUtil.initFields;
@@ -189,7 +191,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
      *
      * @param map The current forwarded map
      */
-    protected void start(@NotNull final FlowMap map) throws NodeException {
+    protected void start(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap map) throws NodeException {
         // update FlowState
         updateFlowInfo(map, this, "start");
 
@@ -241,11 +243,11 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     /**
      * @param o The current map
      */
-    protected void finish(@NotNull final FlowMap o) {
+    protected void finish(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap o) {
         updateFlowInfo(o, this, "finish");
     }
 
-    private void updateFlowInfo(@NotNull final FlowMap map, @NotNull final AbstractNode abstractNode, @NotNull String phase) {
+    private void updateFlowInfo(@NotNull final FlowMap map, @NotNull final AbstractNode<? extends Node> abstractNode, @NotNull String phase) {
         if(logLevel.worseOrEqual(WARN)) {
             // only history of start is tracked
             if(phase.equalsIgnoreCase("start")) return;
@@ -424,12 +426,18 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
 
     @Override @NotNull
     public Collection<NodeHook> beforeHooks() {
-        return Set.of(this::start);
+        return Stream.concat(
+                getJobInstance().getBeforeHooks().stream(),
+                Stream.of(this::start)
+        ).collect(Collectors.toList());
     }
 
     @Override @NotNull
     public Collection<NodeHook> afterHooks() {
-        return Set.of(this::finish);
+        return Stream.concat(
+                getJobInstance().getAfterHooks().stream(),
+                Stream.of(this::finish)
+        ).collect(Collectors.toList());
     }
 
     @Override

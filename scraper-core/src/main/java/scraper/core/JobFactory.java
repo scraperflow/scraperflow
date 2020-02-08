@@ -7,6 +7,7 @@ import org.springframework.plugin.metadata.SimplePluginMetadata;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.InstanceAddress;
+import scraper.api.node.NodeHook;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.impl.GraphAddressImpl;
 import scraper.api.node.impl.InstanceAddressImpl;
@@ -61,7 +62,7 @@ public class JobFactory {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
 
-    private ScrapeInstaceImpl parseJob(ScrapeSpecification def) {
+    private ScrapeInstaceImpl parseJob(ScrapeSpecification def, Collection<NodeHook> hooks) {
         ScrapeInstaceImpl job = new ScrapeInstaceImpl(def);
         job.setName(def.getName());
 
@@ -69,6 +70,9 @@ public class JobFactory {
         job.setFileService(fileService);
         job.setHttpService(httpService);
         job.setProxyReservation(proxyReservation);
+
+        hooks.stream().filter(NodeHook::beforeHook).forEach(job::addBeforeHook);
+        hooks.stream().filter(h -> !h.beforeHook()).forEach(job::addAfterHook);
 
         return job;
     }
@@ -100,11 +104,17 @@ public class JobFactory {
 //    }
 
     public @NotNull ScrapeInstaceImpl convertScrapeJob(@NotNull final ScrapeSpecification jobDefinition) throws IOException, ValidationException {
-        return convertJob(jobDefinition, null);
+        return convertJob(jobDefinition, null, Set.of());
+    }
+
+    public @NotNull ScrapeInstaceImpl convertScrapeJob(@NotNull final ScrapeSpecification jobDefinition, Collection<NodeHook> nodeHooks) throws IOException, ValidationException {
+        return convertJob(jobDefinition, null, nodeHooks);
     }
 
     private @NotNull ScrapeInstaceImpl convertJob(@NotNull final ScrapeSpecification jobDefinition,
-                                         Function<String, Map<String, Object>> nodeSupplier) throws IOException, ValidationException {
+                                         Function<String, Map<String, Object>> nodeSupplier,
+                                                  Collection<NodeHook> nodeHooks)
+            throws IOException, ValidationException {
 
         // ===
         // Imports
@@ -120,7 +130,7 @@ public class JobFactory {
             // overwrite global configuration of imported job
             newJob.getGlobalNodeConfigurations().putAll(jobDefinition.getGlobalNodeConfigurations());
 
-            ScrapeInstaceImpl parsedJob = convertScrapeJob(newJob);
+            ScrapeInstaceImpl parsedJob = convertScrapeJob(newJob, nodeHooks);
             parsedImports.put(new InstanceAddressImpl(newJob.getName()), parsedJob);
         }
 
@@ -143,7 +153,7 @@ public class JobFactory {
         // Job Pojo
         // ===
         log.info("Parsing {}",jobDefinition.getScrapeFile());
-        ScrapeInstaceImpl job = parseJob(jobDefinition);
+        ScrapeInstaceImpl job = parseJob(jobDefinition, nodeHooks);
 
         // ===
         // .args files

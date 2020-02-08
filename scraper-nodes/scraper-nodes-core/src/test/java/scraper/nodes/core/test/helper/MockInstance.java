@@ -1,10 +1,7 @@
 package scraper.nodes.core.test.helper;
 
 import scraper.annotations.NotNull;
-import scraper.api.node.Address;
-import scraper.api.node.GraphAddress;
-import scraper.api.node.InstanceAddress;
-import scraper.api.node.NodeAddress;
+import scraper.api.node.*;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.service.ExecutorsService;
@@ -14,6 +11,7 @@ import scraper.api.service.ProxyReservation;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,12 +33,23 @@ public class MockInstance implements ScrapeInstance {
 //    @NotNull @Override public List<NodeContainer<? extends Node>> getEntryGraph() { return List.of(node); }
 //    @NotNull @Override public List<NodeContainer<? extends Node>> getGraph(@NotNull GraphAddress label) { return getEntryGraph(); }
     @NotNull @Override public Map<InstanceAddress, ScrapeInstance> getImportedInstances() { throw new IllegalStateException(); }
+
+    @Override
+    public Collection<NodeHook> getBeforeHooks() {
+        throw new IllegalStateException();
+    }
+
+    @Override
+    public Collection<NodeHook> getAfterHooks() {
+        throw new IllegalStateException();
+    }
+
     @Override public void init() { }
 
     @NotNull
     @Override
     public ScrapeSpecification getSpecification() {
-        return null;
+        throw new IllegalStateException();
     }
 
     //    @Override public Address getForwardTarget(@NotNull NodeAddress origin) { throw new IllegalStateException(); }
