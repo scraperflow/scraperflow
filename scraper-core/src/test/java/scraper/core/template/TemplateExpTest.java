@@ -7,16 +7,18 @@ import org.junit.Before;
 import org.junit.Test;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
+import scraper.api.flow.impl.FlowMapImpl;
 import scraper.util.NodeUtil;
 import scraper.util.TemplateUtil;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class TemplateExpTest {
 
-    private final static FlowMap o = NodeUtil.flowOf(new HashMap<>());
+    private final static FlowMap o = new FlowMapImpl(UUID.randomUUID());
     private final static ObjectMapper mapper = new ObjectMapper();
 
     @Before

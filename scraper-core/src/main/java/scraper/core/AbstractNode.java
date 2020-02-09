@@ -11,7 +11,6 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
-import scraper.api.flow.impl.FlowStateImpl;
 import scraper.api.node.Address;
 import scraper.api.node.GraphAddress;
 import scraper.api.node.NodeAddress;
@@ -192,8 +191,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
      * @param map The current forwarded map
      */
     protected void start(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap map) throws NodeException {
-        // update FlowState
-        updateFlowInfo(map, this, "start");
+        map.nextSequence();
 
         // evaluate and write log message if any
         try {
@@ -244,41 +242,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
      * @param o The current map
      */
     protected void finish(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap o) {
-        updateFlowInfo(o, this, "finish");
-    }
-
-    private void updateFlowInfo(@NotNull final FlowMap map, @NotNull final AbstractNode<? extends Node> abstractNode, @NotNull String phase) {
-        if(logLevel.worseOrEqual(WARN)) {
-            // only history of start is tracked
-            if(phase.equalsIgnoreCase("start")) return;
-        }
-
-        FlowStateImpl state = new FlowStateImpl(phase);
-        state.log("address", getAddress());
-        state.log("graph", getGraphKey());
-
-        if(logLevel.worseOrEqual(INFO)) {
-            state.log("keys", new HashSet<>(map.keySet()));
-        }
-
-        if(logLevel.worseOrEqual(DEBUG)) {
-            Map<String, Object> keyValues = new HashMap<>();
-
-            // TODO re-implement
-//            for (String key : map.keySet()) {
-//                if(map.get(key) instanceof String) {
-//                    // trim string
-//                    keyValues.put(key, ((String) Objects.requireNonNull(map.get(key)))
-//                            .substring(0, Math.min(100, ((String) Objects.requireNonNull(map.get(key))).length())));
-//                } else {
-//                    // else just put class name
-//                    keyValues.put(key, Objects.requireNonNull(map.get(key)).getClass().getName());
-//                }
-//            }
-            state.log("key-values", keyValues);
-        }
-
-        // TODO implement TRACE deep copy keys
+        // no op
     }
 
 
@@ -427,16 +391,16 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     @Override @NotNull
     public Collection<NodeHook> beforeHooks() {
         return Stream.concat(
-                getJobInstance().getBeforeHooks().stream(),
-                Stream.of(this::start)
+                Stream.of(this::start),
+                getJobInstance().getBeforeHooks().stream()
         ).collect(Collectors.toList());
     }
 
     @Override @NotNull
     public Collection<NodeHook> afterHooks() {
         return Stream.concat(
-                getJobInstance().getAfterHooks().stream(),
-                Stream.of(this::finish)
+                Stream.of(this::finish),
+                getJobInstance().getAfterHooks().stream()
         ).collect(Collectors.toList());
     }
 

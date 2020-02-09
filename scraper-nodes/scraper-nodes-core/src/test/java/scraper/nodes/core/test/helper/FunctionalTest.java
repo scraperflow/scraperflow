@@ -3,6 +3,7 @@ package scraper.nodes.core.test.helper;
 import junitparams.Parameters;
 import org.junit.Test;
 import scraper.api.flow.FlowMap;
+import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
 import scraper.nodes.core.test.annotations.Functional;
@@ -46,10 +47,10 @@ public abstract class FunctionalTest {
             node.init(mockContainer, mockInstance);
 
             // feed input
-            FlowMap actualOutput = flowOf(input);
+            FlowMap actualOutput = FlowMapImpl.origin(input);
             node.modify(mockContainer, actualOutput);
 
-            FlowMap expectedOutput = flowOf(output);
+            FlowMap expectedOutput = FlowMapImpl.origin(output);
 
             if (!actualOutput.containsElements(expectedOutput)) {
                 throw new Exception("Map not matching: \nActual output: "+actualOutput+"\nExpected output: "+expectedOutput);

@@ -10,6 +10,7 @@ import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
+import scraper.util.NodeUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -45,14 +46,12 @@ public final class PeriodicNode implements FunctionalNode {
 
     @Override
     public void init(@NotNull NodeContainer n, @NotNull final ScrapeInstance job) {
-        o = flowOf(job.getEntryArguments());
-
         timerTask = new TimerTask() {
             @Override
             public void run() {
                 if(started.get() && dispatch.get()) {
                     n.log(DEBUG,"Dispatching {}", onPeriod);
-                    final FlowMap oCopy = o;
+                    final FlowMap oCopy = o.copy();
                     n.forkDispatch(oCopy, onPeriod);
                 }
             }

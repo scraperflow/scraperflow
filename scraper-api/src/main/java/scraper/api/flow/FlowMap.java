@@ -63,8 +63,16 @@ public interface FlowMap {
     /** Checks if this maps contains all elements (equals method) of the other map by recursive descent */
     boolean containsElements(@NotNull FlowMap otherMap);
 
-    /** State of this flow. Useful for debugging purposes. Amount of tracking increases with log level of the nodes accessed in the flow. */
-    @NotNull FlowHistory getFlowHistory();
+    //===================
+    // State
+    //===================
+
+    /** If this flow map originated from another flow */
+    @NotNull Optional<UUID> getParentId();
+
+    /** Returns the sequence number of the flow. Starts with 0 */
+    @NotNull int getSequence();
+    @NotNull void nextSequence();
 
     /** Returns the unique id of this flow */
     @NotNull UUID getId();
@@ -90,4 +98,6 @@ public interface FlowMap {
     // Output
 
     <A> void output(@NotNull T<A> locationAndType, @Nullable A outputObject);
+
+    FlowMap copy();
 }

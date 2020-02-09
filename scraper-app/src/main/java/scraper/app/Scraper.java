@@ -8,6 +8,7 @@ import scraper.annotations.NotNull;
 import scraper.annotations.di.DITarget;
 import scraper.api.di.DIContainer;
 import scraper.api.flow.FlowMap;
+import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.NodeHook;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
@@ -130,7 +131,7 @@ public class Scraper {
 		jobs.forEach((definition, job) -> {
             CompletableFuture<FlowMap> future = CompletableFuture.supplyAsync(() -> {
                 try {
-                    FlowMap initial = flowOf(job.getEntryArguments());
+                    FlowMap initial = FlowMapImpl.origin(job.getEntryArguments());
 
                     NodeContainer<? extends Node> initialNode = job.getEntry();
                     initialNode.getC().accept(initialNode, initial);

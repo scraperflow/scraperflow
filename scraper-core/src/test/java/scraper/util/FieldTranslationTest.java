@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
+import scraper.api.flow.FlowMap;
+import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.reflect.T;
 
 import java.lang.reflect.Field;
@@ -298,7 +300,7 @@ public class FieldTranslationTest {
 
         if(field.getType().isAssignableFrom(T.class)) {
             T<?> template = (T<?>) field.get(this);
-            Optional<?> templateEvaluation = NodeUtil.flowOf(args).evalMaybe(template);
+            Optional<?> templateEvaluation = FlowMapImpl.origin(args).evalMaybe(template);
 
             // static convention check for simple cases
             if(expectedTemplateEval != null && (templateEvaluation.isEmpty() || !expectedTemplateEval.equals(templateEvaluation.get()))) {

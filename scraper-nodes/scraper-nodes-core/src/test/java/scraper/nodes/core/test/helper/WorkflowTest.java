@@ -4,6 +4,7 @@ import junitparams.Parameters;
 import org.junit.Test;
 import scraper.api.di.DIContainer;
 import scraper.api.flow.FlowMap;
+import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.specification.impl.ScrapeInstaceImpl;
@@ -51,7 +52,7 @@ public abstract class WorkflowTest {
         ScrapeInstaceImpl convJob = dibean.get(JobFactory.class).convertScrapeJob(spec);
 
         // build initial input map
-        FlowMap initialFlow = flowOf(Map.of());
+        FlowMap initialFlow = FlowMapImpl.origin();
 
         // feed input
         try {

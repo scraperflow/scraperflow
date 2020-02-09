@@ -65,6 +65,12 @@ public interface ScrapeInstance {
 
     @NotNull Map<String, Object> getEntryArguments();
 
+    // ===========
+    // Helper
+    // ===========
+
+    // for plugins and hooks
+    Address addressOf(String representation);
 
     // Cross-cutting concerns services
     @NotNull ExecutorsService getExecutors();

@@ -21,7 +21,7 @@ public class FlowMapImplTest {
     @Test
     public void mapFunctionsTest() {
         // direct instantiation
-        FlowMap flowMap = new FlowMapImpl();
+        FlowMap flowMap = FlowMapImpl.origin();
         Assert.assertNotNull(flowMap.toString());
 
         // put and get
@@ -60,12 +60,12 @@ public class FlowMapImplTest {
         initialMap.put("answer", 42);
 
         // direct instantiation
-        FlowMap flowMap = new FlowMapImpl(initialMap);
+        FlowMap flowMap = FlowMapImpl.origin(initialMap);
 
         // copy
         FlowMap flowMap1 = FlowMapImpl.copy(flowMap);
         FlowMap flowMap2 = FlowMapImpl.copy((FlowMapImpl) flowMap);
-        FlowMap flowMap3 = FlowMapImpl.of(initialMap);
+        FlowMap flowMap3 = NodeUtil.flowOf(flowMap);
 
         assertEquals(flowMap, flowMap1);
         assertNotSame(flowMap, flowMap1);
@@ -100,9 +100,9 @@ public class FlowMapImplTest {
 
     @Test
     public void flowContainsTest() {
-        FlowMap o1 = NodeUtil.flowOf(Map.of("k1",123, "k2", 42));
-        FlowMap o2 = NodeUtil.flowOf(Map.of("k1",123, "k2", 42, "more", "more!"));
-        FlowMap o3 = NodeUtil.flowOf(Map.of("k1",123, "k2", 42, "more", "more!", "even more", "ok"));
+        FlowMap o1 = FlowMapImpl.origin(Map.of("k1",123, "k2", 42));
+        FlowMap o2 = FlowMapImpl.origin(Map.of("k1",123, "k2", 42, "more", "more!"));
+        FlowMap o3 = FlowMapImpl.origin(Map.of("k1",123, "k2", 42, "more", "more!", "even more", "ok"));
 
         // reflexivity
         Assert.assertTrue(o1.containsElements(o1));
@@ -119,8 +119,8 @@ public class FlowMapImplTest {
 
     @Test
     public void flowContainsDescendCollectionsTest() {
-        FlowMap o1 = NodeUtil.flowOf(Map.of("k1",123, "k2", Set.of(Map.of("1",1), "ok", List.of("123", "123"))));
-        FlowMap o2 = NodeUtil.flowOf(Map.of("k1",123, "k2", Set.of(Map.of("1",1,"2","2"), "moreElementsInTheSet", "ok", List.of("listIsBigger","123", "123"))));
+        FlowMap o1 = FlowMapImpl.origin(Map.of("k1",123, "k2", Set.of(Map.of("1",1), "ok", List.of("123", "123"))));
+        FlowMap o2 = FlowMapImpl.origin(Map.of("k1",123, "k2", Set.of(Map.of("1",1,"2","2"), "moreElementsInTheSet", "ok", List.of("listIsBigger","123", "123"))));
 
         // o2 has at least all elements of o1
         Assert.assertTrue(o2.containsElements(o1));

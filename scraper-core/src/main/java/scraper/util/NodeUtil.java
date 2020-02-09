@@ -59,9 +59,9 @@ public final class NodeUtil {
         return replaced;
     }
 
-    public static FlowMap flowOf(Map<String, Object> initialArguments) {
-        return FlowMapImpl.of(initialArguments);
-    }
+//    public static FlowMap flowOf(Map<String, Object> initialArguments) {
+//        return FlowMapImpl.origin(initialArguments);
+//    }
 
     public static FlowMap flowOf(FlowMap o) {
         return FlowMapImpl.copy(o);

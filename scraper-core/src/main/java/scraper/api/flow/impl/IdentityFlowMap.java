@@ -1,7 +1,6 @@
 package scraper.api.flow.impl;
 
 import scraper.annotations.NotNull;
-import scraper.api.flow.FlowHistory;
 import scraper.api.flow.FlowMap;
 import scraper.api.reflect.T;
 
@@ -42,7 +41,6 @@ public class IdentityFlowMap implements FlowMap {
         return Optional.empty();
     }
 
-    @NotNull @Override public FlowHistory getFlowHistory() { throw new IllegalStateException(); }
     @NotNull @Override public UUID getId() { throw new IllegalStateException(); }
     @NotNull
     @Override public <A> A eval(@NotNull T<A> template) { throw new IllegalStateException(); }
@@ -69,8 +67,29 @@ public class IdentityFlowMap implements FlowMap {
     }
 
     @Override public <A> void output(@NotNull T<A> locationAndType, A object) { throw new IllegalStateException(); }
+
+    @Override
+    public FlowMap copy() {
+        return null;
+    }
+
     public @NotNull ConcurrentMap<String, Object> getMap() { throw new IllegalStateException(); }
     public boolean containsElements(@NotNull final FlowMap expectedOutput) { throw new IllegalStateException(); }
+
+    @Override
+    public Optional<UUID> getParentId() {
+        return Optional.empty();
+    }
+
+    @Override
+    public int getSequence() {
+        return 0;
+    }
+
+    @Override
+    public void nextSequence() {
+
+    }
 
     // return identity
 //    @Override public @Nullable Object get(@NotNull String expected) { return expected; }

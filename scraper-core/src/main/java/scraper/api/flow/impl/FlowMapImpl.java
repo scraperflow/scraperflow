@@ -3,10 +3,10 @@ package scraper.api.flow.impl;
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.exceptions.TemplateException;
-import scraper.api.flow.FlowHistory;
 import scraper.api.flow.FlowMap;
 import scraper.api.reflect.T;
 import scraper.core.Template;
+import scraper.util.NodeUtil;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,11 +15,32 @@ import java.util.concurrent.ConcurrentMap;
 public class FlowMapImpl implements FlowMap {
 
     private @NotNull final ConcurrentMap<String, Object> privateMap;
-    private @NotNull final FlowHistory flowHistory = new FlowHistoryImpl();
+    private @NotNull final UUID parentId;
+    private int sequence = 0;
     private @NotNull final UUID uuid = UUID.randomUUID();
 
-    public FlowMapImpl(@NotNull ConcurrentMap<String, Object> privateMap) { this.privateMap = privateMap; }
-    public FlowMapImpl() { privateMap = new ConcurrentHashMap<>(); }
+    public FlowMapImpl(@NotNull ConcurrentMap<String, Object> privateMap, @NotNull UUID parentId) {
+        this.privateMap = privateMap;
+        this.parentId = parentId;
+    }
+    public FlowMapImpl(@NotNull UUID parentId) {
+        privateMap = new ConcurrentHashMap<>();
+        this.parentId = parentId;
+    }
+    private FlowMapImpl() {
+        privateMap = new ConcurrentHashMap<>();
+        parentId = null;
+    }
+
+    public static FlowMap origin() {
+        return new FlowMapImpl();
+    }
+
+    public static FlowMap origin(Map<String, Object> args) {
+        FlowMapImpl o = new FlowMapImpl();
+        o.putAll(args);
+        return o;
+    }
 
     @NotNull
     @Override public Optional<Object> put(@NotNull String location, @NotNull Object value) { return Optional.ofNullable(privateMap.put(location, value)); }
@@ -80,7 +101,20 @@ public class FlowMapImpl implements FlowMap {
         return true;
     }
 
-    @NotNull @Override public FlowHistory getFlowHistory() { return flowHistory; }
+    @Override
+    public Optional<UUID> getParentId() {
+        return Optional.ofNullable(parentId);
+    }
+
+    @Override
+    public int getSequence() {
+        return sequence;
+    }
+
+    @Override
+    public void nextSequence() {
+        sequence++;
+    }
 
     @NotNull
     @Override public UUID getId() { return uuid; }
@@ -126,6 +160,11 @@ public class FlowMapImpl implements FlowMap {
         // for now output templates are only strings
         String json = locationAndType.getRawJson();
         put(json, object);
+    }
+
+    @Override
+    public FlowMap copy() {
+        return NodeUtil.flowOf(this);
     }
 
     private boolean descendMap(@NotNull final Map<?,?> currentMap, @NotNull final Map<?,?> otherMap) {
@@ -176,16 +215,16 @@ public class FlowMapImpl implements FlowMap {
         return true;
     }
 
-    public static synchronized @NotNull FlowMapImpl of(final @NotNull Map<String, Object> initialArguments) {
-        return new FlowMapImpl(new ConcurrentHashMap<>(Objects.requireNonNullElseGet(initialArguments, Map::of)));
-    }
+//    public static synchronized @NotNull FlowMapImpl of(final @NotNull Map<String, Object> initialArguments) {
+//        return new FlowMapImpl(new ConcurrentHashMap<>(Objects.requireNonNullElseGet(initialArguments, Map::of)));
+//    }
 
     public static synchronized @NotNull FlowMapImpl copy(final @NotNull FlowMapImpl o) {
-        return new FlowMapImpl( new ConcurrentHashMap<>(o.privateMap) );
+        return new FlowMapImpl( new ConcurrentHashMap<>(o.privateMap), o.getId());
     }
 
     public static synchronized @NotNull FlowMapImpl copy(final @NotNull FlowMap o) {
-        return new FlowMapImpl( new ConcurrentHashMap<>(((FlowMapImpl) o).privateMap) );
+        return new FlowMapImpl(new ConcurrentHashMap<>(((FlowMapImpl) o).privateMap), o.getId());
     }
 
     @Override
