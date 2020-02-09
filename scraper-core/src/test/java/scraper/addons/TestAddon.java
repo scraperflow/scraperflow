@@ -6,7 +6,7 @@ import scraper.api.plugin.Addon;
 
 public class TestAddon implements Addon {
     @Override
-    public void load(@NotNull DIContainer loadedDependencies) {
+    public void load(@NotNull DIContainer loadedDependencies, @NotNull String[] args) {
         System.setProperty("test-addon", "true");
     }
 }

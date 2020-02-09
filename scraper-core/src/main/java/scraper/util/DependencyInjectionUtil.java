@@ -2,6 +2,7 @@ package scraper.util;
 
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
+import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
 import org.slf4j.Logger;
 import scraper.api.di.DIContainer;
@@ -13,6 +14,11 @@ import scraper.api.plugin.PreHook;
 import scraper.api.service.impl.*;
 import scraper.core.JobFactory;
 import scraper.core.PluginBean;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 public class DependencyInjectionUtil {
@@ -32,44 +38,24 @@ public class DependencyInjectionUtil {
         try (ScanResult scanResult = new ClassGraph().enableClassInfo()
                              .whitelistPackages("scraper.plugins","scraper.addons", "scraper.hooks")
                              .scan()) {
-            for (ClassInfo routeClassInfo : scanResult.getClassesImplementing(Addon.class.getName())) {
-                try {
-                    Class<?> addon = Class.forName(routeClassInfo.getName());
-                    diContainer.addComponent(addon, true);
-                    log.debug("Found addon '{}'", addon.getSimpleName());
-                } catch (ClassNotFoundException e) {
-                    log.error("Scan found addon, but class not found", e);
-                }
-            }
-
-            for (ClassInfo routeClassInfo : scanResult.getClassesImplementing(Hook.class.getName())) {
-                try {
-                    Class<?> hook = Class.forName(routeClassInfo.getName());
-                    diContainer.addComponent(hook, true);
-                    log.debug("Found hook '{}'", hook.getSimpleName());
-                } catch (ClassNotFoundException e) {
-                    log.error("Scan found hook, but class not found", e);
-                }
-            }
-
-            for (ClassInfo routeClassInfo : scanResult.getClassesImplementing(PreHook.class.getName())) {
-                try {
-                    Class<?> hook = Class.forName(routeClassInfo.getName());
-                    diContainer.addComponent(hook, true);
-                    log.debug("Found pre-hook '{}'", hook.getSimpleName());
-                } catch (ClassNotFoundException e) {
-                    log.error("Scan found pre-hook, but class not found", e);
-                }
-            }
-            for (ClassInfo routeClassInfo : scanResult.getClassesImplementing(NodeHook.class.getName())) {
-                try {
-                    Class<?> hook = Class.forName(routeClassInfo.getName());
-                    diContainer.addComponent(hook, true);
-                    log.debug("Found node hook '{}'", hook.getSimpleName());
-                } catch (ClassNotFoundException e) {
-                    log.error("Scan found node hook, but class not found", e);
-                }
-            }
+            List.of(
+                    scanResult.getClassesImplementing(Addon.class.getName()),
+                    scanResult.getClassesImplementing(Hook.class.getName()),
+                    scanResult.getClassesImplementing(PreHook.class.getName()),
+                    scanResult.getClassesImplementing(NodeHook.class.getName())
+            ).stream()
+                    .filter(o -> !o.isEmpty())
+                    .flatMap(Collection::stream)
+                    .distinct()
+                    .forEach(plugin -> {
+                        try {
+                            Class<?> addon = Class.forName(plugin.getName());
+                            diContainer.addComponent(addon, true);
+                            log.debug("Found plugin '{}'", addon.getSimpleName());
+                        } catch (ClassNotFoundException e) {
+                            log.error("Scan found plugin, but class not found", e);
+                        }
+                    });
         }
 
         return diContainer;

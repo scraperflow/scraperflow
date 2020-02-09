@@ -10,7 +10,7 @@ import scraper.api.plugin.Addon;
  */
 public final class NoAddon implements Addon {
     @Override
-    public void load(@NotNull DIContainer loadedDependencies) {
+    public void load(@NotNull DIContainer loadedDependencies, @NotNull String[] args) {
         System.setProperty("noaddon", "true");
     }
 }

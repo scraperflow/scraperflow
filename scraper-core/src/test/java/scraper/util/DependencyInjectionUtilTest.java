@@ -22,7 +22,7 @@ public class DependencyInjectionUtilTest {
         DIContainer container = DependencyInjectionUtil.getDIContainer();
 
         // addon discovery
-        Objects.requireNonNull(container.get(TestAddon.class)).load(container);
+        Objects.requireNonNull(container.get(TestAddon.class)).load(container, new String[]{});
 
         // hook discovery
         Objects.requireNonNull(container.get(TestHook.class)).execute(container, new String[]{}, Map.of());

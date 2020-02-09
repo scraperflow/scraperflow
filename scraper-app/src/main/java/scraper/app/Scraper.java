@@ -98,7 +98,7 @@ public class Scraper {
 
     private void run(@NotNull final String... args) throws Exception {
         log.info("Loading {} addons", addons.size());
-        for (Addon addon : addons) addon.load(pico);
+        for (Addon addon : addons) addon.load(pico, args);
 
         log.info("Executing {} pre-hooks", prehooks.size());
         for (PreHook hook : prehooks) hook.execute(pico, args);
