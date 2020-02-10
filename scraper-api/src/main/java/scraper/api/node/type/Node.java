@@ -6,15 +6,9 @@ import scraper.api.exceptions.TemplateException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
-import scraper.api.node.NodeHook;
+import scraper.api.plugin.NodeHook;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.specification.ScrapeInstance;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 
 /**
  * Objects which implement this interface can consume and modify {@link FlowMap}s.
@@ -35,9 +29,9 @@ public interface Node {
      */
     default @NotNull FlowMap accept(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException {
         try {
-            for (NodeHook hook : n.beforeHooks()) { hook.accept(n, o); }
+            for (NodeHook hook : n.hooks()) { hook.accept(n, o); }
             FlowMap fm = process(n, o);
-            for (NodeHook hook : n.afterHooks()) { hook.accept(n, o); }
+            for (NodeHook hook : n.hooks()) { hook.acceptAfter(n, o); }
             return fm;
         } catch (TemplateException e) {
             n.log(NodeLogLevel.ERROR, "Template type error for {}: {}", n.getAddress(), e.getMessage());

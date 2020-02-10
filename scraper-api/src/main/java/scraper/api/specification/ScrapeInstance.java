@@ -5,6 +5,7 @@ import scraper.api.exceptions.ValidationException;
 import scraper.api.node.*;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
+import scraper.api.plugin.NodeHook;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
@@ -47,11 +48,8 @@ public interface ScrapeInstance {
     /** Imported instances, if any. Routes can point to the names of these instances */
     @NotNull Map<InstanceAddress, ScrapeInstance> getImportedInstances();
 
-    /** Hooks before a flow map is accepted */
-    @NotNull Collection<NodeHook> getBeforeHooks();
-
-    /** Hooks after a flow map has been processed */
-    @NotNull Collection<NodeHook> getAfterHooks();
+    /** Hooks before/after a flow map has been processed */
+    @NotNull Collection<NodeHook> getHooks();
 
     /** Returns the entry node */
     @NotNull NodeContainer<? extends Node> getEntry();

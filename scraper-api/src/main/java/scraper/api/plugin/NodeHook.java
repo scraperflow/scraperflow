@@ -1,4 +1,4 @@
-package scraper.api.node;
+package scraper.api.plugin;
 
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.NodeException;
@@ -14,5 +14,5 @@ import scraper.api.node.type.Node;
 @FunctionalInterface
 public interface NodeHook {
     void accept(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException;
-    default boolean beforeHook() { return true; }
+    default void acceptAfter(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {}
 }

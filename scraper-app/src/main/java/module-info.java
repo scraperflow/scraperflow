@@ -1,4 +1,4 @@
-import scraper.api.node.NodeHook;
+import scraper.api.plugin.NodeHook;
 import scraper.api.plugin.Addon;
 import scraper.api.plugin.Hook;
 import scraper.api.plugin.PreHook;

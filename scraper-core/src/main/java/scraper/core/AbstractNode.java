@@ -14,7 +14,7 @@ import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
 import scraper.api.node.GraphAddress;
 import scraper.api.node.NodeAddress;
-import scraper.api.node.NodeHook;
+import scraper.api.plugin.NodeHook;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.impl.GraphAddressImpl;
@@ -389,18 +389,10 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     public GraphAddress getGraphKey() { return this.graphKey; }
 
     @Override @NotNull
-    public Collection<NodeHook> beforeHooks() {
+    public Collection<NodeHook> hooks() {
         return Stream.concat(
-                Stream.of(this::start),
-                getJobInstance().getBeforeHooks().stream()
-        ).collect(Collectors.toList());
-    }
-
-    @Override @NotNull
-    public Collection<NodeHook> afterHooks() {
-        return Stream.concat(
-                Stream.of(this::finish),
-                getJobInstance().getAfterHooks().stream()
+                Stream.of(basicHook),
+                getJobInstance().getHooks().stream()
         ).collect(Collectors.toList());
     }
 
@@ -429,4 +421,9 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     public Logger getL() { return l; }
 
     public int getStageIndex() { return this.stageIndex; }
+
+    private final NodeHook basicHook = new NodeHook() {
+        @Override public void accept(NodeContainer<? extends Node> n, FlowMap o) throws NodeException { start(n,o); }
+        @Override public void acceptAfter(NodeContainer<? extends Node> n, FlowMap o) { finish(n,o); }
+    };
 }

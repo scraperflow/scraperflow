@@ -7,7 +7,7 @@ import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
 import scraper.api.node.GraphAddress;
 import scraper.api.node.NodeAddress;
-import scraper.api.node.NodeHook;
+import scraper.api.plugin.NodeHook;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
@@ -60,13 +60,7 @@ public class MockContainer implements FunctionalNodeContainer {
 
     @NotNull
     @Override
-    public Collection<NodeHook> beforeHooks() {
-        throw new IllegalStateException();
-    }
-
-    @NotNull
-    @Override
-    public Collection<NodeHook> afterHooks() {
+    public Collection<NodeHook> hooks() {
         throw new IllegalStateException();
     }
 

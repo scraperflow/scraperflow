@@ -7,7 +7,7 @@ import org.springframework.plugin.metadata.SimplePluginMetadata;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.InstanceAddress;
-import scraper.api.node.NodeHook;
+import scraper.api.plugin.NodeHook;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.impl.GraphAddressImpl;
 import scraper.api.node.impl.InstanceAddressImpl;
@@ -71,8 +71,7 @@ public class JobFactory {
         job.setHttpService(httpService);
         job.setProxyReservation(proxyReservation);
 
-        hooks.stream().filter(NodeHook::beforeHook).forEach(job::addBeforeHook);
-        hooks.stream().filter(h -> !h.beforeHook()).forEach(job::addAfterHook);
+        hooks.forEach(job::addHook);
 
         return job;
     }

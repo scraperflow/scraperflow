@@ -5,6 +5,7 @@ import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.*;
 import scraper.api.node.type.Node;
+import scraper.api.plugin.NodeHook;
 import scraper.api.specification.ScrapeInstance;
 
 import java.util.Collection;
@@ -65,11 +66,8 @@ public interface NodeContainer<NODE> extends NodeInitializable {
      */
     @NotNull Optional<NodeContainer<? extends Node>> getGoTo();
 
-    /** Hooks which are executed before accepting a flow map */
-    @NotNull Collection<NodeHook> beforeHooks();
-
     /** Hooks which are executed after processing a flow map */
-    @NotNull Collection<NodeHook> afterHooks();
+    @NotNull Collection<NodeHook> hooks();
 
     /** If forwarding is enabled or not */
     boolean isForward();

@@ -1,13 +1,11 @@
 package scraper.util;
 
 import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ClassInfo;
-import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
 import org.slf4j.Logger;
 import scraper.api.di.DIContainer;
 import scraper.api.di.impl.DIContainerImpl;
-import scraper.api.node.NodeHook;
+import scraper.api.plugin.NodeHook;
 import scraper.api.plugin.Addon;
 import scraper.api.plugin.Hook;
 import scraper.api.plugin.PreHook;
@@ -17,8 +15,6 @@ import scraper.core.PluginBean;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 public class DependencyInjectionUtil {

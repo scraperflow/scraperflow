@@ -4,6 +4,7 @@ import scraper.annotations.NotNull;
 import scraper.api.node.*;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
+import scraper.api.plugin.NodeHook;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
@@ -12,7 +13,6 @@ import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -35,12 +35,7 @@ public class MockInstance implements ScrapeInstance {
     @NotNull @Override public Map<InstanceAddress, ScrapeInstance> getImportedInstances() { throw new IllegalStateException(); }
 
     @Override
-    public Collection<NodeHook> getBeforeHooks() {
-        throw new IllegalStateException();
-    }
-
-    @Override
-    public Collection<NodeHook> getAfterHooks() {
+    public Collection<NodeHook> getHooks() {
         throw new IllegalStateException();
     }
 

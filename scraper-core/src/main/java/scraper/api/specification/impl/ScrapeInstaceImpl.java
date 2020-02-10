@@ -7,6 +7,7 @@ import scraper.api.exceptions.ValidationException;
 import scraper.api.node.*;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
+import scraper.api.plugin.NodeHook;
 import scraper.api.reflect.T;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
@@ -47,8 +48,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
 
     private GraphAddress entry;
 
-    private Collection<NodeHook> beforeHooks = new HashSet<>();
-    private Collection<NodeHook> afterHooks = new HashSet<>();
+    private Collection<NodeHook> hooks = new HashSet<>();
 
     public ScrapeInstaceImpl(ScrapeSpecification spec) {
         this.spec = spec;
@@ -132,13 +132,8 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     @NotNull public FileService getFileService() { return fileService; }
 
     @Override
-    public Collection<NodeHook> getBeforeHooks() {
-        return beforeHooks;
-    }
-
-    @Override
-    public Collection<NodeHook> getAfterHooks() {
-        return afterHooks;
+    public Collection<NodeHook> getHooks() {
+        return hooks;
     }
 
     public void setFileService(FileService fileService) { this.fileService = fileService; }
@@ -215,6 +210,5 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
                 .collect(Collectors.toList());
     }
 
-    public void addBeforeHook(NodeHook h) { beforeHooks.add(h); }
-    public void addAfterHook(NodeHook h) { afterHooks.add(h); }
+    public void addHook(NodeHook h) { hooks.add(h); }
 }

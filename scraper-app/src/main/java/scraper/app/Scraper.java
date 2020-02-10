@@ -9,7 +9,7 @@ import scraper.annotations.di.DITarget;
 import scraper.api.di.DIContainer;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.node.NodeHook;
+import scraper.api.plugin.NodeHook;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.plugin.Addon;
@@ -30,7 +30,6 @@ import java.util.concurrent.CompletableFuture;
 import static java.util.Objects.requireNonNull;
 import static scraper.util.DependencyInjectionUtil.getDIContainer;
 import static scraper.util.JobUtil.parseJobs;
-import static scraper.util.NodeUtil.flowOf;
 
 public class Scraper {
 
@@ -124,11 +123,11 @@ public class Scraper {
     }
 
     private void startScrapeJobs() {
-    	log.info("--------------------------------------------------------");
-    	log.info("--- Starting Main Threads");
-		log.info("--------------------------------------------------------");
-		List<CompletableFuture>  futures = new ArrayList<>();
-		jobs.forEach((definition, job) -> {
+        log.info("--------------------------------------------------------");
+        log.info("--- Starting Main Threads");
+        log.info("--------------------------------------------------------");
+        List<CompletableFuture>  futures = new ArrayList<>();
+        jobs.forEach((definition, job) -> {
             CompletableFuture<FlowMap> future = CompletableFuture.supplyAsync(() -> {
                 try {
                     FlowMap initial = FlowMapImpl.origin(job.getEntryArguments());
@@ -148,9 +147,9 @@ public class Scraper {
             });
 
             futures.add(future);
-		});
+        });
 
-		futures.forEach(CompletableFuture::join);
+        futures.forEach(CompletableFuture::join);
     }
 
 
