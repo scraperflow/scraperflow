@@ -24,7 +24,7 @@ public interface FunctionalNode extends Node {
     /** Default process method should only modify and forward the modified map */
     default FlowMap process(@NotNull final FunctionalNodeContainer n, @NotNull final FlowMap o) throws NodeException {
         modify(n,o);
-        return n.forward(o);
+        return o;
     }
 
     /** Modify the given flowMap */

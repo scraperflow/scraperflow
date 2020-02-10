@@ -30,6 +30,6 @@ public final class PipeNode implements Node {
         for (Address label : o.evalIdentity(pipeTargets))
             o = n.eval(o, label);
 
-        return n.forward(o);
+        return o;
     }
 }

@@ -32,7 +32,7 @@ public interface Node {
             for (NodeHook hook : n.hooks()) { hook.accept(n, o); }
             FlowMap fm = process(n, o);
             for (NodeHook hook : n.hooks()) { hook.acceptAfter(n, o); }
-            return fm;
+            return n.forward(fm);
         } catch (TemplateException e) {
             n.log(NodeLogLevel.ERROR, "Template type error for {}: {}", n.getAddress(), e.getMessage());
             throw new IllegalStateException(e);

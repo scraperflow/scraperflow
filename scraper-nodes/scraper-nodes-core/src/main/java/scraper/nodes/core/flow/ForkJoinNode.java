@@ -34,7 +34,7 @@ public final class ForkJoinNode implements Node {
 
     //TODO nicer implementation
     @NotNull @Override
-    public FlowMap process(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) {
         Map<String, String> keys = o.evalIdentity(this.keys);
 
         List<CompletableFuture<FlowMap>> forkedProcesses = new ArrayList<>();
@@ -57,6 +57,7 @@ public final class ForkJoinNode implements Node {
         keys.forEach((joinKeyForked, joinKey) -> {
             n.log(NodeLogLevel.DEBUG, "Joining {} -> {}", joinKeyForked, joinKey);
 
+            //noinspection unchecked
             List<Object> joinResults = (List<Object>) o.getOrDefault(joinKey, new ArrayList<>());
 
             forkedProcesses.forEach(future -> {
@@ -73,7 +74,7 @@ public final class ForkJoinNode implements Node {
         });
 
         // continue
-        return n.forward(o);
+        return o;
     }
 
 }

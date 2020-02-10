@@ -156,13 +156,13 @@ public final class HttpRequestNode implements Node {
         // check if file already downloaded
         if(checkFileDownloaded(n, o)) {
             n.log(TRACE, "File already downloaded: {}", url);
-            return n.forward(o);
+            return o;
         }
 
         // check if response is cached
         if(cached(n, o, url, exceptionContaining)) {
             n.log(TRACE, "Request cached: {}", url);
-            return n.forward(o);
+            return o;
         }
 
         ReservationToken token;
@@ -237,7 +237,7 @@ public final class HttpRequestNode implements Node {
             throw new NodeException(e, "Hold on forward interrupted");
         }
 
-        return n.forward(o);
+        return o;
     }
 
     private void validateBody(Object body, List<String> exceptionContaining) throws IOException {

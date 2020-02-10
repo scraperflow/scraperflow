@@ -95,6 +95,6 @@ public final class MapJoinNode implements Node {
         keys.forEach((joinKeyForked, joinKey) -> { if(!o.keySet().contains(joinKey)) { o.put(joinKey, new ArrayList<>()); } });
 
         // continue
-        return n.forward(o);
+        return o;
     }
 }

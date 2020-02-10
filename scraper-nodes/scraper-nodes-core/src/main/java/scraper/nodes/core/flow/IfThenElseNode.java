@@ -37,12 +37,12 @@ public final class IfThenElseNode implements Node {
 
         if(condition) {
             if(trueTarget != null)
-                return n.forward(n.eval(o, trueTarget));
+                return n.eval(o, trueTarget);
         } else {
             if(falseTarget != null)
-                return n.forward(n.eval(o, falseTarget));
+                return n.eval(o, falseTarget);
         }
 
-        return n.forward(o);
+        return o;
     }
 }

@@ -5,6 +5,7 @@ import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.core.AbstractNode;
@@ -21,11 +22,14 @@ import static scraper.util.NodeUtil.flowOf;
  * @since 0.1
  * @author Albert Schimpf
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class RetryNode implements Node {
 
     @FlowKey(defaultValue = "5")
     private Integer retry;
+
+    @FlowKey
+    private Address retryTarget;
 
     @NotNull
     @Override
@@ -34,7 +38,7 @@ public final class RetryNode implements Node {
         while(current < retry) {
             FlowMap localCopy = flowOf(o);
             try {
-                return n.forward(localCopy);
+                return n.eval(localCopy, retryTarget);
             } catch (NodeException e) {
                 n.log(INFO, "Retry {}", (current+1));
                 current++;

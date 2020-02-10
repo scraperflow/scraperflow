@@ -39,7 +39,7 @@ public final class MapNode implements Node {
 
     @NotNull
     @Override
-    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
         List<?> targetList = o.eval(list);
 
         targetList.forEach(t -> {
@@ -48,6 +48,6 @@ public final class MapNode implements Node {
             n.forkDispatch(finalCopy, mapTarget);
         });
 
-        return n.forward(o);
+        return o;
     }
 }

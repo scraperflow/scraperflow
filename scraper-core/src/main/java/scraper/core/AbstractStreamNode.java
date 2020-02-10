@@ -89,7 +89,7 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
         getC().process(this, o);
 
         if(!collect) {
-            return forward(o);
+            return o;
         } else {
             log(NodeLogLevel.TRACE, "Finish collection for map {}", o.getId());
             FlowMap copy = NodeUtil.flowOf(openStreams.get(o.getId()));
@@ -100,7 +100,7 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
             collectors.remove(o.getId());
             collectKeys.remove(o.getId());
 
-            return forward(copy);
+            return copy;
         }
     }
 }
