@@ -1,11 +1,9 @@
-import scraper.api.plugin.NodeHook;
 import scraper.api.plugin.Addon;
 import scraper.api.plugin.Hook;
-import scraper.api.plugin.PreHook;
+import scraper.api.plugin.NodeHook;
 
 open module scraper.app {
     uses Addon;
-    uses PreHook;
     uses Hook;
     uses NodeHook;
 

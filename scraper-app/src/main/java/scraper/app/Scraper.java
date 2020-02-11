@@ -9,12 +9,11 @@ import scraper.annotations.di.DITarget;
 import scraper.api.di.DIContainer;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.plugin.NodeHook;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.plugin.Addon;
 import scraper.api.plugin.Hook;
-import scraper.api.plugin.PreHook;
+import scraper.api.plugin.NodeHook;
 import scraper.api.service.ExecutorsService;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
@@ -41,8 +40,6 @@ public class Scraper {
 
     // addons
     private @NotNull final Collection<Addon> addons;
-    // pre parse job hooks
-    private @NotNull final Collection<PreHook> prehooks;
     // hooks
     private @NotNull final Collection<Hook> hooks;
     // node hooks
@@ -55,13 +52,11 @@ public class Scraper {
     private @NotNull final Map<ScrapeSpecification, ScrapeInstance> jobs = new LinkedHashMap<>();
 
     public Scraper(@NotNull JobFactory jobFactory, @NotNull ExecutorsService executorsService,
-                   @NotNull @DITarget(PreHook.class) Collection<PreHook> prehooks,
                    @NotNull @DITarget(Hook.class) Collection<Hook> hooks,
                    @NotNull @DITarget(Addon.class) Collection<Addon> addons,
                    @NotNull @DITarget(NodeHook.class) Collection<NodeHook> nodeHooks) {
         this.jobFactory = jobFactory;
         this.executorsService = executorsService;
-        this.prehooks = prehooks;
         this.hooks = hooks;
         this.addons = addons;
         this.nodeHooks = nodeHooks;
@@ -98,9 +93,6 @@ public class Scraper {
     private void run(@NotNull final String... args) throws Exception {
         log.info("Loading {} addons", addons.size());
         for (Addon addon : addons) addon.load(pico, args);
-
-        log.info("Executing {} pre-hooks", prehooks.size());
-        for (PreHook hook : prehooks) hook.execute(pico, args);
 
         log.debug("Parsing scrape jobs");
         // TODO instead of Set.of(), available paths

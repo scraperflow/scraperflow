@@ -14,7 +14,6 @@ import java.util.Map;
  * Additionally, dependencies can be used.
  *
  * @since 1.0.0
- * @see PreHook
  */
 public interface Hook {
     /** Executes the hook and provides arguments, dependencies, and a ScrapeSpecification to ScrapeInstance map */

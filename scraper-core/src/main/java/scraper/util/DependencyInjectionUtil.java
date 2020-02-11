@@ -5,11 +5,13 @@ import io.github.classgraph.ScanResult;
 import org.slf4j.Logger;
 import scraper.api.di.DIContainer;
 import scraper.api.di.impl.DIContainerImpl;
-import scraper.api.plugin.NodeHook;
 import scraper.api.plugin.Addon;
 import scraper.api.plugin.Hook;
-import scraper.api.plugin.PreHook;
-import scraper.api.service.impl.*;
+import scraper.api.plugin.NodeHook;
+import scraper.api.service.impl.ExecutorsServiceImpl;
+import scraper.api.service.impl.FileServiceImpl;
+import scraper.api.service.impl.HttpServiceImpl;
+import scraper.api.service.impl.ProxyReservationImpl;
 import scraper.core.JobFactory;
 import scraper.core.PluginBean;
 
@@ -37,7 +39,6 @@ public class DependencyInjectionUtil {
             List.of(
                     scanResult.getClassesImplementing(Addon.class.getName()),
                     scanResult.getClassesImplementing(Hook.class.getName()),
-                    scanResult.getClassesImplementing(PreHook.class.getName()),
                     scanResult.getClassesImplementing(NodeHook.class.getName())
             ).stream()
                     .filter(o -> !o.isEmpty())

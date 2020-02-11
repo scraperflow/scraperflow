@@ -8,7 +8,6 @@ import scraper.api.di.DIContainer;
 import scraper.hooks.ExitHook;
 import scraper.hooks.PluginHook;
 import scraper.hooks.TestHook;
-import scraper.hooks.TestPreHook;
 
 import java.util.Collection;
 import java.util.Map;
@@ -27,15 +26,11 @@ public class DependencyInjectionUtilTest {
         // hook discovery
         Objects.requireNonNull(container.get(TestHook.class)).execute(container, new String[]{}, Map.of());
 
-        // pre hook discovery
-        Objects.requireNonNull(container.get(TestPreHook.class)).execute(container, new String[]{});
-
         // plugin discovery
         Objects.requireNonNull(container.get(PluginHook.class)).execute(container, new String[]{}, Map.of());
 
         Assert.assertEquals("true", System.getProperty("test-addon"));
         Assert.assertEquals("true", System.getProperty("test-hook"));
-        Assert.assertEquals("true", System.getProperty("test-pre-hook"));
         Assert.assertEquals("true", System.getProperty("plugin-hook"));
 
         // exit hook

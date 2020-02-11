@@ -71,7 +71,6 @@ public class SimpleSystemTest {
 
         Assert.assertEquals("true", System.getProperty("noaddon"));
         Assert.assertEquals("true", System.getProperty("noplugin"));
-        Assert.assertEquals("true", System.getProperty("noprehook"));
     }
 
     @Test(timeout = 10000)
