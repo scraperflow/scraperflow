@@ -115,6 +115,12 @@ public interface NodeContainer<NODE> extends NodeInitializable {
     @NotNull NODE getC();
 
     //-----------
+    // Address Parsing
+    //-----------
+
+    Address addressOf(String representation);
+
+    //-----------
     // Logging
     //-----------
 

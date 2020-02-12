@@ -99,6 +99,11 @@ public class MockContainer implements FunctionalNodeContainer {
     }
 
     @Override
+    public Address addressOf(String representation) {
+        return null;
+    }
+
+    @Override
     public void log(@NotNull NodeLogLevel trace, @NotNull String s, @NotNull Object... args) {
 
     }

@@ -67,9 +67,6 @@ public interface ScrapeInstance {
     // Helper
     // ===========
 
-    // for plugins and hooks
-    Address addressOf(String representation);
-
     // Cross-cutting concerns services
     @NotNull ExecutorsService getExecutors();
     @NotNull HttpService getHttpService();

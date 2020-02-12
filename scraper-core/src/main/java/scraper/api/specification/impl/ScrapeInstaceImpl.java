@@ -116,11 +116,6 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         return initialArguments;
     }
 
-    @Override
-    public Address addressOf(String representation) {
-        return NodeUtil.addressOf(representation);
-    }
-
     // ================
     // Services
     @NotNull public ExecutorsService getExecutors() { return this.executors; }

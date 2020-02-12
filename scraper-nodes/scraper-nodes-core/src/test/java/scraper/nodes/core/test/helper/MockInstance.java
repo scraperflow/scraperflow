@@ -87,9 +87,4 @@ public class MockInstance implements ScrapeInstance {
         return null;
     }
 
-    @Override
-    public Address addressOf(String representation) {
-        return null;
-    }
-
 }

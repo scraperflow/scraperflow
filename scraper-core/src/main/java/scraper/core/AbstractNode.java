@@ -422,6 +422,11 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
 
     public int getStageIndex() { return this.stageIndex; }
 
+    @Override
+    public Address addressOf(String representation) {
+        return NodeUtil.addressOf(representation);
+    }
+
     private final NodeHook basicHook = new NodeHook() {
         @Override public void accept(NodeContainer<? extends Node> n, FlowMap o) throws NodeException { start(n,o); }
         @Override public void acceptAfter(NodeContainer<? extends Node> n, FlowMap o) { finish(n,o); }

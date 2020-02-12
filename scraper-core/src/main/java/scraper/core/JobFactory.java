@@ -91,17 +91,6 @@ public class JobFactory {
         return inputMap;
     }
 
-//    public ScrapeInstaceImpl createEmptyJob() {
-//        ScrapeInstaceImpl job = new ScrapeInstaceImpl();
-//
-//        job.setExecutors(executorsService);
-//        job.setFileService(fileService);
-//        job.setHttpService(httpService);
-//        job.setProxyReservation(proxyReservation);
-//
-//        return job;
-//    }
-
     public @NotNull ScrapeInstaceImpl convertScrapeJob(@NotNull final ScrapeSpecification jobDefinition) throws IOException, ValidationException {
         return convertJob(jobDefinition, null, Set.of());
     }
@@ -183,7 +172,7 @@ public class JobFactory {
         // ===
         // Pre-process fragments
         // ===
-        log.info("Pre process fragments");
+        log.debug("Pre process fragments");
         for (String graph : jobDefinition.getGraphs().keySet()) {
             preprocessFragments(jobDefinition.getGraphs().get(graph), jobDefinition);
         }
@@ -298,6 +287,7 @@ public class JobFactory {
                     // find fragment file
                     String location = (String) nodeConfig.get("required");
                     File fragment = getFirstExistingPaths(location, jobDefinition.getPaths());
+                    log.info("Pre-processing fragment {}", location);
 
                     List<Map<String, Object>> replaced = generateFragmentRecursive(fragment, jobDefinition, location);
 
@@ -333,6 +323,7 @@ public class JobFactory {
                 String location = (String) node.get("required");
                 // fragment inside fragment found, get path
                 File fragment = getFirstExistingPaths(location, jobDefinition.getPaths());
+                log.info("Pre-processing fragment {}", location);
 
                 // generate fragments
                 List<Map<String, Object>> generated = generateFragmentRecursive(fragment, jobDefinition, location);
