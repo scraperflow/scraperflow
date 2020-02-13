@@ -28,7 +28,7 @@ public final class RetryNode implements Node {
     @FlowKey(defaultValue = "5")
     private Integer retry;
 
-    @FlowKey
+    @FlowKey(mandatory = true)
     private Address retryTarget;
 
     @NotNull
