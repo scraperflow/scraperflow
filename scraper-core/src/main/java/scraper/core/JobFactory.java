@@ -148,7 +148,7 @@ public class JobFactory {
         // ===
 
         // first args from definition
-        Map<String, Object> combinedArgs = new HashMap<>(job.getSpecification().getInitialArguments());
+        Map<String, Object> combinedArgs = new HashMap<>(job.getEntryArguments());
 
         // implied args
         try {

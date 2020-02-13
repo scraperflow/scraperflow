@@ -139,10 +139,10 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
         // initialize fields with arguments
         try {
             initFields(this, getNodeConfiguration(),
-                    job.getSpecification().getInitialArguments(), job.getSpecification().getGlobalNodeConfigurations()
+                    job.getEntryArguments(), job.getSpecification().getGlobalNodeConfigurations()
                     );
             initFields(getC(), getNodeConfiguration(),
-                    job.getSpecification().getInitialArguments(), job.getSpecification().getGlobalNodeConfigurations()
+                    job.getEntryArguments(), job.getSpecification().getGlobalNodeConfigurations()
                     );
 
             // get ensure fields

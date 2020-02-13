@@ -39,7 +39,7 @@ public final class TelegramNode implements FunctionalNode {
 
     /** Message recipient. User or group chat id */
     @FlowKey(mandatory = true)
-    private T<List<Integer>> recipients = new T<>(){};
+    private T<List<String>> recipients = new T<>(){};
 
     /** Telegram bot api link */
     @FlowKey(defaultValue = "\"https://api.telegram.org/bot\"") @Argument
@@ -48,10 +48,10 @@ public final class TelegramNode implements FunctionalNode {
     private ObjectMapper mapper = new ObjectMapper();
     private final HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build();
 
-    private void trySend(String msg, Integer id) throws IOException, InterruptedException {
+    private void trySend(String msg, String id) throws IOException, InterruptedException {
         /// Create Http POST method and set correct headers
         String url = api + botToken + "/sendmessage";
-        String jsonString = mapper.writeValueAsString(new SendMessage("/sendmessage", String.valueOf(id), msg));
+        String jsonString = mapper.writeValueAsString(new SendMessage("/sendmessage", id, msg));
 
         HttpRequest request = HttpRequest
                 .newBuilder(URI.create(url))
@@ -66,7 +66,7 @@ public final class TelegramNode implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) {
-        for (Integer id : o.eval(recipients)) {
+        for (String id : o.eval(recipients)) {
             try {
                 trySend(o.eval(message), id);
             } catch (IOException | InterruptedException e) {

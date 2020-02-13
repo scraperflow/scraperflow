@@ -20,7 +20,6 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
     private String entry = "start";
     private Map<String, List<Map<String, Object>>> graphs = Map.of();
     private Map<String, Map<String, Object>> globalNodeConfigurations = new HashMap<>();
-    private Map<String, Object> initialArguments = new HashMap<>();
 
 
     @NotNull
@@ -54,18 +53,11 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
     public void setImports(Map<String, ScrapeImportSpecification> imports) { this.imports = imports; }
     public void setEntry(String entry) { this.entry = entry; }
     public void setGraphs(Map<String, List<Map<String, Object>>> graphs) { this.graphs = graphs; }
-    public void setInitialarguments(Map<String, Object> args) { this.initialArguments = args; }
 
     @NotNull
     @Override
     public Map<String, Map<String, Object>> getGlobalNodeConfigurations() {
         return globalNodeConfigurations;
-    }
-
-    @NotNull
-    @Override
-    public Map<String, Object> getInitialArguments() {
-        return this.initialArguments;
     }
 
     public void setGlobalNodeConfigurations(Map<String, Map<String, Object>> globalNodeConfigurations) {
