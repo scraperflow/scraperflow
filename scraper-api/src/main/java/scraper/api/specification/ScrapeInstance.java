@@ -12,6 +12,7 @@ import scraper.api.service.HttpService;
 import scraper.api.service.ProxyReservation;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -62,6 +63,7 @@ public interface ScrapeInstance {
 
 
     @NotNull Map<String, Object> getEntryArguments();
+    @NotNull Map<Address, NodeContainer<? extends Node>> getRoutes();
 
     // ===========
     // Helper

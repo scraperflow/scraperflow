@@ -116,6 +116,11 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         return initialArguments;
     }
 
+    @Override
+    public Map<Address, NodeContainer<? extends Node>> getRoutes() {
+        return routes;
+    }
+
     // ================
     // Services
     @NotNull public ExecutorsService getExecutors() { return this.executors; }
