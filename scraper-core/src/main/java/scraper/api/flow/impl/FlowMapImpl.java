@@ -16,20 +16,25 @@ public class FlowMapImpl implements FlowMap {
 
     private @NotNull final ConcurrentMap<String, Object> privateMap;
     private @NotNull final UUID parentId;
+    private final Integer parentSequence;
     private int sequence = 0;
     private @NotNull final UUID uuid = UUID.randomUUID();
 
-    public FlowMapImpl(@NotNull ConcurrentMap<String, Object> privateMap, @NotNull UUID parentId) {
+    public FlowMapImpl(@NotNull ConcurrentMap<String, Object> privateMap, @NotNull UUID parentId, int parentSequence) {
         this.privateMap = privateMap;
         this.parentId = parentId;
+        this.parentSequence = parentSequence;
     }
-    public FlowMapImpl(@NotNull UUID parentId) {
+
+    public FlowMapImpl(@NotNull UUID parentId, int parentSequence) {
         privateMap = new ConcurrentHashMap<>();
         this.parentId = parentId;
+        this.parentSequence = parentSequence;
     }
     private FlowMapImpl() {
         privateMap = new ConcurrentHashMap<>();
         parentId = null;
+        parentSequence = null;
     }
 
     public static FlowMap origin() {
@@ -104,6 +109,11 @@ public class FlowMapImpl implements FlowMap {
     @Override
     public Optional<UUID> getParentId() {
         return Optional.ofNullable(parentId);
+    }
+
+    @Override
+    public Optional<Integer> getParentSequence() {
+        return Optional.ofNullable(parentSequence);
     }
 
     @Override
@@ -220,11 +230,11 @@ public class FlowMapImpl implements FlowMap {
 //    }
 
     public static synchronized @NotNull FlowMapImpl copy(final @NotNull FlowMapImpl o) {
-        return new FlowMapImpl( new ConcurrentHashMap<>(o.privateMap), o.getId());
+        return new FlowMapImpl( new ConcurrentHashMap<>(o.privateMap), o.getId(), o.getSequence());
     }
 
     public static synchronized @NotNull FlowMapImpl copy(final @NotNull FlowMap o) {
-        return new FlowMapImpl(new ConcurrentHashMap<>(((FlowMapImpl) o).privateMap), o.getId());
+        return new FlowMapImpl(new ConcurrentHashMap<>(((FlowMapImpl) o).privateMap), o.getId(), o.getSequence());
     }
 
     @Override

@@ -69,6 +69,7 @@ public interface FlowMap {
 
     /** If this flow map originated from another flow */
     @NotNull Optional<UUID> getParentId();
+    @NotNull Optional<Integer> getParentSequence();
 
     /** Returns the sequence number of the flow. Starts with 0 */
     @NotNull int getSequence();

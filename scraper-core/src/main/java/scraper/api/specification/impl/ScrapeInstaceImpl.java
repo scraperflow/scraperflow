@@ -36,7 +36,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
     private final @NotNull Map<String, Object> initialArguments = new HashMap<>();
 
     /** Addressable instances */
-    private final @NotNull Map<InstanceAddress, ScrapeInstance> importedInstances = new HashMap<>();
+    public final @NotNull Map<InstanceAddress, ScrapeInstance> importedInstances = new HashMap<>();
 
     private final Map<Address, NodeContainer<? extends Node>> routes = new HashMap<>();
 
@@ -106,7 +106,7 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
 
     @Override
     public void addRoute(@NotNull Address address, @NotNull NodeContainer<? extends Node> nodeAbstractNode) {
-        assert !routes.containsKey(address);
+        assert !routes.containsKey(address) || routes.get(address) == nodeAbstractNode: "Already added " + address+ "  "+routes.get(address)+" <=> "+nodeAbstractNode;
         routes.put(address, nodeAbstractNode);
     }
 

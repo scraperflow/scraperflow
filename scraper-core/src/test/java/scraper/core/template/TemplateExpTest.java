@@ -18,7 +18,7 @@ import java.util.UUID;
 
 public class TemplateExpTest {
 
-    private final static FlowMap o = new FlowMapImpl(UUID.randomUUID());
+    private final static FlowMap o = new FlowMapImpl(UUID.randomUUID(), -1);
     private final static ObjectMapper mapper = new ObjectMapper();
 
     @Before

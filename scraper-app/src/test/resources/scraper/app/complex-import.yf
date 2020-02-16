@@ -1,6 +1,8 @@
 ---
 name: imp
 
+entry: test
+
 imports:
   complex-import-2.yf:
 

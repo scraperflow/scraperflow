@@ -1,6 +1,7 @@
 package scraper.api.service;
 
 import scraper.annotations.NotNull;
+import scraper.api.node.Address;
 
 import java.util.concurrent.ExecutorService;
 

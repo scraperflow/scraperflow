@@ -495,10 +495,10 @@ public final class NodeUtil {
                 if(localTarget.isPresent()) return localTarget.get();
 
                 // imported instance
-                ScrapeInstance importedInstance = jobInstance.getImportedInstances().get(new InstanceAddressImpl(goTo.getRepresentation()));
-                if(importedInstance == null)
+                Optional<NodeContainer<? extends Node>> importedTarget = jobInstance.getNode(new InstanceAddressImpl(goTo.getRepresentation()));
+                if(importedTarget.isEmpty())
                     throw new IllegalStateException(origin+": Address is neither in local graph, relative graph, or imported instance: "+goTo);
-                return importedInstance.getEntry();
+                return importedTarget.get();
             } else {
                 // graph relative
                 Address graph = addressOf(
@@ -512,14 +512,11 @@ public final class NodeUtil {
 
                 // imported instance
                 String instanceTarget = goTo.getRepresentation().split("\\.")[0];
-
-                ScrapeInstance importedInstance = jobInstance.getImportedInstances().get(
-                        new InstanceAddressImpl(instanceTarget)
-                );
-                if(importedInstance == null)
+                Optional<NodeContainer<? extends Node>> inTarget = jobInstance.getImportedInstances().get(new InstanceAddressImpl(instanceTarget)).getNode(goTo);
+                if(inTarget.isEmpty())
                     throw new IllegalStateException(origin+": Neither graph relative address nor imported instance found for " + goTo);
-                Optional<NodeContainer<? extends Node>> imported = importedInstance.getNode(addressOf(goTo.getRepresentation() + ".0"));
-                return imported.get();
+//                Optional<NodeContainer<? extends Node>> imported = importedInstance.getNode(addressOf(goTo.getRepresentation() + ".0"));
+                return inTarget.get();
             }
         } catch (NoSuchElementException e) {
             throw new IllegalStateException("Address "+goTo+" not found");

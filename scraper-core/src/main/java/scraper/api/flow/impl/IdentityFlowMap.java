@@ -82,6 +82,11 @@ public class IdentityFlowMap implements FlowMap {
     }
 
     @Override
+    public Optional<Integer> getParentSequence() {
+        return Optional.empty();
+    }
+
+    @Override
     public int getSequence() {
         return 0;
     }

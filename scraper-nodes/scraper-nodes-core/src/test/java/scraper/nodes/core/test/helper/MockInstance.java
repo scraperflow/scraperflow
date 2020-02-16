@@ -87,4 +87,9 @@ public class MockInstance implements ScrapeInstance {
         return null;
     }
 
+    @Override
+    public Map<Address, NodeContainer<? extends Node>> getRoutes() {
+        return null;
+    }
+
 }

@@ -33,6 +33,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static scraper.utils.FileUtil.getFirstExistingPaths;
 
@@ -222,12 +223,18 @@ public class JobFactory {
             }
         }
 
-        job.getImportedInstances().putAll(parsedImports);
-        for (InstanceAddress address : parsedImports.keySet()) {
-            parsedImports.get(address).init();
-        }
+        job.importedInstances.putAll(parsedImports);
+
+        List<Map.Entry<InstanceAddress, ScrapeInstance>> nested = job.importedInstances.entrySet()
+                .stream()
+                .flatMap(e -> e.getValue().getImportedInstances().entrySet().stream())
+                .collect(Collectors.toList());
+
+        nested.forEach(e -> job.importedInstances.put(e.getKey(), e.getValue()));
 
         job.init();
+
+        job.importedInstances.forEach((a,i)-> i.getRoutes().forEach(job::addRoute));
 
         job.validate();
         return job;

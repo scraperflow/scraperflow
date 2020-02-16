@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static scraper.api.node.container.NodeLogLevel.*;
+import static scraper.util.NodeUtil.convert;
 import static scraper.util.NodeUtil.initFields;
 import static scraper.utils.ClassUtil.getAllFields;
 
@@ -82,11 +83,11 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     @FlowKey protected Address goTo;
 
     /** If set, returns a thread pool with given name and {@link #threads} */
-    @FlowKey(defaultValue = "\"main\"")
+    @FlowKey
     protected String service;
 
     /** Number of worker threads for given executor service pool {@link #service} */
-    @FlowKey(defaultValue = "25") @Argument
+    @FlowKey(defaultValue = "100") @Argument
     protected Integer threads;
 
     /** Label of a node which can be used as a goto reference */
@@ -191,8 +192,6 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
      * @param map The current forwarded map
      */
     protected void start(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap map) throws NodeException {
-        map.nextSequence();
-
         // evaluate and write log message if any
         try {
             Object logString = Template.eval(log, map);
@@ -242,7 +241,7 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
      * @param o The current map
      */
     protected void finish(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap o) {
-        // no op
+        o.nextSequence();
     }
 
 
@@ -366,9 +365,13 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
     // getter
     //===========
 
-    @NotNull
+    @NotNull @Override
     public ExecutorService getService() {
-        return getJobPojo().getExecutors().getService(getJobPojo().getName(), service, threads);
+        if(service != null) {
+            return getJobPojo().getExecutors().getService(getJobPojo().getName(), service, threads);
+        } else {
+            return getJobPojo().getExecutors().getService(getJobPojo().getName(), getAddress().toString(), threads);
+        }
     }
 
     @NotNull

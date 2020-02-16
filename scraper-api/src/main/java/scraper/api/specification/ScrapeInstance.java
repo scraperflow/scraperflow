@@ -2,7 +2,10 @@ package scraper.api.specification;
 
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
-import scraper.api.node.*;
+import scraper.api.node.Address;
+import scraper.api.node.GraphAddress;
+import scraper.api.node.InstanceAddress;
+import scraper.api.node.NodeAddress;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.plugin.NodeHook;
@@ -12,7 +15,7 @@ import scraper.api.service.HttpService;
 import scraper.api.service.ProxyReservation;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,7 +49,7 @@ public interface ScrapeInstance {
     /** Specification used for this instance */
     @NotNull ScrapeSpecification getSpecification();
 
-    /** Imported instances, if any. Routes can point to the names of these instances */
+    /** Imported instance addresses, if any.  Includes nested imported instances. */
     @NotNull Map<InstanceAddress, ScrapeInstance> getImportedInstances();
 
     /** Hooks before/after a flow map has been processed */
@@ -61,8 +64,10 @@ public interface ScrapeInstance {
     /** Gets a node at a relative target address maybe */
     @NotNull Optional<NodeContainer<? extends Node>> getNode(@NotNull Address target);
 
-
+    /** Initial arguments passed via command line or args files */
     @NotNull Map<String, Object> getEntryArguments();
+
+    /** Flat address mapping to all known nodes including nodes in nested imported instances */
     @NotNull Map<Address, NodeContainer<? extends Node>> getRoutes();
 
     // ===========
