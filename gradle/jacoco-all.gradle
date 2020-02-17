@@ -12,7 +12,7 @@ task codeCoverageReport(type: JacocoReport) {
 
     afterEvaluate {
         // exclude module info files, they are treated as classes and classes have to have a unique name
-        classDirectories = files(classDirectories.files.collect {
+        classDirectories.from = files(classDirectories.files.collect {
             fileTree(dir: it, exclude: '**/module-info*')
         })
     }

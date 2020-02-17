@@ -20,7 +20,7 @@ subprojects.each { itp ->
             println "Configuring ${plugin} plugin to include ${nodes}"
             afterEvaluate{
                 dependencies {
-                    testCompile project(":scraper-nodes:${nodes}")
+                    testImplementation project(":scraper-nodes:${nodes}")
                 }
             }
         }
