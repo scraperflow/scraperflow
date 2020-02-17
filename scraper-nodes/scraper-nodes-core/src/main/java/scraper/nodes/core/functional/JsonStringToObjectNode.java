@@ -18,7 +18,7 @@ import static scraper.api.node.container.NodeLogLevel.WARN;
 /**
  * Converts and evaluates a json string to a json object
  */
-@NodePlugin("1.0.0")
+@NodePlugin("0.1.0")
 public final class JsonStringToObjectNode implements FunctionalNode {
 
     /** JSON string */

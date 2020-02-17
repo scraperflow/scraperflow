@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 /**
  * @see ArgsCommand
- * @since 1.0.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

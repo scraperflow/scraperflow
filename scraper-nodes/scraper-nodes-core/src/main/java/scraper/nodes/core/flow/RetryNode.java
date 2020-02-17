@@ -19,7 +19,6 @@ import static scraper.util.NodeUtil.flowOf;
  * Provides a try-catch mechanism
  *
  * @see AbstractNode
- * @since 0.1
  * @author Albert Schimpf
  */
 @NodePlugin("0.2.0")

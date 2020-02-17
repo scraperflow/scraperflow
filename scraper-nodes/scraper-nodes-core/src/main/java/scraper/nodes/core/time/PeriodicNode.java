@@ -10,7 +10,6 @@ import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
-import scraper.util.NodeUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -23,7 +22,7 @@ import static scraper.util.NodeUtil.flowOf;
  * Executes a given node periodically.
  * Periodic execution can start at initialization or on first accept call, controlled via the flag.
  */
-@NodePlugin(value = "1.0.0", stateful = true)
+@NodePlugin(value = "1.0.0")
 public final class PeriodicNode implements FunctionalNode {
 
     /** Period time in ms */

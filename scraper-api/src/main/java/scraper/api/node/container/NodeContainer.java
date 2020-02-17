@@ -25,8 +25,6 @@ import java.util.concurrent.ExecutorService;
  *     Most nodes are state-less. If stateful nodes are used in a specification,
  *     precautions have to be taken to avoid race conditions.
  * </p>
- *
- * @since 1.0.0
  */
 public interface NodeContainer<NODE> extends NodeInitializable {
 

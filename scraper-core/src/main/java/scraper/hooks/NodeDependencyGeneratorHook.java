@@ -20,8 +20,6 @@ import java.util.Map;
 
 /**
  * Hook to generate a node dependency file for the currently parsed workflow specifications
- *
- * @since 1.0.0
  */
 @ArgsCommand(
         value = "ndep",

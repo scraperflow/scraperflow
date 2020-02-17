@@ -11,7 +11,7 @@ import scraper.api.reflect.T;
 /**
  * Replaces occurrences in a string
  */
-@NodePlugin("1.0.0")
+@NodePlugin("0.1.0")
 public final class StringReplaceNode implements FunctionalNode {
 
     /** The content to apply the regex on */

@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Logs specific arguments in the current flow map. Useful for debugging.
  */
-@NodePlugin(value = "0.1.1")
+@NodePlugin(value = "0.1.0")
 public final class PrintNode implements Node {
 
     @FlowKey

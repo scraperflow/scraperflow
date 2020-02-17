@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  * The maps capture the content of the capture groups.
  * If groups are empty, the map is empty and the list is populated with empty maps.
  */
-@NodePlugin("1.0.0")
+@NodePlugin("0.9.0")
 public final class RegexNode implements StreamNode {
 
     /** Regex as a Java String */

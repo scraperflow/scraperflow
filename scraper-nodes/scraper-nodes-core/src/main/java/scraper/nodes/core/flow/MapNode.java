@@ -4,7 +4,6 @@ package scraper.nodes.core.flow;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
@@ -23,7 +22,7 @@ import static scraper.util.NodeUtil.flowOf;
  *
  * @author Albert Schimpf
  */
-@NodePlugin("1.0.0")
+@NodePlugin("0.1.0")
 public final class MapNode implements Node {
 
     /** The expected list is located to fork on */

@@ -1,14 +1,11 @@
 package scraper.api.service;
 
 import scraper.annotations.NotNull;
-import scraper.api.node.Address;
 
 import java.util.concurrent.ExecutorService;
 
 /**
  * Service managing the execution and scheduling of flows
- *
- * @since 1.0.0
  */
 public interface ExecutorsService {
 

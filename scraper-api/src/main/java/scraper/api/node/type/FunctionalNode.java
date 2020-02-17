@@ -8,8 +8,6 @@ import scraper.api.node.container.NodeContainer;
 
 /**
  * Nodes which implement this interface only modify the FlowMap and can be tested functionally.
- *
- * @since 1.0.0
  */
 public interface FunctionalNode extends Node {
 

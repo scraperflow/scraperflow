@@ -13,9 +13,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * @since 1.0.0
- */
 // if something goes wrong, then at the beginning at the container build up
 // so this is fine, I think
 @SuppressWarnings("unchecked")

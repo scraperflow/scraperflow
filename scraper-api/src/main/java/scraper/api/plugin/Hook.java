@@ -12,8 +12,6 @@ import java.util.Map;
  * and provided access to all specifications and instances of workflows.
  * <p>
  * Additionally, dependencies can be used.
- *
- * @since 1.0.0
  */
 public interface Hook {
     /** Executes the hook and provides arguments, dependencies, and a ScrapeSpecification to ScrapeInstance map */

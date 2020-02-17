@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Appends a T to a list.
  */
-@NodePlugin("1.0.0")
+@NodePlugin("0.1.0")
 public final class AggregateListNode implements FunctionalNode {
 
     /** Evaluated content inserted into 'put' */

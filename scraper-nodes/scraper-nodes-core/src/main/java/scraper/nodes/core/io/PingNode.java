@@ -10,12 +10,10 @@ import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.reflect.T;
-import scraper.util.NodeUtil;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +22,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Pings a given hostname on the given port.
  */
-@NodePlugin("1.0.0")
+@NodePlugin("0.1.0")
 public final class PingNode implements FunctionalNode {
 
     /** Argument ping address */

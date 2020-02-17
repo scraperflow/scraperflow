@@ -15,7 +15,6 @@ import java.io.File;
  * Checks if file exists
  *
  * @see AbstractNode
- * @since 0.1
  * @author Albert Schimpf
  */
 @NodePlugin("0.1.0")

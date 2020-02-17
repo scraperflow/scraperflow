@@ -15,7 +15,6 @@ import scraper.core.AbstractNode;
  * Executes node target given specified difference in ms
  *
  * @see AbstractNode
- * @since 0.1
  * @author Albert Schimpf
  */
 @NodePlugin("0.1.0")

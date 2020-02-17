@@ -15,8 +15,6 @@ import java.util.Map;
  * A basic hook to provide an exit mechanism after hooks all hooks are executed
  * <p>
  *     Can be used to generate a control flow graph an exit after generation
- *
- * @since 1.0.0
  */
 @ArgsCommand(
         value = "exit",

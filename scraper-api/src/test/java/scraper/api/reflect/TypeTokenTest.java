@@ -5,8 +5,6 @@ import org.junit.Test;
 
 /**
  * Tests the type token T
- *
- * @since 1.0.0
  */
 public class TypeTokenTest {
 

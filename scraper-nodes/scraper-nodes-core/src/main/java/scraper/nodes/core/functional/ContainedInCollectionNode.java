@@ -16,7 +16,7 @@ import java.util.Collection;
  *
  * @author Albert Schimpf
  */
-@NodePlugin("1.0.0")
+@NodePlugin("0.1.0")
 public final class ContainedInCollectionNode implements FunctionalNode {
 
     /** Collection to be checked if the object is contained */

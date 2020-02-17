@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 /**
  */
-@NodePlugin("1.0.0")
+@NodePlugin("0.9.0")
 public final class ReadFileNode implements FunctionalNode {
 
     /** Input file path */

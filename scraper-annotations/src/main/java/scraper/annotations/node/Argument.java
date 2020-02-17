@@ -7,8 +7,6 @@ import java.lang.annotation.*;
 /**
  * Fields annotated with this annotation are evaluated as templates once during initialization.
  * A custom JSON converter can be provided.
- *
- * @since 1.0.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

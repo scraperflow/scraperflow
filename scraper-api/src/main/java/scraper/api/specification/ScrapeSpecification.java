@@ -9,8 +9,6 @@ import java.util.Optional;
 
 /**
  * Specification of a Scraper .scrape workflow.
- *
- * @since 1.0.0
  */
 public interface ScrapeSpecification {
 

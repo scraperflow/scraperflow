@@ -15,7 +15,6 @@ import java.util.concurrent.TimeoutException;
  * Reservation service to provide reservations for local HTTP and proxied HTTP requests.
  *
  * @see HttpService
- * @since 1.0.0
  */
 public interface ProxyReservation {
 

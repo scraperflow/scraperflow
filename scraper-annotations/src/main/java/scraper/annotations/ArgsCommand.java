@@ -7,7 +7,6 @@ import java.lang.annotation.*;
  * It can be used multiple times if the class has multiple command line arguments to offer.
  *
  * @see ArgsCommands
- * @since 1.0.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

@@ -11,8 +11,6 @@ import java.lang.annotation.RetentionPolicy;
  * <p>
  * Nodes use semantic versioning.
  * Before increasing the major version of a node, archive the old version first to enable legacy node versioning.
- *
- * @since 1.0.0
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -25,7 +23,4 @@ public @interface NodePlugin {
      * and are likely to be upgraded to a next major version or deleted completely.
      */
     boolean deprecated() default false;
-
-    /** Indicates if a node keeps a hidden state which can be manipulated by accepting flows */
-    boolean stateful() default false;
 }

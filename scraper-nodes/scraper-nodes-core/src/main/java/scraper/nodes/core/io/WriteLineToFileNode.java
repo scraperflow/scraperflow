@@ -21,7 +21,7 @@ import static scraper.api.node.container.NodeLogLevel.ERROR;
  *
  * @author Albert Schimpf
  */
-@NodePlugin("1.0.0")
+@NodePlugin("0.1.0")
 public final class WriteLineToFileNode implements FunctionalNode {
 
     /** Output file path */

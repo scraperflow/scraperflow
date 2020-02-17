@@ -5,8 +5,6 @@ import scraper.annotations.Nullable;
 
 /**
  * Minimal dependency injection container. It can handle single beans and beans in a collection.
- *
- * @since 1.0.0
  */
 public interface DIContainer {
     /**

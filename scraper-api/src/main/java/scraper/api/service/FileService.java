@@ -8,8 +8,6 @@ import java.io.IOException;
 
 /**
  * Provides conflict-free synchronized access to I/O operations on the underlying file system.
- *
- * @since 1.0.0
  */
 public interface FileService {
     /** Ensures that a files exists for specified path */

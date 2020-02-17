@@ -7,8 +7,6 @@ import java.lang.annotation.*;
 /**
  * Indicates that this field will be parsed from a scrape specification.
  * If mandatory is enabled, it enforces the key to exist in the specification.
- *
- * @since 1.0.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

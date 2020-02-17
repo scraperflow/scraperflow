@@ -14,12 +14,12 @@ import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
 import scraper.api.node.GraphAddress;
 import scraper.api.node.NodeAddress;
-import scraper.api.plugin.NodeHook;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.impl.GraphAddressImpl;
 import scraper.api.node.impl.NodeAddressImpl;
 import scraper.api.node.type.Node;
+import scraper.api.plugin.NodeHook;
 import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
 import scraper.util.NodeUtil;
@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static scraper.api.node.container.NodeLogLevel.*;
-import static scraper.util.NodeUtil.convert;
 import static scraper.util.NodeUtil.initFields;
 import static scraper.utils.ClassUtil.getAllFields;
 
@@ -58,7 +57,7 @@ import static scraper.utils.ClassUtil.getAllFields;
  * </p>
  */
 @SuppressWarnings({"WeakerAccess", "unused"}) // abstract implementation
-@NodePlugin("1.0.1")
+@NodePlugin("1.0.2")
 public abstract class AbstractNode<NODE extends Node> implements NodeContainer<NODE> {
     /** Logger with the actual class name */
     protected Logger l = LoggerFactory.getLogger(getClass());

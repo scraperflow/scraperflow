@@ -8,8 +8,6 @@ import scraper.api.di.DIContainer;
  * <p>
  *     When it is loaded at startup, it can use other dependencies via the dependency injection framework.
  * </p>
- *
- * @since 1.0.0
  */
 public interface Addon {
     /** Loads and initializes the addon with already loaded dependencies */

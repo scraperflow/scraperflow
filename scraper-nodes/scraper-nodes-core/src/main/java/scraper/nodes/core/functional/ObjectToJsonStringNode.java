@@ -15,7 +15,7 @@ import java.io.IOException;
 /**
  * Converts a Json object (map) to a String representation
  */
-@NodePlugin("1.0.0")
+@NodePlugin("0.1.0")
 public final class ObjectToJsonStringNode implements FunctionalNode {
 
     /** Json object */

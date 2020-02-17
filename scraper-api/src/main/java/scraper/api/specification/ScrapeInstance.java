@@ -15,14 +15,11 @@ import scraper.api.service.HttpService;
 import scraper.api.service.ProxyReservation;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
  * Provides scrape specification functions needed during runtime.
- *
- * @since 1.0.0
  */
 public interface ScrapeInstance {
 
@@ -49,7 +46,7 @@ public interface ScrapeInstance {
     /** Specification used for this instance */
     @NotNull ScrapeSpecification getSpecification();
 
-    /** Imported instance addresses, if any.  Includes nested imported instances. */
+    /** Imported instance addresses, if any. Includes nested imported instances. */
     @NotNull Map<InstanceAddress, ScrapeInstance> getImportedInstances();
 
     /** Hooks before/after a flow map has been processed */

@@ -14,7 +14,6 @@ import java.util.concurrent.TimeoutException;
  *
  * @see ProxyReservation
  * @see ReservationToken
- * @since 1.0.0
  */
 public interface HttpService {
 

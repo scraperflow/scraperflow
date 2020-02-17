@@ -12,8 +12,6 @@ import scraper.api.specification.ScrapeInstance;
 
 /**
  * Objects which implement this interface can consume and modify {@link FlowMap}s.
- *
- * @since 1.0.0
  */
 @FunctionalInterface
 public interface Node {

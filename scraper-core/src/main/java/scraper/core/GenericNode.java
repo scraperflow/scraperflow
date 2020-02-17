@@ -22,7 +22,7 @@ import scraper.api.node.type.Node;
  * </p>
  */
 @SuppressWarnings({"WeakerAccess", "unused"}) // abstract implementation
-@NodePlugin("1.0.1")
+@NodePlugin("0.1.0")
 public abstract class GenericNode extends AbstractNode<Node> {
     public GenericNode(@NotNull String instance, @NotNull String graph, @Nullable String node, int index) {
         super(instance, graph, node, index);

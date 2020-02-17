@@ -8,8 +8,6 @@ import scraper.api.node.type.Node;
 
 /**
  * Objects which implement this interface can consume and modify {@link FlowMap}s.
- *
- * @since 1.0.0
  */
 @FunctionalInterface
 public interface NodeHook {

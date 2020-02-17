@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
  *
  * @author Albert Schimpf
  */
-@NodePlugin("1.0.0")
+@NodePlugin("0.9.0")
 public final class StringGeneratorNode implements StreamNode {
 
     /** String used to generate a list of more strings */

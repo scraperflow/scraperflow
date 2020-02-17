@@ -11,7 +11,7 @@ import scraper.api.reflect.T;
 /**
  * Hashes a values
  */
-@NodePlugin("1.0.0")
+@NodePlugin("0.1.0")
 public final class HashNode implements FunctionalNode {
 
     /** The content to apply the hash on */

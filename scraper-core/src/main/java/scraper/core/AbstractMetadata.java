@@ -9,8 +9,6 @@ import scraper.api.node.type.Node;
 /**
  * This class holds the metadata needed for node instantiation and node versioning.
  * During initialization, AbstractMetadata is generated for each node found in the class/module path.
- *
- * @since 1.0.0
  */
 public abstract class AbstractMetadata extends AbstractMetadataBasedPlugin {
 

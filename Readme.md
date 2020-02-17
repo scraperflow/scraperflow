@@ -1,7 +1,7 @@
 Scraper - A Composable Workflow Framework
 =========================================
 
-![version](https://img.shields.io/badge/version-1.0.0-green.svg)
+![version](https://img.shields.io/badge/version-0.9.0-green.svg)
 ![language](https://img.shields.io/badge/language-java11-blue.svg)
 ![build](https://img.shields.io/badge/build-gradle-yellowgreen.svg)
 
@@ -67,4 +67,4 @@ will
 * package the project core as a runnable jar in the `build/libs` folder
   * If the core jar is used, plugins needs to be provided explicitly on the class path
   
-         java -cp "/usr/lib/scraper/core/scraper-1.0.0.jar:/usr/lib/scraper/addons/*:/usr/lib/scraper/nodes/*" scraper.app.Scraper
+         java -cp "/usr/lib/scraper/core/scraper-0.9.0.jar:/usr/lib/scraper/addons/*:/usr/lib/scraper/nodes/*" scraper.app.Scraper

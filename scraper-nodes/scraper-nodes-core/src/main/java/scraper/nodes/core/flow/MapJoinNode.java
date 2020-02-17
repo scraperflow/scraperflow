@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutionException;
 /**
  *
  */
-@NodePlugin("1.0.0")
+@NodePlugin("0.9.0")
 public final class MapJoinNode implements Node {
 
     /** Expected join for each key defined in this map after a forked flow terminates */

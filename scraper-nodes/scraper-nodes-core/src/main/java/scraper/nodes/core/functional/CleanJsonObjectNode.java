@@ -36,7 +36,6 @@ import java.util.Map;
  * </p>
  *
  * @see AbstractNode
- * @since 0.1
  * @author Albert Schimpf
  */
 // TODO api doc; | descends into maps, [] descends into arrays

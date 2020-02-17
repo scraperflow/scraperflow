@@ -37,7 +37,7 @@ import static scraper.util.NodeUtil.flowOf;
  * }</pre>
  *
  */
-@NodePlugin(value = "0.1.1", stateful = true)
+@NodePlugin(value = "0.1.1")
 public final class TimerNode implements FunctionalNode {
 
     /** timeout in ms for this node */

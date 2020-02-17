@@ -17,8 +17,6 @@ import scraper.api.node.impl.AddressImpl;
  * <li> String
  *
  * If the given string cannot be converted to given target class, a {@link ValidationException} is thrown.
- *
- * @since 1.0.0
  */
 public final class StringToClassConverter {
     private StringToClassConverter(){}

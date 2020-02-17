@@ -18,7 +18,6 @@ import java.util.UUID;
  *
  * @see NodeContainer
  * @see Map
- * @since 1.0.0
  */
 public interface FlowMap {
 
@@ -67,12 +66,14 @@ public interface FlowMap {
     // State
     //===================
 
-    /** If this flow map originated from another flow */
+    /** If this flow map originated from another flow, returns the parent id */
     @NotNull Optional<UUID> getParentId();
+    /** If this flow map originated from another flow, returns the parent's sequence number */
     @NotNull Optional<Integer> getParentSequence();
 
     /** Returns the sequence number of the flow. Starts with 0 */
     @NotNull int getSequence();
+    /** Increases the sequence number of this flow */
     @NotNull void nextSequence();
 
     /** Returns the unique id of this flow */
@@ -97,8 +98,9 @@ public interface FlowMap {
     @NotNull <A> A evalOrDefault(@NotNull T<A> template, @NotNull A defaultEval);
 
     // Output
-
+    /** Uses the template's content and type to insert the outputObject into this FlowMap */
     <A> void output(@NotNull T<A> locationAndType, @Nullable A outputObject);
 
+    /** Copies this FlowMap */
     FlowMap copy();
 }

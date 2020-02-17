@@ -47,7 +47,7 @@ import static scraper.api.node.container.NodeLogLevel.*;
  *
  * @author Albert Schimpf
  */
-@NodePlugin("1.0.1")
+@NodePlugin("1.0.0")
 public final class HttpRequestNode implements Node {
 
     private final ObjectMapper mapper = new ObjectMapper();

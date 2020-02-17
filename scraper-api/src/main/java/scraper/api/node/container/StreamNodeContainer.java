@@ -11,8 +11,6 @@ import java.util.List;
  * A container for stream nodes provides a node to collect and stream keys.
  *
  * The origin flow map is used to group requests for the collect case.
- *
- * @since 1.0.0
  */
 public interface StreamNodeContainer extends NodeContainer<StreamNode> {
     /**

@@ -21,7 +21,7 @@ import java.util.*;
 /**
  * Fixes accept method for functional nodes
  */
-@NodePlugin("1.0.0")
+@NodePlugin("0.1.0")
 public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implements StreamNodeContainer {
     AbstractStreamNode(@NotNull String instance, @NotNull String graph, @Nullable String node, int index) { super(instance, graph, node, index); }
 

@@ -6,8 +6,6 @@ import java.lang.annotation.*;
  * Annotated (String) fields are treated as file paths.
  * On Initialization and during runtime file existence (optionally with directory structure) is ensured.
  * If ensure fails, a NodeException is thrown.
- *
- * @since 1.0.0
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

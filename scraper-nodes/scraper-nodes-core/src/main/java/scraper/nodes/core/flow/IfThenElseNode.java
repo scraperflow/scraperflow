@@ -15,7 +15,6 @@ import scraper.core.AbstractNode;
  * Provides if-then-else routing
  *
  * @see AbstractNode
- * @since 0.1
  * @author Albert Schimpf
  */
 @NodePlugin("0.1.0")
