@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static scraper.util.NodeUtil.*;
-
 public abstract class WorkflowTest {
 
     @Test
@@ -49,14 +47,15 @@ public abstract class WorkflowTest {
         spec.getGlobalNodeConfigurations().put("/.*Node/", Map.of("onForkException", "fail"));
         spec.getGraphs().put("fail", List.of(Map.of("type", "ExceptionNode", "exception", "FAIL")));
 
-        ScrapeInstaceImpl convJob = dibean.get(JobFactory.class).convertScrapeJob(spec);
-
-        // build initial input map
-        FlowMap initialFlow = FlowMapImpl.origin();
-
-        // feed input
         try {
+            ScrapeInstaceImpl convJob = dibean.get(JobFactory.class).convertScrapeJob(spec);
+
+            // build initial input map
+            FlowMap initialFlow = FlowMapImpl.origin();
+
+            // feed input
             NodeContainer<? extends Node> n = convJob.getEntry();
+
             n.getC().accept(n, initialFlow);
 
             TestUtil.assertSuccess(convJob.getAllNodes());

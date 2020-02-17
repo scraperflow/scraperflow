@@ -33,14 +33,14 @@ public class ControlFlowGraphImpl implements ControlFlowGraph {
     @Override
     public List<ControlFlowEdge> getOutgoingEdges(Address node) {
         return edges.stream()
-                .filter(edge -> edge.getFromAddress().equalsTo(node))
+                .filter(edge -> edge.getFromAddress().equals(node))
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<ControlFlowEdge> getIncomingEdges(Address node) {
         return edges.stream()
-                .filter(edge -> edge.getToAddress().equalsTo(node))
+                .filter(edge -> edge.getToAddress().equals(node))
                 .collect(Collectors.toList());
     }
 

@@ -61,6 +61,9 @@ public interface ScrapeInstance {
     /** Gets a node at a relative target address maybe */
     @NotNull Optional<NodeContainer<? extends Node>> getNode(@NotNull Address target);
 
+    /** Gets a node at a target address denoted by a string representation ({@code <instance.graph.node>}) maybe */
+    @NotNull Optional<NodeContainer<? extends Node>> getNode(@NotNull String targetRepresentation);
+
     /** Initial arguments passed via command line or args files */
     @NotNull Map<String, Object> getEntryArguments();
 

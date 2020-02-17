@@ -77,6 +77,11 @@ public class MockInstance implements ScrapeInstance {
     }
 
     @Override
+    public Optional<NodeContainer<? extends Node>> getNode(String targetRepresentation) {
+        return Optional.empty();
+    }
+
+    @Override
     public void addRoute(@NotNull Address address, @NotNull NodeContainer<? extends Node> node) {
 
     }

@@ -1,0 +1,21 @@
+{
+    "name" : "pipe-simple",
+    "graphs" : {
+        "start":
+        [
+          { "type": "EchoNode", "puts": { "before": "OK" } },
+          { "type" : "PipeNode", "pipeTargets": ["line1", "line2"] },
+          { "type": "AssertNode", "containedInMap": { "before": ["OK"], "line1": ["OK"], "line2": ["OK"] } }
+        ],
+
+      "line1": [
+        { "type": "AssertNode", "containedInMap": { "before": ["OK"] } },
+        { "type": "EchoNode", "puts": { "line1":  "OK"} }
+      ],
+
+      "line2": [
+        { "type": "AssertNode", "containedInMap": { "before": ["OK"], "line1": ["OK"] } },
+        { "type": "EchoNode", "puts": { "line2": "OK"} }
+      ]
+    }
+}

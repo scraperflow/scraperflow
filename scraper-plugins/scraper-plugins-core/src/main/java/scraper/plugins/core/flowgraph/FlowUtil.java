@@ -9,7 +9,6 @@ import scraper.core.Template;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.plugins.core.flowgraph.api.ControlFlowNode;
-import scraper.plugins.core.flowgraph.api.DataFlowGraph;
 import scraper.plugins.core.flowgraph.impl.ControlFlowGraphImpl;
 import scraper.plugins.core.flowgraph.impl.ControlFlowNodeImpl;
 import scraper.plugins.core.flowgraph.impl.DataFlowGraphImpl;
@@ -18,6 +17,7 @@ import scraper.util.NodeUtil;
 import scraper.utils.ClassUtil;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,24 +28,25 @@ public class FlowUtil {
     public static ControlFlowGraph generateControlFlowGraph(ScrapeInstance instance) {
         ControlFlowGraphImpl cfg = new ControlFlowGraphImpl();
 
-
-        instance.getGraphs().forEach(((graphAddress, nodes) ->
-                nodes.forEach(node -> handleNode(cfg, instance, node))
-        ));
+        instance.getRoutes().forEach(((address, nodeContainer) -> {
+            if (address.isAbsolute()) {
+                handleNode(cfg, instance, nodeContainer);
+            }
+        }));
 
         return cfg;
     }
 
-    @NotNull
-    public static DataFlowGraph generateDataFlowGraph(ScrapeInstance instance) {
-        DataFlowGraphImpl dfg = new DataFlowGraphImpl();
-
-        instance.getGraphs().forEach(((graphAddress, nodes) ->
-                nodes.forEach(node -> handleNodeDfg(dfg, instance, node))
-        ));
-
-        return dfg;
-    }
+//    @NotNull
+//    public static DataFlowGraph generateDataFlowGraph(ScrapeInstance instance) {
+//        DataFlowGraphImpl dfg = new DataFlowGraphImpl();
+//
+//        instance.getGraphs().forEach(((graphAddress, nodes) ->
+//                nodes.forEach(node -> handleNodeDfg(dfg, instance, node))
+//        ));
+//
+//        return dfg;
+//    }
 
     private static void handleNode(ControlFlowGraphImpl cfg, ScrapeInstance instance, NodeContainer<? extends Node> node) {
         ControlFlowNode cfnode = new ControlFlowNodeImpl(node.getAddress());
@@ -62,8 +63,10 @@ public class FlowUtil {
                 Method method = control.getDeclaredMethod("getOutput", List.class, NodeContainer.class, ScrapeInstance.class);
                 //noinspection unchecked
                 output = (List<ControlFlowEdge>) method.invoke(null, output, node, instance);
-            } catch (Exception ignored) {
-                System.out.println("[Skip] Could not find control for " + nodeClass+": " + controlClass);
+            } catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException ignored) {
+                System.out.println("[Skip] Could not find control for " + nodeClass + ": " + controlClass);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
             }
         }
 
@@ -88,15 +91,15 @@ public class FlowUtil {
             String controlClass = "scraper.plugins.core.flowgraph.data."+nodeClass.getSimpleName()+"Data";
             try {
                 Class<?> control = Class.forName(controlClass);
-                Method method = control.getDeclaredMethod("getOutput", Map.class, Node.class, ScrapeInstance.class);
+                Method method = control.getDeclaredMethod("getOutput", Map.class, NodeContainer.class, ScrapeInstance.class);
                 //noinspection unchecked
                 output = (Map<String, String>) method.invoke(null, output, node, instance);
 
-                Method method2 = control.getDeclaredMethod("getInput", Map.class, Node.class, ScrapeInstance.class);
+                Method method2 = control.getDeclaredMethod("getInput", Map.class, NodeContainer.class, ScrapeInstance.class);
                 //noinspection unchecked
                 input = (Map<String, String>) method2.invoke(null, input, node, instance);
             } catch (Exception ignored) {
-//                System.out.println("[Skip] Could not find data for " + nodeClass+": " + controlClass);
+                System.out.println("[Skip] Could not find data for " + nodeClass+": " + controlClass);
             }
         }
 
@@ -108,9 +111,12 @@ public class FlowUtil {
 
     private static List<Class> getReverseOrderHierarchy(NodeContainer<? extends Node> node) {
         List<Class> result = new LinkedList<>();
+        result.add(node.getC().getClass());
         Class current = node.getClass();
-        while(current.getSimpleName().toLowerCase().contains("node")) {
-            result.add(current);
+        while(!current.getName().toLowerCase().contains("java.lang.object")) {
+            if(current.getSimpleName().toLowerCase().contains("node")) {
+                result.add(current);
+            }
             current = current.getSuperclass();
         }
 
@@ -119,11 +125,11 @@ public class FlowUtil {
         return result;
     }
 
-    public static <T> T getField(String field, Object instance) throws Exception {
+    public static <T> Optional<T> getField(String field, Object instance) throws Exception {
         Field f = instance.getClass().getDeclaredField(field);
         f.setAccessible(true);
         //noinspection unchecked
-        return (T) f.get(instance);
+        return Optional.ofNullable((T) f.get(instance));
     }
 
     private static Map<String, String> getDefaultDataFlowOutput(NodeContainer<? extends Node> node) {

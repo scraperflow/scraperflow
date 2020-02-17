@@ -104,11 +104,12 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
         return Optional.ofNullable(routes.get(target));
     }
 
-    @NotNull
     @Override
-    public Map<GraphAddress, List<NodeContainer<? extends Node>>> getGraphs() {
-        return getAllNodes().stream().collect(Collectors.groupingBy(NodeContainer::getGraphKey));
-
+    public Optional<NodeContainer<? extends Node>> getNode(String targetRepresentation) {
+        if(!targetRepresentation.contains("<") || !targetRepresentation.contains(">")) return Optional.empty();
+        // remove <> brackets for utility call
+        targetRepresentation = targetRepresentation.substring(1, targetRepresentation.length()-1);
+        return getNode(NodeUtil.addressOf(targetRepresentation));
     }
 
     @Override

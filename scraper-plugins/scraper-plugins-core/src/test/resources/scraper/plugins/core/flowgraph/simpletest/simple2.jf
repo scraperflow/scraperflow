@@ -1,5 +1,5 @@
 {
-  "name": "test",
+  "name": "simple2",
   "entry": "start",
   "graphs": {
     "start": [

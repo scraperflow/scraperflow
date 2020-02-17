@@ -1,0 +1,18 @@
+{
+    "name" : "pipe-missing-target",
+    "graphs" : {
+        "start":
+        [
+          { "type": "EchoNode", "puts": { "before": "OK" } },
+          { "type" : "PipeNode", "pipeTargets": ["line1", "lixe2"] }
+        ],
+
+      "line1": [
+        { "type": "EchoNode", "puts": { "line1":  "OK"} }
+      ],
+
+      "line2": [
+        { "type": "EchoNode", "puts": { "line2": "OK"} }
+      ]
+    }
+}
