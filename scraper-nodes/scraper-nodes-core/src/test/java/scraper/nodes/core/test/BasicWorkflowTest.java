@@ -18,6 +18,4 @@ public class BasicWorkflowTest extends WorkflowTest {
     @Workflow("import-simple.jf")
     public void importTest() {}
 
-    @Workflow("address-test.yf")
-    public void addressTest() {}
 }
