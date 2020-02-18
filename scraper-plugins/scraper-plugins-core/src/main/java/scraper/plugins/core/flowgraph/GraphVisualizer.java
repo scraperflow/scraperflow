@@ -23,26 +23,28 @@ class GraphVisualizer {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(GraphVisualizer.class);
     private static StringBuilder graph;
 
+    static Boolean includeInstance = true;
+    static Boolean includeGraph = true;
+    static Boolean includeNodeType = true;
+    static Boolean includeNodeAddress = true;
+    static Boolean absolute = true;
+
     static void visualize(ScrapeInstance job, String createCF) throws FileNotFoundException {
         ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(job);
 
         log.info("Output: {}", createCF);
-
-
-
-
         graph = new StringBuilder();
 
         write("digraph G {");
 
-//        cfg.getNodes().forEach((a,n) ->
-//                write("  " + ((NodeAddress) a).getNode() + " [label=\""+a.toString()+"\"]")
-//        );
-
         cfg.getNodes().entrySet().stream()
                 .collect(groupingBy(e -> ((NodeAddress) e.getKey()).getInstance()))
                 .forEach((instance, entries) -> {
-                    write(String.format(instanceStart, instance, instance));
+                    if(absolute) {
+                        write(instanceStartAbs);
+                    } else {
+                        write(String.format(instanceStart, instance, instance));
+                    }
                     // instance -> addresses belonging to instance
                     entries.stream()
                             .collect(groupingBy(e -> ((NodeAddress) e.getKey()).getGraph()))
@@ -50,11 +52,24 @@ class GraphVisualizer {
                                     // graph -> addresses belonging to graph and instance
                                     (graph, entries1) -> {
                                         StringBuilder nodes = new StringBuilder();
-                                        entries1.forEach(e -> nodes.append("\"").append(e.getKey().getRepresentation()).append("\" [label=\""+getNodeLabelForAddress(e, job)+"\"]; "));
-                                        write(String.format(subgraphTemplate, graph, nodes.toString(), graph));
+                                        entries1.forEach(e -> nodes
+                                                .append("\"")
+                                                .append(e.getKey().getRepresentation())
+                                                .append("\" [shape=rectangle, label=\"")
+                                                .append(getNodeLabelForAddress(absolute, e, job))
+                                                .append("\"]; "));
+                                        if(absolute) {
+                                            write(String.format(subgraphTemplateAbs, nodes.toString()));
+                                        } else {
+                                            write(String.format(subgraphTemplate, graph, nodes.toString(), graph));
+                                        }
                                     }
                     );
-                    write(instanceEnd);
+                    if(absolute) {
+                        write(instanceEndAbs);
+                    } else {
+                        write(instanceEnd);
+                    }
         });
 
         cfg.getEdges().forEach(controlFlowEdge -> {
@@ -64,33 +79,6 @@ class GraphVisualizer {
                 }
         );
 
-        // define label mappings
-
-//        for (Node node : mapping.keySet()) {
-//            Integer id = mapping.get(node);
-//            String statefulStr = "";
-//            if(node instanceof AbstractFunctionalNode) statefulStr += ", color=\"green\"";
-//            write("  " + id + " [label=\""+node.getDisplayName()+"\""+ statefulStr+"]");
-//        }
-//
-//        printSubgraphFragments(job, mapping);
-//
-//        for (Node node : job.getEntryGraph()) {
-//            Integer current = mapping.get(node);
-//
-//            for (ControlFlowEdge s : node.getOutput()) {
-//                // FIXME
-////                Integer target = mapping.get(job.getNode(NodeUtil.addressOf(s.getTargetLabel())));
-////                write("    "+current +" -> "+target+" [label=\""+s.getLabel()+"\""
-////                        +(s.isMultiple() ? ",color=red" : "")
-////                        +(s.isDispatched() ? ",style=dotted" : "")
-////                        +", arrowhead=vee]");
-//            }
-//
-//            if(node.getInput().isEmpty() && node.getOutput().isEmpty()) {
-//                write("    \""+current +"\" [color=red, style=filled, fillcolor=red]");
-//            }
-//        }
         write("}");
 
         try (PrintWriter writer = new PrintWriter(new FileOutputStream(new File(createCF), false))) {
@@ -99,12 +87,26 @@ class GraphVisualizer {
 
     }
 
-    private static String getNodeLabelForAddress(Map.Entry<Address, ControlFlowNode> e, ScrapeInstance job) {
-        NodeAddress adr = (NodeAddress) e.getKey();
-        NodeContainer<? extends Node> node = job.getNode(adr);
-        String simpleName = node.getC().getClass().getSimpleName();
+    private static String getNodeLabelForAddress(Boolean abs, Map.Entry<Address, ControlFlowNode> e, ScrapeInstance job) {
+        if(abs) {
+            NodeAddress adr = (NodeAddress) e.getKey();
+            NodeContainer<? extends Node> node = job.getNode(adr);
+            String simpleName = node.getC().getClass().getSimpleName();
 
-        return simpleName+"\\n"+adr.toString();
+            return
+                    (includeInstance ? adr.getInstance()+"\\n" : "") +
+                            (includeGraph ? adr.getGraph()+"\\n" : "") +
+                            (includeNodeType ? simpleName+"\\n<" : "") +
+                            (includeNodeAddress ? "<"+ adr.getNode() +">": "")
+                    +""
+                    ;
+        } else {
+            NodeAddress adr = (NodeAddress) e.getKey();
+            NodeContainer<? extends Node> node = job.getNode(adr);
+            String simpleName = node.getC().getClass().getSimpleName();
+
+            return simpleName+"\\n<"+ adr.getNode()+">";
+        }
     }
 
     private static String getStyle(ControlFlowEdge controlFlowEdge) {
@@ -122,32 +124,7 @@ class GraphVisualizer {
         return style+"]";
     }
 
-//    private static void printSubgraphFragments(ScrapeInstance job, Map<Node, Integer> mapping) {
-//        Map<String, List<Node>> fragments = new HashMap<>();
-//        for (Node node : job.getEntryGraph()) {
-//            if(node.getFragment() == null) continue;
-//
-//            List<Node> arr = fragments.getOrDefault(node.getFragment(), new ArrayList<>());
-//            arr.add(node);
-//            fragments.put(node.getFragment(), arr);
-//        }
-//
-//        int frag = 1;
-//        for (String fragment : fragments.keySet()) {
-//            List<Node> nodes = fragments.get(fragment);
-//            StringBuilder nodesString = new StringBuilder();
-//
-//            for (Node node : nodes) {
-//                nodesString.append(mapping.get(node)).append(";");
-//            }
-//
-//            write(String.format(subgraphTemplate, frag, nodesString.toString(), fragment));
-//
-//            frag++;
-//        }
-//
-//    }
-
+    private static final String subgraphTemplateAbs = "\t\t\t%s\n";
     private static final String subgraphTemplate = "\t\tsubgraph \"cluster_%s\" {\n" +
             "\t\t\tstyle=filled;\n" +
             "\t\t\tcolor=lightgrey;\n" +
@@ -156,11 +133,13 @@ class GraphVisualizer {
             "\t\t\tlabel = \"%s\";\n" +
             "\t\t}";
 
+    private static final String instanceStartAbs = "\t\t\t\n";
     private static final String instanceStart = "\tsubgraph \"cluster_%s\" {\n" +
             "\t\tstyle=filled;\n" +
             "\t\tcolor=grey;\n" +
             "\t\tlabel = \"%s\";\n";
 
+    private static final String instanceEndAbs = "";
     private static final String instanceEnd = "\t}";
 
     private static void write(String line) {
