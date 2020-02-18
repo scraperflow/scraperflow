@@ -1,9 +1,15 @@
+import scraper.api.plugin.Hook;
+import scraper.plugins.core.flowgraph.ControlFlowGraphGeneratorHook;
+
 open module scraper.plugins.core {
     requires scraper.annotations;
     requires scraper.api;
     requires scraper.core;
     requires scraper.utils;
 
+
+    requires org.slf4j;
+
 //    // FIXME why is this needed so that reflections can find all nodes?
-//    provides Node with EchoNode;
+    provides Hook with ControlFlowGraphGeneratorHook;
 }

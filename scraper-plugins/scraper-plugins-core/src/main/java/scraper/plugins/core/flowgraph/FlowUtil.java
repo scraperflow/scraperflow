@@ -132,6 +132,13 @@ public class FlowUtil {
         return Optional.ofNullable((T) f.get(instance));
     }
 
+    public static <T> Optional<T> getFieldForClass(String field, Object instance, Class<?> clazz) throws Exception {
+        Field f = clazz.getDeclaredField(field);
+        f.setAccessible(true);
+        //noinspection unchecked
+        return Optional.ofNullable((T) f.get(instance));
+    }
+
     private static Map<String, String> getDefaultDataFlowOutput(NodeContainer<? extends Node> node) {
         //noinspection RedundantOperationOnEmptyContainer what is this warning about???
         List<Field> outputData = ClassUtil.getAllFields(new LinkedList<>(), node.getClass()).stream()

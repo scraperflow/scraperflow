@@ -1,0 +1,15 @@
+{
+    "name" : "mapjoin1",
+    "graphs" : {
+        "start":
+        [
+          { "type": "EchoNode", "puts": { "before": "OK" } },
+          { "type" : "MapJoinNode", "mapTarget": "line1", "keys": {}, "list": [] },
+          { "type": "EchoNode", "puts": { "before": "OK" } }
+        ],
+
+      "line1": [
+        { "type": "EchoNode", "puts": { "line1":  "OK"} }
+      ]
+    }
+}

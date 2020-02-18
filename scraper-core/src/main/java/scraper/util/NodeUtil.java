@@ -238,7 +238,7 @@ public final class NodeUtil {
             if(jsonValue != null) value = jsonValue;
 
             // value has to be defined if mandatory
-            if (mandatory && value == null) throw new ValidationException("Value has to be defined if mandatory: " + fieldType);
+            if (mandatory && value == null) throw new ValidationException("Value has to be defined if mandatory: " + field.getName());
 
             // --------- current state of value
             // value != null: from JSON file
@@ -490,7 +490,7 @@ public final class NodeUtil {
                 if(localTarget.isPresent()) return localTarget.get();
 
                 // graph relative
-                Address graph = new GraphAddressImpl(jobInstance.getName(), goTo.getRepresentation());
+                Address graph = new GraphAddressImpl(origin.getInstance(), goTo.getRepresentation());
                 localTarget = jobInstance.getNode(graph);
                 if(localTarget.isPresent()) return localTarget.get();
 
@@ -502,7 +502,7 @@ public final class NodeUtil {
             } else {
                 // graph relative
                 Address graph = addressOf(
-                        jobInstance.getName()+"."+
+                        origin.getInstance()+"."+
                                 goTo.getRepresentation().split("\\.")[0]+"."+
                                 goTo.getRepresentation().split("\\.")[1]
                 );

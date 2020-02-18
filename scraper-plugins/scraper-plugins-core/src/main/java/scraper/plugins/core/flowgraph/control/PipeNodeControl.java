@@ -34,14 +34,3 @@ public final class PipeNodeControl {
     }
 }
 
-// old api version reference
-//    public List<ControlFlowEdge> getOutput() {
-//        List<ControlFlowEdge> targets = new ArrayList<>();
-//
-//        pipeTargets.forEach(target -> {
-//            ControlFlowEdge e = new ControlFlowEdgeImpl(getAddress(), getJobPojo().getNode(addressOf(target)).getAddress(), "pipe", false, false);
-//            targets.add(e);
-//        });
-//
-//        return Stream.concat(super.getOutput().stream(), targets.stream()).collect(Collectors.toList());
-//    }

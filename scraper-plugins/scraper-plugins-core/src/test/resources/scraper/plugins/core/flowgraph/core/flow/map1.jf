@@ -1,0 +1,15 @@
+{
+    "name" : "map1",
+    "graphs" : {
+        "start":
+        [
+          { "type": "EchoNode", "puts": { "before": "OK" } },
+          { "type" : "MapNode", "mapTarget": "line1", "list": [] },
+          { "type": "EchoNode", "puts": { "before": "OK" } }
+        ],
+
+      "line1": [
+        { "type": "EchoNode", "puts": { "line1":  "OK"} }
+      ]
+    }
+}

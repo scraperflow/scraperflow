@@ -1,0 +1,19 @@
+{
+    "name" : "forkjoin1",
+    "graphs" : {
+        "start":
+        [
+          { "type": "EchoNode", "puts": { "before": "OK" } },
+          { "type" : "ForkJoinNode", "forkTargets": ["line1", "line2"], "keys": {} },
+          { "type": "EchoNode", "puts": { "before": "OK" } }
+        ],
+
+      "line1": [
+        { "type": "EchoNode", "puts": { "line1":  "OK"} }
+      ],
+
+      "line2": [
+        { "type": "EchoNode", "puts": { "line2": "OK"} }
+      ]
+    }
+}

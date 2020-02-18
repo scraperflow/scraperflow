@@ -106,10 +106,13 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
 
     @Override
     public Optional<NodeContainer<? extends Node>> getNode(String targetRepresentation) {
-        if(!targetRepresentation.contains("<") || !targetRepresentation.contains(">")) return Optional.empty();
-        // remove <> brackets for utility call
-        targetRepresentation = targetRepresentation.substring(1, targetRepresentation.length()-1);
-        return getNode(NodeUtil.addressOf(targetRepresentation));
+        if(!targetRepresentation.contains("<") || !targetRepresentation.contains(">")) {
+            return getNode(NodeUtil.addressOf(targetRepresentation));
+        } else {
+            // remove <> brackets for utility call
+            targetRepresentation = targetRepresentation.substring(1, targetRepresentation.length()-1);
+            return getNode(NodeUtil.addressOf(targetRepresentation));
+        }
     }
 
     @Override
