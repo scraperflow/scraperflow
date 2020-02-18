@@ -1,20 +1,19 @@
 package scraper.plugins.core.flowgraph;
 
 import org.slf4j.Logger;
+import scraper.api.node.Address;
 import scraper.api.node.NodeAddress;
+import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.specification.ScrapeInstance;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
-import scraper.util.NodeUtil;
+import scraper.plugins.core.flowgraph.api.ControlFlowNode;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -51,15 +50,18 @@ class GraphVisualizer {
                                     // graph -> addresses belonging to graph and instance
                                     (graph, entries1) -> {
                                         StringBuilder nodes = new StringBuilder();
-                                        entries1.forEach(e -> nodes.append("\"").append(e.getKey().getRepresentation()).append("\"; "));
+                                        entries1.forEach(e -> nodes.append("\"").append(e.getKey().getRepresentation()).append("\" [label=\""+getNodeLabelForAddress(e, job)+"\"]; "));
                                         write(String.format(subgraphTemplate, graph, nodes.toString(), graph));
                                     }
                     );
                     write(instanceEnd);
         });
 
-        cfg.getEdges().forEach(controlFlowEdge ->
-                write("\""+controlFlowEdge.getFromAddress().getRepresentation()+"\" -> "+"\""+job.getNode(controlFlowEdge.getToAddress()).get().getAddress().getRepresentation()+"\"")
+        cfg.getEdges().forEach(controlFlowEdge -> {
+                    String style = getStyle(controlFlowEdge);
+                    NodeContainer<? extends Node> addr = job.getNode(controlFlowEdge.getToAddress());
+                    write("\""+controlFlowEdge.getFromAddress().getRepresentation()+"\" -> "+"\""+addr.getAddress().getRepresentation()+"\" "+style);
+                }
         );
 
         // define label mappings
@@ -97,6 +99,29 @@ class GraphVisualizer {
 
     }
 
+    private static String getNodeLabelForAddress(Map.Entry<Address, ControlFlowNode> e, ScrapeInstance job) {
+        NodeAddress adr = (NodeAddress) e.getKey();
+        NodeContainer<? extends Node> node = job.getNode(adr);
+        String simpleName = node.getC().getClass().getSimpleName();
+
+        return simpleName+"\\n"+adr.toString();
+    }
+
+    private static String getStyle(ControlFlowEdge controlFlowEdge) {
+        String style = "[ xlabel=\"" + controlFlowEdge.getDisplayLabel() + "\",";
+        if(controlFlowEdge.isDispatched()) {
+            style += "style=dashed,";
+        }
+
+        if(controlFlowEdge.isMultiple()) {
+            style += "color=red";
+        }
+
+
+
+        return style+"]";
+    }
+
 //    private static void printSubgraphFragments(ScrapeInstance job, Map<Node, Integer> mapping) {
 //        Map<String, List<Node>> fragments = new HashMap<>();
 //        for (Node node : job.getEntryGraph()) {
@@ -123,7 +148,7 @@ class GraphVisualizer {
 //
 //    }
 
-    private static final String subgraphTemplate = "\t\tsubgraph cluster_%s {\n" +
+    private static final String subgraphTemplate = "\t\tsubgraph \"cluster_%s\" {\n" +
             "\t\t\tstyle=filled;\n" +
             "\t\t\tcolor=lightgrey;\n" +
             "\t\t\tnode [style=filled,color=white];\n" +
@@ -131,9 +156,9 @@ class GraphVisualizer {
             "\t\t\tlabel = \"%s\";\n" +
             "\t\t}";
 
-    private static final String instanceStart = "\tsubgraph cluster_%s {\n" +
+    private static final String instanceStart = "\tsubgraph \"cluster_%s\" {\n" +
             "\t\tstyle=filled;\n" +
-            "\t\tcolor=brown;\n" +
+            "\t\tcolor=grey;\n" +
             "\t\tlabel = \"%s\";\n";
 
     private static final String instanceEnd = "\t}";

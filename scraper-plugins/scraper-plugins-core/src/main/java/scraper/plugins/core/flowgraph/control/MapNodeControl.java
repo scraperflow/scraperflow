@@ -9,6 +9,7 @@ import scraper.api.specification.ScrapeInstance;
 import scraper.plugins.core.flowgraph.FlowUtil;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.Version;
+import scraper.util.NodeUtil;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,10 +22,11 @@ public final class MapNodeControl {
     public static List<ControlFlowEdge> getOutput(List<ControlFlowEdge> previous, NodeContainer<? extends Node> node, ScrapeInstance spec) throws Exception {
         //noinspection OptionalGetWithoutIsPresent 0.1.0 has mapTarget
         Address mapTarget = (Address) FlowUtil.getField("mapTarget", node.getC()).get();
+        NodeContainer<? extends Node> mapNode = NodeUtil.getTarget(node.getAddress(), mapTarget, spec);
 
         return Stream.concat(
                 previous.stream(),
-                Stream.of(edge(node.getAddress(), mapTarget, "map", true, true))
+                Stream.of(edge(node.getAddress(), mapNode.getAddress(), "map", true, true))
         ).collect(Collectors.toList());
     }
 }

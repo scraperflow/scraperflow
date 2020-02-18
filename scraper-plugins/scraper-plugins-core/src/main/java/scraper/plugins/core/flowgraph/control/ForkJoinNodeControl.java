@@ -12,6 +12,7 @@ import scraper.core.Template;
 import scraper.plugins.core.flowgraph.FlowUtil;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.Version;
+import scraper.util.NodeUtil;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,10 +27,14 @@ public final class ForkJoinNodeControl {
         List<Address> forkTargets = Template.eval((T<List<Address>>) FlowUtil.getField("forkTargets", node.getC()).get(), new IdentityFlowMap());
 
         return Stream.concat(
-                previous.stream(),
+                previous.stream().filter(e -> !e.getDisplayLabel().equalsIgnoreCase("forward")),
+                Stream.concat(previous.stream().filter(e -> e.getDisplayLabel().equalsIgnoreCase("forward")).map(e -> edge(e.getFromAddress(), e.getToAddress(), "join")),
                 forkTargets.stream().map(label ->
-                    edge(node.getAddress(), label, "fork", false, false)
-                )
+                        {
+                            NodeContainer<? extends Node> forkTarget = NodeUtil.getTarget(node.getAddress(), label, spec);
+                            return edge(node.getAddress(), forkTarget.getAddress(), "fork", false, false);
+                        }
+                ))
         ).collect(Collectors.toList());
     }
 }

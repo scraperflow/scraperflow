@@ -512,7 +512,11 @@ public final class NodeUtil {
 
                 // imported instance
                 String instanceTarget = goTo.getRepresentation().split("\\.")[0];
-                Optional<NodeContainer<? extends Node>> inTarget = jobInstance.getImportedInstances().get(new InstanceAddressImpl(instanceTarget)).getNode(goTo);
+                ScrapeInstance maybeInstance = jobInstance.getImportedInstances().get(new InstanceAddressImpl(instanceTarget));
+                if(maybeInstance == null)
+                    throw new IllegalStateException(origin+": Neither graph relative address nor imported instance found for " + goTo);
+
+                Optional<NodeContainer<? extends Node>> inTarget = maybeInstance.getNode(goTo);
                 if(inTarget.isEmpty())
                     throw new IllegalStateException(origin+": Neither graph relative address nor imported instance found for " + goTo);
 //                Optional<NodeContainer<? extends Node>> imported = importedInstance.getNode(addressOf(goTo.getRepresentation() + ".0"));

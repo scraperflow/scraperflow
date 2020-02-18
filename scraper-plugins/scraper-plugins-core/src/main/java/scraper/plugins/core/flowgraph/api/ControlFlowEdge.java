@@ -2,7 +2,7 @@ package scraper.plugins.core.flowgraph.api;
 
 
 import scraper.annotations.NotNull;
-import scraper.api.node.Address;
+import scraper.api.node.NodeAddress;
 
 /**
  * Describes a single edge form one node to another
@@ -10,8 +10,8 @@ import scraper.api.node.Address;
  * @since 1.0.0
  */
 public interface ControlFlowEdge {
-    @NotNull Address getFromAddress();
-    @NotNull Address getToAddress();
+    @NotNull NodeAddress getFromAddress();
+    @NotNull NodeAddress getToAddress();
 
     /** Middle display string */
     @NotNull String getDisplayLabel();

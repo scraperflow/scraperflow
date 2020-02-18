@@ -12,6 +12,7 @@ import scraper.core.Template;
 import scraper.plugins.core.flowgraph.FlowUtil;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.Version;
+import scraper.util.NodeUtil;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +33,10 @@ public final class ForkNodeControl {
         return Stream.concat(
                 previous.stream(),
                 forkTargets.stream().map(label ->
-                        edge(node.getAddress(), label, "fork", false, true)
+                        {
+                            NodeContainer<? extends Node> forkTarget = NodeUtil.getTarget(node.getAddress(), label, spec);
+                            return edge(node.getAddress(), forkTarget.getAddress(), "fork", false, true);
+                        }
                 )
         ).collect(Collectors.toList());
     }

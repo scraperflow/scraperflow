@@ -17,15 +17,15 @@ import java.util.stream.Stream;
 
 import static scraper.plugins.core.flowgraph.impl.ControlFlowEdgeImpl.edge;
 
-public final class TimerNodeControl {
+public final class RetryNodeControl {
     @Version("0.1.1") @NotNull
     public static List<ControlFlowEdge> getOutput(List<ControlFlowEdge> previous, NodeContainer node, ScrapeInstance spec) throws Exception {
         //noinspection OptionalGetWithoutIsPresent 0.1.0
-        NodeAddress mapTarget = NodeUtil.getTarget(node.getAddress(), (Address) FlowUtil.getField("onTimeout", node.getC()).get(), spec).getAddress();
+        NodeAddress mapTarget = NodeUtil.getTarget(node.getAddress(), (Address) FlowUtil.getField("retryTarget", node.getC()).get(), spec).getAddress();
 
         return Stream.concat(
                 previous.stream(),
-                        Stream.of(edge(node.getAddress(), mapTarget, "timeout", false, true))
+                        Stream.of(edge(node.getAddress(), mapTarget, "retry", false, false))
         ).collect(Collectors.toList());
     }
 }

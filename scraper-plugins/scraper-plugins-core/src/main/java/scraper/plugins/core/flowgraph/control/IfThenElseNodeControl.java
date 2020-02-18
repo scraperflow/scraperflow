@@ -7,6 +7,7 @@ import scraper.api.specification.ScrapeInstance;
 import scraper.plugins.core.flowgraph.FlowUtil;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.Version;
+import scraper.util.NodeUtil;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,8 +26,8 @@ public final class IfThenElseNodeControl {
         Optional<Address> falseTarget = FlowUtil.getField("falseTarget", node.getC());
 
         Stream<ControlFlowEdge> additionalOutput = Stream.concat(
-                trueTarget.stream().map(a -> edge(node.getAddress(), a, "true")),
-                falseTarget.stream().map(a -> edge(node.getAddress(), a, "false"))
+                trueTarget.stream().map(a -> edge(node.getAddress(), NodeUtil.getTarget(node.getAddress(), a, spec).getAddress(), "true")),
+                falseTarget.stream().map(a -> edge(node.getAddress(), NodeUtil.getTarget(node.getAddress(), a, spec).getAddress(), "false"))
         );
 
         return Stream.concat(
