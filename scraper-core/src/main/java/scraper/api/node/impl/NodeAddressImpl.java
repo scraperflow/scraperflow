@@ -30,11 +30,7 @@ public class NodeAddressImpl implements NodeAddress {
     @NotNull
     @Override
     public String getRepresentation() {
-        return instance +"." + graph+"."+
-                (label==null?index:
-                        label+(index != null ? ":"+index : "")
-                )
-                ;
+        return instance +"." + graph+"."+ getNode();
     }
 
     @Override
@@ -65,5 +61,22 @@ public class NodeAddressImpl implements NodeAddress {
     @Override
     public Address replace(@NotNull String representation) {
         return new AddressImpl(instance+"."+graph+"."+representation);
+    }
+
+    @Override
+    public String getNode() {
+        return ""+(label==null?index:
+                label+(index != null ? ":"+index : "")
+        );
+    }
+
+    @Override
+    public String getGraph() {
+        return graph;
+    }
+
+    @Override
+    public String getInstance() {
+        return instance;
     }
 }

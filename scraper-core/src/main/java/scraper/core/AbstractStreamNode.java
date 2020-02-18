@@ -36,7 +36,8 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
     private Boolean collect;
 
     /** Where the stream is dispatched */
-    @FlowKey private Address streamTarget;
+    @FlowKey
+    private Address streamTarget;
 
     private final @NotNull Map<UUID, FlowMap> openStreams = new HashMap<>();
     private final @NotNull Map<UUID, Map<String, List<Object>>> collectors = new HashMap<>();
