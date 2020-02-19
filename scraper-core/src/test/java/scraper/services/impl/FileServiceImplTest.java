@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class FileServiceImplTest {
 
     File root;
@@ -32,7 +33,6 @@ public class FileServiceImplTest {
         Assert.assertTrue(f.getTemporaryDirectory().exists());
 
         File toRead = rootP.resolve("test.txt").toFile();
-        //noinspection ResultOfMethodCallIgnored
         toRead.delete();
         toRead.deleteOnExit();
         String p = toRead.getAbsolutePath();

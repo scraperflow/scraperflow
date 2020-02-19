@@ -2,7 +2,7 @@ package scraper.plugins.core.flowgraph.control;
 
 
 import scraper.annotations.NotNull;
-import scraper.api.flow.impl.IdentityFlowMap;
+import scraper.utils.IdentityFlowMap;
 import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
@@ -21,10 +21,10 @@ import java.util.stream.Stream;
 
 import static scraper.plugins.core.flowgraph.impl.ControlFlowEdgeImpl.edge;
 
+@SuppressWarnings({"unused", "unchecked", "OptionalGetWithoutIsPresent"})
 public final class PipeNodeControl {
     @Version("1.0.0") @NotNull
-    public static List<ControlFlowEdge> getOutput(List<ControlFlowEdge> previous, NodeContainer node, ScrapeInstance spec) throws Exception {
-        //noinspection unchecked, OptionalGetWithoutIsPresent 1.0.0 has pipeTargets, mandatory
+    public static List<ControlFlowEdge> getOutput(List<ControlFlowEdge> previous, NodeContainer<? extends Node> node, ScrapeInstance spec) throws Exception {
         List<Address> pipeTargets = Template.eval((T<List<Address>>) FlowUtil.getField("pipeTargets", node.getC()).get(), new IdentityFlowMap());
 
         return Stream.concat(

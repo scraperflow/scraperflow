@@ -88,11 +88,10 @@ class GraphVisualizer {
     }
 
     private static String getNodeLabelForAddress(Boolean abs, Map.Entry<Address, ControlFlowNode> e, ScrapeInstance job) {
+        NodeAddress adr = (NodeAddress) e.getKey();
+        NodeContainer<? extends Node> node = job.getNode(adr);
+        String simpleName = node.getC().getClass().getSimpleName();
         if(abs) {
-            NodeAddress adr = (NodeAddress) e.getKey();
-            NodeContainer<? extends Node> node = job.getNode(adr);
-            String simpleName = node.getC().getClass().getSimpleName();
-
             return
                     (includeInstance ? adr.getInstance()+"\\n" : "") +
                             (includeGraph ? adr.getGraph()+"\\n" : "") +
@@ -101,10 +100,6 @@ class GraphVisualizer {
                     +""
                     ;
         } else {
-            NodeAddress adr = (NodeAddress) e.getKey();
-            NodeContainer<? extends Node> node = job.getNode(adr);
-            String simpleName = node.getC().getClass().getSimpleName();
-
             return simpleName+"\\n<"+ adr.getNode()+">";
         }
     }
@@ -118,8 +113,6 @@ class GraphVisualizer {
         if(controlFlowEdge.isMultiple()) {
             style += "color=red";
         }
-
-
 
         return style+"]";
     }

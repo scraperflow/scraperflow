@@ -9,6 +9,7 @@ import scraper.api.node.NodeAddress;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.plugin.NodeHook;
+import scraper.api.reflect.IdentityTemplateEvaluator;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
@@ -21,7 +22,7 @@ import java.util.Optional;
 /**
  * Provides scrape specification functions needed during runtime.
  */
-public interface ScrapeInstance {
+public interface ScrapeInstance extends IdentityTemplateEvaluator {
 
     // ===========
     // Initialization and route building of the instances
@@ -52,8 +53,8 @@ public interface ScrapeInstance {
     /** Hooks before/after a flow map has been processed */
     @NotNull Collection<NodeHook> getHooks();
 
-    /** Returns the entry node */
-    @NotNull NodeContainer<? extends Node> getEntry();
+    /** Returns the entry node, if any */
+    @NotNull Optional<NodeContainer<? extends Node>> getEntry();
 
     /** Gets a node at absolute target address (has to exist, NodeAddress can't be generated) */
     @NotNull NodeContainer<? extends Node> getNode(@NotNull NodeAddress target);

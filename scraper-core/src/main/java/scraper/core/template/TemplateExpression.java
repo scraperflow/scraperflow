@@ -16,8 +16,8 @@ public abstract class TemplateExpression<T> {
 
     public abstract T eval(@NotNull final FlowMap o);
 
+    @SuppressWarnings("unchecked") // get exact type for this type token, not the raw type, type token has no API if getType() to return Class<T> instead of Class<? super T>
     public @NotNull Class<T> getType() {
-        //noinspection unchecked
         return (Class<T>) targetType.getRawType();
     }
 

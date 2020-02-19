@@ -8,6 +8,7 @@ import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
+import scraper.api.node.type.Node;
 import scraper.api.reflect.T;
 
 import java.io.BufferedReader;
@@ -75,7 +76,7 @@ public final class ExecNode implements FunctionalNode {
         else if(execStr.isPresent()) exec(n, Arrays.asList(execStr.get().split("\\s")), o);
     }
 
-    private void exec(NodeContainer n, List<String> exec, FlowMap o) throws NodeException {
+    private void exec(NodeContainer<? extends Node> n, List<String> exec, FlowMap o) throws NodeException {
         try {
             n.log(DEBUG,"Executing {}", exec);
 

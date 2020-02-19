@@ -24,10 +24,10 @@ public class GroupInfoImpl implements GroupInfo {
     public int hashCode() { return Objects.hash(id); }
 
     @Override
-    public @NotNull List<String> getAllProxiesAsString() {
+    public @NotNull List<String> getAllProxiesAsString(boolean includeScore) {
         List<String> result = new ArrayList<>();
         for (ProxyInfo knownProxy : knownProxies) {
-            result.add( knownProxy.getAddress() + ":" +knownProxy.getPort() );
+            result.add( knownProxy.getAddress() + ":" +knownProxy.getPort() + (includeScore? "|" + knownProxy.getScore(): ""));
         }
         return result;
     }

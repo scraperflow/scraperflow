@@ -17,10 +17,10 @@ import java.util.stream.Stream;
 
 import static scraper.plugins.core.flowgraph.impl.ControlFlowEdgeImpl.edge;
 
+@SuppressWarnings({"unused", "OptionalGetWithoutIsPresent"})
 public final class MapJoinNodeControl {
     @Version("0.1.0") @NotNull
     public static List<ControlFlowEdge> getOutput(List<ControlFlowEdge> previous, NodeContainer<? extends Node> node, ScrapeInstance spec) throws Exception {
-        //noinspection OptionalGetWithoutIsPresent 0.1.0 has mapTarget
         Address mapTarget = (Address) FlowUtil.getField("mapTarget", node.getC()).get();
         NodeContainer<? extends Node> map = NodeUtil.getTarget(node.getAddress(), mapTarget, spec);
 

@@ -2,7 +2,7 @@ package scraper.plugins.core.flowgraph.control;
 
 
 import scraper.annotations.NotNull;
-import scraper.api.flow.impl.IdentityFlowMap;
+import scraper.utils.IdentityFlowMap;
 import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
@@ -23,11 +23,11 @@ import static scraper.plugins.core.flowgraph.impl.ControlFlowEdgeImpl.edge;
 /**
  *
  */
+@SuppressWarnings({"unchecked", "unused", "OptionalGetWithoutIsPresent"}) // versioning
 public final class ForkNodeControl {
 
     @Version("0.1.0") @NotNull
     public static List<ControlFlowEdge> getOutput(List<ControlFlowEdge> previous, NodeContainer<? extends Node> node, ScrapeInstance spec) throws Exception {
-        //noinspection unchecked, OptionalGetWithoutIsPresent 0.1.0 has forkTargets, mandatory
         List<Address> forkTargets = Template.eval((T<List<Address>>) FlowUtil.getField("forkTargets", node.getC()).get(), new IdentityFlowMap());
 
         return Stream.concat(

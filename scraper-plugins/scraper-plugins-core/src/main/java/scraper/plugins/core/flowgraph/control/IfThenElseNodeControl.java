@@ -3,6 +3,7 @@ package scraper.plugins.core.flowgraph.control;
 import scraper.annotations.NotNull;
 import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
+import scraper.api.node.type.Node;
 import scraper.api.specification.ScrapeInstance;
 import scraper.plugins.core.flowgraph.FlowUtil;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
@@ -16,11 +17,12 @@ import java.util.stream.Stream;
 
 import static scraper.plugins.core.flowgraph.impl.ControlFlowEdgeImpl.edge;
 
+@SuppressWarnings("unused")
 public final class IfThenElseNodeControl {
 
     // if OR else target
     @Version("0.1.0") @NotNull
-    public static List<ControlFlowEdge> getOutput(List<ControlFlowEdge> previous, NodeContainer node, ScrapeInstance spec) throws Exception {
+    public static List<ControlFlowEdge> getOutput(List<ControlFlowEdge> previous, NodeContainer<? extends Node> node, ScrapeInstance spec) throws Exception {
         // 0.1.0 has trueTarget field and falseTarget field (Address)
         Optional<Address> trueTarget = FlowUtil.getField("trueTarget", node.getC());
         Optional<Address> falseTarget = FlowUtil.getField("falseTarget", node.getC());

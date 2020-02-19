@@ -30,6 +30,11 @@ import static java.util.Objects.requireNonNull;
 import static scraper.util.DependencyInjectionUtil.getDIContainer;
 import static scraper.util.JobUtil.parseJobs;
 
+@ArgsCommand(
+        value = "debug-info",
+        doc = "Returns more information about unexpected errors",
+        example = "scraper debug-info app.yt"
+)
 public class Scraper {
 
     private @NotNull static final Logger log = org.slf4j.LoggerFactory.getLogger("Scraper");
@@ -83,7 +88,10 @@ public class Scraper {
 
         String exitWithException = System.getProperty("exitWithException", "false");
         if(exitWithException.equalsIgnoreCase("false")) {
-            try { main.run(args); } catch (Exception e) { log.error("Could not run scrape job: {}", e.getMessage()); }
+            try { main.run(args); } catch (Exception e) {
+                log.error("Could not run scrape job: {}", e.getMessage());
+                if(StringUtil.getArgument(args, "debug") != null) e.printStackTrace();
+            }
         } else {
             main.run(args);
         }
@@ -95,7 +103,6 @@ public class Scraper {
         for (Addon addon : addons) addon.load(pico, args);
 
         log.debug("Parsing scrape jobs");
-        // TODO instead of Set.of(), available paths
         List<ScrapeSpecification> jobDefinitions = parseJobs(args, Set.of());
 
         log.debug("Converting scrape jobs");
@@ -118,14 +125,18 @@ public class Scraper {
         log.info("--------------------------------------------------------");
         log.info("--- Starting Main Threads");
         log.info("--------------------------------------------------------");
-        List<CompletableFuture>  futures = new ArrayList<>();
+        List<CompletableFuture<FlowMap>>  futures = new ArrayList<>();
         jobs.forEach((definition, job) -> {
             CompletableFuture<FlowMap> future = CompletableFuture.supplyAsync(() -> {
                 try {
                     FlowMap initial = FlowMapImpl.origin(job.getEntryArguments());
-
-                    NodeContainer<? extends Node> initialNode = job.getEntry();
-                    initialNode.getC().accept(initialNode, initial);
+                    Optional<NodeContainer<? extends Node>> entry = job.getEntry();
+                    if(entry.isEmpty()) {
+                        log.warn("Job has no entry node: {}", job.getName());
+                    } else {
+                        NodeContainer<? extends Node> initialNode = entry.get();
+                        initialNode.getC().accept(initialNode, initial);
+                    }
 
                     return initial;
                 } catch (Exception e) {

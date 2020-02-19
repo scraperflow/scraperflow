@@ -31,24 +31,6 @@ public class ProxyReservationImpl implements ProxyReservation {
     private @NotNull final ConcurrentHashMap<String, GroupInfoImpl> allProxies = new ConcurrentHashMap<>();
     private @NotNull final ConcurrentHashMap<String, LocalChannelInfo> allLocalChannels = new ConcurrentHashMap<>();
 
-//    {
-        // TODO think about persisting proxy scores
-//        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-//            System.out.println(allProxies.keySet());
-//            allProxies.forEach((group, groupInfo) -> {
-//                System.out.println("-----------------------");
-//                System.out.println("---------- Group: "+group);
-//                System.out.println("-----------------------");
-//                System.out.println("-----------------------");
-//                System.out.println("-----------------------");
-//                System.out.println("-----------------------");
-//                System.out.println(groupInfo.knownProxies.size());
-//                ArrayList<ProxyInfoImpl> list = new ArrayList<>(groupInfo.knownProxies);
-//                list.sort(Comparator.comparing(o -> o.score));
-//                list.forEach(l -> System.out.println(l.address+ "|"+l.score));
-//            });
-//        }));
-//    }
 
     @Override
     public void addProxies(@NotNull String proxyPath, @NotNull String proxyGroup) {
@@ -56,6 +38,15 @@ public class ProxyReservationImpl implements ProxyReservation {
             StringUtil.readBody(new File(proxyPath), line -> proxyLineConsumer.accept(line, Collections.singleton(proxyGroup)));
         } catch (Exception e) {
             log.error("Could not insert proxies for group {} at {}: {}", proxyGroup, proxyPath, e);
+        }
+    }
+
+    @Override
+    public void addProxyLine(String proxyLine) {
+        if(proxyLine.contains(">")) {
+            proxyLineConsumer.accept(proxyLine.split(">")[1], Collections.singleton(proxyLine.split(">")[0]));
+        } else {
+            proxyLineConsumer.accept(proxyLine, allProxies.keySet());
         }
     }
 
@@ -117,6 +108,11 @@ public class ProxyReservationImpl implements ProxyReservation {
     @Override
     public @Nullable GroupInfo getInfoForGroup(@NotNull String group) {
         return allProxies.get(group);
+    }
+
+    @Override
+    public Map<String, GroupInfo> getAllGroups() {
+        return new HashMap<>(allProxies);
     }
 
 
@@ -207,7 +203,7 @@ public class ProxyReservationImpl implements ProxyReservation {
                         info.knownProxies.add(proxy);
                         info.freeProxies.add(proxy);
                         if(finalScore != -1) {
-                            log.info("Using known score {}", finalScore);
+                            log.debug("Using known score {}", finalScore);
                             proxy.score = finalScore;
                         }
                     }
@@ -266,9 +262,9 @@ public class ProxyReservationImpl implements ProxyReservation {
     }
 
     static class LocalChannelInfo {
-        UUID id = UUID.randomUUID();
-        String group;
-        AtomicBoolean inUse = new AtomicBoolean(false);
+        final UUID id = UUID.randomUUID();
+        final String group;
+        final AtomicBoolean inUse = new AtomicBoolean(false);
 
         LocalChannelInfo(@NotNull String proxyGroup) {
             this.group = proxyGroup;
@@ -277,12 +273,11 @@ public class ProxyReservationImpl implements ProxyReservation {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true; if (o == null || getClass() != o.getClass()) return false;
-            GroupInfoImpl groupInfo = (GroupInfoImpl) o;
-            return Objects.equals(id, groupInfo.id);
+            LocalChannelInfo that = (LocalChannelInfo) o;
+            return id.equals(that.id);
         }
 
-        @Override
-        public int hashCode() { return Objects.hash(id); }
+        @Override public int hashCode() { return Objects.hash(id); }
     }
 
 }

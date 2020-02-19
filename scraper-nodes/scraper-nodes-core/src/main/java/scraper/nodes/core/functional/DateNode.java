@@ -8,6 +8,7 @@ import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
+import scraper.api.node.type.Node;
 import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
 
@@ -35,7 +36,7 @@ public final class DateNode implements FunctionalNode {
     private DateFormat parsedDateFormat;
 
     @Override
-    public void init(@NotNull NodeContainer n, @NotNull final ScrapeInstance job) {
+    public void init(@NotNull NodeContainer<? extends Node> n, @NotNull final ScrapeInstance job) {
         parsedDateFormat = new SimpleDateFormat(dateFormat);
     }
 

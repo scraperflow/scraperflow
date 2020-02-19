@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
+@SuppressWarnings("RedundantIfStatement")
 public final class NodeUtil {
 
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -59,10 +60,6 @@ public final class NodeUtil {
         return replaced;
     }
 
-//    public static FlowMap flowOf(Map<String, Object> initialArguments) {
-//        return FlowMapImpl.origin(initialArguments);
-//    }
-
     public static FlowMap flowOf(FlowMap o) {
         return FlowMapImpl.copy(o);
     }
@@ -82,11 +79,13 @@ public final class NodeUtil {
     }
 
     private static boolean test(@NotNull String address1, @NotNull String address2, Pattern p) {
-        String onlyNodeRepresentation = p.matcher(address1).results().map(m -> m.group(1) + m.group(2)).findFirst().get();
-        if(representationEquals(onlyNodeRepresentation, address2)) return true;
+        Optional<String> onlyNodeRepresentation = p.matcher(address1).results().map(m -> m.group(1) + m.group(2)).findFirst();
+        if(onlyNodeRepresentation.isEmpty()) return false;
+        if(representationEquals(onlyNodeRepresentation.get(), address2)) return true;
 
-        String onlyIndexRepresentation = p.matcher(address1).results().map(m -> m.group(1) + m.group(3)).findFirst().get();
-        if(representationEquals(onlyIndexRepresentation, address2)) return true;
+        Optional<String> onlyIndexRepresentation = p.matcher(address1).results().map(m -> m.group(1) + m.group(3)).findFirst();
+        if(onlyIndexRepresentation.isEmpty()) return false;
+        if(representationEquals(onlyIndexRepresentation.get(), address2)) return true;
 
         return false;
     }
@@ -316,7 +315,7 @@ public final class NodeUtil {
             }
             // if enum: try convert
             else if (Enum.class.isAssignableFrom(fieldType)) {
-                value = Enum.valueOf(fieldType.asSubclass(Enum.class), String.valueOf(value));
+                value = getEnum(fieldType, value);
             } // type match
                 if (fieldType.isAssignableFrom(value.getClass())) {
                     // value is 'correct' only if no generics are used
@@ -337,6 +336,11 @@ public final class NodeUtil {
         } catch (Exception e) {
             throw new ValidationException(e,  e.getMessage());
         }
+    }
+
+    @SuppressWarnings({"unchecked"}) //enum runtime type cast
+    private static Object getEnum(Class<?> fieldType, Object value) {
+        return Enum.valueOf(fieldType.asSubclass(Enum.class), String.valueOf(value));
     }
 
     public static Method getConverter(final Class<?> converter) throws ValidationException {
@@ -421,7 +425,7 @@ public final class NodeUtil {
 //        for (GraphAddress k : graphs.keySet()) {
 //            Iterator<NodeContainer<? extends Node>> it = graphs.get(k).iterator();
 //            while(it.hasNext()) {
-//                NodeContainer node = it.next();
+//                NodeContainer<? extends Node> node = it.next();
 //                if(node.getAddress().equalsTo(origin)){
 //                    if(it.hasNext()) {
 //                        return it.next().getAddress();
@@ -451,7 +455,7 @@ public final class NodeUtil {
 //                return graphs.get(k).get(0);
 //            }
 //
-//            for (NodeContainer node : graphs.get(k)) {
+//            for (NodeContainer<? extends Node> node : graphs.get(k)) {
 //                if(node.getAddress().equalsTo(target))
 //                    return node;
 //            }

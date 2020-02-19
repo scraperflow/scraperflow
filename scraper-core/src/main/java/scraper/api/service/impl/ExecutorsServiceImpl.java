@@ -41,7 +41,7 @@ public class ExecutorsServiceImpl implements ExecutorsService {
                 // block until there's room
                 executor.getQueue().put(r);
             } catch (InterruptedException e) {
-                // TODO how to handle interrupted exception
+                log.error("Producer thread interrupted", e);
                 Thread.currentThread().interrupt();
                 throw new RejectedExecutionException("Producer thread interrupted", e);
             }

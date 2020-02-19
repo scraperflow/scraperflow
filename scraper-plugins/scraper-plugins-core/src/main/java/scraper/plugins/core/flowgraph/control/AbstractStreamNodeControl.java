@@ -2,14 +2,11 @@ package scraper.plugins.core.flowgraph.control;
 
 
 import scraper.annotations.NotNull;
-import scraper.api.flow.impl.IdentityFlowMap;
 import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
-import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
 import scraper.core.AbstractStreamNode;
-import scraper.core.Template;
 import scraper.plugins.core.flowgraph.FlowUtil;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.Version;
@@ -24,11 +21,11 @@ import static scraper.plugins.core.flowgraph.impl.ControlFlowEdgeImpl.edge;
 /**
  *
  */
+@SuppressWarnings({"OptionalGetWithoutIsPresent", "unused"}) // versioning, mandatory fields
 public final class AbstractStreamNodeControl {
 
     @Version("0.1.0") @NotNull
     public static List<ControlFlowEdge> getOutput(List<ControlFlowEdge> previous, NodeContainer<? extends Node> node, ScrapeInstance spec) throws Exception {
-        //noinspection OptionalGetWithoutIsPresent 0.1.0 has collect
         Boolean collect = (Boolean) FlowUtil.getFieldForClass("collect", node, AbstractStreamNode.class).get();
         if(collect) { // forward contract
             return previous;

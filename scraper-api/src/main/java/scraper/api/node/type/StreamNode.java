@@ -13,7 +13,7 @@ import scraper.api.node.container.StreamNodeContainer;
 public interface StreamNode extends Node {
     /** Default accept method should only modify and forward the modified map */
     @NotNull @Override
-    default FlowMap process(@NotNull NodeContainer n, @NotNull final FlowMap o) throws NodeException {
+    default FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException {
         assert n instanceof StreamNodeContainer;
         StreamNodeContainer sn = ((StreamNodeContainer) n);
         return sn.processStream(o);

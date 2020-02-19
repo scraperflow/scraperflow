@@ -5,6 +5,7 @@ import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
+import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
@@ -15,6 +16,7 @@ import scraper.api.reflect.T;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -33,6 +35,7 @@ public final class ForkJoinNode implements Node {
     private T<List<Address>> forkTargets = new T<>(){};
 
     //TODO nicer implementation
+    @SuppressWarnings("unchecked")
     @NotNull @Override
     public FlowMap process(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) {
         Map<String, String> keys = o.evalIdentity(this.keys);
@@ -57,14 +60,19 @@ public final class ForkJoinNode implements Node {
         keys.forEach((joinKeyForked, joinKey) -> {
             n.log(NodeLogLevel.DEBUG, "Joining {} -> {}", joinKeyForked, joinKey);
 
-            //noinspection unchecked
             List<Object> joinResults = (List<Object>) o.getOrDefault(joinKey, new ArrayList<>());
 
             forkedProcesses.forEach(future -> {
                 try {
                     FlowMap fm = future.get();
-                    joinResults.add(fm.get(joinKeyForked).get());
-                    o.put(joinKey, joinResults);
+                    Optional<Object> returnResult = fm.get(joinKeyForked);
+                    if(returnResult.isEmpty()) {
+                        n.log(NodeLogLevel.ERROR, "Missing key in completed flow {}", joinKeyForked);
+                        throw new TemplateException("Completed flow does not return expected key: "+ joinKeyForked);
+                    } else {
+                        joinResults.add(returnResult.get());
+                        o.put(joinKey, joinResults);
+                    }
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                     n.log(NodeLogLevel.ERROR, "Bad join", e);

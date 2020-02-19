@@ -6,7 +6,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.slf4j.Logger;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.TemplateException;
-import scraper.api.flow.impl.IdentityFlowMap;
+import scraper.utils.IdentityFlowMap;
 import scraper.api.reflect.T;
 import scraper.core.exp.TemplateExpressionVisitor;
 import scraper.core.exp.TemplateLexer;

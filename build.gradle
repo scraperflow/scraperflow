@@ -32,3 +32,4 @@ apply from: 'gradle/idea-fix.gradle'
 //                       bundleNodesOnly, bundleNodesDependencies,
 //                       bundleAddonsOnly, bundleAddonsDependencies
 apply from: 'gradle/scraper-bundle.gradle'
+

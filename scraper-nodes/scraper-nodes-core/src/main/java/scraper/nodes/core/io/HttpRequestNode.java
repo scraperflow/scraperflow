@@ -136,7 +136,7 @@ public final class HttpRequestNode implements Node {
     private T<Object> payload = new T<>(){};
 
     @Override
-    public void init(@NotNull NodeContainer n, @NotNull final ScrapeInstance job) throws ValidationException {
+    public void init(@NotNull NodeContainer<? extends Node> n, @NotNull final ScrapeInstance job) throws ValidationException {
         if (proxyFile != null) {
             try {
                 n.getJobInstance().getProxyReservation().addProxies(proxyFile, proxyGroup);
@@ -176,6 +176,7 @@ public final class HttpRequestNode implements Node {
         try {
             // build request
             HttpRequest request = buildRequest(n, o, url);
+            @SuppressWarnings({"rawtypes"}) // choose bodyhandler by config
             HttpResponse.BodyHandler handler = null;
 
             switch (expectedResponse) {
@@ -193,6 +194,7 @@ public final class HttpRequestNode implements Node {
             HttpService service = n.getJobInstance().getHttpService();
 
             // TODO use generics
+            @SuppressWarnings({"rawtypes", "unchecked"}) // choose bodyhandler by config
             HttpResponse response = service.send(request, handler, token);
 
             Object body = response.body();
@@ -252,7 +254,7 @@ public final class HttpRequestNode implements Node {
         }
     }
 
-    private HttpRequest buildRequest(NodeContainer n, FlowMap o, String url) throws NodeException {
+    private HttpRequest buildRequest(NodeContainer<? extends Node> n, FlowMap o, String url) throws NodeException {
         try {
             // set url
             if(url.startsWith("//")) url = defaultSchema+url;
@@ -302,21 +304,20 @@ public final class HttpRequestNode implements Node {
     }
 
     private String getCookieString(Map<String, String> cookies) {
-        String cookie = "";
+        StringBuilder cookie = new StringBuilder();
 
         for (String key : cookies.keySet()) {
-            //noinspection StringConcatenationInLoop not that important to use StringBuilder here
-            cookie += key+"="+cookies.get(key)+"; ";
+            cookie.append(key).append("=").append(cookies.get(key)).append("; ");
         }
 
         if(cookies.size() > 0) {
-            cookie = cookie.substring(0, cookie.length()-2);
+            cookie = new StringBuilder(cookie.substring(0, cookie.length() - 2));
         }
 
-        return cookie;
+        return cookie.toString();
     }
 
-    private void cacheResponse(NodeContainer n, String cache, String url, String content) {
+    private void cacheResponse(NodeContainer<? extends Node> n, String cache, String url, String content) {
         String file = urlToCachedFilename(url);
         try {
             n.getJobInstance().getFileService().ensureFile(cache+file);
@@ -335,7 +336,7 @@ public final class HttpRequestNode implements Node {
     }
 
     /** Checks if file is already downloaded at expected location (for RequestType.FILE) */
-    private boolean checkFileDownloaded(NodeContainer n, FlowMap o) {
+    private boolean checkFileDownloaded(NodeContainer<? extends Node> n, FlowMap o) {
         if(expectedResponse.equals(ResponseType.FILE)) {
             String path = o.eval(this.path);
             File f = new File(path);
@@ -352,7 +353,7 @@ public final class HttpRequestNode implements Node {
     }
 
     /** If cached try to get cached value first */
-    private boolean cached(NodeContainer n, FlowMap o, String url, List<String> exceptionContaining) {
+    private boolean cached(NodeContainer<? extends Node> n, FlowMap o, String url, List<String> exceptionContaining) {
         if (cache != null) {
             String cachedContent = getCached(n, cache, url, exceptionContaining);
             if (cachedContent != null) {
@@ -366,7 +367,7 @@ public final class HttpRequestNode implements Node {
         return false;
     }
 
-    private String getCached(NodeContainer n, String cache, String url, List<String> exceptionContaining) {
+    private String getCached(NodeContainer<? extends Node> n, String cache, String url, List<String> exceptionContaining) {
         String filename = urlToCachedFilename(url);
         File f = Paths.get(cache, filename).toFile();
         if(!f.exists()) return null;

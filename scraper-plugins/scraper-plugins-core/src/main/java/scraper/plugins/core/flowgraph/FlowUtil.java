@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+@SuppressWarnings("unchecked") //convention
 public class FlowUtil {
 
     @NotNull
@@ -48,16 +49,15 @@ public class FlowUtil {
         ControlFlowNode cfnode = new ControlFlowNodeImpl(node.getAddress());
         cfg.addNode(node.getAddress(), cfnode);
 
-        List<Class> classesToCheck = getReverseOrderHierarchy(node);
+        List<Class<?>> classesToCheck = getReverseOrderHierarchy(node);
 
         List<ControlFlowEdge> output = new LinkedList<>();
 
-        for (Class nodeClass : classesToCheck) {
+        for (Class<?> nodeClass : classesToCheck) {
             String controlClass = "scraper.plugins.core.flowgraph.control."+nodeClass.getSimpleName()+"Control";
             try {
                 Class<?> control = Class.forName(controlClass);
                 Method method = control.getDeclaredMethod("getOutput", List.class, NodeContainer.class, ScrapeInstance.class);
-                //noinspection unchecked
                 output = (List<ControlFlowEdge>) method.invoke(null, output, node, instance);
             } catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException ignored) {
                 System.out.println("[Skip] Could not find control for " + nodeClass + ": " + controlClass);
@@ -105,10 +105,10 @@ public class FlowUtil {
 //        dfg.addNode(node.getAddress(), cfnode);
 //    }
 
-    private static List<Class> getReverseOrderHierarchy(NodeContainer<? extends Node> node) {
-        List<Class> result = new LinkedList<>();
+    private static List<Class<?>> getReverseOrderHierarchy(NodeContainer<? extends Node> node) {
+        List<Class<?>> result = new LinkedList<>();
         result.add(node.getC().getClass());
-        Class current = node.getClass();
+        Class<?> current = node.getClass();
         while(!current.getName().toLowerCase().contains("java.lang.object")) {
             if(current.getSimpleName().toLowerCase().contains("node")) {
                 result.add(current);
@@ -124,14 +124,12 @@ public class FlowUtil {
     public static <T> Optional<T> getField(String field, Object instance) throws Exception {
         Field f = instance.getClass().getDeclaredField(field);
         f.setAccessible(true);
-        //noinspection unchecked
         return Optional.ofNullable((T) f.get(instance));
     }
 
     public static <T> Optional<T> getFieldForClass(String field, Object instance, Class<?> clazz) throws Exception {
         Field f = clazz.getDeclaredField(field);
         f.setAccessible(true);
-        //noinspection unchecked
         return Optional.ofNullable((T) f.get(instance));
     }
 

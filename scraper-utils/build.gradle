@@ -2,6 +2,7 @@ apply plugin: 'java-library'
 
 dependencies {
 	implementation project(':scraper-annotations')
+	implementation project(':scraper-api')
 }
 
 

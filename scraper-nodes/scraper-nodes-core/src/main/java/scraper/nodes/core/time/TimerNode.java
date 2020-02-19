@@ -9,6 +9,7 @@ import scraper.api.node.Address;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
+import scraper.api.node.type.Node;
 import scraper.api.reflect.T;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -76,7 +77,7 @@ public final class TimerNode implements FunctionalNode {
         processAction(n, action, o);
     }
 
-    private synchronized void processAction(NodeContainer n, Action action, FlowMap o) {
+    private synchronized void processAction(NodeContainer<? extends Node> n, Action action, FlowMap o) {
         switch (action) {
             case TIME_ELAPSED: {
                 checkState(o);
@@ -143,7 +144,7 @@ public final class TimerNode implements FunctionalNode {
         }
     }
 
-    private void startThread(NodeContainer n, final FlowMap o, boolean force) {
+    private void startThread(NodeContainer<? extends Node> n, final FlowMap o, boolean force) {
         forceWait.set(force);
         Integer timeout = o.eval(this.timeout);
 
@@ -193,7 +194,7 @@ public final class TimerNode implements FunctionalNode {
         }
     }
 
-    private Thread getThread(NodeContainer n, final FlowMap o, Integer timeout) {
+    private Thread getThread(NodeContainer<? extends Node> n, final FlowMap o, Integer timeout) {
         return new Thread(() -> {
             n.log(TRACE,"Make a local copy of the current input map");
             final FlowMap oCopy = flowOf(o);

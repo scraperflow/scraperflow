@@ -251,6 +251,7 @@ public class FieldTranslationTest {
         }
     }
 
+    @SuppressWarnings("unchecked")// try to get argument map by convention, if not, use empty instead
     private void testField(Field field, FlowKey flowKey, TranslationInput testInput) throws Exception {
         System.out.println("Testing field '" + field.getName() + "'");
 
@@ -269,7 +270,6 @@ public class FieldTranslationTest {
 
         Map<String, Object> args = Map.of();
         try { // try to get argument map by convention, if not, use empty instead
-            //noinspection unchecked
             args = (Map<String, Object>) getClass().getDeclaredField(field.getName()+"Args").get(this);
         } catch (Exception ignored) {}
 
@@ -310,7 +310,6 @@ public class FieldTranslationTest {
             // custom method check for complex cases
             Consumer<? super Object> checkMethod = null;
             try { // try to get check method by convention, if not, do not use it
-                //noinspection unchecked
                 checkMethod = (Consumer<? super Object>) getClass().getDeclaredField(field.getName()+"Check").get(this);
             } catch (Exception ignored) {}
 

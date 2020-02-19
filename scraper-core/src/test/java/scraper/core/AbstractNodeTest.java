@@ -10,6 +10,7 @@ import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.Node;
+import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.impl.ScrapeInstaceImpl;
 import scraper.api.specification.impl.ScrapeSpecificationImpl;
 import scraper.util.DependencyInjectionUtil;
@@ -27,8 +28,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 import static scraper.util.NodeUtil.addressOf;
-import static scraper.util.NodeUtil.flowOf;
 
+@SuppressWarnings("rawtypes") // testing abstract node
 public class AbstractNodeTest {
 
     private final DIContainer deps = DependencyInjectionUtil.getDIContainer();
@@ -43,7 +44,7 @@ public class AbstractNodeTest {
     public void simpleFunctionalNodeTest() throws Exception {
         ScrapeInstaceImpl instance = getInstance("abstract", "job2.jf");
 
-        NodeContainer<? extends Node> node = instance.getEntry();
+        NodeContainer<? extends Node> node = opt(instance);
         Assert.assertTrue(node instanceof AbstractFunctionalNode);
 
         FlowMap o = FlowMapImpl.origin();
@@ -52,7 +53,7 @@ public class AbstractNodeTest {
         assertTrue(o.get("simple").isPresent());
         assertEquals(true, o.get("simple").get());
 
-        AbstractNode abstractNode = ((AbstractNode) node);
+        AbstractNode abstractNode = (AbstractNode) node;
         Assert.assertNotNull(abstractNode.getL());
         assertEquals(NodeLogLevel.INFO, abstractNode.getLogLevel());
         assertEquals("SimpleFunctionalNode", abstractNode.getType());
@@ -62,7 +63,7 @@ public class AbstractNodeTest {
     public void globalNodeConfigurationsTest() throws Exception {
         ScrapeInstaceImpl instance = getInstance("abstract", "all-field.jf");
 
-        NodeContainer<? extends Node> node = instance.getEntry();
+        NodeContainer<? extends Node> node = opt(instance);
         FlowMap o = FlowMapImpl.origin();
         o = node.getC().accept(node, o);
 
@@ -79,7 +80,7 @@ public class AbstractNodeTest {
     public void getService() throws Exception {
         ScrapeInstaceImpl instance = getInstance("abstract", "dummy.jf");
 
-        AbstractNode node = (AbstractNode) instance.getEntry();
+        AbstractNode<? extends Node> node = (AbstractNode<? extends Node>) opt(instance);
         node.service = "newService";
 
         // service thread group is created only once
@@ -100,36 +101,36 @@ public class AbstractNodeTest {
     public void badLogTest() throws Exception {
         ScrapeInstaceImpl instance = getInstance("abstract", "bad-log.jf");
 
-        AbstractNode node = (AbstractNode) instance.getEntry();
+        NodeContainer<? extends Node> node = opt(instance);
         FlowMap o = FlowMapImpl.origin();
         // bad log should never stop the process
-        node.start(node, o);
+        ((AbstractNode<?>) node).start(node, o);
     }
 
     @Test
     public void fileTest() throws Exception {
         ScrapeInstaceImpl instance = getInstance("abstract", "file-node.jf");
 
-        AbstractNode node = (AbstractNode) instance.getEntry();
+        NodeContainer<? extends Node> node = opt(instance);
         FlowMap o = FlowMapImpl.origin();
-        node.start(node, o);
+        ((AbstractNode<?>) node).start(node, o);
     }
 
     @Test
     public void fileWithTemplateTest() throws Exception {
         ScrapeInstaceImpl instance = getInstance("abstract", "file-template.jf");
 
-        AbstractNode node = (AbstractNode) instance.getEntry();
+        NodeContainer<? extends Node> node = opt(instance);
         FlowMap o = FlowMapImpl.origin();
         o.put("path-template", "/tmp/scraper-ok");
-        node.start(node, o);
+        ((AbstractNode<?>) node).start(node, o);
     }
 
     @Test
     public void allLogLevelsTest() throws Exception {
         ScrapeInstaceImpl instance = getInstance("abstract", "log-levels.jf");
 
-        NodeContainer<? extends Node> node = instance.getEntry();
+        NodeContainer<? extends Node> node = opt(instance);
         FlowMap o = FlowMapImpl.origin();
 
         //trace
@@ -150,7 +151,7 @@ public class AbstractNodeTest {
     public void goToNodeTest() throws Exception {
         ScrapeInstaceImpl instance = getInstance("abstract", "goto.jf");
 
-        AbstractNode node = (AbstractNode) instance.getEntry();
+        NodeContainer<? extends Node> node = opt(instance);
         FlowMap o = FlowMapImpl.origin();
         FlowMap o2 = node.forward(o);
 
@@ -162,7 +163,7 @@ public class AbstractNodeTest {
     public void impliedGoToTest() throws Exception {
         ScrapeInstaceImpl instance = getInstance("abstract", "implied-goto.jf");
 
-        AbstractNode node = (AbstractNode) instance.getEntry();
+        NodeContainer<? extends Node> node = opt(instance);
         FlowMap o = FlowMapImpl.origin();
         FlowMap o2 = node.forward(o);
 
@@ -173,7 +174,7 @@ public class AbstractNodeTest {
     public void functionalNodeWithGotoTest() throws Exception {
         ScrapeInstaceImpl instance = getInstance("abstract", "func-goto.jf");
 
-        NodeContainer<? extends Node> node = instance.getEntry();
+        NodeContainer<? extends Node> node = opt(instance);
         FlowMap o = FlowMapImpl.origin();
         o = node.forward(o);
 
@@ -227,9 +228,9 @@ public class AbstractNodeTest {
                 }
             });
 
-            AbstractNode node = (AbstractNode) instance.getEntry();
+            NodeContainer<? extends Node> node = opt(instance);
             FlowMap o = FlowMapImpl.origin();
-            node.start(node, o);
+            ((AbstractNode<?>) node).start(node, o);
         } finally {
             System.setSecurityManager(sm);
         }
@@ -239,7 +240,7 @@ public class AbstractNodeTest {
     public void badEnsureFileTest() throws Exception {
         ScrapeInstaceImpl instance = getInstance("abstract", "file-bad-node.jf");
 
-        NodeContainer<? extends Node> node = instance.getEntry();
+        NodeContainer<? extends Node> node = opt(instance);
         FlowMap o = FlowMapImpl.origin();
         node.getC().accept(node, o);
     }
@@ -248,7 +249,7 @@ public class AbstractNodeTest {
     public void nullEnsureFileTest() throws Exception {
         ScrapeInstaceImpl instance = getInstance("abstract", "file-notwanted.jf");
 
-        NodeContainer<? extends Node> node = instance.getEntry();
+        NodeContainer<? extends Node> node = opt(instance);
         FlowMap o = FlowMapImpl.origin();
         node.getC().accept(node, o);
     }
@@ -262,7 +263,7 @@ public class AbstractNodeTest {
     @Test
     public void indexAndLabelTest() throws Exception {
         ScrapeInstaceImpl instance = getInstance("addressing", "debug.yf");
-        NodeContainer<? extends Node> node = instance.getEntry();
+        NodeContainer<? extends Node> node = opt(instance);
         Assert.assertEquals(addressOf("debug.start.startingnode"), node.getAddress());
     }
 
@@ -337,5 +338,11 @@ public class AbstractNodeTest {
     @Test(expected = ValidationException.class)
     public void badFieldTest() throws Exception {
         getInstance("abstract", "bad-field.jf");
+    }
+
+    private NodeContainer<? extends Node> opt(ScrapeInstance i) {
+        Optional<NodeContainer<? extends Node>> e = i.getEntry();
+        Assert.assertTrue(e.isPresent());
+        return e.get();
     }
 }

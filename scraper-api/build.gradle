@@ -3,9 +3,6 @@ apply plugin: 'java-library'
 dependencies {
     // annotation api dependency
     api project(":scraper-annotations")
-    
-    // util dependency
-    implementation project(":scraper-utils")
 }
 
 // test dependencies

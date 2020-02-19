@@ -8,6 +8,7 @@ import scraper.api.node.Address;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
+import scraper.api.node.type.Node;
 import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
 
@@ -44,7 +45,7 @@ public final class PeriodicNode implements FunctionalNode {
     private TimerTask timerTask;
 
     @Override
-    public void init(@NotNull NodeContainer n, @NotNull final ScrapeInstance job) {
+    public void init(@NotNull NodeContainer<? extends Node> n, @NotNull final ScrapeInstance job) {
         timerTask = new TimerTask() {
             @Override
             public void run() {

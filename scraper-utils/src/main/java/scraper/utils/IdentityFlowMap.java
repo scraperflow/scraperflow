@@ -1,4 +1,4 @@
-package scraper.api.flow.impl;
+package scraper.utils;
 
 import scraper.annotations.NotNull;
 import scraper.api.flow.FlowMap;
@@ -95,8 +95,4 @@ public class IdentityFlowMap implements FlowMap {
     public void nextSequence() {
 
     }
-
-    // return identity
-//    @Override public @Nullable Object get(@NotNull String expected) { return expected; }
-//    @Override public @NotNull Object getOrDefault(@NotNull Object key , @NotNull Object defaultObjectalue) { return key; }
 }

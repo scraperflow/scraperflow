@@ -4,7 +4,6 @@ package scraper.nodes.core.flow;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
@@ -48,7 +47,7 @@ public final class MapJoinNode implements Node {
 
     // TODO nicer implementation
     @NotNull @Override
-    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
         List<Object> list = o.eval(this.list);
         if(distinct) list = new ArrayList<>(new HashSet<>(list));
 
@@ -76,6 +75,7 @@ public final class MapJoinNode implements Node {
         keys.forEach((joinKeyForked, joinKey) -> {
             n.log(NodeLogLevel.TRACE, "Joining {} -> {}", joinKeyForked, joinKey);
 
+            @SuppressWarnings("unchecked")
             List<Object> joinResults = (List<Object>) o.getOrDefault(joinKey, new ArrayList<>());
 
             forkedProcesses.forEach(future -> {

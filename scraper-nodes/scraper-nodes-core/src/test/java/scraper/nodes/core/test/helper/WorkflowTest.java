@@ -16,13 +16,11 @@ import scraper.util.JobUtil;
 
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public abstract class WorkflowTest {
 
+    @SuppressWarnings("TestMethodWithIncorrectSignature") // runner
     @Test
     @Parameters
     public void workflowTests(
@@ -54,9 +52,11 @@ public abstract class WorkflowTest {
             FlowMap initialFlow = FlowMapImpl.origin();
 
             // feed input
-            NodeContainer<? extends Node> n = convJob.getEntry();
+            Optional<NodeContainer<? extends Node>> n = convJob.getEntry();
 
-            n.getC().accept(n, initialFlow);
+            if(n.isEmpty()) throw new IllegalArgumentException("Job has no entry node");
+
+            n.get().getC().accept(n.get(), initialFlow);
 
             TestUtil.assertSuccess(convJob.getAllNodes());
         } catch (Exception e) {
@@ -76,10 +76,11 @@ public abstract class WorkflowTest {
     }
 
     // searches for Workflow annotations
+    @SuppressWarnings("unused") // runner
     protected Object[] parametersForWorkflowTests() {
         List<Object[]> foundTestCases = new LinkedList<>();
 
-        Class c = getClass();
+        Class<?> c = getClass();
         for (Method method : c.getDeclaredMethods()) {
             // found workflow parameters
             if(method.isAnnotationPresent(Workflow.class)) {

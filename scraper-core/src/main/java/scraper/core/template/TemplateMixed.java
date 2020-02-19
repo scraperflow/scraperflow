@@ -26,7 +26,7 @@ public class TemplateMixed<T> extends TemplateExpression<T>{
             StringBuilder lookup = new StringBuilder();
             for (Object t : concatTemplatesOrStrings) {
                 if (t instanceof TemplateExpression) {
-                    Object evaled = ((TemplateExpression) t).eval(o);
+                    Object evaled = ((TemplateExpression<?>) t).eval(o);
                     lookup.append(evaled);
                 } else if (t instanceof String) {
                     lookup.append(t);

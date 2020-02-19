@@ -2,6 +2,7 @@
 
     package scraper.core.exp;
 
+import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -73,13 +74,13 @@ public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<Templ
                 ParseTree listexp = ctx.getChild(1);
                 ParseTree intexp = ctx.getChild(3);
 
-                TypeToken<List<T>> listToken = new TypeToken<>(){};
+                TypeToken<List<T>> listToken = listOf(target);
                 TemplateExpressionVisitor<List<T>> listTargetVisitor = new TemplateExpressionVisitor<>(listToken);
                 TemplateExpressionVisitor<Integer> intTargetVisitor = new TemplateExpressionVisitor<>(TypeToken.of(Integer.class));
                 TemplateExpression<List<T>> templateList = listTargetVisitor.visit(listexp);
                 TemplateExpression<Integer> templateInt = intTargetVisitor.visit(intexp);
 
-                TypeToken<Map<String, T>> mapToken = new TypeToken<>(){};
+                TypeToken<Map<String, T>> mapToken = mapOf(TypeToken.of(String.class), target);
                 TemplateExpressionVisitor<Map<String, T>> mapTargetVisitor = new TemplateExpressionVisitor<>(mapToken);
                 TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(TypeToken.of(String.class));
                 TemplateExpression<Map<String, T>> templateMap = mapTargetVisitor.visit(listexp);
@@ -129,4 +130,13 @@ public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<Templ
         return content;
     }
 
+    static <K, V> TypeToken<Map<K, V>> mapOf(TypeToken<K> keyType, TypeToken<V> valueType) {
+        return new TypeToken<Map<K, V>>() {}
+                .where(new TypeParameter<>() {}, keyType)
+                .where(new TypeParameter<>() {}, valueType);
+    }
+
+    static <K> TypeToken<List<K>> listOf(TypeToken<K> elementType) {
+        return new TypeToken<List<K>>() {}.where(new TypeParameter<>() {}, elementType);
+    }
 }

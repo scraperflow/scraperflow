@@ -8,6 +8,7 @@ import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.StreamNodeContainer;
+import scraper.api.node.type.Node;
 import scraper.api.node.type.StreamNode;
 import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
@@ -58,7 +59,7 @@ public final class RegexNode implements StreamNode {
     private Pattern p;
 
     @Override
-    public void init(@NotNull NodeContainer n, final @NotNull ScrapeInstance job) throws ValidationException {
+    public void init(@NotNull NodeContainer<? extends Node> n, final @NotNull ScrapeInstance job) throws ValidationException {
         try {
             if(dotAll) p = Pattern.compile(regex, Pattern.DOTALL);
             else p = Pattern.compile(regex);

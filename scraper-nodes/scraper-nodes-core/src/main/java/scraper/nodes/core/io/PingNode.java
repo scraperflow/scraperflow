@@ -9,6 +9,7 @@ import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
+import scraper.api.node.type.Node;
 import scraper.api.reflect.T;
 
 import java.io.IOException;
@@ -54,7 +55,7 @@ public final class PingNode implements FunctionalNode {
      * @param timeOutMillis timeout for the ping
      * @return true if target is reachable; false otherwise
      */
-    private boolean isReachable(NodeContainer n, String addr, int openPort, int timeOutMillis) {
+    private boolean isReachable(NodeContainer<? extends Node> n, String addr, int openPort, int timeOutMillis) {
         Future<Boolean> future = n.getService().submit(() -> {
             try {
                 try (Socket soc = new Socket()) {

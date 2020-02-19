@@ -13,7 +13,7 @@ public interface FunctionalNode extends Node {
 
     /** Functional node container cast and usage of process for functional nodes */
     @Override @NotNull
-    default FlowMap process(@NotNull final NodeContainer n, @NotNull final FlowMap o) throws NodeException {
+    default FlowMap process(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException {
         assert n instanceof FunctionalNodeContainer;
         FunctionalNodeContainer sn = ((FunctionalNodeContainer) n);
         return process(sn, o);

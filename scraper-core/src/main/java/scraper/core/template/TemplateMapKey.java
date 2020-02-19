@@ -26,7 +26,6 @@ public class TemplateMapKey<T> extends TemplateExpression<T> {
             if(targetValue.isEmpty())
                 throw new IllegalStateException("FlowMap has no element at key " + targetKey);
 
-            // TODO generic type checking may be missing here
             Object converted = StringToClassConverter.convert(targetValue.get(), targetType.getRawType());
             T returnt = (T) targetType.getRawType().cast(converted);
 

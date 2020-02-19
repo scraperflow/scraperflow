@@ -5,14 +5,16 @@ import scraper.annotations.Nullable;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
 import scraper.api.reflect.T;
+import scraper.core.IdentityEvaluator;
 import scraper.core.Template;
 import scraper.util.NodeUtil;
+import scraper.utils.IdentityFlowMap;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class FlowMapImpl implements FlowMap {
+public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     private @NotNull final ConcurrentMap<String, Object> privateMap;
     private @NotNull final UUID parentId;

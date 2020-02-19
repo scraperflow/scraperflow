@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import static scraper.plugins.core.flowgraph.impl.ControlFlowEdgeImpl.edge;
 
+@SuppressWarnings("unused") // reflection access
 public final class AbstractNodeControl {
     // default implementation (AbstractNode) of any node is only concerned with forward to next/goTo node, if enabled
     @Version("1.0.1") @NotNull

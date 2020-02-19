@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 
 import static scraper.plugins.core.flowgraph.impl.ControlFlowEdgeImpl.edge;
 
+@SuppressWarnings("unused")
 public final class MapNodeControl {
     @Version("0.1.0") @NotNull
     public static List<ControlFlowEdge> getOutput(List<ControlFlowEdge> previous, NodeContainer<? extends Node> node, ScrapeInstance spec) throws Exception {

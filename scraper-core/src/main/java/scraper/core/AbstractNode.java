@@ -58,7 +58,7 @@ import static scraper.utils.ClassUtil.getAllFields;
  */
 @SuppressWarnings({"WeakerAccess", "unused"}) // abstract implementation
 @NodePlugin("1.0.2")
-public abstract class AbstractNode<NODE extends Node> implements NodeContainer<NODE> {
+public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator implements NodeContainer<NODE> {
     /** Logger with the actual class name */
     protected Logger l = LoggerFactory.getLogger(getClass());
 
@@ -207,10 +207,9 @@ public abstract class AbstractNode<NODE extends Node> implements NodeContainer<N
 
                 String path = null;
                 if(T.class.isAssignableFrom(ensureFileField.getType())) {
-                    T<?> templ = (T) ensureFileField.get(getC());
-                    //noinspection unchecked
-                    Optional<String> maybePath = (Optional<String>) map.evalMaybe(templ);
-                    if(maybePath.isPresent()) path = maybePath.get();
+                    T<?> templ = (T<?>) ensureFileField.get(getC());
+                    Optional<?> maybePath = map.evalMaybe(templ);
+                    if(maybePath.isPresent()) path = (String) maybePath.get();
                 } else {
                     path = (String) ensureFileField.get(getC());
                 }

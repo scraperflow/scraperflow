@@ -15,6 +15,7 @@ import scraper.api.service.HttpService;
 import scraper.api.service.ProxyReservation;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
+import scraper.core.IdentityEvaluator;
 import scraper.util.NodeUtil;
 import scraper.util.TemplateUtil;
 
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 import static scraper.api.node.container.NodeLogLevel.ERROR;
 import static scraper.utils.ClassUtil.getAllFields;
 
-public class ScrapeInstaceImpl implements ScrapeInstance {
+public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstance {
 
     private @NotNull static final Logger log = org.slf4j.LoggerFactory.getLogger("ScraperInstance");
 
@@ -86,8 +87,8 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
 
     @NotNull
     @Override
-    public NodeContainer<? extends Node> getEntry() {
-        return routes.get(entry);
+    public Optional<NodeContainer<? extends Node>> getEntry() {
+        return Optional.ofNullable(routes.get(entry));
     }
 
     @NotNull
@@ -149,7 +150,6 @@ public class ScrapeInstaceImpl implements ScrapeInstance {
 
     public void setFileService(FileService fileService) { this.fileService = fileService; }
 
-    // TODO implement this in a better way
     public void validate() throws ValidationException {
         try {
             for (NodeContainer<? extends Node> node : getAllNodes()) {

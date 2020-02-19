@@ -30,6 +30,7 @@ public class TemplateMapOrListLookup<T> extends TemplateExpression<T> {
 
 
     public T eval(@NotNull final FlowMap o) {
+
         try{
             List<T> l = list.eval(o);
             Integer index = this.index.eval(o);

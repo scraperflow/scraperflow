@@ -1,7 +1,9 @@
 package scraper.core.template;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
+import org.checkerframework.checker.units.qual.K;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -242,4 +244,13 @@ public class TemplateExpTest {
         String target = test.eval(o);
         Assert.assertEquals("hello world", target);
     }
+
+//    @Test
+//    public void complexGenericTemplate() {
+//        String source = "{{L}}[{index}]";
+//        TemplateExpression<List<String>> test = TemplateUtil.parseTemplate( source, new TypeToken<>() {} );
+////        o.put("L", List.of(List.of(),List.of(),List.of(), List.of(1,2,3)));
+////        o.put("index", 3);
+//        Object tt = test.eval(o);
+//    }
 }

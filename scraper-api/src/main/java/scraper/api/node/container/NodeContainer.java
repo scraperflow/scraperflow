@@ -6,6 +6,7 @@ import scraper.api.flow.FlowMap;
 import scraper.api.node.*;
 import scraper.api.node.type.Node;
 import scraper.api.plugin.NodeHook;
+import scraper.api.reflect.IdentityTemplateEvaluator;
 import scraper.api.specification.ScrapeInstance;
 
 import java.util.Collection;
@@ -26,7 +27,7 @@ import java.util.concurrent.ExecutorService;
  *     precautions have to be taken to avoid race conditions.
  * </p>
  */
-public interface NodeContainer<NODE> extends NodeInitializable {
+public interface NodeContainer<NODE> extends NodeInitializable, IdentityTemplateEvaluator {
 
     // ==================
     // Specification

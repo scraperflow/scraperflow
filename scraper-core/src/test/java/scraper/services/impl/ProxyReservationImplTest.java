@@ -134,7 +134,7 @@ public class ProxyReservationImplTest {
 
         GroupInfo info = r.getInfoForGroup("1");
         Assert.assertNotNull(info);
-        List<String> l = info.getAllProxiesAsString();
+        List<String> l = info.getAllProxiesAsString(false);
         assertTrue(l.contains("1.1.1.1:1"));
         assertTrue(l.contains("1.2.1.2:1"));
         assertTrue(l.contains("1.2.1.2:3"));

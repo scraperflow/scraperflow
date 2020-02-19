@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.fail;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class ReservationTokenImplTest {
 
     @Test
@@ -25,9 +26,7 @@ public class ReservationTokenImplTest {
         Assert.assertNotEquals(t1,t2);
         Assert.assertNotEquals(t1,"test");
 
-        //noinspection ResultOfMethodCallIgnored
         t1.toString();
-        //noinspection ResultOfMethodCallIgnored
         t2.toString();
 
         t1.get();

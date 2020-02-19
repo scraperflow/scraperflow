@@ -8,6 +8,7 @@ import scraper.api.service.proxy.ProxyMode;
 import scraper.api.service.proxy.ReservationToken;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
@@ -22,6 +23,8 @@ public interface ProxyReservation {
     void addProxies(@NotNull Set<String> proxiesAsSet, @NotNull String proxyGroup);
     /** Adds all proxies to given group */
     void addProxies(@NotNull String proxyFile, @NotNull String proxyGroup) throws IOException;
+    /** Adds a single proxy for one group, possibly overwriting an existing entry for that group */
+    @Nullable void addProxyLine(String proxyLine);
 
     /** Waits until a token for given proxy mode and group is free */
     @NotNull ReservationToken reserveToken(@NotNull String proxyGroup, @NotNull ProxyMode proxyMode) throws InterruptedException;
@@ -31,6 +34,7 @@ public interface ProxyReservation {
 
     /** Retrieves proxy info for given group */
     @Nullable GroupInfo getInfoForGroup(@NotNull String group);
+    @Nullable Map<String, GroupInfo> getAllGroups();
 
 
 

@@ -17,7 +17,6 @@ subprojects.each { itp ->
     project(":scraper-nodes").subprojects.each{ itn ->
         def nodes = itn.name
         project(":scraper-plugins:${plugin}") {
-            println "Configuring ${plugin} plugin to include ${nodes}"
             afterEvaluate{
                 dependencies {
                     testImplementation project(":scraper-nodes:${nodes}")

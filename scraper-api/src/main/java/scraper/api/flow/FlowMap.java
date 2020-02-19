@@ -4,6 +4,7 @@ package scraper.api.flow;
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.node.container.NodeContainer;
+import scraper.api.reflect.IdentityTemplateEvaluator;
 import scraper.api.reflect.T;
 
 import java.util.Map;
@@ -19,7 +20,7 @@ import java.util.UUID;
  * @see NodeContainer
  * @see Map
  */
-public interface FlowMap {
+public interface FlowMap extends IdentityTemplateEvaluator {
 
     //===================
     // Read
@@ -53,7 +54,6 @@ public interface FlowMap {
 
     /** @see Map#clear() */
     void clear();
-
 
     //===================
     // Other

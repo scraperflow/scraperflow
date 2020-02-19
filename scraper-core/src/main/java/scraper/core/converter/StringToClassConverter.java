@@ -77,9 +77,10 @@ public final class StringToClassConverter {
         }
 
         if (Enum.class.isAssignableFrom(target)) {
+            @SuppressWarnings("rawtypes")
             Class<? extends Enum> e = target.asSubclass(Enum.class);
 
-            // class cast should be thrown before, if enum cant be converted. TODO think about this a bit more
+            // class cast should be thrown before, if enum cant be converted
             try {
                 @SuppressWarnings("unchecked")
                 Enum<?> t = Enum.valueOf(e, s);
