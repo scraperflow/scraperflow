@@ -22,11 +22,12 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     private int sequence = 0;
     private @NotNull final UUID uuid;
 
-    public FlowMapImpl(@NotNull ConcurrentMap<String, Object> privateMap, UUID parentId, UUID uuid, int parentSequence) {
+    public FlowMapImpl(@NotNull ConcurrentMap<String, Object> privateMap, UUID parentId, UUID uuid, int parentSequence, int sequence) {
         this.privateMap = privateMap;
         this.parentId = parentId;
         this.parentSequence = parentSequence;
         this.uuid = uuid;
+        this.sequence = sequence;
     }
 
     public FlowMapImpl(@NotNull ConcurrentMap<String, Object> privateMap, @NotNull UUID parentId, int parentSequence) {
@@ -193,7 +194,7 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     @Override
     public FlowMap newFlow() {
-        return new FlowMapImpl(privateMap, uuid, UUID.randomUUID(), parentSequence);
+        return new FlowMapImpl(privateMap, uuid, UUID.randomUUID(), parentSequence, 0);
     }
 
     private boolean descendMap(@NotNull final Map<?,?> currentMap, @NotNull final Map<?,?> otherMap) {
@@ -249,11 +250,11 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 //    }
 
     public static synchronized @NotNull FlowMapImpl copy(final @NotNull FlowMapImpl o) {
-        return new FlowMapImpl( new ConcurrentHashMap<>(o.privateMap), o.parentId, o.getId(), o.getSequence());
+        return new FlowMapImpl( new ConcurrentHashMap<>(o.privateMap), o.parentId, o.getId(), o.parentSequence, o.getSequence());
     }
 
     public static synchronized @NotNull FlowMapImpl copy(final @NotNull FlowMap o) {
-        return new FlowMapImpl(new ConcurrentHashMap<>(((FlowMapImpl) o).privateMap), ((FlowMapImpl) o).parentId, o.getId(), o.getSequence());
+        return new FlowMapImpl(new ConcurrentHashMap<>(((FlowMapImpl) o).privateMap), ((FlowMapImpl) o).parentId, o.getId(), ((FlowMapImpl) o).parentSequence, ((FlowMapImpl) o).sequence);
     }
 
     @Override
