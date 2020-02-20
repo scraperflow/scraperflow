@@ -239,7 +239,6 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
      * @param o The current map
      */
     protected void finish(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap o) {
-        o.nextSequence();
     }
 
 
@@ -296,6 +295,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
     public FlowMap forward(@NotNull final FlowMap o) throws NodeException {
         if (getGoTo().isPresent()) {
             NodeContainer<? extends Node> targetNode = getGoTo().get();
+            o.nextSequence();
             return targetNode.getC().accept(targetNode, o);
         } else {
             return o;
@@ -305,6 +305,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
     @NotNull @Override
     public FlowMap eval(@NotNull final FlowMap o, @NotNull final Address target) throws NodeException {
         NodeContainer<? extends Node> opt = NodeUtil.getTarget(getAddress(), target, getJobInstance());
+        o.nextSequence();
         return opt.getC().accept(opt, o);
     }
 
