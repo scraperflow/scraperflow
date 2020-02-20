@@ -1,4 +1,4 @@
-image: hirokimatsumoto/alpine-openjdk-11
+image: adoptopenjdk/openjdk12:x86_64-debian-jre-12.0.2_10
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -14,7 +14,6 @@ stages:
 before_script:
   - java -version
   - export GRADLE_USER_HOME=`pwd`/.gradle
-  - apk update && apk upgrade && apk add --no-cache git
 
 cache:
   paths:
