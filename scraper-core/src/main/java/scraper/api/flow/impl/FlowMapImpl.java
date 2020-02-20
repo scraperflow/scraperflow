@@ -193,7 +193,7 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     @Override
     public FlowMap newFlow() {
-        return new FlowMapImpl(privateMap, parentId, uuid,parentSequence);
+        return new FlowMapImpl(privateMap, uuid, UUID.randomUUID(), parentSequence);
     }
 
     private boolean descendMap(@NotNull final Map<?,?> currentMap, @NotNull final Map<?,?> otherMap) {
