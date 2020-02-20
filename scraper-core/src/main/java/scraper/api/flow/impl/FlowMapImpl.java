@@ -243,7 +243,13 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 //    }
 
     public static synchronized @NotNull FlowMapImpl copy(final @NotNull FlowMap o) {
-        return new FlowMapImpl(new ConcurrentHashMap<>(((FlowMapImpl) o).privateMap), ((FlowMapImpl) o).parentId, o.getSequence());
+        return new FlowMapImpl(
+                new ConcurrentHashMap<>(((FlowMapImpl) o).privateMap),
+                ((FlowMapImpl) o).parentId,
+                ((FlowMapImpl) o).uuid,
+                ((FlowMapImpl) o).parentSequence,
+                ((FlowMapImpl) o).sequence
+        );
     }
 
     @Override
