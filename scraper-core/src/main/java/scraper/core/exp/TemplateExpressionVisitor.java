@@ -2,7 +2,6 @@
 
     package scraper.core.exp;
 
-import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -12,6 +11,9 @@ import scraper.core.template.*;
 
 import java.util.List;
 import java.util.Map;
+
+import static scraper.util.TemplateUtil.listOf;
+import static scraper.util.TemplateUtil.mapOf;
 
 public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<TemplateExpression<T>> implements TemplateVisitor<TemplateExpression<T>> {
 
@@ -37,6 +39,7 @@ public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<Templ
         return visit(ctx.children.get(0));
     }
 
+    @SuppressWarnings("unchecked") // Mixed template can only return String as target and that is checked in line 53
     @Override
     public TemplateExpression<T> visitTemplate(TemplateParser.TemplateContext ctx) {
         l.trace("Visiting template '{}'", ctx.getText());
@@ -47,7 +50,9 @@ public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<Templ
 
         // template template
         if(ctx.children.size() == 2) {
-            TemplateMixed<T> result = new TemplateMixed<>(target);
+            if(!target.equals(TypeToken.of(String.class)))
+                throw new RuntimeException("Mixed template target has to be java.lang.String");
+            TemplateMixed result = new TemplateMixed();
 
             TemplateExpressionVisitor<String> targetVisitor = new TemplateExpressionVisitor<>(TypeToken.of(String.class));
 
@@ -57,7 +62,7 @@ public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<Templ
             visited = targetVisitor.visit(ctx.getChild(1));
             result.addTemplateOrString(visited);
 
-            return result;
+            return (TemplateExpression<T>) result;
         }
 
 
@@ -74,16 +79,16 @@ public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<Templ
                 ParseTree listexp = ctx.getChild(1);
                 ParseTree intexp = ctx.getChild(3);
 
-                TypeToken<List<T>> listToken = listOf(target);
-                TemplateExpressionVisitor<List<T>> listTargetVisitor = new TemplateExpressionVisitor<>(listToken);
+                TypeToken<List<? extends T>> listToken = listOf(target);
+                TemplateExpressionVisitor<List<? extends T>> listTargetVisitor = new TemplateExpressionVisitor<>(listToken);
                 TemplateExpressionVisitor<Integer> intTargetVisitor = new TemplateExpressionVisitor<>(TypeToken.of(Integer.class));
-                TemplateExpression<List<T>> templateList = listTargetVisitor.visit(listexp);
+                TemplateExpression<List<? extends T>> templateList = listTargetVisitor.visit(listexp);
                 TemplateExpression<Integer> templateInt = intTargetVisitor.visit(intexp);
 
-                TypeToken<Map<String, T>> mapToken = mapOf(TypeToken.of(String.class), target);
-                TemplateExpressionVisitor<Map<String, T>> mapTargetVisitor = new TemplateExpressionVisitor<>(mapToken);
+                TypeToken<Map<String, ? extends T>> mapToken = mapOf(TypeToken.of(String.class), target);
+                TemplateExpressionVisitor<Map<String, ? extends T>> mapTargetVisitor = new TemplateExpressionVisitor<>(mapToken);
                 TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(TypeToken.of(String.class));
-                TemplateExpression<Map<String, T>> templateMap = mapTargetVisitor.visit(listexp);
+                TemplateExpression<Map<String, ? extends T>> templateMap = mapTargetVisitor.visit(listexp);
                 TemplateExpression<String> templateString = stringTargetVisitor.visit(intexp);
 
                 return new TemplateMapOrListLookup<>(templateMap, templateList, templateInt, templateString, target);
@@ -130,13 +135,4 @@ public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<Templ
         return content;
     }
 
-    static <K, V> TypeToken<Map<K, V>> mapOf(TypeToken<K> keyType, TypeToken<V> valueType) {
-        return new TypeToken<Map<K, V>>() {}
-                .where(new TypeParameter<>() {}, keyType)
-                .where(new TypeParameter<>() {}, valueType);
-    }
-
-    static <K> TypeToken<List<K>> listOf(TypeToken<K> elementType) {
-        return new TypeToken<List<K>>() {}.where(new TypeParameter<>() {}, elementType);
-    }
 }

@@ -2,7 +2,6 @@ package scraper.core.template;
 
 import com.google.common.reflect.TypeToken;
 import scraper.annotations.NotNull;
-import scraper.core.converter.StringToClassConverter;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
 
@@ -12,21 +11,20 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class TemplateMixed<T> extends TemplateExpression<T>{
+public class TemplateMixed extends TemplateExpression<String>{
     private List<Object> concatTemplatesOrStrings = new ArrayList<>();
 
-    public TemplateMixed(TypeToken<T> targetType) {
-        super(targetType);
+    public TemplateMixed() {
+        super(TypeToken.of(String.class));
     }
 
-    public T eval(@NotNull final FlowMap o) {
+    public String eval(@NotNull final FlowMap o) {
         try{
-            // TODO use the string type token for template expressions
-            TypeToken<String> stringTypeToken = TypeToken.of(String.class);
             StringBuilder lookup = new StringBuilder();
             for (Object t : concatTemplatesOrStrings) {
                 if (t instanceof TemplateExpression) {
-                    Object evaled = ((TemplateExpression<?>) t).eval(o);
+                    @SuppressWarnings("unchecked") // by convention, see TemplateExpressionVisitor
+                    String evaled = ((TemplateExpression<String>) t).eval(o);
                     lookup.append(evaled);
                 } else if (t instanceof String) {
                     lookup.append(t);
@@ -35,8 +33,7 @@ public class TemplateMixed<T> extends TemplateExpression<T>{
                 }
             }
 
-            // TODO same problem as TemplateMapKey, generics check maybe needed here
-            return (T) targetType.getRawType().cast(StringToClassConverter.convert(lookup.toString(), targetType.getRawType()));
+            return lookup.toString();
         } catch (Exception e) {
             throw new TemplateException("Could not evaluate template string '"+toString()+"'. "+ e.toString());
         }

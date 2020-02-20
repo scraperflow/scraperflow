@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
  *
  * @author Albert Schimpf
  */
-@NodePlugin("0.9.0")
+@NodePlugin("0.10.0")
 public final class StringGeneratorNode implements StreamNode {
 
     /** String used to generate a list of more strings */
@@ -60,15 +60,15 @@ public final class StringGeneratorNode implements StreamNode {
         if(!m.find()) throw new UnsupportedOperationException("Other expressions than 'KEY X TO Y' are not supported: " + targetString);
 
         String key = String.valueOf(m.group(1));
-        Integer from = Integer.valueOf(m.group(2));
-        Integer to = Integer.valueOf(m.group(3));
+        int from = Integer.parseInt(m.group(2));
+        int to = Integer.parseInt(m.group(3));
 
         n.collect(o, List.of(generatedElement.getRawJson(), key));
 
         for (int i = from; i <= to; i++) {
-            FlowMap copy = NodeUtil.flowOf(o);
+            FlowMap copy = o.copy();
             // used to evaluate generator T
-            copy.put(key, i);
+            copy.output(key, i);
 
             String generatedString = copy.eval(generator);
             copy.output(generatedElement, generatedString);

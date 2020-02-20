@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  * The maps capture the content of the capture groups.
  * If groups are empty, the map is empty and the list is populated with empty maps.
  */
-@NodePlugin("0.9.0")
+@NodePlugin("0.10.0")
 public final class RegexNode implements StreamNode {
 
     /** Regex as a Java String */
@@ -83,14 +83,14 @@ public final class RegexNode implements StreamNode {
                 singleCapture.put(name, m.group(group));
             }
 
-            FlowMap copy = NodeUtil.flowOf(o);
+            FlowMap copy = o.copy();
             copy.output(output, singleCapture);
             n.streamFlowMap(o, copy);
         }
 
         Optional<Map<String, Object>> evalDefault = o.evalMaybe(noMatchDefaultOutput);
         if(evalDefault.isPresent() && m.reset().results().findAny().isEmpty()) {
-            FlowMap copy = NodeUtil.flowOf(o);
+            FlowMap copy = o.copy();
             copy.output(output, evalDefault.get());
             n.streamFlowMap(o, copy);
         }

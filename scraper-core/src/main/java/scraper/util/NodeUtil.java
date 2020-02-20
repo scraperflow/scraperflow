@@ -60,10 +60,6 @@ public final class NodeUtil {
         return replaced;
     }
 
-    public static FlowMap flowOf(FlowMap o) {
-        return FlowMapImpl.copy(o);
-    }
-
     public static boolean representationEquals(@NotNull String address1, @NotNull String address2) {
         if(address1.equalsIgnoreCase(address2)) return true;
 

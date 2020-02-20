@@ -15,7 +15,7 @@ import scraper.api.reflect.T;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static scraper.api.node.container.NodeLogLevel.*;
-import static scraper.util.NodeUtil.flowOf;
+
 
 /**
  * Execute a node after a timeout. TimerNode is initially dormant and has to be started with a start Action.
@@ -38,7 +38,7 @@ import static scraper.util.NodeUtil.flowOf;
  * }</pre>
  *
  */
-@NodePlugin(value = "0.1.1")
+@NodePlugin(value = "0.2.0")
 public final class TimerNode implements FunctionalNode {
 
     /** timeout in ms for this node */
@@ -171,9 +171,9 @@ public final class TimerNode implements FunctionalNode {
     private void checkState(final FlowMap o) {
         if(elapsedTimestamp != null) {
             long time = (System.nanoTime()/1000000 - elapsedTimestamp);
-            o.put(put, time);
+            o.output(put, time);
         } else {
-            o.put(put, 0);
+            o.output(put, 0);
         }
     }
 
@@ -188,16 +188,16 @@ public final class TimerNode implements FunctionalNode {
     private void checkTimeout(FlowMap o) {
         if(timeoutTimestamp != null) {
             long time = lastTimeout - (System.nanoTime()/1000000 - timeoutTimestamp);
-            o.put(put, time);
+            o.output(put, time);
         } else {
-            o.put(put, 0);
+            o.output(put, 0);
         }
     }
 
     private Thread getThread(NodeContainer<? extends Node> n, final FlowMap o, Integer timeout) {
         return new Thread(() -> {
             n.log(TRACE,"Make a local copy of the current input map");
-            final FlowMap oCopy = flowOf(o);
+            final FlowMap oCopy = o.copy();
 
             while(!Thread.interrupted()) {
                 n.log(INFO,"'{}' alarm in {}", name, timeout);

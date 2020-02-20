@@ -13,7 +13,6 @@ import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.container.StreamNodeContainer;
 import scraper.api.node.type.StreamNode;
 import scraper.api.specification.ScrapeInstance;
-import scraper.util.NodeUtil;
 
 import java.util.*;
 
@@ -51,7 +50,7 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
             collectors.put(o.getId(), new HashMap<>());
             
             // create collector for o ID
-            openStreams.put(o.getId(), NodeUtil.flowOf(o));
+            openStreams.put(o.getId(), o.copy());
 
             // create empty list as default
             collectKeys.get(o.getId()).forEach(key -> collectors.get(o.getId()).put(key, new LinkedList<>()));
@@ -67,7 +66,7 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
             collectKeys.get(origin.getId()).forEach(key -> {
                 Map<String, List<Object>> collectorForId = collectors.get(origin.getId());
                 // collect to list
-                Optional<Object> element = newMap.get(key);
+                Optional<?> element = newMap.get(key);
                 if(element.isEmpty()) {
                     log(NodeLogLevel.ERROR, "Missing expected element at key {}, fix node implementation. Skipping", key);
                     throw new TemplateException("Missing expected element at key " + key);
@@ -93,9 +92,9 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
             return o;
         } else {
             log(NodeLogLevel.TRACE, "Finish collection for map {}", o.getId());
-            FlowMap copy = NodeUtil.flowOf(openStreams.get(o.getId()));
+            FlowMap copy = openStreams.get(o.getId()).copy();
             Map<String, List<Object>> toCollect = collectors.get(o.getId());
-            toCollect.forEach(copy::put);
+            toCollect.forEach(copy::output);
 
             openStreams.remove(o.getId());
             collectors.remove(o.getId());

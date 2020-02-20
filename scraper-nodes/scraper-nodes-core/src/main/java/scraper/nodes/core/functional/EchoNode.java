@@ -15,7 +15,7 @@ import java.util.Optional;
 /**
  * Can modify the current argument map.
  */
-@NodePlugin("1.1.2")
+@NodePlugin("1.2.0")
 public class EchoNode implements FunctionalNode {
 
     /** Multiple put operations can be specified in this map at once */
@@ -33,7 +33,7 @@ public class EchoNode implements FunctionalNode {
 
         // put multiple objects/strings
         if(puts.isPresent()) for (String key : puts.get().keySet()) {
-            o.put(key, puts.get().get(key));
+            o.output(key, puts.get().get(key));
         }
 
         // remove keys

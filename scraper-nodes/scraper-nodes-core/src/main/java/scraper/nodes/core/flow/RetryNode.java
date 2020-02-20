@@ -12,7 +12,7 @@ import scraper.core.AbstractNode;
 
 import static scraper.api.node.container.NodeLogLevel.ERROR;
 import static scraper.api.node.container.NodeLogLevel.INFO;
-import static scraper.util.NodeUtil.flowOf;
+
 
 
 /**
@@ -21,7 +21,7 @@ import static scraper.util.NodeUtil.flowOf;
  * @see AbstractNode
  * @author Albert Schimpf
  */
-@NodePlugin("0.2.0")
+@NodePlugin("0.3.0")
 public final class RetryNode implements Node {
 
     @FlowKey(defaultValue = "5")
@@ -35,7 +35,7 @@ public final class RetryNode implements Node {
     public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
         int current = 0;
         while(current < retry) {
-            FlowMap localCopy = flowOf(o);
+            FlowMap localCopy = o.copy();
             try {
                 return n.eval(localCopy, retryTarget);
             } catch (NodeException e) {

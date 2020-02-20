@@ -12,7 +12,7 @@ import scraper.api.reflect.T;
 
 import java.util.List;
 
-import static scraper.util.NodeUtil.flowOf;
+
 
 /**
  * Expects a list at goTo key.
@@ -22,7 +22,7 @@ import static scraper.util.NodeUtil.flowOf;
  *
  * @author Albert Schimpf
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class MapNode implements Node {
 
     /** The expected list is located to fork on */
@@ -42,8 +42,8 @@ public final class MapNode implements Node {
         List<?> targetList = o.eval(list);
 
         targetList.forEach(t -> {
-            FlowMap finalCopy = flowOf(o);
-            finalCopy.put(putElement, t);
+            FlowMap finalCopy = o.copy();
+            finalCopy.output(putElement, t);
             n.forkDispatch(finalCopy, mapTarget);
         });
 

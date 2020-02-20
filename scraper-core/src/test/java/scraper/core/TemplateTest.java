@@ -50,7 +50,7 @@ public class TemplateTest {
     public void simpleTSingle() throws Exception {
         T<String> str = new T<>(){};
         str.setParsedJson(convert(str, "{hello}"));
-        o.put("hello", "eval-value");
+        o.output("hello", "eval-value");
         String eval = o.eval(str);
         Assert.assertEquals("eval-value", eval);
     }
@@ -59,7 +59,7 @@ public class TemplateTest {
     public void simpleTSingleInt() throws Exception {
         T<Integer> str = new T<>(){};
         str.setParsedJson(convert(str, "{int}"));
-        o.put("int", 1);
+        o.output("int", 1);
         Integer eval = o.eval(str);
         Assert.assertEquals((Integer) 1, eval);
     }
@@ -68,7 +68,7 @@ public class TemplateTest {
     public void simpleTDouble() throws Exception {
         T<String> str = new T<>(){};
         str.setParsedJson(convert(str, "{hello}{hello}hello"));
-        o.put("hello", "eval-value");
+        o.output("hello", "eval-value");
         String eval = o.eval(str);
         Assert.assertEquals("eval-valueeval-valuehello", eval);
         Assert.assertNotNull(str.toString());
@@ -78,7 +78,7 @@ public class TemplateTest {
     public void simpleTMixed() throws Exception {
         T<String> str = new T<>(){};
         str.setParsedJson(convert(str, "{hello}hello{hello}hello"));
-        o.put("hello", "eval-value");
+        o.output("hello", "eval-value");
         String eval = o.eval(str);
         Assert.assertEquals("eval-valuehelloeval-valuehello", eval);
         Assert.assertNotNull(str.toString());
@@ -88,7 +88,7 @@ public class TemplateTest {
     public void simpleTNestedInList() throws Exception {
         T<List<Integer>> str = new T<>(){};
         str.setParsedJson(convert(str, mapper.readValue("[1,2,\"{template-int}\"]", List.class)));
-        o.put("template-int",3);
+        o.output("template-int",3);
         List<Integer> eval = o.eval(str);
         Assert.assertEquals((Integer) 1, eval.get(0));
         Assert.assertEquals((Integer) 2, eval.get(1));
@@ -99,7 +99,7 @@ public class TemplateTest {
     public void simpleTNestedInMap() throws Exception {
         T<Map<String, Integer>> str = new T<>(){};
         str.setParsedJson(convert(str, mapper.readValue("{\"1\": 2, \"other\": \"{template-int}\"}", Map.class)));
-        o.put("template-int",3);
+        o.output("template-int",3);
         Map<String, Integer> eval = o.eval(str);
         Assert.assertEquals((Integer) 2, eval.get("1"));
         Assert.assertEquals((Integer) 3, eval.get("other"));
@@ -118,7 +118,7 @@ public class TemplateTest {
     public void simpleTBadKeyType() throws Exception {
         T<Map<String, Integer>> str = new T<>(){};
         str.setParsedJson(convert(str, mapper.readValue("{\"other\": \"{template-int}\"}", Map.class)));
-        o.put("template-int","3b");
+        o.output("template-int","3b");
         Map<String, Integer> eval = o.eval(str);
         Assert.assertEquals((Integer) 3, eval.get("other"));
     }
@@ -179,17 +179,16 @@ public class TemplateTest {
     public void nestedKeyLookupFail() throws Exception {
         T<String> str = new T<>(){};
         str.setParsedJson(convert(str, mapper.readValue("\"{list}\"}", String.class)));
-        o.put("list", List.of("hello"));
-        String evaled = o.eval(str);
-        System.out.println(evaled);
+        o.output("list", List.of("hello"));
+        o.eval(str);
     }
 
 //    @Test
 //    public void nestedKeyLookup() throws Exception {
 //        T<String> str = new T<>(){};
 //        str.setParsedJson(convert(str, mapper.readValue("\"@{list}[0]\"}", String.class)));
-//        o.put("list", List.of("hello"));
-//        o.put("hello", "1");
+//        o.output("list", List.of("hello"));
+//        o.output("hello", "1");
 //        String eval = o.eval(str);
 //        Assert.assertEquals("1", eval);
 //    }
@@ -198,7 +197,7 @@ public class TemplateTest {
 //    public void outOfBoundsArrayLookup() throws Exception {
 //        T<String> str = new T<>(){};
 //        str.setParsedJson(convert(str, mapper.readValue("\"@{list}[1]\"}", String.class)));
-//        o.put("list", List.of("hello"));
+//        o.output("list", List.of("hello"));
 //        o.eval(str);
 //    }
 //
@@ -206,7 +205,7 @@ public class TemplateTest {
 //    public void arrayNegativeLookup() throws Exception {
 //        T<String> str = new T<>(){};
 //        str.setParsedJson(convert(str, mapper.readValue("\"{list}[-1]\"}", String.class)));
-//        o.put("list", List.of("hello", "world"));
+//        o.output("list", List.of("hello", "world"));
 //        String eval = o.eval(str);
 //        Assert.assertEquals("world", eval);
 //    }
@@ -215,8 +214,8 @@ public class TemplateTest {
     public void nestedMapEvalTest() throws Exception {
         T<Map<String, Integer>> str = new T<>(){};
         str.setParsedJson(convert(str, mapper.readValue("{\"other\": \"{{template-int}}\"}", Map.class)));
-        o.put("template-int","3b");
-        o.put("3b",3);
+        o.output("template-int","3b");
+        o.output("3b",3);
         Map<String, Integer> eval = o.eval(str);
         Assert.assertEquals((Integer) 3, eval.get("other"));
     }

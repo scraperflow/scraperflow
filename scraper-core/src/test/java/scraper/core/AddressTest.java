@@ -2,36 +2,12 @@ package scraper.core;
 
 import org.junit.Assert;
 import org.junit.Test;
-import scraper.api.di.DIContainer;
-import scraper.api.exceptions.NodeException;
-import scraper.api.exceptions.ValidationException;
-import scraper.api.flow.FlowMap;
-import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.impl.GraphAddressImpl;
 import scraper.api.node.impl.InstanceAddressImpl;
 import scraper.api.node.impl.NodeAddressImpl;
-import scraper.api.node.type.Node;
-import scraper.api.specification.impl.ScrapeInstaceImpl;
-import scraper.api.specification.impl.ScrapeSpecificationImpl;
-import scraper.util.DependencyInjectionUtil;
-import scraper.util.JobUtil;
-import scraper.utils.ClassUtil;
 
-import java.lang.reflect.ReflectPermission;
-import java.net.URL;
-import java.security.Permission;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static scraper.util.NodeUtil.addressOf;
-import static scraper.util.NodeUtil.flowOf;
+
 
 public class AddressTest {
 

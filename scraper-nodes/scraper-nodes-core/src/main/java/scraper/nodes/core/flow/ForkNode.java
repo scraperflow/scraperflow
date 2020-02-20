@@ -16,7 +16,7 @@ import java.util.List;
 /**
  *
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class ForkNode implements Node {
 
     /** All nodes to fork the current flow map to */
@@ -28,7 +28,7 @@ public final class ForkNode implements Node {
     public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
         o.evalIdentity(forkTargets).forEach(target -> {
             // dispatch new flow for every goTo
-            FlowMap copy = NodeUtil.flowOf(o);
+            FlowMap copy = o.copy();
             n.forkDispatch(copy, target);
         });
 

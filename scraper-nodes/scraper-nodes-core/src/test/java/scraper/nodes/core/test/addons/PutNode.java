@@ -14,6 +14,6 @@ public final class PutNode implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) throws NodeException {
-        o.put("hello", "world"); o.put(toPut, "result");
+        o.output("hello", "world"); o.output(toPut, "result");
     }
 }

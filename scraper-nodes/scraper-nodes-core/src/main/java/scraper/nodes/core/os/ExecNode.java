@@ -45,7 +45,7 @@ import static scraper.api.node.container.NodeLogLevel.ERROR;
  * }
  * </pre>
  */
-@NodePlugin("0.2.0")
+@NodePlugin("0.3.0")
 public final class ExecNode implements FunctionalNode {
 
     /** Command to execute. Every element is handled as one argument. Argument strings are evaluated. */
@@ -87,8 +87,8 @@ public final class ExecNode implements FunctionalNode {
 
             String stdOut = readStream(b.getInputStream());
             String stdErr = readStream(b.getErrorStream());
-            if(put    != null) o.put(put   , stdOut);
-            if(putErr != null) o.put(putErr, stdErr);
+            if(put    != null) o.output(put   , stdOut);
+            if(putErr != null) o.output(putErr, stdErr);
 
             b.destroy();
             b.waitFor();

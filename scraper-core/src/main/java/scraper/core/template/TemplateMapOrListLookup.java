@@ -10,14 +10,14 @@ import java.util.List;
 import java.util.Map;
 
 public class TemplateMapOrListLookup<T> extends TemplateExpression<T> {
-    private TemplateExpression<List<T>> list;
+    private TemplateExpression<List<? extends T>> list;
     private TemplateExpression<Integer> index;
-    private TemplateExpression<Map<String, T>> map;
+    private TemplateExpression<Map<String, ? extends T>> map;
     private TemplateExpression<String> key;
 
     public TemplateMapOrListLookup(
-            TemplateExpression<Map<String, T>> map,
-            TemplateExpression<List<T>> list,
+            TemplateExpression<Map<String, ? extends T>> map,
+            TemplateExpression<List<? extends T>> list,
             TemplateExpression<Integer> index,
             TemplateExpression<String> key,
             TypeToken<T> targetType) {
@@ -31,23 +31,28 @@ public class TemplateMapOrListLookup<T> extends TemplateExpression<T> {
 
     public T eval(@NotNull final FlowMap o) {
 
+        String otherMsg;
         try{
-            List<T> l = list.eval(o);
+            List<? extends T> l = list.eval(o);
             Integer index = this.index.eval(o);
+            T element;
 
             if (index < 0) {
-                return l.get(l.size() - Math.abs(index));
+                element = l.get(l.size() - Math.abs(index));
             } else {
-                return l.get(index);
+                element =  l.get(index);
             }
+            return element;
         }
         catch (IndexOutOfBoundsException e) {
             throw new TemplateException("Array index out of bounds for '"+toString()+"': "+ e.getMessage());
         }
-        catch (Exception ignored) {}
+        catch (Exception e) {
+            otherMsg = e.getMessage();
+        }
 
         try {
-            Map<String, T> m = map.eval(o);
+            Map<String, ? extends T> m = map.eval(o);
             String k = key.eval(o);
 
             T mapElement = m.get(k);
@@ -56,7 +61,7 @@ public class TemplateMapOrListLookup<T> extends TemplateExpression<T> {
 
             return mapElement;
         } catch (Exception e) {
-            throw new TemplateException("Could not evaluate array/map lookup template '"+toString()+"'. " + e.getMessage());
+            throw new TemplateException("Could not evaluate array/map lookup template '"+toString()+"'. " + e.getMessage()+ " // " + otherMsg);
         }
     }
 

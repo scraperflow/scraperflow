@@ -1,5 +1,7 @@
 package scraper.api.flow.impl;
 
+import com.google.common.reflect.TypeToken;
+import org.slf4j.Logger;
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.exceptions.TemplateException;
@@ -7,31 +9,44 @@ import scraper.api.flow.FlowMap;
 import scraper.api.reflect.T;
 import scraper.core.IdentityEvaluator;
 import scraper.core.Template;
-import scraper.util.NodeUtil;
 import scraper.utils.IdentityFlowMap;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import static scraper.util.TemplateUtil.listOf;
+import static scraper.util.TemplateUtil.mapOf;
+
 public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
-    private final ConcurrentMap<String, Object> privateMap;
+    private @NotNull final ConcurrentMap<String, Object> privateMap;
+    private @NotNull final ConcurrentMap<String, TypeToken<?>> privateTypeMap;
     private final UUID parentId;
+
     private final Integer parentSequence;
     private int sequence = 0;
-    private final UUID uuid;
+    private UUID uuid;
 
-    public FlowMapImpl(ConcurrentMap<String, Object> privateMap, UUID parentId, UUID uuid, Integer parentSequence, int sequence) {
+    public FlowMapImpl(
+            @NotNull ConcurrentMap<String, Object> privateMap,
+            @NotNull ConcurrentMap<String, TypeToken<?>> privateTokenMap,
+            @NotNull UUID parentId,
+            UUID uuid,
+            int parentSequence,
+            int sequence
+    ) {
         this.privateMap = privateMap;
+        this.privateTypeMap = privateTokenMap;
         this.parentId = parentId;
         this.parentSequence = parentSequence;
         this.uuid = uuid;
         this.sequence = sequence;
     }
 
-    public FlowMapImpl(ConcurrentMap<String, Object> map, UUID parentId, int parentSequence) {
-        privateMap = map;
+    public FlowMapImpl(@NotNull UUID parentId, int parentSequence) {
+        privateMap = new ConcurrentHashMap<>();
+        privateTypeMap = new ConcurrentHashMap<>();
         this.parentId = parentId;
         this.parentSequence = parentSequence;
         uuid = UUID.randomUUID();
@@ -39,6 +54,7 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     public FlowMapImpl() {
         privateMap = new ConcurrentHashMap<>();
+        privateTypeMap = new ConcurrentHashMap<>();
         parentId = null;
         parentSequence = null;
         uuid = UUID.randomUUID();
@@ -50,21 +66,16 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     }
 
     public static FlowMap origin(Map<String, Object> args) {
-        FlowMapImpl o = new FlowMapImpl();
-        o.putAll(args);
+        FlowMap o = new FlowMapImpl();
+        args.forEach(o::output);
         return o;
     }
 
-    @NotNull
-    @Override public Optional<Object> put(@NotNull String location, @NotNull Object value) { return Optional.ofNullable(privateMap.put(location, value)); }
-
-    @Override
-    public void putAll(@NotNull Map<String, Object> m) {
-        privateMap.putAll(m);
+    @NotNull @Override
+    public void remove(@NotNull String location) {
+        privateMap.remove(location);
+        privateTypeMap.remove(location);
     }
-
-    @NotNull
-    @Override public Optional<Object> remove(@NotNull String location) { return Optional.ofNullable(privateMap.remove(location)); }
 
     @NotNull
     @Override
@@ -80,16 +91,12 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     @Override
     public void clear() {
         privateMap.clear();
+        privateTypeMap.clear();
     }
 
     @Override
     public @NotNull Set<String> keySet() {
         return privateMap.keySet();
-    }
-
-    @Override
-    public @NotNull Object getOrDefault(@NotNull Object key , @NotNull Object defaultObjectalue) {
-        return privateMap.getOrDefault(key, defaultObjectalue);
     }
 
     @Override
@@ -104,11 +111,11 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     public boolean containsElements(@NotNull final FlowMap expectedOutput) {
         for (String key : expectedOutput.keySet()) {
-            Optional<Object> thisElement = get(key);
-            Optional<Object> thatElement = expectedOutput.get(key);
-            if(thisElement.isPresent() && thatElement.isPresent()) {
-                if(!compareElement(thisElement.get(), thatElement.get())) return false;
-            } else if(thisElement.isEmpty() && thatElement.isPresent()) return false;
+            Object thisElement = privateMap.get(key);
+            Object thatElement = ((FlowMapImpl) expectedOutput).privateMap.get(key);
+            if(thisElement != null && thatElement != null) {
+                if(!compareElement(thisElement, thatElement)) return false;
+            } else if(thisElement == null && thatElement != null) return false;
         }
 
         return true;
@@ -177,17 +184,27 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     public <A> void output(@NotNull T<A> locationAndType, A object) {
         // for now output templates are only strings
         String json = locationAndType.getRawJson();
-        put(json, object);
+        privateMap.put(json, object);
+        privateTypeMap.put(json, TypeToken.of(locationAndType.get()));
     }
 
     @Override
+    public void output(String location, Object outputObject) {
+        TypeToken<?> inferredType = inferType(outputObject);
+        log.debug("Inferred type for {}: {}", location, inferredType);
+        privateTypeMap.put(location, inferredType);
+        privateMap.put(location, outputObject);
+    }
+
+
+    @Override
     public FlowMap copy() {
-        return NodeUtil.flowOf(this);
+        return copy(this);
     }
 
     @Override
     public FlowMap newFlow() {
-        return new FlowMapImpl(privateMap, uuid, UUID.randomUUID(), sequence, 0);
+        return new FlowMapImpl(privateMap, privateTypeMap, uuid, UUID.randomUUID(), sequence, 0);
     }
 
     private boolean descendMap(@NotNull final Map<?,?> currentMap, @NotNull final Map<?,?> otherMap) {
@@ -245,6 +262,7 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     public static synchronized @NotNull FlowMapImpl copy(final @NotNull FlowMap o) {
         return new FlowMapImpl(
                 new ConcurrentHashMap<>(((FlowMapImpl) o).privateMap),
+                new ConcurrentHashMap<>(((FlowMapImpl) o).privateTypeMap),
                 ((FlowMapImpl) o).parentId,
                 ((FlowMapImpl) o).uuid,
                 ((FlowMapImpl) o).parentSequence,
@@ -265,5 +283,121 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     @Override
     public int hashCode() {
         return Objects.hash(privateMap);
+    }
+
+
+
+
+
+
+    private @NotNull static final Logger log = org.slf4j.LoggerFactory.getLogger("TypeInfer");
+
+    // ======
+    // Runtime type checking
+    // ======
+    public <K> Optional<K> getWithType(String targetKey, TypeToken<K> targetType) {
+        Object targetObject = privateMap.get(targetKey);
+        if(targetObject == null) return Optional.empty();
+
+        // for each inserted element there should be an associated type token
+        assert privateTypeMap.containsKey(targetKey);
+        TypeToken<?> knownType = privateTypeMap.get(targetKey);
+
+
+        if(targetType.isSupertypeOf(knownType)) {
+            @SuppressWarnings("unchecked") // checked with subtype relation
+            K targetO = (K) targetObject;
+            return Optional.of(targetO);
+        }
+
+        if(targetType.isSubtypeOf(knownType)) {
+            log.warn("Downcasting '{}' from '{}' -> '{}'. This may indicate a node implementation error or an insufficient type infer of that key",
+                    targetKey, knownType, targetType);
+            @SuppressWarnings("unchecked") // warned user about potentially bad downcast
+            Optional<K> castObject = Optional.of((K) targetObject);
+            return castObject;
+        }
+
+        throw new TemplateException(String.format("Bad typing for key %s. Expected type '%s', got type '%s'",
+                targetKey,
+                targetType.toString(),
+                knownType.toString()
+        ));
+    }
+
+    /**
+     * Infers the type of the current object strengthening the type for this flow map for that key
+     */
+    private <K> void inferTypeAgainstActualObject(String targetKey, TypeToken<?> knownType, TypeToken<K> targetType, Object targetObject) {
+        assert targetType.isSubtypeOf(knownType);
+        log.debug("Inferring type of '{}' -> '{}' with actual object '{}'", knownType, targetType, targetObject);
+//
+//
+//        Class<? super K> targetRawType = targetType.getRawType();
+//        if(targetRawType.isAssignableFrom(List.class)) {
+//            log.info("Descending list type");
+//            if(((List) targetObject).isEmpty()) {
+//                log.info("Actual list empty, inferring type by promoting {}: {} -> {}", targetKey, knownType, targetType);
+//                privateTypeMap.put(targetKey, targetType);
+//            }
+//
+//            Type typp = ((ParameterizedType) targetType.getType()).getActualTypeArguments()[0];
+//            TypeToken<?> typeTokenListGenericType = TypeToken.of(typp);
+//            System.out.println(typeTokenListGenericType);
+//
+//
+//
+//
+//        } else if (targetRawType.isAssignableFrom(Map.class)) {
+//            log.info("Descending map type");
+//            if(((Map) targetObject).isEmpty()) {
+//                log.info("Actual map empty, inferring type by promoting {}: {} -> {}", targetKey, knownType, targetType);
+//                privateTypeMap.put(targetKey, targetType);
+//            }
+//
+//
+//
+//        } else {
+//            log.info("Primitive type ");
+//        }
+//
+//
+//        throw new TemplateException("Could not infer type for "+targetKey+"("+knownType+"->"+targetType+"): Error");
+    }
+
+    @SuppressWarnings("rawtypes")
+    private TypeToken<?> inferType(Object o) {
+        if(o instanceof List) {
+            List oList = ((List) o);
+            if(((List) o).isEmpty()) return TypeToken.of(List.class);
+
+            // full check
+            TypeToken<?> commonType = inferType(oList.get(0));
+            for (int i = 1; i < oList.size(); i++) {
+                TypeToken<?> nextType = inferType(oList.get(i));
+                if(!commonType.isSubtypeOf(nextType) || !nextType.isSubtypeOf(commonType))
+                    throw new TemplateException("Types of elements of a list have to match exactly: "+commonType + " != "+ nextType);
+            }
+
+            return listOf(commonType);
+        } else if (o instanceof Map) {
+            Map oMap = ((Map) o);
+            if(((Map) o).isEmpty()) return TypeToken.of(Map.class);
+
+            // full check
+            Iterator iter = oMap.keySet().iterator();
+            TypeToken<?> commonType = inferType(iter.next());
+            while(iter.hasNext()) {
+                TypeToken<?> nextType = inferType(iter.next());
+                if(!commonType.isSubtypeOf(nextType) || !nextType.isSubtypeOf(commonType))
+                    throw new TemplateException("Types of elements of a map have to match exactly: "+commonType + " != "+ nextType);
+            }
+
+            return mapOf(TypeToken.of(String.class), commonType);
+
+        } else {
+            // raw type
+            return TypeToken.of(o.getClass());
+        }
     }
 }

@@ -17,9 +17,9 @@ public final class SimpleFunctionalNode implements FunctionalNode {
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) {
         System.out.println(output);
         if(output != null)
-            o.put(output, true);
+            o.output(output, true);
         else {
-            o.put("simple", true);
+            o.output("simple", true);
         }
     }
 }

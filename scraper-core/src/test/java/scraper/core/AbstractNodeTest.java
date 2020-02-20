@@ -122,7 +122,7 @@ public class AbstractNodeTest {
 
         NodeContainer<? extends Node> node = opt(instance);
         FlowMap o = FlowMapImpl.origin();
-        o.put("path-template", "/tmp/scraper-ok");
+        o.output("path-template", "/tmp/scraper-ok");
         ((AbstractNode<?>) node).start(node, o);
     }
 

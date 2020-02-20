@@ -28,14 +28,15 @@ public final class StringToClassConverter {
      * @return string converted to target class, null if o is null or String 'null'
      * @throws ValidationException if string cannot be converted to target class
      */
-    public static @Nullable Object convert(@Nullable final Object o, @NotNull final Class<?> target) throws ValidationException {
+    @SuppressWarnings("unchecked") // raw type checked
+    public static @Nullable <T> T convert(@Nullable final Object o, @NotNull final Class<? super T> target) throws ValidationException {
 
         // argument 'null'
         if(o == null) return null;
         // json 'null'
         if(o instanceof String && ((String) o).equalsIgnoreCase("null")) return null;
 
-        if(target.isAssignableFrom(o.getClass())) return o;
+        if(target.isAssignableFrom(o.getClass())) return (T) o;
 
         if(
                 !(o instanceof String)
@@ -49,31 +50,31 @@ public final class StringToClassConverter {
 
         if(Double.class.isAssignableFrom(target))
             try {
-                return Double.valueOf(s);
+                return (T) Double.valueOf(s);
             } catch (NumberFormatException e) {
                 throw new ValidationException(e, "Could not convert string to Double");
             }
 
         if(Long.class.isAssignableFrom(target))
             try {
-                return Long.valueOf(s);
+                return (T) Long.valueOf(s);
             } catch (NumberFormatException e) {
                 throw new ValidationException(e, "Could not convert string to Long");
             }
 
         if(Integer.class.isAssignableFrom(target))
             try {
-                return Integer.valueOf(s);
+                return (T) Integer.valueOf(s);
             } catch (NumberFormatException e) {
                 throw new ValidationException(e, "Could not convert string to Integer");
             }
 
         if(Address.class.isAssignableFrom(target))
-            return new AddressImpl(o.toString());
+            return (T) new AddressImpl(o.toString());
 
         if(Boolean.class.isAssignableFrom(target)) {
-            if(s.equalsIgnoreCase("false")) return false;
-            else if(s.equalsIgnoreCase("true")) return true;
+            if(s.equalsIgnoreCase("false")) return (T) Boolean.valueOf(false);
+            else if(s.equalsIgnoreCase("true")) return (T) Boolean.valueOf(true);
         }
 
         if (Enum.class.isAssignableFrom(target)) {
@@ -84,14 +85,14 @@ public final class StringToClassConverter {
             try {
                 @SuppressWarnings("unchecked")
                 Enum<?> t = Enum.valueOf(e, s);
-                return t;
+                return (T) t;
             } catch (IllegalArgumentException | NullPointerException ex) {
                 throw new ValidationException(ex, "Could not convert string to Enum");
             }
         }
 
         if (String.class.isAssignableFrom(target)) {
-            return s;
+            return (T) s;
         }
 
         throw new ValidationException("Could not convert string to target class. String: '"+s+"'; target class: '"+target+"'");

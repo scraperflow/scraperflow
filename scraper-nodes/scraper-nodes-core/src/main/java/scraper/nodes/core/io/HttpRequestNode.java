@@ -47,7 +47,7 @@ import static scraper.api.node.container.NodeLogLevel.*;
  *
  * @author Albert Schimpf
  */
-@NodePlugin("1.0.0")
+@NodePlugin("1.1.0")
 public final class HttpRequestNode implements Node {
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -209,7 +209,7 @@ public final class HttpRequestNode implements Node {
             if(expectedResponse.equals(ResponseType.JSON) && (body instanceof String))
                 body = mapper.readValue((String) body, Object.class);
 
-            o.put(put, body);
+            o.output(put, body);
 
         } catch (InterruptedException e) {
             n.log(WARN, "Interrupted while waiting for token: {}", url);
@@ -359,7 +359,7 @@ public final class HttpRequestNode implements Node {
             if (cachedContent != null) {
                 n.log(DEBUG,"[\uD83D\uDCBE] {}", url);
 
-                o.put(put, cachedContent);
+                o.output(put, cachedContent);
                 return true;
             }
         }

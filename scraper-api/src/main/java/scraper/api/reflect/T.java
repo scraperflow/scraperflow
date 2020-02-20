@@ -21,6 +21,8 @@ public abstract class T<TYPE> implements Supplier<Type> {
 	private Object parsedJson;
 
 	public T() { this.type = resolveType(); }
+	// can be used for location T
+	public T(String location) { this.type = resolveType(); this.parsedJson = location; }
 
 	@Override @NotNull public Type get() { return type; }
 

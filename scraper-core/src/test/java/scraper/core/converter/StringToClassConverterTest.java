@@ -56,10 +56,10 @@ public class StringToClassConverterTest {
 
     @Test
     public void doubleTest() throws Exception {
-        Assert.assertEquals(1.0, StringToClassConverter.convert("1", Double.class));
-        Assert.assertEquals(0.0, StringToClassConverter.convert("0", Double.class));
-        Assert.assertEquals(1.5, StringToClassConverter.convert("1.5", Double.class));
-        Assert.assertEquals(1.2345, StringToClassConverter.convert("1.2345", Double.class));
+        Assert.assertEquals(((Double) 1.0), StringToClassConverter.convert("1", Double.class));
+        Assert.assertEquals(((Double) 0.0), StringToClassConverter.convert("0", Double.class));
+        Assert.assertEquals(((Double) 1.5), StringToClassConverter.convert("1.5", Double.class));
+        Assert.assertEquals(((Double) 1.2345), StringToClassConverter.convert("1.2345", Double.class));
     }
 
     @Test(expected = ValidationException.class)

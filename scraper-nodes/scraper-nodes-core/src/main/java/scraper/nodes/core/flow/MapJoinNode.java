@@ -10,7 +10,6 @@ import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.Node;
 import scraper.api.reflect.T;
-import scraper.util.NodeUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,7 +21,7 @@ import java.util.concurrent.ExecutionException;
 /**
  *
  */
-@NodePlugin("0.9.0")
+@NodePlugin("0.10.0")
 public final class MapJoinNode implements Node {
 
     /** Expected join for each key defined in this map after a forked flow terminates */
@@ -31,7 +30,7 @@ public final class MapJoinNode implements Node {
 
     /** List to apply map to */
     @FlowKey(mandatory = true) @NotNull
-    private T<List<Object>> list = new T<>(){};
+    private T<List<?>> list = new T<>(){};
 
     /** Label of goTo */
     @FlowKey(mandatory = true)
@@ -39,21 +38,20 @@ public final class MapJoinNode implements Node {
 
     /** At which key to put the element of the list into. */
     @FlowKey(defaultValue = "\"element\"") @NotNull
-    private T<Object> putElement = new T<>(){};
+    private String putElement;
 
     /** Only distinct elements */
     @FlowKey(defaultValue = "false")
     private Boolean distinct;
 
-    // TODO nicer implementation
     @NotNull @Override
     public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
-        List<Object> list = o.eval(this.list);
+        List<?> list = o.eval(this.list);
         if(distinct) list = new ArrayList<>(new HashSet<>(list));
 
         List<CompletableFuture<FlowMap>> forkedProcesses = new ArrayList<>();
         list.forEach(element -> {
-            FlowMap copy = NodeUtil.flowOf(o);
+            FlowMap copy = o.copy();
             copy.output(putElement, element);
             // dispatch new flow, expect future to return the modified flow map
             CompletableFuture<FlowMap> t = n.forkDepend(copy, mapTarget);
@@ -75,8 +73,7 @@ public final class MapJoinNode implements Node {
         keys.forEach((joinKeyForked, joinKey) -> {
             n.log(NodeLogLevel.TRACE, "Joining {} -> {}", joinKeyForked, joinKey);
 
-            @SuppressWarnings("unchecked")
-            List<Object> joinResults = (List<Object>) o.getOrDefault(joinKey, new ArrayList<>());
+            List<Object> joinResults = o.evalMaybe(new T<List<Object>>() {}).orElse(new ArrayList<>());
 
             forkedProcesses.forEach(future -> {
                 try {
@@ -84,7 +81,7 @@ public final class MapJoinNode implements Node {
                     if(fm.get(joinKeyForked).isEmpty())
                         throw new IllegalStateException("Missing value at join key: " + joinKeyForked);
                     joinResults.add(fm.get(joinKeyForked).get());
-                    o.put(joinKey, joinResults);
+                    o.output(joinKey, joinResults);
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                     n.log(NodeLogLevel.ERROR, "Bad join", e);
@@ -92,7 +89,7 @@ public final class MapJoinNode implements Node {
             });
 
         });
-        keys.forEach((joinKeyForked, joinKey) -> { if(!o.keySet().contains(joinKey)) { o.put(joinKey, new ArrayList<>()); } });
+        keys.forEach((joinKeyForked, joinKey) -> { if(!o.keySet().contains(joinKey)) { o.output(joinKey, new ArrayList<>()); } });
 
         // continue
         return o;

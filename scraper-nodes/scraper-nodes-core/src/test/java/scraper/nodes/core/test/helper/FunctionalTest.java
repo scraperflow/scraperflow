@@ -12,7 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import static scraper.util.NodeUtil.flowOf;
+
 import static scraper.util.NodeUtil.initFields;
 
 public abstract class FunctionalTest {

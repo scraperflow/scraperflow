@@ -17,13 +17,13 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static scraper.api.node.container.NodeLogLevel.DEBUG;
-import static scraper.util.NodeUtil.flowOf;
+
 
 /**
  * Executes a given node periodically.
  * Periodic execution can start at initialization or on first accept call, controlled via the flag.
  */
-@NodePlugin(value = "1.0.0")
+@NodePlugin(value = "1.1.0")
 public final class PeriodicNode implements FunctionalNode {
 
     /** Period time in ms */
@@ -64,7 +64,7 @@ public final class PeriodicNode implements FunctionalNode {
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         boolean flag = o.eval(this.flag);
         dispatch.set(flag);
-        this.o = flowOf(o);
+        this.o = o.copy();
 
         if (!started.getAndSet(true)) {
             timer.scheduleAtFixedRate(timerTask, 0 , period);

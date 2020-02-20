@@ -4,7 +4,6 @@ import scraper.annotations.NotNull;
 import scraper.api.flow.FlowMap;
 import scraper.api.reflect.T;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -16,29 +15,13 @@ public class IdentityFlowMap implements FlowMap {
         return Optional.empty();
     }
 
-    @NotNull @Override public Object getOrDefault(@NotNull Object key, @NotNull Object defaultObjectValue) {
-        return defaultObjectValue;
-    }
-
     @Override public int size() { throw new IllegalStateException(); }
     @Override public void clear() { throw new IllegalStateException(); }
     @Override public @NotNull Set<String> keySet() { throw new IllegalStateException(); }
 
-    @NotNull
     @Override
-    public Optional<?> put(@NotNull String key, @NotNull Object value) {
-        return Optional.empty();
-    }
+    public void remove(String key) {
 
-    @Override
-    public void putAll(@NotNull Map<String, Object> m) {
-
-    }
-
-    @NotNull
-    @Override
-    public Optional<Object> remove(@NotNull String key) {
-        return Optional.empty();
     }
 
     @NotNull @Override public UUID getId() { throw new IllegalStateException(); }
@@ -67,6 +50,11 @@ public class IdentityFlowMap implements FlowMap {
     }
 
     @Override public <A> void output(@NotNull T<A> locationAndType, A object) { throw new IllegalStateException(); }
+
+    @Override
+    public void output(String location, Object outputObject) {
+
+    }
 
     @Override
     public FlowMap copy() {

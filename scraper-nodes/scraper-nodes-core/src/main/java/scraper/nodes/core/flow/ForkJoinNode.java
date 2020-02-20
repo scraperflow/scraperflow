@@ -4,7 +4,6 @@ package scraper.nodes.core.flow;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
@@ -23,7 +22,7 @@ import java.util.concurrent.ExecutionException;
 /**
  *
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class ForkJoinNode implements Node {
 
     /** Expected join for each key defined in this map after a forked flow terminates */
@@ -34,8 +33,6 @@ public final class ForkJoinNode implements Node {
     @FlowKey(mandatory = true)
     private T<List<Address>> forkTargets = new T<>(){};
 
-    //TODO nicer implementation
-    @SuppressWarnings("unchecked")
     @NotNull @Override
     public FlowMap process(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) {
         Map<String, String> keys = o.evalIdentity(this.keys);
@@ -60,18 +57,18 @@ public final class ForkJoinNode implements Node {
         keys.forEach((joinKeyForked, joinKey) -> {
             n.log(NodeLogLevel.DEBUG, "Joining {} -> {}", joinKeyForked, joinKey);
 
-            List<Object> joinResults = (List<Object>) o.getOrDefault(joinKey, new ArrayList<>());
+            List<Object> joinResults = o.evalMaybe(new T<List<Object>>() {}).orElse(new ArrayList<>());
 
             forkedProcesses.forEach(future -> {
                 try {
                     FlowMap fm = future.get();
-                    Optional<Object> returnResult = fm.get(joinKeyForked);
+                    Optional<?> returnResult = fm.get(joinKeyForked);
                     if(returnResult.isEmpty()) {
                         n.log(NodeLogLevel.ERROR, "Missing key in completed flow {}", joinKeyForked);
                         throw new TemplateException("Completed flow does not return expected key: "+ joinKeyForked);
                     } else {
                         joinResults.add(returnResult.get());
-                        o.put(joinKey, joinResults);
+                        o.output(joinKey, joinResults);
                     }
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();

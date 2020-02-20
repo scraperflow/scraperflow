@@ -53,7 +53,6 @@ public class JobUtilTest {
     @Test
     public void parseValidYmlSpecifications() throws IOException, ValidationException {
         URL folder = (getClass().getResource("job/specifications/valid/yml"));
-        System.out.println(folder);
         File[] validFiles = new File(folder.getPath()).listFiles();
         Assert.assertNotNull(validFiles);
         for (File validFile : validFiles) {

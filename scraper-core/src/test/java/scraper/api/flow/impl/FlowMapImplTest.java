@@ -3,7 +3,6 @@ package scraper.api.flow.impl;
 import org.junit.Assert;
 import org.junit.Test;
 import scraper.api.flow.FlowMap;
-import scraper.util.NodeUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,36 +20,33 @@ public class FlowMapImplTest {
     @Test
     public void mapFunctionsTest() {
         // direct instantiation
-        FlowMap flowMap = FlowMapImpl.origin();
-        Assert.assertNotNull(flowMap.toString());
+        FlowMap o = FlowMapImpl.origin();
+        Assert.assertNotNull(o.toString());
 
         // put and get
-        flowMap.put("key1", 123);
-        Assert.assertTrue(flowMap.get("key1").isPresent());
-        Assert.assertEquals(123, flowMap.get("key1").get());
+        o.output("key1", 123);
+        Assert.assertTrue(o.get("key1").isPresent());
+        Assert.assertEquals(123, o.get("key1").get());
 
         // clear
-        Assert.assertEquals(1, flowMap.size());
-        flowMap.clear();
-        Assert.assertEquals(0, flowMap.size());
+        Assert.assertEquals(1, o.size());
+        o.clear();
+        Assert.assertEquals(0, o.size());
 
         // putAll
-        flowMap.putAll(Map.of("k1", 42, "k2", "hello"));
-        Assert.assertTrue(flowMap.get("k1").isPresent());
-        Assert.assertTrue(flowMap.get("k2").isPresent());
-        Assert.assertEquals(42, flowMap.get("k1").get());
-        Assert.assertEquals("hello", flowMap.get("k2").get());
-        Assert.assertEquals(2, flowMap.size());
-        assertTrue(flowMap.keySet().contains("k1"));
-        assertTrue(flowMap.keySet().contains("k2"));
-
-        Assert.assertEquals(42, flowMap.getOrDefault("k1",1));
-        Assert.assertEquals(1, flowMap.getOrDefault("k11",1));
+        Map.of("k1", 42, "k2", "hello").forEach(o::output);
+        Assert.assertTrue(o.get("k1").isPresent());
+        Assert.assertTrue(o.get("k2").isPresent());
+        Assert.assertEquals(42, o.get("k1").get());
+        Assert.assertEquals("hello", o.get("k2").get());
+        Assert.assertEquals(2, o.size());
+        assertTrue(o.keySet().contains("k1"));
+        assertTrue(o.keySet().contains("k2"));
 
         // remove
-        flowMap.remove("k2");
-        Assert.assertTrue(flowMap.get("k2").isEmpty());
-        Assert.assertEquals(1, flowMap.size());
+        o.remove("k2");
+        Assert.assertTrue(o.get("k2").isEmpty());
+        Assert.assertEquals(1, o.size());
     }
 
     @Test
@@ -63,9 +59,9 @@ public class FlowMapImplTest {
         FlowMap flowMap = FlowMapImpl.origin(initialMap);
 
         // copy
-        FlowMap flowMap1 = FlowMapImpl.copy(flowMap);
-        FlowMap flowMap2 = FlowMapImpl.copy((FlowMapImpl) flowMap);
-        FlowMap flowMap3 = NodeUtil.flowOf(flowMap);
+        FlowMap flowMap1 = flowMap.copy();
+        FlowMap flowMap2 = flowMap.copy();
+        FlowMap flowMap3 = flowMap.copy();
 
         assertEquals(flowMap, flowMap1);
         assertNotSame(flowMap, flowMap1);
@@ -85,8 +81,8 @@ public class FlowMapImplTest {
         mapInMap1.put("key1", "yes");
         mapInMap2.put("key1", "yes");
 
-        flowMap1.put("map", mapInMap1);
-        flowMap2.put("map", mapInMap2);
+        flowMap1.output("map", mapInMap1);
+        flowMap2.output("map", mapInMap2);
 
         assertEquals(flowMap1, flowMap2);
         assertNotSame(flowMap1, flowMap2);

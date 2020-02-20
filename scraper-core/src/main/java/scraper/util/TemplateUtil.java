@@ -1,5 +1,6 @@
 package scraper.util;
 
+import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
@@ -76,6 +77,16 @@ public final class TemplateUtil {
                     o.accept(t);
             }
         }
+    }
+
+    public static <K, V> TypeToken<Map<K, ? extends V>> mapOf(TypeToken<K> keyType, TypeToken<V> valueType) {
+        return new TypeToken<Map<K, ? extends V>>() {}
+                .where(new TypeParameter<>() {}, keyType)
+                .where(new TypeParameter<>() {}, valueType);
+    }
+
+    public static <K> TypeToken<List<? extends K>> listOf(TypeToken<K> elementType) {
+        return new TypeToken<List<? extends K>>() {}.where(new TypeParameter<>() {}, elementType);
     }
 }
 
