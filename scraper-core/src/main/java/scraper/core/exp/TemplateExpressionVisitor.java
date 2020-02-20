@@ -50,8 +50,8 @@ public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<Templ
 
         // template template
         if(ctx.children.size() == 2) {
-            if(!target.equals(TypeToken.of(String.class)))
-                throw new RuntimeException("Mixed template target has to be java.lang.String");
+            if(!target.isSupertypeOf(TypeToken.of(String.class)))
+                throw new RuntimeException("Mixed template target has to be supertype of java.lang.String");
             TemplateMixed result = new TemplateMixed();
 
             TemplateExpressionVisitor<String> targetVisitor = new TemplateExpressionVisitor<>(TypeToken.of(String.class));
