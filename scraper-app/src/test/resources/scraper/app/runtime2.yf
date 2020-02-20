@@ -1,0 +1,12 @@
+---
+name: listWithStrings
+
+graphs:
+  start:
+    - type: EchoNode
+      puts:
+        listOf: ["1", 23]
+
+    - type: RuntimeListNode
+      onlyStringsAllowed: "{listOf}"
+

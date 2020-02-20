@@ -189,10 +189,15 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     @Override
     public void output(String location, Object outputObject) {
-        TypeToken<?> inferredType = inferType(outputObject);
-        log.debug("Inferred type for {}: {}", location, inferredType);
-        privateTypeMap.put(location, inferredType);
-        privateMap.put(location, outputObject);
+        try {
+            TypeToken<?> inferredType = inferType(outputObject);
+            log.info("Inferred type for {}: {}", location, inferredType);
+            privateTypeMap.put(location, inferredType);
+            privateMap.put(location, outputObject);
+        } catch (Exception e) {
+            log.error("Could not infer type for key '{}' and actual object '{}': {}", location, outputObject, e.getMessage());
+            throw new TemplateException(e, "Could not infer type for key '"+location+"' and actual object '"+outputObject+"': "+ e.getMessage());
+        }
     }
 
 
