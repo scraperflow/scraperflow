@@ -20,24 +20,36 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     private @NotNull final UUID parentId;
     private final Integer parentSequence;
     private int sequence = 0;
-    private @NotNull final UUID uuid = UUID.randomUUID();
+    private @NotNull final UUID uuid;
+
+    public FlowMapImpl(@NotNull ConcurrentMap<String, Object> privateMap, UUID parentId, UUID uuid, int parentSequence) {
+        this.privateMap = privateMap;
+        this.parentId = parentId;
+        this.parentSequence = parentSequence;
+        this.uuid = uuid;
+    }
 
     public FlowMapImpl(@NotNull ConcurrentMap<String, Object> privateMap, @NotNull UUID parentId, int parentSequence) {
         this.privateMap = privateMap;
         this.parentId = parentId;
         this.parentSequence = parentSequence;
+        uuid = UUID.randomUUID();
     }
 
     public FlowMapImpl(@NotNull UUID parentId, int parentSequence) {
         privateMap = new ConcurrentHashMap<>();
         this.parentId = parentId;
         this.parentSequence = parentSequence;
+        uuid = UUID.randomUUID();
     }
+
     private FlowMapImpl() {
         privateMap = new ConcurrentHashMap<>();
         parentId = null;
         parentSequence = null;
+        uuid = UUID.randomUUID();
     }
+
 
     public static FlowMap origin() {
         return new FlowMapImpl();
@@ -179,6 +191,11 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
         return NodeUtil.flowOf(this);
     }
 
+    @Override
+    public FlowMap newFlow() {
+        return new FlowMapImpl(privateMap, parentId, uuid,parentSequence);
+    }
+
     private boolean descendMap(@NotNull final Map<?,?> currentMap, @NotNull final Map<?,?> otherMap) {
         for (Object s : otherMap.keySet()) {
             Object otherElement = otherMap.get(s);
@@ -232,11 +249,11 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 //    }
 
     public static synchronized @NotNull FlowMapImpl copy(final @NotNull FlowMapImpl o) {
-        return new FlowMapImpl( new ConcurrentHashMap<>(o.privateMap), o.getId(), o.getSequence());
+        return new FlowMapImpl( new ConcurrentHashMap<>(o.privateMap), o.parentId, o.getId(), o.getSequence());
     }
 
     public static synchronized @NotNull FlowMapImpl copy(final @NotNull FlowMap o) {
-        return new FlowMapImpl(new ConcurrentHashMap<>(((FlowMapImpl) o).privateMap), o.getId(), o.getSequence());
+        return new FlowMapImpl(new ConcurrentHashMap<>(((FlowMapImpl) o).privateMap), ((FlowMapImpl) o).parentId, o.getId(), o.getSequence());
     }
 
     @Override

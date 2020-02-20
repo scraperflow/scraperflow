@@ -73,6 +73,11 @@ public class IdentityFlowMap implements FlowMap {
         return null;
     }
 
+    @Override
+    public FlowMap newFlow() {
+        return null;
+    }
+
     public @NotNull ConcurrentMap<String, Object> getMap() { throw new IllegalStateException(); }
     public boolean containsElements(@NotNull final FlowMap expectedOutput) { throw new IllegalStateException(); }
 

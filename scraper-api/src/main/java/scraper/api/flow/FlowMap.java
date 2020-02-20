@@ -103,4 +103,7 @@ public interface FlowMap extends IdentityTemplateEvaluator {
 
     /** Copies this FlowMap */
     FlowMap copy();
+
+    /** Creates a new flow with a new ID */
+    FlowMap newFlow();
 }
