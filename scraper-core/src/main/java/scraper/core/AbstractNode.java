@@ -313,7 +313,8 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
     public void forkDispatch(@NotNull final FlowMap o, @NotNull final Address target) {
         dispatch(() -> {
             try {
-                return eval(o.newFlow(), target);
+                NodeContainer<? extends Node> opt = NodeUtil.getTarget(getAddress(), target, getJobInstance());
+                return opt.getC().accept(opt, o);
             } catch (Exception e) {
                 log(ERROR, "Dispatch terminated exceptionally {}: {}", target, e);
                 // TODO re-add exception feature
@@ -336,7 +337,8 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
     public CompletableFuture<FlowMap> forkDepend(@NotNull final FlowMap o, @NotNull final Address target) {
         return dispatch(() -> {
             try {
-                return eval(o.newFlow(), target);
+                NodeContainer<? extends Node> opt = NodeUtil.getTarget(getAddress(), target, getJobInstance());
+                return opt.getC().accept(opt, o);
             } catch (Exception e) {
                 log(ERROR, "Fork depend to goTo '{}' terminated exceptionally.", target, e);
                 throw new RuntimeException(e);
