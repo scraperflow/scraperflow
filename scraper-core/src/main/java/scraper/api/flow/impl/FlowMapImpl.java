@@ -22,7 +22,7 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     private int sequence = 0;
     private final UUID uuid;
 
-    public FlowMapImpl(ConcurrentMap<String, Object> privateMap, UUID parentId, UUID uuid, int parentSequence, int sequence) {
+    public FlowMapImpl(ConcurrentMap<String, Object> privateMap, UUID parentId, UUID uuid, Integer parentSequence, int sequence) {
         this.privateMap = privateMap;
         this.parentId = parentId;
         this.parentSequence = parentSequence;
