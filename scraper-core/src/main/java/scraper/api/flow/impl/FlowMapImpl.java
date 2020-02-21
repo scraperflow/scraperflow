@@ -21,7 +21,7 @@ import static scraper.util.TemplateUtil.mapOf;
 public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     private @NotNull final ConcurrentMap<String, Object> privateMap;
-    private @NotNull final ConcurrentMap<String, TypeToken<?>> privateTypeMap;
+    private @NotNull final ConcurrentMap<String, T<?>> privateTypeMap;
     private UUID parentId;
     private Integer parentSequence;
     private int sequence = 0;
@@ -29,7 +29,7 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     public FlowMapImpl(
             @NotNull ConcurrentMap<String, Object> privateMap,
-            @NotNull ConcurrentMap<String, TypeToken<?>> privateTokenMap,
+            @NotNull ConcurrentMap<String, T<?>> privateTokenMap,
             UUID parentId,
             UUID uuid,
             Integer parentSequence,
@@ -80,6 +80,11 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     @Override
     public Optional<Object> get(@NotNull String expected) {
         return Optional.ofNullable(privateMap.get(expected));
+    }
+
+    @Override
+    public Optional<T<?>> getType(String key) {
+        return Optional.ofNullable(privateTypeMap.get(key));
     }
 
     @Override
@@ -184,15 +189,16 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
         // for now output templates are only strings
         String json = locationAndType.getRawJson();
         privateMap.put(json, object);
-        privateTypeMap.put(json, TypeToken.of(locationAndType.get()));
+        privateTypeMap.put(json, locationAndType);
     }
 
     @Override
     public void output(String location, Object outputObject) {
         try {
             TypeToken<?> inferredType = inferType(outputObject);
+            T<?> tt = new T<>(inferredType.getType()){};
             log.info("Inferred type for {}: {}", location, inferredType);
-            privateTypeMap.put(location, inferredType);
+            privateTypeMap.put(location, tt);
             privateMap.put(location, outputObject);
         } catch (Exception e) {
             log.error("Could not infer type for key '{}' and actual object '{}': {}", location, outputObject, e.getMessage());
@@ -305,16 +311,16 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
         // for each inserted element there should be an associated type token
         assert privateTypeMap.containsKey(targetKey);
-        TypeToken<?> knownType = privateTypeMap.get(targetKey);
+        T<?> knownType = privateTypeMap.get(targetKey);
 
 
-        if(targetType.isSupertypeOf(knownType)) {
+        if(targetType.isSupertypeOf(TypeToken.of(knownType.get()))) {
             @SuppressWarnings("unchecked") // checked with subtype relation
             K targetO = (K) targetObject;
             return Optional.of(targetO);
         }
 
-        if(targetType.isSubtypeOf(knownType)) {
+        if(targetType.isSubtypeOf(TypeToken.of(knownType.get()))) {
             log.warn("Downcasting '{}' from '{}' -> '{}'. This may indicate a node implementation error or an insufficient type infer of that key",
                     targetKey, knownType, targetType);
             @SuppressWarnings("unchecked") // warned user about potentially bad downcast
@@ -329,47 +335,8 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
         ));
     }
 
-    /**
-     * Infers the type of the current object strengthening the type for this flow map for that key
-     */
-    private <K> void inferTypeAgainstActualObject(String targetKey, TypeToken<?> knownType, TypeToken<K> targetType, Object targetObject) {
-        assert targetType.isSubtypeOf(knownType);
-        log.debug("Inferring type of '{}' -> '{}' with actual object '{}'", knownType, targetType, targetObject);
-//
-//
-//        Class<? super K> targetRawType = targetType.getRawType();
-//        if(targetRawType.isAssignableFrom(List.class)) {
-//            log.info("Descending list type");
-//            if(((List) targetObject).isEmpty()) {
-//                log.info("Actual list empty, inferring type by promoting {}: {} -> {}", targetKey, knownType, targetType);
-//                privateTypeMap.put(targetKey, targetType);
-//            }
-//
-//            Type typp = ((ParameterizedType) targetType.getType()).getActualTypeArguments()[0];
-//            TypeToken<?> typeTokenListGenericType = TypeToken.of(typp);
-//            System.out.println(typeTokenListGenericType);
-//
-//
-//
-//
-//        } else if (targetRawType.isAssignableFrom(Map.class)) {
-//            log.info("Descending map type");
-//            if(((Map) targetObject).isEmpty()) {
-//                log.info("Actual map empty, inferring type by promoting {}: {} -> {}", targetKey, knownType, targetType);
-//                privateTypeMap.put(targetKey, targetType);
-//            }
-//
-//
-//
-//        } else {
-//            log.info("Primitive type ");
-//        }
-//
-//
-//        throw new TemplateException("Could not infer type for "+targetKey+"("+knownType+"->"+targetType+"): Error");
-    }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings("rawtypes") // fully checking types and members of list and map
     private TypeToken<?> inferType(Object o) {
         if(o instanceof List) {
             List oList = ((List) o);
