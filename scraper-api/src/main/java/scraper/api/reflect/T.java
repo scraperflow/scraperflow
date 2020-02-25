@@ -1,7 +1,6 @@
 package scraper.api.reflect;
 
 import scraper.annotations.NotNull;
-import scraper.api.flow.FlowMap;
 
 import java.lang.reflect.*;
 import java.util.Objects;
@@ -24,15 +23,6 @@ public abstract class T<TYPE> implements Supplier<Type> {
 	public T(Type t) { this.type = t; }
 	// can be used for location T
 	public T(Term<TYPE> location) { this.type = resolveType(); this.term = location; }
-	public T(String constant) { this.type = resolveType();
-		T<TYPE> ref = this;
-		this.term = new Primitive<>() {
-		@Override public void accept(TVisitor visitor) { visitor.visitPrimitive(this); }
-		@SuppressWarnings("unchecked") // TODO think about how to describe locations and expected types without abusing T
-		@Override public TYPE eval(FlowMap o) { return (TYPE) constant; }
-		@Override public Object getRaw() { return constant; }
-			@Override public T<TYPE> getToken() { throw new IllegalStateException(); }
-		}; }
 
 	@Override @NotNull public Type get() { return type; }
 
@@ -56,26 +46,6 @@ public abstract class T<TYPE> implements Supplier<Type> {
 		final ParameterizedType parameterizedGenericSuperclass = (ParameterizedType) genericSuperclass;
 		final Type[] actualTypeArguments = parameterizedGenericSuperclass.getActualTypeArguments();
 		return actualTypeArguments[0];
-	}
-
-	public static <A> Class<A> getRawType(Type type) {
-		if (type instanceof GenericArrayType) {
-			Type componentType = ((GenericArrayType) type).getGenericComponentType();
-			Class<?> componentClass = getRawType(componentType);
-			if (componentClass != null) {
-				@SuppressWarnings("unchecked")
-				Class<A> claz = (Class<A>) Array.newInstance(componentClass, 0).getClass();
-				return claz;
-			} else throw new UnsupportedOperationException("Unknown class: " + type.getClass());
-		} else if (type instanceof Class) {
-			@SuppressWarnings("unchecked") // raw type is |A|
-			Class<A> claz = (Class<A>) type;
-			return claz;
-		} else if (type instanceof ParameterizedType) {
-			return getRawType(((ParameterizedType) type).getRawType());
-		} else if (type instanceof TypeVariable) {
-			throw new RuntimeException("The type signature is erased. The type class cant be known by using reflection");
-		} else throw new UnsupportedOperationException("Unknown class: " + type.getClass());
 	}
 
 	@Override

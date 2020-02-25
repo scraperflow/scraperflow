@@ -259,8 +259,8 @@ public class TemplateExpTest {
     public void complexGenericTemplateFail() {
         String source = "{{L}}[{index}]";
         Term<List<Integer>> test = TemplateUtil.parseTemplate(source, new T<>(){});
-        o.output(new T<>("L"){}, List.of(List.of("1"), List.of("2"), List.of("3")));
-        o.output(new T<>("index"){}, 2);
+        o.output("L", List.of(List.of("1"), List.of("2"), List.of("3")));
+        o.output("index", 2);
         test.eval(o);
     }
 
@@ -268,8 +268,8 @@ public class TemplateExpTest {
     public void complexGenericTemplate() {
         String source = "{{L}}[{index}]";
         Term<List<String>> test = TemplateUtil.parseTemplate(source, new T<>(){});
-        o.output(new T<>("L"){}, List.of(List.of("1"), List.of("2"), List.of("3")));
-        o.output(new T<>("index"){}, 2);
+        o.output("L", List.of(List.of("1"), List.of("2"), List.of("3")));
+        o.output("index", 2);
         //noinspection unused
         List<String> tt = test.eval(o);
     }
@@ -278,8 +278,8 @@ public class TemplateExpTest {
     public void complexGenericTemplateOnlySubtype() {
         String source = "{{L}}[{index}]";
         Term<List<?>> test = TemplateUtil.parseTemplate(source, new T<>(){});
-        o.output(new T<>("L") {}, List.of(List.of("1"), List.of("2"), List.of("3")));
-        o.output(new T<>("index") {}, 2);
+        o.output("L", List.of(List.of("1"), List.of("2"), List.of("3")));
+        o.output("index", 2);
 
         try {
             List<?> tt = test.eval(o);
@@ -373,14 +373,14 @@ public class TemplateExpTest {
     @Test
     public void wildcardTest2() {
         Term<List<? extends List<?>>> expectedTemplate = TemplateUtil.parseTemplate( "{L}", new T<>(){});
-        o.output(new T<>("L") {}, List.of(List.of("1"), List.of("2"), List.of("3")));
+        o.output("L", List.of(List.of("1"), List.of("2"), List.of("3")));
         expectedTemplate.eval(o);
     }
 
     @Test
     public void wildcardTest3() {
         Term<List<?>> expectedTemplate = TemplateUtil.parseTemplate( "{{L}}[2]", new T<>(){});
-        o.output(new T<>("L") {}, List.of(List.of("1"), List.of("2"), List.of("3")));
+        o.output("L", List.of(List.of("1"), List.of("2"), List.of("3")));
         expectedTemplate.eval(o);
     }
 
