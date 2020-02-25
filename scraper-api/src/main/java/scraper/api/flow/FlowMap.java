@@ -32,6 +32,8 @@ public interface FlowMap extends IdentityTemplateEvaluator {
     /** @see Map#get(Object) */
     @NotNull Optional<T<?>> getType(@NotNull String key);
 
+    <K> Optional<K> getWithType(String targetKey, T<K> targetType);
+
     /** @see Map#size() */
     int size();
 
@@ -98,4 +100,5 @@ public interface FlowMap extends IdentityTemplateEvaluator {
 
     /** Creates a new flow with a new ID */
     FlowMap newFlow();
+
 }

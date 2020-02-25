@@ -65,7 +65,5 @@ public class ControlFlowGraphGeneratorHook implements Hook {
                 GraphVisualizer.visualize(job, path);
             }
         }
-
     }
-
 }

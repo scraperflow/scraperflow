@@ -24,44 +24,44 @@ public class TypeTokenTest {
         Assert.assertNotEquals(simpleType, new Object());
     }
 
-    @Test
-    public void jsonEqualsSimpleTest()  {
-        T<Integer> int1 = new T<>(){};
-        int1.setParsedJson(5);
-
-        T<Integer> int2 = new T<>(){};
-        int2.setParsedJson(5);
-
-        T<Integer> int3 = new T<>(){};
-        int3.setParsedJson(-1);
-
-        Assert.assertEquals(int1, int2);
-        Assert.assertNotEquals(int1, int3);
-    }
-
-    @Test
-    public void jsonEqualsGrammarTest()  {
-        T<Integer> int1 = new T<>(){};
-        int1.setParsedJson("{my-int}");
-
-        T<Integer> int2 = new T<>(){};
-        int2.setParsedJson(5);
-
-        T<Integer> int3 = new T<>(){};
-        int3.setParsedJson("{my-int}");
-
-        Assert.assertEquals(int1, int3);
-        Assert.assertNotEquals(int1, int2);
-    }
-
-    @Test
-    public void rawJsonTest()  {
-        T<Integer> int1 = new T<>(){};
-        int1.setParsedJson("{my-int}");
-        Assert.assertEquals(int1.getRawJson(), "{my-int}");
-        Assert.assertEquals(int1.getParsedJson(), "{my-int}");
-        Assert.assertEquals(int1.toString(), "{my-int}");
-    }
+//    @Test
+//    public void jsonEqualsSimpleTest()  {
+//        T<Integer> int1 = new T<>(){};
+//        int1.setParsedJson(5);
+//
+//        T<Integer> int2 = new T<>(){};
+//        int2.setParsedJson(5);
+//
+//        T<Integer> int3 = new T<>(){};
+//        int3.setParsedJson(-1);
+//
+//        Assert.assertEquals(int1, int2);
+//        Assert.assertNotEquals(int1, int3);
+//    }
+//
+//    @Test
+//    public void jsonEqualsGrammarTest()  {
+//        T<Integer> int1 = new T<>(){};
+//        int1.setParsedJson("{my-int}");
+//
+//        T<Integer> int2 = new T<>(){};
+//        int2.setParsedJson(5);
+//
+//        T<Integer> int3 = new T<>(){};
+//        int3.setParsedJson("{my-int}");
+//
+//        Assert.assertEquals(int1, int3);
+//        Assert.assertNotEquals(int1, int2);
+//    }
+//
+//    @Test
+//    public void rawJsonTest()  {
+//        T<Integer> int1 = new T<>(){};
+//        int1.setParsedJson("{my-int}");
+//        Assert.assertEquals(int1.getRawJson(), "{my-int}");
+//        Assert.assertEquals(int1.getParsedJson(), "{my-int}");
+//        Assert.assertEquals(int1.toString(), "{my-int}");
+//    }
 
     @Test(expected = IllegalArgumentException.class)
     public void doNotExtendTest()  { new TTest<Integer>(){}; }

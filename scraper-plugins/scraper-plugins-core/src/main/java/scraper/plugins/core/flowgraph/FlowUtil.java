@@ -60,7 +60,7 @@ public class FlowUtil {
                 Method method = control.getDeclaredMethod("getOutput", List.class, NodeContainer.class, ScrapeInstance.class);
                 output = (List<ControlFlowEdge>) method.invoke(null, output, node, instance);
             } catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException ignored) {
-                System.out.println("[Skip] Could not find control for " + nodeClass + ": " + controlClass);
+//                System.out.println("[Skip] Could not find control for " + nodeClass + ": " + controlClass);
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             }

@@ -4,11 +4,16 @@ import com.google.common.collect.Streams;
 import org.slf4j.Logger;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
+import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.*;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
+import scraper.api.plugin.Addon;
 import scraper.api.plugin.NodeHook;
+import scraper.api.reflect.DefaultVisitor;
+import scraper.api.reflect.Primitive;
 import scraper.api.reflect.T;
+import scraper.api.reflect.TVisitor;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
@@ -18,6 +23,7 @@ import scraper.api.specification.ScrapeSpecification;
 import scraper.core.IdentityEvaluator;
 import scraper.util.NodeUtil;
 import scraper.util.TemplateUtil;
+import scraper.utils.IdentityFlowMap;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -199,10 +205,18 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
                         throw new ValidationException("Fix implementation, T<> " +
                                 "field was not created for " + node.getClass());
 
-                    if(t.getParsedJson() != null) {
-                        TemplateUtil.accept(t, Address.class, n -> {
-                            if(n != null)
-                                NodeUtil.getTarget(origin, n, this);
+                    ScrapeInstance instance = this;
+                    if(t.getTerm() != null) {
+                        t.getTerm().accept(new DefaultVisitor(){
+                            @Override
+                            public void visitPrimitive(Primitive<?> primitive) {
+                                Object address = primitive.eval(new FlowMapImpl());
+
+                                if(address instanceof Address) {
+                                    Address add = (Address) address;
+                                    NodeUtil.getTarget(origin, add, instance);
+                                }
+                            }
                         });
                     }
                 }

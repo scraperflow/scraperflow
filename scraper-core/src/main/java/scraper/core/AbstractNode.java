@@ -193,8 +193,10 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
     protected void start(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap map) throws NodeException {
         // evaluate and write log message if any
         try {
-            Object logString = Template.eval(log, map);
-            if(logString != null) log(logLevel, logString.toString());
+            if(log.getTerm() != null) {
+                Object logString = log.getTerm().eval(map);
+                if(logString != null) log(logLevel, logString.toString());
+            }
         } catch (Exception e) {
             log(ERROR, "Could not evaluate log template: {}", e.getMessage());
         }

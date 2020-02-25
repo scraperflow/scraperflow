@@ -1,26 +1,30 @@
 package scraper.core.template;
 
-import com.google.common.reflect.TypeToken;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
+import scraper.api.reflect.MapOrListLookup;
+import scraper.api.reflect.T;
+import scraper.api.reflect.TVisitor;
+import scraper.api.reflect.Term;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class TemplateMapOrListLookup<T> extends TemplateExpression<T> {
-    private TemplateExpression<List<? extends T>> list;
+public class TemplateMapOrListLookup<K> extends TemplateExpression<K> implements MapOrListLookup<K> {
+    @Override public void accept(TVisitor visitor) { visitor.visitMapOrListLookup(this); }
+
+    private TemplateExpression<List<? extends K>> list;
     private TemplateExpression<Integer> index;
-    private TemplateExpression<Map<String, ? extends T>> map;
+    private TemplateExpression<Map<String, ? extends K>> map;
     private TemplateExpression<String> key;
 
     public TemplateMapOrListLookup(
-            TemplateExpression<Map<String, ? extends T>> map,
-            TemplateExpression<List<? extends T>> list,
+            TemplateExpression<Map<String, ? extends K>> map,
+            TemplateExpression<List<? extends K>> list,
             TemplateExpression<Integer> index,
             TemplateExpression<String> key,
-            TypeToken<T> targetType) {
+            T<K> targetType) {
         super(targetType);
         this.map = map;
         this.list = list;
@@ -29,13 +33,14 @@ public class TemplateMapOrListLookup<T> extends TemplateExpression<T> {
     }
 
 
-    public T eval(@NotNull final FlowMap o) {
+
+    public K eval(@NotNull final FlowMap o) {
 
         String otherMsg;
         try{
-            List<? extends T> l = list.eval(o);
+            List<? extends K> l = list.eval(o);
             Integer index = this.index.eval(o);
-            T element;
+            K element;
 
             if (index < 0) {
                 element = l.get(l.size() - Math.abs(index));
@@ -52,10 +57,10 @@ public class TemplateMapOrListLookup<T> extends TemplateExpression<T> {
         }
 
         try {
-            Map<String, ? extends T> m = map.eval(o);
+            Map<String, ? extends K> m = map.eval(o);
             String k = key.eval(o);
 
-            T mapElement = m.get(k);
+            K mapElement = m.get(k);
 
             if(mapElement == null) throw new TemplateException("Key '"+k+"' does not exist for map access '" +toString() +"'. Map has only the keys " + m.keySet()+"");
 
@@ -66,12 +71,37 @@ public class TemplateMapOrListLookup<T> extends TemplateExpression<T> {
     }
 
     @Override
+    public Object getRaw() {
+        return toString();
+    }
+
+    @Override
     public String toString() {
         return "{" + list.toString() + "}[" + index.toString() + "]";
     }
 
-    public @NotNull Collection<String> getKeysInTemplate(@NotNull FlowMap o) {
+    public @NotNull Map<String, T<?>> getKeysInTemplate(@NotNull FlowMap o) {
         // TODO implement
         throw new IllegalStateException("Not implemented yet");
+    }
+
+    @Override
+    public Term<List<? extends K>> getListObjectTerm() {
+        return list;
+    }
+
+    @Override
+    public Term<Integer> getIndexTerm() {
+        return index;
+    }
+
+    @Override
+    public Term<Map<String, ? extends K>> getMapObjectTerm() {
+        return map;
+    }
+
+    @Override
+    public Term<String> getKeyTerm() {
+        return key;
     }
 }

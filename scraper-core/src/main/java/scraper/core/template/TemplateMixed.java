@@ -1,36 +1,31 @@
 package scraper.core.template;
 
-import com.google.common.reflect.TypeToken;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
+import scraper.api.reflect.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class TemplateMixed extends TemplateExpression<String>{
-    private List<Object> concatTemplatesOrStrings = new ArrayList<>();
+public class TemplateMixed extends TemplateExpression<String> implements Concatenation<String> {
+    @Override public void accept(TVisitor visitor) { visitor.visitConcatenation(this); }
+    private List<Term<String>> concatTemplatesOrStrings = new ArrayList<>();
 
-    public TemplateMixed() {
-        super(TypeToken.of(String.class));
+    @Override
+    public List<Term<String>> getConcatTemplatesOrStrings() {
+        return concatTemplatesOrStrings;
     }
+
+    public TemplateMixed() { super(new T<>(String.class){}); }
 
     public String eval(@NotNull final FlowMap o) {
         try{
             StringBuilder lookup = new StringBuilder();
-            for (Object t : concatTemplatesOrStrings) {
-                if (t instanceof TemplateExpression) {
-                    @SuppressWarnings("unchecked") // by convention, see TemplateExpressionVisitor
-                    String evaled = ((TemplateExpression<String>) t).eval(o);
-                    lookup.append(evaled);
-                } else if (t instanceof String) {
-                    lookup.append(t);
-                } else {
-                    throw new TemplateException("Unknown class " + t.getClass().getSimpleName());
-                }
+            for (Term<String> term : concatTemplatesOrStrings) {
+                String toConcat = term.eval(o);
+                lookup.append(toConcat);
             }
 
             return lookup.toString();
@@ -39,31 +34,46 @@ public class TemplateMixed extends TemplateExpression<String>{
         }
     }
 
+    @Override
+    public Object getRaw() {
+        return toString();
+    }
+
     public String toString() {
         StringBuilder str = new StringBuilder();
 
-        for (Object concatTemplatesOrString : concatTemplatesOrStrings) {
-            str.append(concatTemplatesOrString.toString());
+        for (Term<String> concatTemplatesOrString : concatTemplatesOrStrings) {
+            str.append(concatTemplatesOrString.getRaw());
         }
 
         return str.toString();
     }
 
     @NotNull
-    public Collection<String> getKeysInTemplate(@NotNull FlowMap fm) {
-        List<List<String>> ret = concatTemplatesOrStrings.stream().map((Function<Object, List<String>>) o -> {
+    public Map<String, T<?>> getKeysInTemplate(@NotNull FlowMap fm) {
+        Map<String, T<?>> allKeys = new HashMap<>();
+
+        List<Map<String, T<?>>> ret = concatTemplatesOrStrings.stream().map((Function<Object, Map<String, T<?>>>) o -> {
             if (o instanceof TemplateExpression) {
-                Collection<String> t = ((TemplateExpression<?>) o).getKeysInTemplate(fm);
-                return new ArrayList<>(t);
+                Map<String, T<?>> t = ((TemplateExpression<?>) o).getKeysInTemplate(fm);
+                return new HashMap<>(t);
             } else {
-                return List.of();
+                return Map.of();
             }
         }).collect(Collectors.toList());
 
-        return ret.stream().flatMap(List::stream).collect(Collectors.toList());
+        ret.forEach(m -> m.forEach((key, type) -> {
+                    if(allKeys.containsKey(key) && !allKeys.get(key).equals(type))
+                        throw new IllegalStateException("Types don't match");
+                    allKeys.put(key,type);
+        }
+                ));
+
+        return allKeys;
     }
 
-    public void addTemplateOrString(Object intermediateTemplate) {
+    public void addTemplateOrString(Term<String> intermediateTemplate) {
         concatTemplatesOrStrings.add(intermediateTemplate);
     }
+
 }

@@ -293,9 +293,13 @@ public class FieldTranslationTest {
                 args
         );
 
-        //noinspection ConstantConditions NPE expected and catched
-        if((expectedReturnValue != null || translatedValue != null) && !expectedReturnValue.equals(translatedValue))
-            throw new IllegalStateException("Failed equality check");
+        if((expectedReturnValue != null || translatedValue != null)) {
+            if (expectedReturnValue != null) {
+                if(!expectedReturnValue.equals(translatedValue)){
+                    throw new IllegalStateException("Failed equality check");
+                }
+            }
+        }
 
         if(field.getType().isAssignableFrom(T.class)) {
             T<?> template = (T<?>) field.get(this);

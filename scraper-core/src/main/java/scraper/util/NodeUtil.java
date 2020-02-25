@@ -5,10 +5,9 @@ import com.google.common.reflect.TypeToken;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
+import scraper.api.reflect.Term;
 import scraper.core.converter.StringToClassConverter;
 import scraper.api.exceptions.ValidationException;
-import scraper.api.flow.FlowMap;
-import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.Address;
 import scraper.api.node.GraphAddress;
 import scraper.api.node.InstanceAddress;
@@ -21,6 +20,7 @@ import scraper.api.node.impl.NodeAddressImpl;
 import scraper.api.node.type.Node;
 import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
+import scraper.core.template.TemplateConstant;
 import scraper.utils.ClassUtil;
 
 import java.lang.reflect.Field;
@@ -301,13 +301,14 @@ public final class NodeUtil {
             // check if (input) template
             if (T.class.isAssignableFrom(fieldType) && !isOutput) {
                 T<?> template = (T<?>) fieldValue;
-                template.setParsedJson(convert(TypeToken.of(template.get()), value));
-                return null;
+                Term term = TemplateUtil.parseTemplate(value, template);
+                template.setTerm(term);
+                return template;
             } // check if (output) template
             else if (T.class.isAssignableFrom(fieldType) && isOutput) {
-                T<?> template = (T<?>) fieldValue;
-                template.setParsedJson(convert(new TypeToken<String>(){}, value)); // targets only raw String type for now, no evaluation
-                return null;
+                T template = (T<?>) fieldValue;
+                template.setTerm(new TemplateConstant(value, template));
+                return template;
             }
             // if enum: try convert
             else if (Enum.class.isAssignableFrom(fieldType)) {
@@ -358,54 +359,56 @@ public final class NodeUtil {
         TypeToken<?> templ = TypeToken.of(token.get());
         return convert(templ, value);
     }
-    public static Object convert(TypeToken<?> templ, Object value) throws ValidationException {
+    public static <Y> Term<Y> convert(TypeToken<Y> templ, Object value) throws ValidationException {
 
         //null: return null
         if(value == null) return null;
 
         //check JSON object types
         //JSON list
-        if(List.class.isAssignableFrom(value.getClass()) &&
-                (
+        if(List.class.isAssignableFrom(value.getClass()) && (
                         List.class.isAssignableFrom(templ.getRawType()) || templ.getRawType().equals(Object.class)
                 )) {
+            throw new IllegalStateException("List terms not implemented yet");
             // create a list with converted values
-            TypeToken<?> elementType = (templ.getRawType().equals(Object.class) ? templ : templ.resolveType(List.class.getTypeParameters()[0]));
-            List<?> valueList = (List<?>) value;
-//            log(TRACE,"Converting list: {}, expecting {}", valueList, elementType);
-
-            List<Object> resultList = new ArrayList<>();
-
-            for (Object o : valueList) {
-                resultList.add(convert(elementType, o));
-            }
-
-            return resultList;
+//            TypeToken<?> elementType = (templ.getRawType().equals(Object.class) ? templ : templ.resolveType(List.class.getTypeParameters()[0]));
+//            List<?> valueList = (List<?>) value;
+////            log(TRACE,"Converting list: {}, expecting {}", valueList, elementType);
+//
+//            List<Object> resultList = new ArrayList<>();
+//
+//            for (Object o : valueList) {
+//                resultList.add(convert(elementType, o));
+//            }
+//
+//            return resultList;
         } // JSON map
-        else if(Map.class.isAssignableFrom(value.getClass()) &&
-                (
+        else if(Map.class.isAssignableFrom(value.getClass()) && (
                         Map.class.isAssignableFrom(templ.getRawType()) || templ.getRawType().equals(Object.class) // descend into object
                 )) {
-            // create a map with checked values
-            TypeToken<?> elementType = (templ.getRawType().equals(Object.class) ? templ : templ.resolveType(Map.class.getTypeParameters()[1]));
-            Map<?, ?> valueMap = (Map<?, ?>) value;
-//            log(TRACE,"Converting map: {}, expecting value type {}", valueMap, elementType);
-
-            Map<Object, Object> resultMap = new LinkedHashMap<>();
-            for (Object key : valueMap.keySet()) {
-                resultMap.put(key, convert(elementType, valueMap.get(key)));
-            }
-
-            return resultMap;
+            throw new IllegalStateException("Map terms not implemented yet");
+//            // create a map with checked values
+//            TypeToken<?> elementType = (templ.getRawType().equals(Object.class) ? templ : templ.resolveType(Map.class.getTypeParameters()[1]));
+//            Map<?, ?> valueMap = (Map<?, ?>) value;
+////            log(TRACE,"Converting map: {}, expecting value type {}", valueMap, elementType);
+//
+//            Map<Object, Object> resultMap = new LinkedHashMap<>();
+//            for (Object key : valueMap.keySet()) {
+//                resultMap.put(key, convert(elementType, valueMap.get(key)));
+//            }
+//
+//            return resultMap;
         } // JSON primitive
         else {
             // raw type
             if(templ.getRawType().isAssignableFrom(value.getClass()) && !String.class.isAssignableFrom(value.getClass())) {
-                // same types, return actual object
-                return value;
+                throw new IllegalStateException("Same type return not implemented");
+//                // same types, return actual object
+//                return value;
             } else if (String.class.isAssignableFrom(value.getClass())) {
-                // string template found
-                return TemplateUtil.parseTemplate(((String) value), templ);
+                // string template found // FIXME
+                throw new IllegalStateException("String template not implemented");
+//                return TemplateUtil.parseTemplate(((String) value), templ);
             } else {
                 throw new ValidationException("Argument type mismatch! Expected String or "+templ+", but found "+ value.getClass());
             }
@@ -460,15 +463,15 @@ public final class NodeUtil {
         throw new IllegalArgumentException("Node address not existing! "+target);
     }
 
-    public static Map<String, String> extractMapFromFields(List<Field> outputData, NodeContainer target) {
-        Map<String, String> outputResult = new HashMap<>();
+    public static Map<String, T<?>> extractMapFromFields(List<Field> outputData, NodeContainer<?> target) {
+        Map<String, T<?>> outputResult = new HashMap<>();
         for (Field output : outputData) {
             String name = output.getName();
             output.setAccessible(true);
             try {
-                String value = ((T) output.get(target)).get().getTypeName();
+                T<?> token = (T<?>) output.get(target.getC());
 
-                outputResult.put(name, value);
+                outputResult.put(name, token);
             } catch (IllegalAccessException e) {
                 // TODO handle exception differently
                 throw new RuntimeException(e);

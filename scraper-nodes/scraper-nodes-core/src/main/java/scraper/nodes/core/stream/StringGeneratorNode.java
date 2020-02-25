@@ -63,7 +63,7 @@ public final class StringGeneratorNode implements StreamNode {
         int from = Integer.parseInt(m.group(2));
         int to = Integer.parseInt(m.group(3));
 
-        n.collect(o, List.of(generatedElement.getRawJson(), key));
+        n.collect(o, List.of(String.valueOf(generatedElement.getTerm().getRaw()), key));
 
         for (int i = from; i <= to; i++) {
             FlowMap copy = o.copy();

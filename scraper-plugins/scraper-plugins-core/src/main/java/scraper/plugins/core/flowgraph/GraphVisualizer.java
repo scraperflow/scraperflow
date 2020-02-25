@@ -27,7 +27,7 @@ class GraphVisualizer {
     static Boolean includeGraph = true;
     static Boolean includeNodeType = true;
     static Boolean includeNodeAddress = true;
-    static Boolean absolute = true;
+    static Boolean absolute = false;
 
     static void visualize(ScrapeInstance job, String createCF) throws FileNotFoundException {
         ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(job);

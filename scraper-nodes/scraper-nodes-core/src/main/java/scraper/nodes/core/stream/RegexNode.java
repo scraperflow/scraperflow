@@ -68,7 +68,7 @@ public final class RegexNode implements StreamNode {
 
     @Override
     public void process(@NotNull StreamNodeContainer n, @NotNull FlowMap o) throws NodeException {
-        n.collect(o, List.of(output.getRawJson()));
+        n.collect(o, List.of(String.valueOf(output.getTerm().getRaw())));
 
         String content = o.eval(this.content);
         Map<String, Integer> groups = o.evalIdentity(this.groups);

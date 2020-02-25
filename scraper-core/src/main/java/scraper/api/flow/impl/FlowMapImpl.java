@@ -5,8 +5,11 @@ import org.slf4j.Logger;
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.exceptions.TemplateException;
+import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
+import scraper.api.reflect.Primitive;
 import scraper.api.reflect.T;
+import scraper.api.reflect.Term;
 import scraper.core.IdentityEvaluator;
 import scraper.core.Template;
 import scraper.utils.IdentityFlowMap;
@@ -21,6 +24,9 @@ import static scraper.util.TemplateUtil.mapOf;
 public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     private @NotNull final ConcurrentMap<String, Object> privateMap;
+
+    public ConcurrentMap<String, T<?>> getPrivateTypeMap() { return privateTypeMap; }
+
     private @NotNull final ConcurrentMap<String, T<?>> privateTypeMap;
     private UUID parentId;
     private Integer parentSequence;
@@ -87,6 +93,7 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
         return Optional.ofNullable(privateTypeMap.get(key));
     }
 
+
     @Override
     public int size() {
         return privateMap.size();
@@ -150,7 +157,7 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     @NotNull @Override
     public <A> A eval(@NotNull T<A> template) {
-        A evaluated = Template.eval(template, this);
+        A evaluated = template.getTerm().eval(this);
         if(evaluated == null)
             throw new TemplateException("Template was evaluated to null but not expected, " +
                     "either wrong node implementation/usage or type safety violated");
@@ -159,20 +166,21 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     @NotNull @Override
     public <A> A evalOrDefault(@NotNull T<A> template, @NotNull A object) {
-        A eval = Template.eval(template, this);
+        A eval = template.getTerm().eval(this);
         if(eval == null) return object;
         return eval;
     }
 
     @NotNull @Override
     public <A> Optional<A> evalMaybe(@NotNull T<A> template) {
-        return Optional.ofNullable(Template.eval(template, this));
+        if(template.getTerm()==null) return Optional.empty();
+        return Optional.ofNullable(template.getTerm().eval(this));
     }
 
 
     @NotNull @Override
     public <A> A evalIdentity(@NotNull T<A> t) {
-        A evaluated = Template.eval(t, new IdentityFlowMap());
+        A evaluated = t.getTerm().eval(new IdentityFlowMap());
         if(evaluated == null)
             throw new TemplateException("Template was evaluated to null but not expected, " +
                     "either wrong node implementation/usage or type safety violated");
@@ -181,15 +189,17 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     @NotNull @Override
     public <A> Optional<A> evalIdentityMaybe(@NotNull T<A> template) {
-        return Optional.ofNullable(Template.eval(template, new IdentityFlowMap()));
+        return Optional.ofNullable(template.getTerm().eval(new IdentityFlowMap()));
     }
 
     @Override
     public <A> void output(@NotNull T<A> locationAndType, A object) {
         // for now output templates are only strings
-        String json = locationAndType.getRawJson();
-        privateMap.put(json, object);
-        privateTypeMap.put(json, locationAndType);
+        Term<A> location = locationAndType.getTerm();
+        if(!(location instanceof Primitive)) throw new TemplateException("Location output is only allowed to be a primitive"); // for now
+        String l = String.valueOf(location.eval(this));
+        privateMap.put(l, object);
+        privateTypeMap.put(l, locationAndType);
     }
 
     @Override
@@ -305,7 +315,9 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     // ======
     // Runtime type checking
     // ======
-    public <K> Optional<K> getWithType(String targetKey, TypeToken<K> targetType) {
+
+    @Override
+    public <K> Optional<K> getWithType(String targetKey, T<K> targetType) {
         Object targetObject = privateMap.get(targetKey);
         if(targetObject == null) return Optional.empty();
 
@@ -314,23 +326,24 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
         T<?> knownType = privateTypeMap.get(targetKey);
 
 
-        if(targetType.isSupertypeOf(TypeToken.of(knownType.get()))) {
+
+        if(TypeToken.of(targetType.get()).isSupertypeOf(TypeToken.of(knownType.get()))) {
             @SuppressWarnings("unchecked") // checked with subtype relation
-            K targetO = (K) targetObject;
+                    K targetO = (K) targetObject;
             return Optional.of(targetO);
         }
 
-        if(targetType.isSubtypeOf(TypeToken.of(knownType.get()))) {
+        if(TypeToken.of(targetType.get()).isSubtypeOf(TypeToken.of(knownType.get()))) {
             log.warn("Downcasting '{}' from '{}' -> '{}'. This may indicate a node implementation error or an insufficient type infer of that key",
                     targetKey, knownType, targetType);
             @SuppressWarnings("unchecked") // warned user about potentially bad downcast
-            Optional<K> castObject = Optional.of((K) targetObject);
+                    Optional<K> castObject = Optional.of((K) targetObject);
             return castObject;
         }
 
         throw new TemplateException(String.format("Bad typing for key %s. Expected type '%s', got type '%s'",
                 targetKey,
-                targetType.toString(),
+                targetType.get().toString(),
                 knownType.toString()
         ));
     }

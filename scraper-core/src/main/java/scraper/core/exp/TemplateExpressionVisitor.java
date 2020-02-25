@@ -7,7 +7,10 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scraper.api.reflect.T;
+import scraper.api.reflect.Term;
 import scraper.core.template.*;
+import scraper.util.TemplateUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -15,22 +18,22 @@ import java.util.Map;
 import static scraper.util.TemplateUtil.listOf;
 import static scraper.util.TemplateUtil.mapOf;
 
-public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<TemplateExpression<T>> implements TemplateVisitor<TemplateExpression<T>> {
+public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<TemplateExpression<Y>> implements TemplateVisitor<TemplateExpression<Y>> {
 
     protected Logger l = LoggerFactory.getLogger(getClass());
 
-    private final TypeToken<T> target;
+    private final T<Y> target;
 
-    public TemplateExpressionVisitor(TypeToken<T> templ) {
+    public TemplateExpressionVisitor(T<Y> templ) {
         super();
         this.target = templ;
     }
 
     @Override
-    public TemplateExpression<T> visitRoot(TemplateParser.RootContext ctx) {
+    public TemplateExpression<Y> visitRoot(TemplateParser.RootContext ctx) {
         l.trace("Parsing template '{}'", ctx.getText());
         if(ctx.getText().isEmpty()) {
-            TemplateString<T> t = new TemplateString<>(target);
+            TemplateString<Y> t = new TemplateString<>(target);
             t.addContent("");
             return t;
         }
@@ -39,9 +42,8 @@ public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<Templ
         return visit(ctx.children.get(0));
     }
 
-    @SuppressWarnings("unchecked") // Mixed template can only return String as target and that is checked in line 53
     @Override
-    public TemplateExpression<T> visitTemplate(TemplateParser.TemplateContext ctx) {
+    public TemplateExpression<Y> visitTemplate(TemplateParser.TemplateContext ctx) {
         l.trace("Visiting template '{}'", ctx.getText());
         // string content or fmlookup
         if(ctx.children.size() == 1) {
@@ -50,25 +52,26 @@ public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<Templ
 
         // template template
         if(ctx.children.size() == 2) {
-            if(!target.isSupertypeOf(TypeToken.of(String.class)))
+            if(!TypeToken.of(target.get()).isSupertypeOf(TypeToken.of(String.class)))
                 throw new RuntimeException("Mixed template target has to be supertype of java.lang.String");
+
             TemplateMixed result = new TemplateMixed();
 
-            TemplateExpressionVisitor<String> targetVisitor = new TemplateExpressionVisitor<>(TypeToken.of(String.class));
+            TemplateExpressionVisitor<String> targetVisitor = new TemplateExpressionVisitor<>(new T<>(){});
 
-            TemplateExpression<String> visited = targetVisitor.visit(ctx.getChild(0));
+            Term<String> visited = targetVisitor.visit(ctx.getChild(0));
             result.addTemplateOrString(visited);
 
             visited = targetVisitor.visit(ctx.getChild(1));
             result.addTemplateOrString(visited);
 
-            return (TemplateExpression<T>) result;
+            // TODO cast correct?
+            return (TemplateExpression<Y>) result;
         }
 
 
         // lookup or append
         if (ctx.children.size() == 4) {
-
             if (ctx.getChild(3) instanceof TemplateParser.AppendContext) {
                 l.trace("Append");
                 throw new RuntimeException("Append not implemented");
@@ -78,17 +81,18 @@ public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<Templ
                 l.trace("Array or map lookup");
                 ParseTree listexp = ctx.getChild(1);
                 ParseTree intexp = ctx.getChild(3);
-
-                TypeToken<List<? extends T>> listToken = listOf(target);
-                TemplateExpressionVisitor<List<? extends T>> listTargetVisitor = new TemplateExpressionVisitor<>(listToken);
-                TemplateExpressionVisitor<Integer> intTargetVisitor = new TemplateExpressionVisitor<>(TypeToken.of(Integer.class));
-                TemplateExpression<List<? extends T>> templateList = listTargetVisitor.visit(listexp);
+                @SuppressWarnings("unchecked") // generics type parameter is lost with target.get() but fully reconstructed
+                TypeToken<List<? extends Y>> listToken = TemplateUtil.listOf((TypeToken<Y>) TypeToken.of(target.get()));
+                TemplateExpressionVisitor<List<? extends Y>> listTargetVisitor = new TemplateExpressionVisitor<>(new T<>(listToken.getType()){});
+                TemplateExpressionVisitor<Integer> intTargetVisitor = new TemplateExpressionVisitor<>(new T<>(){});
+                TemplateExpression<List<? extends Y>> templateList = listTargetVisitor.visit(listexp);
                 TemplateExpression<Integer> templateInt = intTargetVisitor.visit(intexp);
 
-                TypeToken<Map<String, ? extends T>> mapToken = mapOf(TypeToken.of(String.class), target);
-                TemplateExpressionVisitor<Map<String, ? extends T>> mapTargetVisitor = new TemplateExpressionVisitor<>(mapToken);
-                TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(TypeToken.of(String.class));
-                TemplateExpression<Map<String, ? extends T>> templateMap = mapTargetVisitor.visit(listexp);
+                @SuppressWarnings("unchecked") // generics type parameter is lost with target.get() but fully reconstructed
+                TypeToken<Map<String, ? extends Y>> mapToken = mapOf(TypeToken.of(String.class), (TypeToken<Y>) TypeToken.of(target.get()));
+                TemplateExpressionVisitor<Map<String, ? extends Y>> mapTargetVisitor = new TemplateExpressionVisitor<>(new T<>(mapToken.getType()){});
+                TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(new T<>(){});
+                TemplateExpression<Map<String, ? extends Y>> templateMap = mapTargetVisitor.visit(listexp);
                 TemplateExpression<String> templateString = stringTargetVisitor.visit(intexp);
 
                 return new TemplateMapOrListLookup<>(templateMap, templateList, templateInt, templateString, target);
@@ -100,31 +104,31 @@ public class TemplateExpressionVisitor<T> extends AbstractParseTreeVisitor<Templ
     }
 
     @Override
-    public TemplateExpression<T> visitFmlookup(TemplateParser.FmlookupContext ctx) {
+    public TemplateExpression<Y> visitFmlookup(TemplateParser.FmlookupContext ctx) {
         l.trace("Visiting fm lookup '{}'", ctx.getText());
-        if(ctx.children.size() != 3) throw new RuntimeException("FM Lookup Template does not look like ( T )");
+        if(ctx.children.size() != 3) throw new RuntimeException("FM Lookup Template does not look like { T }");
 
-        TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(TypeToken.of(String.class));
+        TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(new T<>(){});
         TemplateExpression<String> visited = stringTargetVisitor.visit(ctx.children.get(1));
 
         return new TemplateMapKey<>(visited, target);
     }
 
     @Override
-    public TemplateExpression<T> visitArraymaplookup(TemplateParser.ArraymaplookupContext ctx) {
+    public TemplateExpression<Y> visitArraymaplookup(TemplateParser.ArraymaplookupContext ctx) {
         return visit(ctx.getChild(1));
     }
 
     @Override
-    public TemplateExpression<T> visitAppend(TemplateParser.AppendContext ctx) {
+    public TemplateExpression<Y> visitAppend(TemplateParser.AppendContext ctx) {
         l.trace("Visiting append '{}'", ctx.getText());
         return null;
     }
 
     @Override
-    public TemplateExpression<T> visitStringcontent(TemplateParser.StringcontentContext ctx) {
+    public TemplateExpression<Y> visitStringcontent(TemplateParser.StringcontentContext ctx) {
         l.trace("String content '{}'", ctx.getText());
-        TemplateString<T> content = new TemplateString<>(target);
+        TemplateString<Y> content = new TemplateString<>(target);
         String unescape = ctx.getText()
                 .replaceAll("\\\\\\{", "{")
                 .replaceAll("\\\\}", "}")
