@@ -7,6 +7,7 @@ import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
+import scraper.api.specification.ScrapeSpecification;
 import scraper.api.specification.impl.ScrapeInstaceImpl;
 import scraper.api.specification.impl.ScrapeSpecificationImpl;
 import scraper.core.JobFactory;
@@ -43,7 +44,10 @@ public abstract class WorkflowTest {
         // add fail safe to every test
         // i.e. redirect fork exceptions to the graph key 'fail', which triggers a System.setProperty set of workflow.fail = FAIL
         spec.getGlobalNodeConfigurations().put("/.*Node/", Map.of("onForkException", "fail"));
-        spec.getGraphs().put("fail", List.of(Map.of("type", "ExceptionNode", "exception", "FAIL")));
+        injectExceptionNode(spec);
+
+        // reset property before test
+        System.setProperty("workflow.fail", "no");
 
         try {
             ScrapeInstaceImpl convJob = dibean.get(JobFactory.class).convertScrapeJob(spec);
@@ -71,8 +75,18 @@ public abstract class WorkflowTest {
 //        }
 
         // System fail
-        if(System.getProperty("workflow.fail","no").equalsIgnoreCase("fail"))
-            throw new IllegalStateException("Failed workflow by system property");
+        if(System.getProperty("workflow.fail","no").equalsIgnoreCase("fail")) {
+            if(expectException.equals(IllegalStateException.class)) {
+                System.out.println("Excepted exception");
+            } else {
+                throw new IllegalStateException("Failed workflow by system property");
+            }
+        }
+    }
+
+    private void injectExceptionNode(ScrapeSpecification spec) {
+        spec.getGraphs().put("fail", List.of(Map.of("type", "ExceptionNode", "exception", "FAIL")));
+        spec.getImports().forEach((key, imp) -> injectExceptionNode(imp.getSpec()));
     }
 
     // searches for Workflow annotations

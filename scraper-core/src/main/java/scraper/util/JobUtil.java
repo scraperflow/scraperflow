@@ -76,6 +76,19 @@ public final class JobUtil {
         return parseJobs(args, canditatePaths.stream().map(Path::toString).collect(Collectors.toSet()));
     }
 
+    public static List<ScrapeSpecification> parseJobs(final String[] args) throws IOException, ValidationException {
+        Set<String> candidates = Stream.concat(
+                List.of(args).stream().filter(s -> s.endsWith("jf")),
+                List.of(args).stream().filter(s -> s.endsWith("yf"))
+        )
+                .map(c -> Path.of(c))
+                .map(Path::getParent)
+                .map(Path::toString)
+                .collect(Collectors.toSet());
+
+        return parseJobs(args, candidates);
+    }
+
     public static List<ScrapeSpecification> parseJobs(final String[] args, final Set<String> canditatePaths)
             throws IOException, ValidationException {
         List<ScrapeSpecification> jobs = new LinkedList<>();
@@ -187,7 +200,16 @@ public final class JobUtil {
         File scrapeFile = FileUtil.getFirstExisting(scrapePath, candidatePaths);
         if(!scrapeFile.exists() || !scrapeFile.isFile()) throw new IOException("scrape file is not a file or does not exist");
 
-        return parseSingleSpecification(scrapeFile, argsPaths);
+        ScrapeSpecification firstSpec = parseSingleSpecification(scrapeFile, argsPaths);
+
+        for (var entry : firstSpec.getImports().entrySet()) {
+            String id = entry.getKey();
+//            File sf = FileUtil.getFirstExisting(id, candidatePaths);
+            ScrapeSpecification imp = parseSingleSpecification(new String[]{id}, candidatePaths);
+            firstSpec.getImports().put(id, new ScraperImportSpecificationImpl(imp));
+        }
+
+        return firstSpec;
     }
 
     // separate check for null values since Jackson does not support mandatory keys

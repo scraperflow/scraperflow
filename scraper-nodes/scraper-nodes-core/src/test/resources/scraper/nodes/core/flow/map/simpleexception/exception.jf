@@ -1,0 +1,15 @@
+{
+    "name" : "map",
+    "graphs" : {
+        "start":
+        [
+          { "type": "EchoNode", "puts": { "fork":  ["a","b"]} },
+          { "type" : "MapNode", "list": "{fork}", "mapTarget": "target", "forward": false },
+          {
+            "type": "ExceptionNode",
+            "label": "target",
+            "exception": "NODE"
+          }
+        ]
+    }
+}

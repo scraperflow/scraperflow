@@ -102,8 +102,8 @@ public class Scraper {
         log.info("Loading {} addons", addons.size());
         for (Addon addon : addons) addon.load(pico, args);
 
-        log.debug("Parsing scrape jobs");
-        List<ScrapeSpecification> jobDefinitions = parseJobs(args, Set.of());
+        log.info("Parsing scrape jobs in {}", System.getProperty("user.dir"));
+        List<ScrapeSpecification> jobDefinitions = parseJobs(args);
 
         log.debug("Converting scrape jobs");
         for (ScrapeSpecification jobDefinition : jobDefinitions)

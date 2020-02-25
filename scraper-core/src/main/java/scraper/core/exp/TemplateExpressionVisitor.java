@@ -64,8 +64,9 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
             visited = targetVisitor.visit(ctx.getChild(1));
             result.addTemplateOrString(visited);
 
-            // TODO cast correct?
-            return (TemplateExpression<Y>) result;
+            @SuppressWarnings({"UnnecessaryLocalVariable", "unchecked"}) // cast checked with token
+            TemplateExpression<Y> castResult = (TemplateExpression<Y>) result;
+            return castResult;
         }
 
 

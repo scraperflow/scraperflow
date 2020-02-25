@@ -19,7 +19,8 @@ public class JobUtilTest {
         File[] validFiles = new File(folder.getPath()).listFiles();
         Assert.assertNotNull(validFiles);
         for (File validFile : validFiles) {
-            List<ScrapeSpecification> result = JobUtil.parseJobs(new String[]{validFile.getPath()}, Set.of());
+            System.out.println(validFile);
+            List<ScrapeSpecification> result = JobUtil.parseJobs(new String[]{validFile.getPath()}, Set.of(validFile.getParent()));
             Assert.assertEquals("Bad file: "+validFile.getPath(), 1, result.size());
         }
     }
@@ -31,7 +32,7 @@ public class JobUtilTest {
         Assert.assertNotNull(validFiles);
         for (File validFile : validFiles) {
             try {
-                JobUtil.parseJobs(new String[]{validFile.getPath()}, Set.of());
+                JobUtil.parseJobs(new String[]{validFile.getPath()}, Set.of(validFile.getParent()));
                 Assert.fail("Expected exception for file " + validFile.getPath());
             } catch (Exception ignored) {}
         }
@@ -44,7 +45,7 @@ public class JobUtilTest {
         Assert.assertNotNull(validFiles);
         for (File validFile : validFiles) {
             try {
-                JobUtil.parseJobs(new String[]{validFile.getPath()}, Set.of());
+                JobUtil.parseJobs(new String[]{validFile.getPath()}, Set.of(validFile.getParent()));
                 throw new IllegalStateException("Expected exception for file " + validFile.getPath());
             } catch (Exception ignored) {}
         }
@@ -56,7 +57,7 @@ public class JobUtilTest {
         File[] validFiles = new File(folder.getPath()).listFiles();
         Assert.assertNotNull(validFiles);
         for (File validFile : validFiles) {
-            List<ScrapeSpecification> result = JobUtil.parseJobs(new String[]{validFile.getPath()}, Set.of());
+            List<ScrapeSpecification> result = JobUtil.parseJobs(new String[]{validFile.getPath()}, Set.of(validFile.getParent()));
             Assert.assertEquals("Bad file: "+validFile.getPath(), 1, result.size());
         }
     }

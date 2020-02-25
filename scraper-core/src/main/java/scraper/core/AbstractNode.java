@@ -110,8 +110,8 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
     private GraphAddress graphKey;
 
     /** Target if a dispatched flow exception occurs */
-//    @FlowKey
-//    protected Address onForkException;
+    @FlowKey
+    protected Address onForkException;
 
     public AbstractNode(@NotNull String instance, @NotNull String graph, @Nullable String node, int index) {
         this.absoluteAddress = new NodeAddressImpl(instance, graph, node, index);
@@ -318,19 +318,18 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
                 NodeContainer<? extends Node> opt = NodeUtil.getTarget(getAddress(), target, getJobInstance());
                 return opt.getC().accept(opt, o.newFlow());
             } catch (Exception e) {
-                log(ERROR, "Dispatch terminated exceptionally {}: {}", target, e);
-                // TODO re-add exception feature
-//                if(onForkException != null) {
-//                    try {
-//                        return eval(o, onForkException);
-//                    } catch (NodeException ex) {
-//                        log(ERROR, "OnException fork target terminated exceptionally.", target, e);
-//                        throw new RuntimeException(e);
-//                    }
-//                } else {
-//                    log(ERROR, "Fork dispatch to goTo '{}' terminated exceptionally.", target, e);
+                if(onForkException != null) {
+                    try {
+                        log(WARN, "Fork dispatch to goTo '{}' terminated exceptionally, executing onException '{}'.", e.getMessage(), onForkException);
+                        return eval(o, onForkException);
+                    } catch (NodeException ex) {
+                        log(ERROR, "OnException fork target terminated exceptionally.", target, e);
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    log(ERROR, "Fork dispatch to goTo '{}' terminated exceptionally.", target, e);
                     throw new RuntimeException(e);
-//                }
+                }
             }
         });
     }
@@ -342,8 +341,17 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
                 NodeContainer<? extends Node> opt = NodeUtil.getTarget(getAddress(), target, getJobInstance());
                 return opt.getC().accept(opt, o.newFlow());
             } catch (Exception e) {
-                log(ERROR, "Fork depend to goTo '{}' terminated exceptionally.", target, e);
-                throw new RuntimeException(e);
+                if(onForkException != null) {
+                    try {
+                        return eval(o, onForkException);
+                    } catch (NodeException ex) {
+                        log(ERROR, "OnException fork target terminated exceptionally.", target, e);
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    log(ERROR, "Fork depend to goTo '{}' terminated exceptionally.", target, e);
+                    throw new RuntimeException(e);
+                }
             }
         });
     }

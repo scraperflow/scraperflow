@@ -1,9 +1,26 @@
 package scraper.api.specification.impl;
 
 import scraper.api.specification.ScrapeImportSpecification;
-
-import java.io.Serializable;
+import scraper.api.specification.ScrapeSpecification;
 
 
 public class ScraperImportSpecificationImpl implements ScrapeImportSpecification {
+
+    private ScrapeSpecification spec;
+
+    public ScraperImportSpecificationImpl() {}
+
+    public ScraperImportSpecificationImpl(ScrapeSpecification imp) {
+        this.spec = imp;
+    }
+
+    @Override
+    public ScrapeSpecification getSpec() {
+        return spec;
+    }
+
+    @Override
+    public void setSpec(ScrapeSpecification spec) {
+        this.spec = spec;
+    }
 }

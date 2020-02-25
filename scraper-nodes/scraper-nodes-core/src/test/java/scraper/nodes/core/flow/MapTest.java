@@ -11,5 +11,8 @@ public class MapTest extends WorkflowTest {
 
     @Workflow("simple.jf")
     public void simpleMap() {}
+
+    @Workflow(value = "exception.jf", expectToFail = IllegalStateException.class)
+    public void simpleException() {}
 }
 

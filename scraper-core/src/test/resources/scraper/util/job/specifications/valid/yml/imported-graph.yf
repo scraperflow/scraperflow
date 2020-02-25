@@ -1,0 +1,8 @@
+---
+name: imported-graph
+graphs:
+  start:
+    - type: PipeNode
+      pipe:
+        - imported-graph
+      log: Scrape job is running!

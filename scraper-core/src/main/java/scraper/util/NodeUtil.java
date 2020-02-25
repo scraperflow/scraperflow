@@ -163,7 +163,7 @@ public final class NodeUtil {
         Object globalValue = null;
 
         if(globalConfigurations != null) {
-            String nodeName = instance.getClass().getSimpleName();
+            String nodeName = field.getDeclaringClass().getSimpleName();
 
             //check if regex matches, and apply if valid
             for (String maybeRegex : globalConfigurations.keySet()) {

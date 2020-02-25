@@ -7,13 +7,13 @@ import org.springframework.plugin.metadata.SimplePluginMetadata;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.InstanceAddress;
-import scraper.api.plugin.NodeHook;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.impl.GraphAddressImpl;
 import scraper.api.node.impl.InstanceAddressImpl;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.node.type.Node;
 import scraper.api.node.type.StreamNode;
+import scraper.api.plugin.NodeHook;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
@@ -21,19 +21,16 @@ import scraper.api.service.ProxyReservation;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
 import scraper.api.specification.impl.ScrapeInstaceImpl;
-import scraper.util.JobUtil;
 import scraper.utils.FileUtil;
 import scraper.utils.StringUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static scraper.utils.FileUtil.getFirstExistingPaths;
 
@@ -110,11 +107,8 @@ public class JobFactory {
         // ===
         Map<InstanceAddress, ScrapeInstance> parsedImports = new HashMap<>();
         for (String job : jobDefinition.getImports().keySet()) {
-//            List<Address> exportedAddresses = jobDefinition.getImports().get(job);
             log.info("Importing '{}' into '{}'", job, jobDefinition.getName());
-            List<ScrapeSpecification> importedJob = JobUtil.parseJobs(new String[]{job}, jobDefinition.getPaths().stream().map(Path::toString).collect(Collectors.toSet()));
-            if(importedJob.size() > 1) throw new ValidationException("Imported job is ambiguous: " + importedJob.size());
-            ScrapeSpecification newJob = importedJob.get(0);
+            ScrapeSpecification newJob = jobDefinition.getImports().get(job).getSpec();
 
             // overwrite global configuration of imported job
             newJob.getGlobalNodeConfigurations().putAll(jobDefinition.getGlobalNodeConfigurations());

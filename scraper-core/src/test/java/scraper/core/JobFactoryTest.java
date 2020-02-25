@@ -76,6 +76,14 @@ public class JobFactoryTest {
         Assert.assertEquals(n4.get().getGoTo().get(), n5.get());
     }
 
+    @Test
+    public void importsTest() throws Exception {
+        URL base = getClass().getResource("jobfactory/import");
+        ScrapeSpecificationImpl spec = (ScrapeSpecificationImpl) JobUtil.parseJobs(new String[]{"import-simple.jf"}, Set.of(base.getFile())).get(0);
+        Assert.assertEquals(1, spec.getImports().size());
+        Assert.assertNotNull(spec.getImports().get("part.jf").getSpec());
+    }
+
 //    @Test(expected = ValidationException.class)
 //    public void missingPluginTest() throws IOException, ValidationException {
 //        URL base = getClass().getResource("missingplugin");
