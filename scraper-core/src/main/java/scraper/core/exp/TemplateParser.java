@@ -1,44 +1,46 @@
-// Generated from Template.g4 by ANTLR 4.7.2
+// Generated from Template.g4 by ANTLR 4.8
 
     package scraper.core.exp;
 
-import org.antlr.v4.runtime.atn.*;
-import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.*;
-import org.antlr.v4.runtime.tree.*;
+import org.antlr.v4.runtime.atn.ATN;
+import org.antlr.v4.runtime.atn.ATNDeserializer;
+import org.antlr.v4.runtime.atn.ParserATNSimulator;
+import org.antlr.v4.runtime.atn.PredictionContextCache;
+import org.antlr.v4.runtime.dfa.DFA;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class TemplateParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.7.2", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		LEFTP=1, RIGHTP=2, LEFTA=3, LEFTB=4, APPEND=5, ANYCHAR=6, ESCAPECHAR=7;
+		LEFTP=1, RIGHTP=2, LEFTA=3, LEFTB=4, LOOKUP=5, ANYCHAR=6, ESCAPECHAR=7;
 	public static final int
-		RULE_root = 0, RULE_template = 1, RULE_fmlookup = 2, RULE_arraymaplookup = 3, 
-		RULE_append = 4, RULE_stringcontent = 5;
+		RULE_root = 0, RULE_template = 1, RULE_fmlookup = 2, RULE_arraylookup = 3, 
+		RULE_maplookup = 4, RULE_stringcontent = 5;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"root", "template", "fmlookup", "arraymaplookup", "append", "stringcontent"
+			"root", "template", "fmlookup", "arraylookup", "maplookup", "stringcontent"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'{'", "'}'", "'['", "']'", "'^'"
+			null, "'{'", "'}'", "'['", "']'", "'@'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "LEFTP", "RIGHTP", "LEFTA", "LEFTB", "APPEND", "ANYCHAR", "ESCAPECHAR"
+			null, "LEFTP", "RIGHTP", "LEFTA", "LEFTB", "LOOKUP", "ANYCHAR", "ESCAPECHAR"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -161,11 +163,11 @@ public class TemplateParser extends Parser {
 			return getRuleContext(TemplateContext.class,i);
 		}
 		public TerminalNode RIGHTP() { return getToken(TemplateParser.RIGHTP, 0); }
-		public ArraymaplookupContext arraymaplookup() {
-			return getRuleContext(ArraymaplookupContext.class,0);
+		public ArraylookupContext arraylookup() {
+			return getRuleContext(ArraylookupContext.class,0);
 		}
-		public AppendContext append() {
-			return getRuleContext(AppendContext.class,0);
+		public MaplookupContext maplookup() {
+			return getRuleContext(MaplookupContext.class,0);
 		}
 		public TemplateContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -217,7 +219,7 @@ public class TemplateParser extends Parser {
 				setState(23);
 				match(RIGHTP);
 				setState(24);
-				arraymaplookup();
+				arraylookup();
 				}
 				break;
 			case 4:
@@ -229,7 +231,7 @@ public class TemplateParser extends Parser {
 				setState(28);
 				match(RIGHTP);
 				setState(29);
-				append();
+				maplookup();
 				}
 				break;
 			}
@@ -311,26 +313,26 @@ public class TemplateParser extends Parser {
 		return _localctx;
 	}
 
-	public static class ArraymaplookupContext extends ParserRuleContext {
+	public static class ArraylookupContext extends ParserRuleContext {
 		public TerminalNode LEFTA() { return getToken(TemplateParser.LEFTA, 0); }
 		public TemplateContext template() {
 			return getRuleContext(TemplateContext.class,0);
 		}
 		public TerminalNode LEFTB() { return getToken(TemplateParser.LEFTB, 0); }
-		public ArraymaplookupContext(ParserRuleContext parent, int invokingState) {
+		public ArraylookupContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_arraymaplookup; }
+		@Override public int getRuleIndex() { return RULE_arraylookup; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof TemplateVisitor ) return ((TemplateVisitor<? extends T>)visitor).visitArraymaplookup(this);
+			if ( visitor instanceof TemplateVisitor ) return ((TemplateVisitor<? extends T>)visitor).visitArraylookup(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final ArraymaplookupContext arraymaplookup() throws RecognitionException {
-		ArraymaplookupContext _localctx = new ArraymaplookupContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_arraymaplookup);
+	public final ArraylookupContext arraylookup() throws RecognitionException {
+		ArraylookupContext _localctx = new ArraylookupContext(_ctx, getState());
+		enterRule(_localctx, 6, RULE_arraylookup);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
@@ -353,38 +355,32 @@ public class TemplateParser extends Parser {
 		return _localctx;
 	}
 
-	public static class AppendContext extends ParserRuleContext {
-		public TerminalNode APPEND() { return getToken(TemplateParser.APPEND, 0); }
-		public TerminalNode LEFTP() { return getToken(TemplateParser.LEFTP, 0); }
+	public static class MaplookupContext extends ParserRuleContext {
+		public TerminalNode LOOKUP() { return getToken(TemplateParser.LOOKUP, 0); }
 		public TemplateContext template() {
 			return getRuleContext(TemplateContext.class,0);
 		}
-		public TerminalNode RIGHTP() { return getToken(TemplateParser.RIGHTP, 0); }
-		public AppendContext(ParserRuleContext parent, int invokingState) {
+		public MaplookupContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_append; }
+		@Override public int getRuleIndex() { return RULE_maplookup; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof TemplateVisitor ) return ((TemplateVisitor<? extends T>)visitor).visitAppend(this);
+			if ( visitor instanceof TemplateVisitor ) return ((TemplateVisitor<? extends T>)visitor).visitMaplookup(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final AppendContext append() throws RecognitionException {
-		AppendContext _localctx = new AppendContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_append);
+	public final MaplookupContext maplookup() throws RecognitionException {
+		MaplookupContext _localctx = new MaplookupContext(_ctx, getState());
+		enterRule(_localctx, 8, RULE_maplookup);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(48);
-			match(APPEND);
+			match(LOOKUP);
 			setState(49);
-			match(LEFTP);
-			setState(50);
 			template(0);
-			setState(51);
-			match(RIGHTP);
 			}
 		}
 		catch (RecognitionException re) {
@@ -426,7 +422,7 @@ public class TemplateParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(54); 
+			setState(52); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -434,7 +430,7 @@ public class TemplateParser extends Parser {
 				case 1:
 					{
 					{
-					setState(53);
+					setState(51);
 					_la = _input.LA(1);
 					if ( !(_la==ANYCHAR || _la==ESCAPECHAR) ) {
 					_errHandler.recoverInline(this);
@@ -450,7 +446,7 @@ public class TemplateParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(56); 
+				setState(54); 
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,3,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -483,22 +479,21 @@ public class TemplateParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\t=\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\t;\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\3\2\3\2\3\2\3\2\5\2\23\n\2\3\3\3\3"+
 		"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3\"\n\3\3\3\3\3\7\3&\n"+
-		"\3\f\3\16\3)\13\3\3\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6"+
-		"\3\7\6\79\n\7\r\7\16\7:\3\7\2\3\4\b\2\4\6\b\n\f\2\3\3\2\b\t\2<\2\22\3"+
-		"\2\2\2\4!\3\2\2\2\6*\3\2\2\2\b.\3\2\2\2\n\62\3\2\2\2\f8\3\2\2\2\16\23"+
-		"\3\2\2\2\17\20\5\4\3\2\20\21\7\2\2\3\21\23\3\2\2\2\22\16\3\2\2\2\22\17"+
-		"\3\2\2\2\23\3\3\2\2\2\24\25\b\3\1\2\25\"\5\f\7\2\26\"\5\6\4\2\27\30\7"+
-		"\3\2\2\30\31\5\4\3\2\31\32\7\4\2\2\32\33\5\b\5\2\33\"\3\2\2\2\34\35\7"+
-		"\3\2\2\35\36\5\4\3\2\36\37\7\4\2\2\37 \5\n\6\2 \"\3\2\2\2!\24\3\2\2\2"+
-		"!\26\3\2\2\2!\27\3\2\2\2!\34\3\2\2\2\"\'\3\2\2\2#$\f\3\2\2$&\5\4\3\4%"+
-		"#\3\2\2\2&)\3\2\2\2\'%\3\2\2\2\'(\3\2\2\2(\5\3\2\2\2)\'\3\2\2\2*+\7\3"+
-		"\2\2+,\5\4\3\2,-\7\4\2\2-\7\3\2\2\2./\7\5\2\2/\60\5\4\3\2\60\61\7\6\2"+
-		"\2\61\t\3\2\2\2\62\63\7\7\2\2\63\64\7\3\2\2\64\65\5\4\3\2\65\66\7\4\2"+
-		"\2\66\13\3\2\2\2\679\t\2\2\28\67\3\2\2\29:\3\2\2\2:8\3\2\2\2:;\3\2\2\2"+
-		";\r\3\2\2\2\6\22!\':";
+		"\3\f\3\16\3)\13\3\3\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\7\6\7"+
+		"\67\n\7\r\7\16\78\3\7\2\3\4\b\2\4\6\b\n\f\2\3\3\2\b\t\2:\2\22\3\2\2\2"+
+		"\4!\3\2\2\2\6*\3\2\2\2\b.\3\2\2\2\n\62\3\2\2\2\f\66\3\2\2\2\16\23\3\2"+
+		"\2\2\17\20\5\4\3\2\20\21\7\2\2\3\21\23\3\2\2\2\22\16\3\2\2\2\22\17\3\2"+
+		"\2\2\23\3\3\2\2\2\24\25\b\3\1\2\25\"\5\f\7\2\26\"\5\6\4\2\27\30\7\3\2"+
+		"\2\30\31\5\4\3\2\31\32\7\4\2\2\32\33\5\b\5\2\33\"\3\2\2\2\34\35\7\3\2"+
+		"\2\35\36\5\4\3\2\36\37\7\4\2\2\37 \5\n\6\2 \"\3\2\2\2!\24\3\2\2\2!\26"+
+		"\3\2\2\2!\27\3\2\2\2!\34\3\2\2\2\"\'\3\2\2\2#$\f\3\2\2$&\5\4\3\4%#\3\2"+
+		"\2\2&)\3\2\2\2\'%\3\2\2\2\'(\3\2\2\2(\5\3\2\2\2)\'\3\2\2\2*+\7\3\2\2+"+
+		",\5\4\3\2,-\7\4\2\2-\7\3\2\2\2./\7\5\2\2/\60\5\4\3\2\60\61\7\6\2\2\61"+
+		"\t\3\2\2\2\62\63\7\7\2\2\63\64\5\4\3\2\64\13\3\2\2\2\65\67\t\2\2\2\66"+
+		"\65\3\2\2\2\678\3\2\2\28\66\3\2\2\289\3\2\2\29\r\3\2\2\2\6\22!\'8";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

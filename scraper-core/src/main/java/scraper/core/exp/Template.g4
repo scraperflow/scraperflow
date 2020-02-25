@@ -8,9 +8,9 @@ LEFTP : '{';
 RIGHTP : '}';
 LEFTA : '[';
 LEFTB : ']';
-APPEND : '^';
-ANYCHAR : ~('\n' | '\r' | '{' | '}' | '[' | ']' | '^');
-ESCAPECHAR : ('\\{' | '\\}' | '\\[' | '\\]' | '\\^');
+LOOKUP : '@';
+ANYCHAR : ~('\n' | '\r' | '{' | '}' | '[' | ']' | '^' | '@');
+ESCAPECHAR : ('\\{' | '\\}' | '\\[' | '\\]' | '\\^' | '\\@');
 
 
 root :
@@ -20,18 +20,18 @@ root :
 template :
     stringcontent               // string content
     | fmlookup                  // single object fm lookup
-    | LEFTP template RIGHTP arraymaplookup   // map or array lookup
-    | LEFTP template RIGHTP append           // append operation
+    | LEFTP template RIGHTP arraylookup   // array lookup
+    | LEFTP template RIGHTP maplookup   // map lookup
     | template template         // mixed template
     ;
 
 fmlookup:
     LEFTP template RIGHTP;
 
-arraymaplookup:
+arraylookup:
     LEFTA template LEFTB;
 
-append:
-    APPEND LEFTP template RIGHTP;
+maplookup:
+    LOOKUP template;
 
 stringcontent :  (ANYCHAR | ESCAPECHAR)+;

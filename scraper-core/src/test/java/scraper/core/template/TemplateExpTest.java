@@ -13,7 +13,6 @@ import scraper.util.TemplateUtil;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class TemplateExpTest {
 
@@ -137,7 +136,7 @@ public class TemplateExpTest {
         Assert.assertEquals("[he{}ll}o{}", target);
     }
 
-    @Test // "{L}[0]"
+    @Test
     public void simpleIndex() {
         String source = "{{L}}[0]";
         Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
@@ -146,7 +145,7 @@ public class TemplateExpTest {
         Assert.assertEquals("1", target);
     }
 
-    @Test // "{L}[{index}]"
+    @Test
     public void indexAsTemplate() {
         String source = "{{L}}[{index}]";
         Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
@@ -156,7 +155,7 @@ public class TemplateExpTest {
         Assert.assertEquals("1", target);
     }
 
-    @Test(expected = TemplateException.class) // "{L}[{index}]"
+    @Test(expected = TemplateException.class)
     public void indexAsTemplateOOB() {
         String source = "{L}[{index}]";
         Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
@@ -165,9 +164,9 @@ public class TemplateExpTest {
         test.eval(o);
     }
 
-    @Test // "{M}[ok]"
+    @Test
     public void simpleMapLookup() {
-        String source = "{{M}}[ok]";
+        String source = "{{M}}@ok";
         Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
         o.output("M", Map.of("1", "hello world", "ok", "hello ok"));
         String target = test.eval(o);
@@ -214,11 +213,25 @@ public class TemplateExpTest {
 
     @Test
     public void nestedMapAndArrayLookup() {
-        String source = "{{{array}}[0]}[module]";
+        String source = "{{{array}}[0]}@module";
         Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
         o.output("array", List.of(Map.of("module", "test-module")));
         String target = test.eval(o);
         Assert.assertEquals("test-module", target);
+    }
+
+    @Test
+    public void nestedMapLookup() {
+        String source = "{{map}}@first";
+        Term<Map<? extends String, ? extends String>> test = TemplateUtil.parseTemplate(source, new T<>(){});
+        o.output("map", Map.of("first", Map.of("module", "test-module")));
+        Map<? extends String, ? extends String> target = test.eval(o);
+        Assert.assertFalse(target.isEmpty());
+
+        String source2 = "{{{map}}@first}@module";
+        Term<String> test2 = TemplateUtil.parseTemplate(source2, new T<>(){});
+        String target2 = test2.eval(o);
+        Assert.assertEquals("test-module", target2);
     }
 
 //    @Test(timeout = 500)

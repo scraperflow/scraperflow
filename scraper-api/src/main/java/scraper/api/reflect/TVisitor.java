@@ -6,7 +6,7 @@ public interface TVisitor {
     void visitConcatenation(Concatenation<?> concat);
     void visitListTerm(ListTerm<?> list);
     void visitMapTerm(MapTerm<?> mapTerm);
-    void visitMapOrListLookup(MapOrListLookup<?> mapOrListLookup);
-
-
+//    void visitMapOrListLookup(MapOrListLookup<?> mapOrListLookup);
+    void visitListLookup(ListLookup<?> listLookup);
+    void visitMapLookup(MapLookup<?> mapLookup);
 }

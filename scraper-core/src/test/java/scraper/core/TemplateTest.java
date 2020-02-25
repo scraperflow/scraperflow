@@ -9,7 +9,6 @@ import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.reflect.T;
-import scraper.core.template.TemplateConstant;
 
 import java.io.Serializable;
 import java.util.List;
@@ -92,7 +91,8 @@ public class TemplateTest {
         Assert.assertNotNull(str.toString());
     }
 
-    @Test // "[1,2,\"{template-int}\"]" // template-int
+    @SuppressWarnings("unchecked") // mapper
+    @Test
     public void simpleTNestedInList() throws Exception {
         T<List<Integer>> str = new T<>(){};
         str.setTerm(parseTemplate(mapper.readValue("[1,2,\"{template-int}\"]", List.class), str));
@@ -178,6 +178,7 @@ public class TemplateTest {
 //    // FM Lookup
 //    // ===============
 
+    @SuppressWarnings("unchecked")
     @Test(expected = ValidationException.class)
     public void badConversionTest() throws ValidationException {
         class TNotImplemented implements Serializable {}

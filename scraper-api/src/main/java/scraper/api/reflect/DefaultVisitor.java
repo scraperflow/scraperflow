@@ -23,13 +23,14 @@ public class DefaultVisitor implements TVisitor {
     }
 
     @Override
-    public void visitMapOrListLookup(MapOrListLookup<?> mapOrListLookup) {
-        try {
-            mapOrListLookup.getListObjectTerm().accept(this);
-            mapOrListLookup.getMapObjectTerm().accept(this);
-        } catch (Exception e) {
-            mapOrListLookup.getIndexTerm().accept(this);
-            mapOrListLookup.getKeyTerm().accept(this);
-        }
+    public void visitListLookup(ListLookup<?> listLookup) {
+        listLookup.getListObjectTerm().accept(this);
+        listLookup.getIndexTerm().accept(this);
+    }
+
+    @Override
+    public void visitMapLookup(MapLookup<?> mapLookup) {
+        mapLookup.getMapObjectTerm().accept(this);
+        mapLookup.getKeyTerm().accept(this);
     }
 }

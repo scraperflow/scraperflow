@@ -11,6 +11,6 @@ graphs:
         output: 1
 
     - type: EchoNode
-      log: "{{test}}[url]"
+      log: "{{test}}@url"
 
 

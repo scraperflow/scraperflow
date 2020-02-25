@@ -5,13 +5,11 @@ import org.slf4j.Logger;
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.exceptions.TemplateException;
-import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.reflect.Primitive;
 import scraper.api.reflect.T;
 import scraper.api.reflect.Term;
 import scraper.core.IdentityEvaluator;
-import scraper.core.Template;
 import scraper.utils.IdentityFlowMap;
 
 import java.util.*;
@@ -370,7 +368,7 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
             // full check
             Iterator iter = oMap.keySet().iterator();
-            TypeToken<?> commonType = inferType(iter.next());
+            TypeToken<?> commonType = inferType(oMap.get(iter.next()));
             while(iter.hasNext()) {
                 TypeToken<?> nextType = inferType(iter.next());
                 if(!commonType.isSubtypeOf(nextType) || !nextType.isSubtypeOf(commonType))
