@@ -8,7 +8,7 @@ import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
-import scraper.api.reflect.T;
+import scraper.api.template.T;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

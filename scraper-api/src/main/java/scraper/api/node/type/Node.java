@@ -27,13 +27,13 @@ public interface Node {
      */
     default @NotNull FlowMap accept(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException {
         try {
-            for (NodeHook hook : n.hooks()) { hook.accept(n, o); }
+            for (NodeHook hook : n.hooks()) { hook.beforeProcess(n, o); }
             FlowMap fm = process(n, o);
-            for (NodeHook hook : n.hooks()) { hook.acceptAfter(n, o); }
+            for (NodeHook hook : n.hooks()) { hook.afterProcess(n, o); }
             return n.forward(fm);
         } catch (TemplateException e) {
             n.log(NodeLogLevel.ERROR, "Template type error for {}: {}", n.getAddress(), e.getMessage());
-            throw new IllegalStateException(e);
+            throw e;
         }
     }
 

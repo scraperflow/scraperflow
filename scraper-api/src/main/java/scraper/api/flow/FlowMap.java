@@ -4,8 +4,8 @@ package scraper.api.flow;
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.node.container.NodeContainer;
-import scraper.api.reflect.IdentityTemplateEvaluator;
-import scraper.api.reflect.T;
+import scraper.api.template.L;
+import scraper.api.template.T;
 
 import java.util.Map;
 import java.util.Optional;
@@ -32,7 +32,7 @@ public interface FlowMap extends IdentityTemplateEvaluator {
     /** @see Map#get(Object) */
     @NotNull Optional<T<?>> getType(@NotNull String key);
 
-    <K> Optional<K> getWithType(String targetKey, T<K> targetType);
+    @NotNull <K> Optional<K> getWithType(@NotNull String targetKey, @NotNull T<K> targetType);
 
     /** @see Map#size() */
     int size();
@@ -44,6 +44,10 @@ public interface FlowMap extends IdentityTemplateEvaluator {
 
     /** Evaluates the given template with this flowmap's content, enforces non-null return */
     @NotNull <A> A eval(@NotNull T<A> template);
+    /** Evaluates the given location template with this flowmap's content, enforces non-null return */
+    @NotNull <A> String eval(@NotNull L<A> template);
+    /** Evaluates the given location template with this flowmap's content, returns empty optional if template is null */
+    @NotNull <A> Optional<String> evalMaybe(@NotNull L<A> template);
     /** Evaluates the given template with this flowmap's content, returns empty optional if template is null */
     @NotNull <A> Optional<A> evalMaybe(@NotNull T<A> template);
     /** Evaluates the given template where templates are replaced by their string identity, i.e. no evaluation at all. Enforces non-null return */
@@ -59,7 +63,7 @@ public interface FlowMap extends IdentityTemplateEvaluator {
     //===================
 
     /** @see Map#remove(Object) */
-    @NotNull void remove(@NotNull String key);
+    void remove(@NotNull String key);
 
     /** @see Map#clear() */
     void clear();
@@ -67,7 +71,7 @@ public interface FlowMap extends IdentityTemplateEvaluator {
     // Templates Output
 
     /** Uses the template's content and type to insert the outputObject into this FlowMap */
-    <A> void output(@NotNull T<A> locationAndType, @Nullable A outputObject);
+    <A> void output(@NotNull L<A> locationAndType, @Nullable A outputObject);
     /** Uses the template's content to insert the outputObject into this FlowMap, inferring its type */
     void output(@NotNull String location, @Nullable Object outputObject);
 
@@ -88,17 +92,17 @@ public interface FlowMap extends IdentityTemplateEvaluator {
     @NotNull Optional<Integer> getParentSequence();
 
     /** Returns the sequence number of the flow. Starts with 0 */
-    @NotNull int getSequence();
+    int getSequence();
     /** Increases the sequence number of this flow */
-    @NotNull void nextSequence();
+    void nextSequence();
 
     /** Returns the unique id of this flow */
     @NotNull UUID getId();
 
     /** Copies this FlowMap */
-    FlowMap copy();
+    @NotNull FlowMap copy();
 
     /** Creates a new flow with a new ID */
-    FlowMap newFlow();
+    @NotNull FlowMap newFlow();
 
 }

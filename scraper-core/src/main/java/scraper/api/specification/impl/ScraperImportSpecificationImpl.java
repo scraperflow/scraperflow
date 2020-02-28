@@ -1,5 +1,6 @@
 package scraper.api.specification.impl;
 
+import scraper.annotations.NotNull;
 import scraper.api.specification.ScrapeImportSpecification;
 import scraper.api.specification.ScrapeSpecification;
 
@@ -14,12 +15,12 @@ public class ScraperImportSpecificationImpl implements ScrapeImportSpecification
         this.spec = imp;
     }
 
+    @NotNull
     @Override
     public ScrapeSpecification getSpec() {
         return spec;
     }
 
-    @Override
     public void setSpec(ScrapeSpecification spec) {
         this.spec = spec;
     }

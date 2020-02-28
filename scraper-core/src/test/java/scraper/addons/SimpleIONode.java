@@ -6,7 +6,8 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
-import scraper.api.reflect.T;
+import scraper.api.template.L;
+import scraper.api.template.T;
 
 import java.util.List;
 
@@ -16,8 +17,8 @@ public final class SimpleIONode implements FunctionalNode {
     @FlowKey
     private T<List<String>> input = new T<>(){};
 
-    @FlowKey(output = true)
-    private T<Integer> output = new T<>(){};
+    @FlowKey
+    private L<Integer> output = new L<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) {

@@ -20,7 +20,7 @@ public class SocketSimulationNode extends AbstractNode {
 
     /** Start or shutdown server */
     @FlowKey(mandatory = true)
-    private final Template<Action> action = new Template<>(){};
+    private final T<Action> action = new Template<>(){};
     private enum Action { ON, OFF, FREEZE, UNFREEZE }
 
     @FlowKey(mandatory = true) @Argument

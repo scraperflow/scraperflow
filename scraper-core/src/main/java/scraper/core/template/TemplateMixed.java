@@ -3,18 +3,21 @@ package scraper.core.template;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
-import scraper.api.reflect.*;
+import scraper.api.template.Concatenation;
+import scraper.api.template.T;
+import scraper.api.template.TVisitor;
+import scraper.api.template.Term;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
-public class TemplateMixed extends TemplateExpression<String> implements Concatenation<String> {
-    @Override public void accept(TVisitor visitor) { visitor.visitConcatenation(this); }
+public class TemplateMixed extends TemplateExpression<String> implements Concatenation {
+    @Override public void accept(@NotNull TVisitor visitor) { visitor.visitConcatenation(this); }
     private List<Term<String>> concatTemplatesOrStrings = new ArrayList<>();
 
+    @NotNull
     @Override
-    public List<Term<String>> getConcatTemplatesOrStrings() {
+    public List<Term<String>> getConcatenationTerms() {
         return concatTemplatesOrStrings;
     }
 
@@ -34,6 +37,7 @@ public class TemplateMixed extends TemplateExpression<String> implements Concate
         }
     }
 
+    @NotNull
     @Override
     public Object getRaw() {
         return toString();
@@ -47,29 +51,6 @@ public class TemplateMixed extends TemplateExpression<String> implements Concate
         }
 
         return str.toString();
-    }
-
-    @NotNull
-    public Map<String, T<?>> getKeysInTemplate(@NotNull FlowMap fm) {
-        Map<String, T<?>> allKeys = new HashMap<>();
-
-        List<Map<String, T<?>>> ret = concatTemplatesOrStrings.stream().map((Function<Object, Map<String, T<?>>>) o -> {
-            if (o instanceof TemplateExpression) {
-                Map<String, T<?>> t = ((TemplateExpression<?>) o).getKeysInTemplate(fm);
-                return new HashMap<>(t);
-            } else {
-                return Map.of();
-            }
-        }).collect(Collectors.toList());
-
-        ret.forEach(m -> m.forEach((key, type) -> {
-                    if(allKeys.containsKey(key) && !allKeys.get(key).equals(type))
-                        throw new IllegalStateException("Types don't match");
-                    allKeys.put(key,type);
-        }
-                ));
-
-        return allKeys;
     }
 
     public void addTemplateOrString(Term<String> intermediateTemplate) {

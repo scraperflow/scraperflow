@@ -1,5 +1,6 @@
 package scraper.plugins.core.flowgraph.helper;
 
+import scraper.annotations.NotNull;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
@@ -13,7 +14,7 @@ import scraper.api.node.type.FunctionalNode;
 public final class SimpleFlowTestNode implements FunctionalNode {
 
     @Override
-    public void modify(FunctionalNodeContainer n, FlowMap o) throws NodeException {
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) throws NodeException {
         // do nothing as pure as it gets
     }
 }

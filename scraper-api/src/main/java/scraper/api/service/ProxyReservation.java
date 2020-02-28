@@ -24,7 +24,7 @@ public interface ProxyReservation {
     /** Adds all proxies to given group */
     void addProxies(@NotNull String proxyFile, @NotNull String proxyGroup) throws IOException;
     /** Adds a single proxy for one group, possibly overwriting an existing entry for that group */
-    @Nullable void addProxyLine(String proxyLine);
+    void addProxyLine(@NotNull String proxyLine);
 
     /** Waits until a token for given proxy mode and group is free */
     @NotNull ReservationToken reserveToken(@NotNull String proxyGroup, @NotNull ProxyMode proxyMode) throws InterruptedException;
@@ -35,7 +35,5 @@ public interface ProxyReservation {
     /** Retrieves proxy info for given group */
     @Nullable GroupInfo getInfoForGroup(@NotNull String group);
     @Nullable Map<String, GroupInfo> getAllGroups();
-
-
 
 }

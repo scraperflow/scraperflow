@@ -7,7 +7,8 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
-import scraper.api.reflect.T;
+import scraper.api.template.L;
+import scraper.api.template.T;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,8 +24,8 @@ public final class AggregateListNode implements FunctionalNode {
     private final T<Object> aggregate = new T<>(){};
 
     /** Expects a List object at the 'put' key or generates a new empty list if there is no list at given key */
-    @FlowKey(mandatory = true, output = true)
-    private final T<List<Object>> put = new T<>(){};
+    @FlowKey(mandatory = true)
+    private final L<List<Object>> put = new L<>(){};
 
     /** Only put distinct elements into list if enabled */
     @FlowKey(defaultValue = "false")

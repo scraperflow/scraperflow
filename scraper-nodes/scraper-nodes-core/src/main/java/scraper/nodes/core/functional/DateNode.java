@@ -9,8 +9,8 @@ import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.node.type.Node;
-import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
+import scraper.api.template.L;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -30,8 +30,8 @@ public final class DateNode implements FunctionalNode {
     private String dateFormat;
 
     /** Where to put the date */
-    @FlowKey(defaultValue = "\"date\"", output = true) @NotNull
-    private T<String> put = new T<>(){};
+    @FlowKey(defaultValue = "\"date\"") @NotNull
+    private L<String> put = new L<>(){};
 
     private DateFormat parsedDateFormat;
 

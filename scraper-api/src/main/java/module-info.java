@@ -12,6 +12,6 @@ module scraper.api {
     exports scraper.api.flow;
     exports scraper.api.di;
     exports scraper.api.service.proxy;
-    exports scraper.api.reflect;
+    exports scraper.api.template;
     exports scraper.api.node.container;
 }

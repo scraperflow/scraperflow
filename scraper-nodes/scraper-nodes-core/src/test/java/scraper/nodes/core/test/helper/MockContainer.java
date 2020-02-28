@@ -13,7 +13,7 @@ import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.node.type.Node;
-import scraper.api.reflect.T;
+import scraper.api.template.T;
 import scraper.api.specification.ScrapeInstance;
 
 import java.util.Collection;
@@ -99,8 +99,9 @@ public class MockContainer implements FunctionalNodeContainer {
         throw new IllegalStateException();
     }
 
+    @NotNull
     @Override
-    public Address addressOf(String representation) {
+    public Address addressOf(@NotNull String representation) {
         return null;
     }
 
@@ -126,8 +127,9 @@ public class MockContainer implements FunctionalNodeContainer {
 
     }
 
+    @NotNull
     @Override
-    public <A> A evalIdentity(T<A> template) {
+    public <A> A evalIdentity(@NotNull T<A> template) {
         return null;
     }
 }

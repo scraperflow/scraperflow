@@ -8,7 +8,8 @@ import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
-import scraper.api.reflect.T;
+import scraper.api.template.L;
+import scraper.api.template.T;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -27,8 +28,8 @@ public final class ReadFileNode implements FunctionalNode {
     private final T<String> inputFile = new T<>(){};
 
     /** Where the output line will be put */
-    @FlowKey(defaultValue = "\"output\"", output = true)
-    private T<String> output = new T<>(){};
+    @FlowKey(defaultValue = "\"output\"")
+    private L<String> output = new L<>(){};
 
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) throws NodeException {
         String file = o.eval(inputFile);

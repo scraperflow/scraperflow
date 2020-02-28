@@ -7,7 +7,7 @@ import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
-import scraper.api.reflect.T;
+import scraper.api.template.T;
 
 import java.math.BigDecimal;
 import java.util.List;

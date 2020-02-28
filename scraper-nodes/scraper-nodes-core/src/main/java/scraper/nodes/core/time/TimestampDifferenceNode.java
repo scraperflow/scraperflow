@@ -7,7 +7,8 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
-import scraper.api.reflect.T;
+import scraper.api.template.L;
+import scraper.api.template.T;
 import scraper.core.AbstractNode;
 
 
@@ -28,8 +29,8 @@ public final class TimestampDifferenceNode implements FunctionalNode {
     @FlowKey(mandatory = true) @Argument
     private Integer differenceMs;
 
-    @FlowKey(mandatory = true, output = true)
-    private T<Boolean> put = new T<>(){};
+    @FlowKey(mandatory = true)
+    private L<Boolean> put = new L<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {

@@ -42,7 +42,7 @@ public class ProxyReservationImpl implements ProxyReservation {
     }
 
     @Override
-    public void addProxyLine(String proxyLine) {
+    public void addProxyLine(@NotNull String proxyLine) {
         if(proxyLine.contains(">")) {
             proxyLineConsumer.accept(proxyLine.split(">")[1], Collections.singleton(proxyLine.split(">")[0]));
         } else {

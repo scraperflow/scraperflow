@@ -8,8 +8,7 @@ import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
-import scraper.api.reflect.T;
-import scraper.util.NodeUtil;
+import scraper.api.template.T;
 
 import java.util.List;
 

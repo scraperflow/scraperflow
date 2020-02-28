@@ -9,7 +9,7 @@ import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.node.type.Node;
-import scraper.api.reflect.T;
+import scraper.api.template.T;
 import scraper.api.specification.ScrapeInstance;
 
 import java.util.Timer;

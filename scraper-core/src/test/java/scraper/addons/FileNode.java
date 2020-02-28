@@ -7,7 +7,7 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
-import scraper.api.reflect.T;
+import scraper.api.template.T;
 
 @NodePlugin(value = "0.1.0", deprecated = true)
 public final class FileNode implements FunctionalNode {

@@ -30,7 +30,7 @@ public interface ScrapeSpecification {
     /** Arguments used */
     @NotNull List<String> getArguments();
 
-    /** .scrape file reference -> exported labels */
+    /** .scrape file reference -> ScrapeImportSpecification */
     @NotNull Map<String, ScrapeImportSpecification> getImports();
 
     /** Entry graph address */

@@ -63,6 +63,7 @@ public class NodeAddressImpl implements NodeAddress {
         return new AddressImpl(instance+"."+graph+"."+representation);
     }
 
+    @NotNull
     @Override
     public String getNode() {
         return ""+(label==null?index:
@@ -70,11 +71,13 @@ public class NodeAddressImpl implements NodeAddress {
         );
     }
 
+    @NotNull
     @Override
     public String getGraph() {
         return graph;
     }
 
+    @NotNull
     @Override
     public String getInstance() {
         return instance;

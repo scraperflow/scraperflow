@@ -10,16 +10,10 @@ import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
-import scraper.api.reflect.T;
+import scraper.api.template.T;
 import scraper.api.specification.ScrapeInstance;
-import scraper.core.template.TemplateExpression;
-import scraper.util.NodeUtil;
-import scraper.util.TemplateUtil;
 
-import java.io.File;
 import java.util.Map;
-
-import static scraper.api.node.container.NodeLogLevel.INFO;
 
 // AbstractNode provides all expected features
 @SuppressWarnings({"DefaultAnnotationParam", "RedundantThrows"}) // tutorial

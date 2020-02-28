@@ -9,7 +9,7 @@ import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.FunctionalNode;
-import scraper.api.reflect.T;
+import scraper.api.template.T;
 import scraper.core.AbstractNode;
 
 import java.io.IOException;

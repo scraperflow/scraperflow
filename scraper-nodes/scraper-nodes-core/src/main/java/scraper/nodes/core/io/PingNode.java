@@ -10,7 +10,7 @@ import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.node.type.Node;
-import scraper.api.reflect.T;
+import scraper.api.template.L;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -35,8 +35,8 @@ public final class PingNode implements FunctionalNode {
     private Integer port;
 
     /** List of targets with additional parameters */
-    @FlowKey(output = true)
-    private T<Boolean> result = new T<>(){};
+    @FlowKey
+    private L<Boolean> result = new L<>(){};
 
     /** Enforced ping timeout time in ms. Default: 500 */
     @FlowKey(defaultValue = "500") @Argument

@@ -10,9 +10,9 @@ import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.StreamNodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.node.type.StreamNode;
-import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
-import scraper.util.NodeUtil;
+import scraper.api.template.L;
+import scraper.api.template.T;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,13 +43,13 @@ public final class RegexNode implements StreamNode {
     @FlowKey(defaultValue = "{}")
     private T<Map<String, Integer>> groups = new T<>(){};
 
-    /** Where the output list will be put. If there's already a list at that key, it will be replaced. */
-    @FlowKey(defaultValue = "\"output\"", output = true)
-    private T<Map<String, Object>> output = new T<>(){};
-
     /** Default output if no matches are present */
     @FlowKey
     private T<Map<String, Object>> noMatchDefaultOutput = new T<>(){};
+
+    /** Where the output list will be put. If there's already a list at that key, it will be replaced. */
+    @FlowKey(defaultValue = "\"output\"")
+    private L<Map<String, Object>> output = new L<>(){};
 
     /** Pattern dotall option */
     @FlowKey(defaultValue = "\"true\"")
@@ -68,7 +68,7 @@ public final class RegexNode implements StreamNode {
 
     @Override
     public void process(@NotNull StreamNodeContainer n, @NotNull FlowMap o) throws NodeException {
-        n.collect(o, List.of(String.valueOf(output.getTerm().getRaw())));
+        n.collect(o, List.of(o.eval(output)));
 
         String content = o.eval(this.content);
         Map<String, Integer> groups = o.evalIdentity(this.groups);

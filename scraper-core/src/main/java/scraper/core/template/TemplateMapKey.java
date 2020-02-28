@@ -3,16 +3,17 @@ package scraper.core.template;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
-import scraper.api.reflect.FlowKeyLookup;
-import scraper.api.reflect.T;
-import scraper.api.reflect.TVisitor;
-import scraper.api.reflect.Term;
+import scraper.api.template.FlowKeyLookup;
+import scraper.api.template.T;
+import scraper.api.template.TVisitor;
+import scraper.api.template.Term;
 
 import java.util.*;
 
 public class TemplateMapKey<K> extends TemplateExpression<K> implements FlowKeyLookup<K> {
-    @Override public void accept(TVisitor visitor) { visitor.visitFlowKeyLookup(this); }
+    @Override public void accept(@NotNull TVisitor visitor) { visitor.visitFlowKeyLookup(this); }
 
+    @NotNull
     @Override
     public Term<String> getKeyLookup() { return keyLookup; }
     private Term<String> keyLookup;
@@ -36,6 +37,7 @@ public class TemplateMapKey<K> extends TemplateExpression<K> implements FlowKeyL
         }
     }
 
+    @NotNull
     @Override
     public Object getRaw() {
         return toString();
@@ -46,21 +48,4 @@ public class TemplateMapKey<K> extends TemplateExpression<K> implements FlowKeyL
         return "{" + keyLookup.getRaw().toString() + "}";
     }
 
-    @NotNull
-    public Map<String, T<?>> getKeysInTemplate(@NotNull FlowMap o) {
-//        Map<String, T<?>> allKeys = new HashMap<>(keyLookup.getKeysInTemplate(o));
-//        keyLookup.getKeysInTemplate(o).forEach((k,v) -> {
-//            // TODO better error message
-//            if(allKeys.containsKey(k) && !allKeys.get(k).equals(v))
-//                throw new IllegalStateException("Types don't match");
-//            allKeys.put(k,v);
-//        });
-//
-//        // TODO this evaluates the key lookup part
-//        //      what if this is not known at compile time?
-//        String location = keyLookup.eval(o);
-//        allKeys.put(location, new T<>(targetType.getType()){});
-
-        return null;
-    }
 }

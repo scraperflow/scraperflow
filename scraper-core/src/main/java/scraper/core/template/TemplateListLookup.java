@@ -3,16 +3,15 @@ package scraper.core.template;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
-import scraper.api.reflect.ListLookup;
-import scraper.api.reflect.T;
-import scraper.api.reflect.TVisitor;
-import scraper.api.reflect.Term;
+import scraper.api.template.ListLookup;
+import scraper.api.template.T;
+import scraper.api.template.TVisitor;
+import scraper.api.template.Term;
 
 import java.util.List;
-import java.util.Map;
 
 public class TemplateListLookup<K> extends TemplateExpression<K> implements ListLookup<K> {
-    @Override public void accept(TVisitor visitor) { visitor.visitListLookup(this); }
+    @Override public void accept(@NotNull TVisitor visitor) { visitor.visitListLookup(this); }
 
     private TemplateExpression<List<? extends K>> list;
     private TemplateExpression<Integer> index;
@@ -49,6 +48,7 @@ public class TemplateListLookup<K> extends TemplateExpression<K> implements List
         }
     }
 
+    @NotNull
     @Override
     public Object getRaw() {
         return toString();
@@ -59,16 +59,13 @@ public class TemplateListLookup<K> extends TemplateExpression<K> implements List
         return "{" + list.toString() + "}[" + index.toString() + "]";
     }
 
-    public @NotNull Map<String, T<?>> getKeysInTemplate(@NotNull FlowMap o) {
-        // TODO implement
-        throw new IllegalStateException("Not implemented yet");
-    }
-
+    @NotNull
     @Override
     public Term<List<? extends K>> getListObjectTerm() {
         return list;
     }
 
+    @NotNull
     @Override
     public Term<Integer> getIndexTerm() {
         return index;

@@ -5,24 +5,34 @@ import scraper.annotations.NotNull;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
-import scraper.api.reflect.Primitive;
-import scraper.api.reflect.T;
-import scraper.api.reflect.TVisitor;
-
-import java.util.Map;
+import scraper.api.template.Primitive;
+import scraper.api.template.T;
+import scraper.api.template.TVisitor;
 
 import static scraper.core.converter.StringToClassConverter.convert;
 
 public class TemplateString<K> extends TemplateExpression<K> implements Primitive<K> {
-    @Override public void accept(TVisitor visitor) { visitor.visitPrimitive(this); }
+    @Override public void accept(@NotNull TVisitor visitor) { visitor.visitPrimitive(this); }
 
-    private StringBuilder stringContent = new StringBuilder();
+    private @NotNull final StringBuilder stringContent = new StringBuilder();
 
     public TemplateString(T<K> targetType) {
         super(targetType);
     }
 
-    public K eval(@NotNull final FlowMap o) {
+    public K eval(@NotNull FlowMap o) {
+        return eval();
+    }
+
+    @NotNull
+    @Override
+    public Object getRaw() {
+        return toString();
+    }
+
+    @NotNull
+    @Override
+    public K eval() {
         try {
             @SuppressWarnings({"RedundantCast", "unchecked"}) // lost type but reconstructed
             K result = (K) convert(stringContent.toString(), TypeToken.of(targetType.get()).getRawType());
@@ -33,22 +43,11 @@ public class TemplateString<K> extends TemplateExpression<K> implements Primitiv
     }
 
     @Override
-    public Object getRaw() {
-        return toString();
-    }
-
     public String toString() {
         return stringContent.toString();
-    }
-
-    @NotNull
-    public Map<String, T<?>> getKeysInTemplate(@NotNull FlowMap o ) {
-        throw new IllegalStateException();
-//        return Map.of(stringContent.toString(), new T<>(targetType.getType()){});
     }
 
     public void addContent(Object content) {
         stringContent.append(content.toString());
     }
-
 }

@@ -20,7 +20,7 @@ import scraper.api.node.impl.GraphAddressImpl;
 import scraper.api.node.impl.NodeAddressImpl;
 import scraper.api.node.type.Node;
 import scraper.api.plugin.NodeHook;
-import scraper.api.reflect.T;
+import scraper.api.template.T;
 import scraper.api.specification.ScrapeInstance;
 import scraper.util.NodeUtil;
 
@@ -436,13 +436,14 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
 
     public int getStageIndex() { return this.stageIndex; }
 
+    @NotNull
     @Override
-    public Address addressOf(String representation) {
+    public Address addressOf(@NotNull String representation) {
         return NodeUtil.addressOf(representation);
     }
 
     private final NodeHook basicHook = new NodeHook() {
-        @Override public void accept(NodeContainer<? extends Node> n, FlowMap o) throws NodeException { start(n,o); }
-        @Override public void acceptAfter(NodeContainer<? extends Node> n, FlowMap o) { finish(n,o); }
+        @Override public void beforeProcess(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException { start(n,o); }
+        @Override public void afterProcess(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) { finish(n,o); }
     };
 }

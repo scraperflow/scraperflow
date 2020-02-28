@@ -1,4 +1,4 @@
-package scraper.api.reflect;
+package scraper.api.template;
 
 import org.junit.Assert;
 import org.junit.Test;

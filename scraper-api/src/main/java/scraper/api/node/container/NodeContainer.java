@@ -6,7 +6,7 @@ import scraper.api.flow.FlowMap;
 import scraper.api.node.*;
 import scraper.api.node.type.Node;
 import scraper.api.plugin.NodeHook;
-import scraper.api.reflect.IdentityTemplateEvaluator;
+import scraper.api.flow.IdentityTemplateEvaluator;
 import scraper.api.specification.ScrapeInstance;
 
 import java.util.Collection;
@@ -117,7 +117,7 @@ public interface NodeContainer<NODE> extends NodeInitializable, IdentityTemplate
     // Address Parsing
     //-----------
 
-    Address addressOf(String representation);
+    @NotNull Address addressOf(@NotNull String representation);
 
     //-----------
     // Logging

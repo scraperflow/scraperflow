@@ -2,7 +2,10 @@ package scraper.core.template;
 
 import scraper.annotations.NotNull;
 import scraper.api.flow.FlowMap;
-import scraper.api.reflect.*;
+import scraper.api.template.MapTerm;
+import scraper.api.template.T;
+import scraper.api.template.TVisitor;
+import scraper.api.template.Term;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
@@ -11,13 +14,13 @@ import java.util.stream.Collectors;
 
 public class TemplateMap<K> implements MapTerm<K> {
 
-
-    @Override public void accept(TVisitor visitor) { visitor.visitMapTerm(this); }
+    @Override public void accept(@NotNull TVisitor visitor) { visitor.visitMapTerm(this); }
 
     private final Map<String, Term<K>> termMap;
     private final T<K> elementType;
     private final T<Map<String, K>> mapType;
 
+    @NotNull
     @Override
     public Map<String, Term<K>> getTerms(){
         return termMap;
@@ -35,6 +38,7 @@ public class TemplateMap<K> implements MapTerm<K> {
         return result;
     }
 
+    @NotNull
     @Override
     public Object getRaw() {
         return termMap.entrySet().stream()
@@ -42,15 +46,10 @@ public class TemplateMap<K> implements MapTerm<K> {
                 .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
     }
 
+    @NotNull
     @Override
     public T<Map<String, K>> getToken() {
         return mapType;
-    }
-
-    @NotNull
-    public Map<String, T<?>> getKeysInTemplate(@NotNull FlowMap o ) {
-        throw new IllegalStateException();
-//        return Map.of(stringContent.toString(), new T<>(targetType.getType()){});
     }
 
 }

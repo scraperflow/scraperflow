@@ -5,7 +5,7 @@ import scraper.api.node.*;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.plugin.NodeHook;
-import scraper.api.reflect.T;
+import scraper.api.template.T;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
@@ -28,6 +28,7 @@ public class MockInstance implements ScrapeInstance {
 
     @NotNull @Override public String getName() { return "mock"; }
     @NotNull @Override public Map<InstanceAddress, ScrapeInstance> getImportedInstances() { throw new IllegalStateException(); }
+    @NotNull
     @Override public Collection<NodeHook> getHooks() { throw new IllegalStateException(); }
     @Override public void init() { }
     @NotNull @Override public ScrapeSpecification getSpecification() { throw new IllegalStateException(); }
@@ -39,9 +40,12 @@ public class MockInstance implements ScrapeInstance {
     @NotNull @Override public Optional<NodeContainer<? extends Node>> getEntry() { return Optional.empty(); }
     @NotNull @Override public NodeContainer<? extends Node> getNode(@NotNull NodeAddress target) { return null; }
     @NotNull @Override public Optional<NodeContainer<? extends Node>> getNode(@NotNull Address target) { return Optional.empty(); }
-    @Override public Optional<NodeContainer<? extends Node>> getNode(String targetRepresentation) { return Optional.empty(); }
+    @NotNull
+    @Override public Optional<NodeContainer<? extends Node>> getNode(@NotNull String targetRepresentation) { return Optional.empty(); }
     @Override public void addRoute(@NotNull Address address, @NotNull NodeContainer<? extends Node> node) { }
     @NotNull @Override public Map<String, Object> getEntryArguments() { return null; }
+    @NotNull
     @Override public Map<Address, NodeContainer<? extends Node>> getRoutes() { return null; }
-    @Override public <A> A evalIdentity(T<A> template) { return null; }
+    @NotNull
+    @Override public <A> A evalIdentity(@NotNull T<A> template) { return null; }
 }

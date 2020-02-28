@@ -9,7 +9,7 @@ import scraper.api.node.NodeAddress;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.plugin.NodeHook;
-import scraper.api.reflect.IdentityTemplateEvaluator;
+import scraper.api.flow.IdentityTemplateEvaluator;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;

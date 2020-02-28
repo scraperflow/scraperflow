@@ -6,9 +6,9 @@ import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
-import scraper.api.reflect.Primitive;
-import scraper.api.reflect.T;
-import scraper.api.reflect.Term;
+import scraper.api.template.L;
+import scraper.api.template.Primitive;
+import scraper.api.template.T;
 import scraper.core.IdentityEvaluator;
 import scraper.utils.IdentityFlowMap;
 
@@ -21,8 +21,9 @@ import static scraper.util.TemplateUtil.mapOf;
 
 public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
-    private @NotNull final ConcurrentMap<String, Object> privateMap;
+    private final ConcurrentMap<String, Object> privateMap;
 
+    @NotNull
     public ConcurrentMap<String, T<?>> getPrivateTypeMap() { return privateTypeMap; }
 
     private @NotNull final ConcurrentMap<String, T<?>> privateTypeMap;
@@ -86,8 +87,9 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
         return Optional.ofNullable(privateMap.get(expected));
     }
 
+    @NotNull
     @Override
-    public Optional<T<?>> getType(String key) {
+    public Optional<T<?>> getType(@NotNull String key) {
         return Optional.ofNullable(privateTypeMap.get(key));
     }
 
@@ -130,11 +132,13 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
         return true;
     }
 
+    @NotNull
     @Override
     public Optional<UUID> getParentId() {
         return Optional.ofNullable(parentId);
     }
 
+    @NotNull
     @Override
     public Optional<Integer> getParentSequence() {
         return Optional.ofNullable(parentSequence);
@@ -162,6 +166,18 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
         return evaluated;
     }
 
+    @NotNull
+    @Override
+    public <A> String eval(@NotNull L<A> template) {
+        if(template.getLocation().getClass().isAssignableFrom(Primitive.class))
+            throw new TemplateException("A location template has to be a primitive: " + template.getLocation().getClass()); // for now
+        String location = template.getLocation().eval(this);
+        if(location == null)
+            throw new TemplateException("Location could not be evaluated: " + template.getLocation().getRaw());
+        return location;
+    }
+
+
     @NotNull @Override
     public <A> A evalOrDefault(@NotNull T<A> template, @NotNull A object) {
         A eval = template.getTerm().eval(this);
@@ -173,6 +189,13 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     public <A> Optional<A> evalMaybe(@NotNull T<A> template) {
         if(template.getTerm()==null) return Optional.empty();
         return Optional.ofNullable(template.getTerm().eval(this));
+    }
+
+    @NotNull
+    @Override
+    public <A> Optional<String> evalMaybe(@NotNull L<A> template) {
+        if(template.getTerm()==null) return Optional.empty();
+        return Optional.ofNullable(template.getLocation().eval(this));
     }
 
 
@@ -191,21 +214,18 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     }
 
     @Override
-    public <A> void output(@NotNull T<A> locationAndType, A object) {
-        // for now output templates are only strings
-        Term<A> location = locationAndType.getTerm();
-        if(!(location instanceof Primitive)) throw new TemplateException("Location output is only allowed to be a primitive"); // for now
-        String l = String.valueOf(location.eval(this));
-        privateMap.put(l, object);
-        privateTypeMap.put(l, locationAndType);
+    public <A> void output(@NotNull L<A> locationAndType, A object) {
+        String location = eval(locationAndType);
+        privateMap.put(location, object);
+        privateTypeMap.put(location, locationAndType);
     }
 
     @Override
-    public void output(String location, Object outputObject) {
+    public void output(@NotNull String location, Object outputObject) {
         try {
             TypeToken<?> inferredType = inferType(outputObject);
             T<?> tt = new T<>(inferredType.getType()){};
-            log.info("Inferred type for {}: {}", location, inferredType);
+            log.debug("Inferred type for '{}': {}", location, inferredType);
             privateTypeMap.put(location, tt);
             privateMap.put(location, outputObject);
         } catch (Exception e) {
@@ -215,11 +235,13 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     }
 
 
+    @NotNull
     @Override
     public FlowMap copy() {
         return copy(this);
     }
 
+    @NotNull
     @Override
     public FlowMap newFlow() {
         return new FlowMapImpl(privateMap, privateTypeMap, uuid, UUID.randomUUID(), sequence, 0);
@@ -294,8 +316,6 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
         if (o == null || getClass() != o.getClass()) return false;
         FlowMapImpl flowMap = (FlowMapImpl) o;
         return privateMap.equals(flowMap.privateMap);
-//                &&
-//                flowState.equals(flowMap.flowState);
     }
 
     @Override
@@ -314,8 +334,9 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     // Runtime type checking
     // ======
 
+    @NotNull
     @Override
-    public <K> Optional<K> getWithType(String targetKey, T<K> targetType) {
+    public <K> Optional<K> getWithType(@NotNull String targetKey, @NotNull T<K> targetType) {
         Object targetObject = privateMap.get(targetKey);
         if(targetObject == null) return Optional.empty();
 

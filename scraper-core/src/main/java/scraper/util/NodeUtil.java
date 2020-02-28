@@ -5,8 +5,6 @@ import com.google.common.reflect.TypeToken;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
-import scraper.api.reflect.Term;
-import scraper.core.converter.StringToClassConverter;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.Address;
 import scraper.api.node.GraphAddress;
@@ -18,8 +16,11 @@ import scraper.api.node.impl.GraphAddressImpl;
 import scraper.api.node.impl.InstanceAddressImpl;
 import scraper.api.node.impl.NodeAddressImpl;
 import scraper.api.node.type.Node;
-import scraper.api.reflect.T;
 import scraper.api.specification.ScrapeInstance;
+import scraper.api.template.L;
+import scraper.api.template.T;
+import scraper.api.template.Term;
+import scraper.core.converter.StringToClassConverter;
 import scraper.core.template.TemplateConstant;
 import scraper.utils.ClassUtil;
 
@@ -198,7 +199,7 @@ public final class NodeUtil {
 
         value = NodeUtil.getValueForField(
                 instance, field, jsonValue, globalValue,
-                flowKey.mandatory(), flowKey.defaultValue(), flowKey.output(),
+                flowKey.mandatory(), flowKey.defaultValue(),
                 ann != null, (ann != null ? ann.converter() : null),
                 args
         );
@@ -214,7 +215,6 @@ public final class NodeUtil {
                                           final Object globalValue,
                                           final boolean mandatory,
                                           final String defaultAnnotationValue,
-                                          final boolean isOutput,
                                           final boolean isArgument,
                                           final Class<?> argumentConverter,
                                           final Map<String, Object> arguments
@@ -299,15 +299,15 @@ public final class NodeUtil {
             if(value == null) return null;
 
             // check if (input) template
-            if (T.class.isAssignableFrom(fieldType) && !isOutput) {
+            if (L.class.isAssignableFrom(fieldType)) {
+                L template = (L) fieldValue;
+                template.setLocation( new TemplateConstant<>(String.valueOf(value), new T<>(){}) );
+                return template;
+            } // check if (output) template
+            else if (T.class.isAssignableFrom(fieldType)) {
                 T<?> template = (T<?>) fieldValue;
                 Term term = TemplateUtil.parseTemplate(value, template);
                 template.setTerm(term);
-                return template;
-            } // check if (output) template
-            else if (T.class.isAssignableFrom(fieldType) && isOutput) {
-                T template = (T<?>) fieldValue;
-                template.setTerm(new TemplateConstant(value, template));
                 return template;
             }
             // if enum: try convert

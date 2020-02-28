@@ -7,8 +7,8 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scraper.api.reflect.T;
-import scraper.api.reflect.Term;
+import scraper.api.template.T;
+import scraper.api.template.Term;
 import scraper.core.template.*;
 import scraper.util.TemplateUtil;
 

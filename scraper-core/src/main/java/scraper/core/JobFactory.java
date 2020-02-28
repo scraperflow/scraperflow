@@ -256,7 +256,6 @@ public class JobFactory {
 
             Map<String, String> nodeDependencies = jobNodeDependencies.getOrDefault(jobDefinition, new LinkedHashMap<>());
             StringUtil.readBody(ndep, line -> {
-                // TODO validate
                 String node = line.split(":")[0];
                 String version = line.split(":")[1];
 

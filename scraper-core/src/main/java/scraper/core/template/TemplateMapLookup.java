@@ -3,15 +3,15 @@ package scraper.core.template;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
-import scraper.api.reflect.MapLookup;
-import scraper.api.reflect.T;
-import scraper.api.reflect.TVisitor;
-import scraper.api.reflect.Term;
+import scraper.api.template.MapLookup;
+import scraper.api.template.T;
+import scraper.api.template.TVisitor;
+import scraper.api.template.Term;
 
 import java.util.Map;
 
 public class TemplateMapLookup<K> extends TemplateExpression<K> implements MapLookup<K> {
-    @Override public void accept(TVisitor visitor) { visitor.visitMapLookup(this); }
+    @Override public void accept(@NotNull TVisitor visitor) { visitor.visitMapLookup(this); }
 
     private TemplateExpression<Map<String, ? extends K>> map;
     private TemplateExpression<String> key;
@@ -24,8 +24,6 @@ public class TemplateMapLookup<K> extends TemplateExpression<K> implements MapLo
         this.map = map;
         this.key = key;
     }
-
-
 
     public K eval(@NotNull final FlowMap o) {
         try {
@@ -42,6 +40,7 @@ public class TemplateMapLookup<K> extends TemplateExpression<K> implements MapLo
         }
     }
 
+    @NotNull
     @Override
     public Object getRaw() {
         return toString();
@@ -52,16 +51,13 @@ public class TemplateMapLookup<K> extends TemplateExpression<K> implements MapLo
         return "{" + map.getRaw() + "}[" + key.getRaw() + "]";
     }
 
-    public @NotNull Map<String, T<?>> getKeysInTemplate(@NotNull FlowMap o) {
-        // TODO implement
-        throw new IllegalStateException("Not implemented yet");
-    }
-
+    @NotNull
     @Override
     public Term<Map<String, ? extends K>> getMapObjectTerm() {
         return map;
     }
 
+    @NotNull
     @Override
     public Term<String> getKeyTerm() {
         return key;

@@ -2,6 +2,7 @@ package scraper.plugins.core.flowgraph;
 
 
 import scraper.annotations.ArgsCommand;
+import scraper.annotations.NotNull;
 import scraper.api.di.DIContainer;
 import scraper.api.plugin.Hook;
 import scraper.api.specification.ScrapeInstance;
@@ -45,7 +46,7 @@ public class ControlFlowGraphGeneratorHook implements Hook {
 //    private static final Logger log = org.slf4j.LoggerFactory.getLogger(ControlFlowGraphGeneratorHook.class);
 
     @Override
-    public void execute(DIContainer dependencies, String[] args, Map<ScrapeSpecification, ScrapeInstance> jobs) throws Exception {
+    public void execute(@NotNull DIContainer dependencies, @NotNull String[] args, @NotNull Map<ScrapeSpecification, ScrapeInstance> jobs) throws Exception {
         // ==
         // control flow graph generation
         // ==

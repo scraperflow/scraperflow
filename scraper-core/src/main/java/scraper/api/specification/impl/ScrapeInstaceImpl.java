@@ -8,12 +8,10 @@ import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.*;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
-import scraper.api.plugin.Addon;
 import scraper.api.plugin.NodeHook;
-import scraper.api.reflect.DefaultVisitor;
-import scraper.api.reflect.Primitive;
-import scraper.api.reflect.T;
-import scraper.api.reflect.TVisitor;
+import scraper.api.template.DefaultVisitor;
+import scraper.api.template.Primitive;
+import scraper.api.template.T;
 import scraper.api.service.ExecutorsService;
 import scraper.api.service.FileService;
 import scraper.api.service.HttpService;
@@ -22,8 +20,6 @@ import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
 import scraper.core.IdentityEvaluator;
 import scraper.util.NodeUtil;
-import scraper.util.TemplateUtil;
-import scraper.utils.IdentityFlowMap;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -111,8 +107,9 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
         return Optional.ofNullable(routes.get(target));
     }
 
+    @NotNull
     @Override
-    public Optional<NodeContainer<? extends Node>> getNode(String targetRepresentation) {
+    public Optional<NodeContainer<? extends Node>> getNode(@NotNull String targetRepresentation) {
         if(!targetRepresentation.contains("<") || !targetRepresentation.contains(">")) {
             return getNode(NodeUtil.addressOf(targetRepresentation));
         } else {
@@ -134,6 +131,7 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
         return initialArguments;
     }
 
+    @NotNull
     @Override
     public Map<Address, NodeContainer<? extends Node>> getRoutes() {
         return routes;
@@ -149,6 +147,7 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
     public void setProxyReservation(ProxyReservation proxyReservation) { this.proxyReservation = proxyReservation; }
     @NotNull public FileService getFileService() { return fileService; }
 
+    @NotNull
     @Override
     public Collection<NodeHook> getHooks() {
         return hooks;
@@ -209,7 +208,7 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
                     if(t.getTerm() != null) {
                         t.getTerm().accept(new DefaultVisitor(){
                             @Override
-                            public void visitPrimitive(Primitive<?> primitive) {
+                            public void visitPrimitive(@NotNull Primitive<?> primitive) {
                                 Object address = primitive.eval(new FlowMapImpl());
 
                                 if(address instanceof Address) {

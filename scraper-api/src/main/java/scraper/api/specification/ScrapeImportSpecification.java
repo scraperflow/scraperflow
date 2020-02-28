@@ -1,9 +1,9 @@
 package scraper.api.specification;
 
+import scraper.annotations.NotNull;
+
 import java.io.Serializable;
 
 public interface ScrapeImportSpecification extends Serializable {
-    ScrapeSpecification getSpec();
-
-    void setSpec(ScrapeSpecification spec);
+    @NotNull ScrapeSpecification getSpec();
 }

@@ -11,6 +11,6 @@ import scraper.api.node.type.Node;
  */
 @FunctionalInterface
 public interface NodeHook {
-    void accept(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException;
-    default void acceptAfter(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {}
+    void beforeProcess(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException;
+    default void afterProcess(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {}
 }

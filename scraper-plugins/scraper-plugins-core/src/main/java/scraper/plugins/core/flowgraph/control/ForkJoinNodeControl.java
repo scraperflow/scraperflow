@@ -5,7 +5,7 @@ import scraper.annotations.NotNull;
 import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
-import scraper.api.reflect.T;
+import scraper.api.template.T;
 import scraper.api.specification.ScrapeInstance;
 import scraper.plugins.core.flowgraph.FlowUtil;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;

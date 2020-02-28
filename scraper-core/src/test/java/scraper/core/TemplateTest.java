@@ -8,7 +8,7 @@ import scraper.api.exceptions.TemplateException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.reflect.T;
+import scraper.api.template.T;
 
 import java.io.Serializable;
 import java.util.List;
@@ -230,5 +230,15 @@ public class TemplateTest {
         o.output("3b",3);
         Map<String, Integer> eval = o.eval(str);
         Assert.assertEquals((Integer) 3, eval.get("other"));
+    }
+
+    @Test
+    public void simpleOutputTemplate() {
+        T<String> simpleString = new T<>(){};
+        simpleString.setTerm(parseTemplate("hello", simpleString));
+
+        String eval = o.eval(simpleString);
+        Assert.assertEquals("hello", eval);
+        Assert.assertNotNull(simpleString.toString());
     }
 }

@@ -7,7 +7,8 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
-import scraper.api.reflect.T;
+import scraper.api.template.L;
+import scraper.api.template.T;
 
 import java.util.Collection;
 
@@ -28,8 +29,8 @@ public final class ContainedInCollectionNode implements FunctionalNode {
     private final T<Object> object = new T<>(){};
 
     /** Key where the result flag will be written to */
-    @FlowKey(defaultValue = "\"flag\"", output = true) @NotNull
-    private T<Boolean> flag = new T<>(){};
+    @FlowKey(defaultValue = "\"flag\"") @NotNull
+    private L<Boolean> flag = new L<>(){};
 
     /** Determines if the contains or contains not operation is used */
     @FlowKey(defaultValue = "false")

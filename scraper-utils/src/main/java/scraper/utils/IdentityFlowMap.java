@@ -1,8 +1,10 @@
 package scraper.utils;
 
 import scraper.annotations.NotNull;
+import scraper.annotations.Nullable;
 import scraper.api.flow.FlowMap;
-import scraper.api.reflect.T;
+import scraper.api.template.L;
+import scraper.api.template.T;
 
 import java.util.Optional;
 import java.util.Set;
@@ -15,28 +17,48 @@ public class IdentityFlowMap implements FlowMap {
         return Optional.empty();
     }
 
+    @NotNull
     @Override
-    public Optional<T<?>> getType(String key) {
+    public Optional<T<?>> getType(@NotNull String key) {
         return Optional.empty();
     }
 
+    @NotNull
     @Override
-    public <K> Optional<K> getWithType(String targetKey, T<K> targetType) {
+    public <K> Optional<K> getWithType(@NotNull String targetKey, @NotNull T<K> targetType) {
         return Optional.empty();
     }
 
     @Override public int size() { throw new IllegalStateException(); }
     @Override public void clear() { throw new IllegalStateException(); }
+
+    @Override
+    public <A> void output(@NotNull L<A> locationAndType, @Nullable A outputObject) {
+
+    }
+
     @Override public @NotNull Set<String> keySet() { throw new IllegalStateException(); }
 
     @Override
-    public void remove(String key) {
+    public void remove(@NotNull String key) {
 
     }
 
     @NotNull @Override public UUID getId() { throw new IllegalStateException(); }
     @NotNull
     @Override public <A> A eval(@NotNull T<A> template) { throw new IllegalStateException(); }
+
+    @NotNull
+    @Override
+    public <A> String eval(@NotNull L<A> template) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public <A> Optional<String> evalMaybe(@NotNull L<A> template) {
+        return Optional.empty();
+    }
 
     @NotNull
     @Override
@@ -59,18 +81,18 @@ public class IdentityFlowMap implements FlowMap {
         return null;
     }
 
-    @Override public <A> void output(@NotNull T<A> locationAndType, A object) { throw new IllegalStateException(); }
-
     @Override
-    public void output(String location, Object outputObject) {
+    public void output(@NotNull String location, Object outputObject) {
 
     }
 
+    @NotNull
     @Override
     public FlowMap copy() {
         return null;
     }
 
+    @NotNull
     @Override
     public FlowMap newFlow() {
         return null;
@@ -79,11 +101,13 @@ public class IdentityFlowMap implements FlowMap {
     public @NotNull ConcurrentMap<String, Object> getMap() { throw new IllegalStateException(); }
     public boolean containsElements(@NotNull final FlowMap expectedOutput) { throw new IllegalStateException(); }
 
+    @NotNull
     @Override
     public Optional<UUID> getParentId() {
         return Optional.empty();
     }
 
+    @NotNull
     @Override
     public Optional<Integer> getParentSequence() {
         return Optional.empty();

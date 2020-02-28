@@ -5,7 +5,7 @@ import org.junit.Test;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.reflect.T;
+import scraper.api.template.T;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -231,7 +231,6 @@ public class FieldTranslationTest {
     private Map<String, Object> badMultiTemplateArgs = Map.of("id", "test");
 
 
-
     @Test
     public void fieldTranslationTest() throws Exception {
         for (Field field : getClass().getDeclaredFields()) {
@@ -288,7 +287,7 @@ public class FieldTranslationTest {
         Class<?> converter = (ann != null ? ann.converter() : null);
 
         Object translatedValue = NodeUtil.getValueForField(this, field, jsonValue, globalValue,
-                flowKey.mandatory(), flowKey.defaultValue(), flowKey.output(),
+                flowKey.mandatory(), flowKey.defaultValue(),
                 isArgument, converter,
                 args
         );

@@ -6,7 +6,8 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
-import scraper.api.reflect.T;
+import scraper.api.template.L;
+import scraper.api.template.T;
 import scraper.core.AbstractNode;
 
 import java.io.File;
@@ -24,8 +25,8 @@ public final class FileExistsNode implements FunctionalNode {
     @FlowKey(mandatory = true) @NotNull
     private final T<String> path = new T<>(){};
 
-    @FlowKey(defaultValue = "\"exists\"", output = true) @NotNull
-    private final T<Boolean> result = new T<>(){};
+    @FlowKey(defaultValue = "\"exists\"") @NotNull
+    private final L<Boolean> result = new L<>(){};
 
     @FlowKey(defaultValue = "true")
     private Boolean treatEmptyAsNonExisting;

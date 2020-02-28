@@ -8,7 +8,8 @@ import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
-import scraper.api.reflect.T;
+import scraper.api.template.L;
+import scraper.api.template.T;
 
 import java.io.IOException;
 
@@ -23,8 +24,8 @@ public final class ObjectToJsonStringNode implements FunctionalNode {
     private final T<Object> object = new T<>(){};
 
     /** Resulting string location */
-    @FlowKey(defaultValue = "\"result\"", output = true)
-    private final T<String> result = new T<>(){};
+    @FlowKey(defaultValue = "\"result\"")
+    private final L<String> result = new L<>(){};
 
     // used to convert JSON
     private final ObjectMapper objectMapper = new ObjectMapper();

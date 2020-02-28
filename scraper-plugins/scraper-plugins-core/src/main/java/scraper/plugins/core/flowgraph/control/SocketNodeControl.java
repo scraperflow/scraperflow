@@ -2,18 +2,17 @@ package scraper.plugins.core.flowgraph.control;
 
 
 import scraper.annotations.NotNull;
-import scraper.utils.IdentityFlowMap;
 import scraper.api.node.Address;
 import scraper.api.node.NodeAddress;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
-import scraper.api.reflect.T;
+import scraper.api.template.T;
 import scraper.api.specification.ScrapeInstance;
-import scraper.core.Template;
 import scraper.plugins.core.flowgraph.FlowUtil;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.Version;
 import scraper.util.NodeUtil;
+import scraper.utils.IdentityFlowMap;
 
 import java.util.List;
 import java.util.Map;
@@ -27,8 +26,8 @@ import static scraper.plugins.core.flowgraph.impl.ControlFlowEdgeImpl.edge;
 public final class SocketNodeControl {
     @Version("1.0.0") @NotNull
     public static List<ControlFlowEdge> getOutput(List<ControlFlowEdge> previous, NodeContainer<? extends Node> node, ScrapeInstance spec) throws Exception {
-        Optional<Map<String, Address>> hosts = Optional.ofNullable(Template.eval((T<Map<String, Address>>) FlowUtil.getField("hostMap", node.getC()).get(), new IdentityFlowMap()));
-        Optional<Map<String, Address>> args = Optional.ofNullable(Template.eval((T<Map<String, Address>>) FlowUtil.getField("args", node.getC()).get(), new IdentityFlowMap()));
+        Optional<Map<String, Address>> hosts = Optional.ofNullable(((T<Map<String, Address>>) FlowUtil.getField("hostMap", node.getC()).get()).getTerm().eval(new IdentityFlowMap()));
+        Optional<Map<String, Address>> args = Optional.ofNullable(((T<Map<String, Address>>) FlowUtil.getField("args", node.getC()).get()).getTerm().eval(new IdentityFlowMap()));
 
         return Stream.concat(
                 previous.stream(),

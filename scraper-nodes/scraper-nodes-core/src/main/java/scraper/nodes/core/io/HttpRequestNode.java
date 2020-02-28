@@ -11,7 +11,7 @@ import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
-import scraper.api.reflect.T;
+import scraper.api.template.T;
 import scraper.api.service.HttpService;
 import scraper.api.service.HttpService.RequestType;
 import scraper.api.service.proxy.ProxyMode;

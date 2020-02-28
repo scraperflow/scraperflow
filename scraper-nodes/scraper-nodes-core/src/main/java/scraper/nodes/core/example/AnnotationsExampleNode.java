@@ -8,7 +8,8 @@ import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
-import scraper.api.reflect.T;
+import scraper.api.template.L;
+import scraper.api.template.T;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -73,8 +74,8 @@ public class AnnotationsExampleNode implements Node {
 
     // output Ts
     // if only the raw type is important
-    @FlowKey(mandatory = true, output = true)
-    private final T<List> outputRaw = new T<>(){};
+    @FlowKey(mandatory = true)
+    private final L<List> outputRaw = new L<>(){};
 
     @Override @NotNull
     public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException {

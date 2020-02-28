@@ -6,7 +6,8 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
-import scraper.api.reflect.T;
+import scraper.api.template.L;
+import scraper.api.template.T;
 
 /**
  * Hashes a values
@@ -19,8 +20,8 @@ public final class HashNode implements FunctionalNode {
     private final T<String> content = new T<>(){};
 
     /** Where the output hash is stored */
-    @FlowKey(defaultValue = "\"output\"", output = true) @NotNull
-    private T<String> output = new T<>(){};
+    @FlowKey(defaultValue = "\"output\"") @NotNull
+    private L<String> output = new L<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {

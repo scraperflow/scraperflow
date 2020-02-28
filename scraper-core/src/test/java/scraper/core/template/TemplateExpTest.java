@@ -7,8 +7,8 @@ import org.junit.Test;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.reflect.T;
-import scraper.api.reflect.Term;
+import scraper.api.template.T;
+import scraper.api.template.Term;
 import scraper.util.TemplateUtil;
 
 import java.util.List;

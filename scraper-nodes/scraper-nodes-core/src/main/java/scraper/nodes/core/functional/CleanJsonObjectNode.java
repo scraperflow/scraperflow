@@ -7,7 +7,8 @@ import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
-import scraper.api.reflect.T;
+import scraper.api.template.L;
+import scraper.api.template.T;
 import scraper.core.AbstractNode;
 
 import java.util.Arrays;
@@ -51,8 +52,8 @@ public final class CleanJsonObjectNode implements FunctionalNode {
     private T<List<String>> clean = new T<>(){};
 
     /** cleaned JSON object location */
-    @FlowKey(defaultValue = "output", output = true)
-    private final T<Map<String, Object>> cleanedObject = new T<>(){};
+    @FlowKey(defaultValue = "output")
+    private final L<Map<String, Object>> cleanedObject = new L<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) throws NodeException {

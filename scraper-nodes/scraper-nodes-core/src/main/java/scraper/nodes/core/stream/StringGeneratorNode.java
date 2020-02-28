@@ -7,8 +7,8 @@ import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.StreamNodeContainer;
 import scraper.api.node.type.StreamNode;
-import scraper.api.reflect.T;
-import scraper.util.NodeUtil;
+import scraper.api.template.L;
+import scraper.api.template.T;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -46,8 +46,8 @@ public final class StringGeneratorNode implements StreamNode {
     private String expression;
 
     /** Output list key */
-    @FlowKey(defaultValue = "\"generated\"", output = true) @NotNull
-    private T<String> generatedElement = new T<>(){};
+    @FlowKey(defaultValue = "\"generated\"") @NotNull
+    private L<String> generatedElement = new L<>(){};
 
     @Override
     public void process(@NotNull StreamNodeContainer n, @NotNull FlowMap o) throws NodeException {

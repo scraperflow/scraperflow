@@ -1,5 +1,6 @@
 package scraper.nodes.core.io;
 
+import scraper.annotations.NotNull;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
@@ -21,7 +22,7 @@ import java.util.Map;
 public final class PersistentCookieStoreNode implements FunctionalNode {
 
     @Override
-    public void modify(FunctionalNodeContainer n, FlowMap o) throws NodeException {
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) throws NodeException {
         System.out.println("Setting persistent cookie store");
 
         if (CookieManager.getDefault() != null) {
