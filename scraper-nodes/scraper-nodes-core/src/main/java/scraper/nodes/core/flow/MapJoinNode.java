@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutionException;
 /**
  *
  */
-@NodePlugin("0.10.0")
+@NodePlugin("0.11.0")
 public final class MapJoinNode implements Node {
 
     /** Expected join for each key defined in this map after a forked flow terminates */
@@ -43,6 +43,13 @@ public final class MapJoinNode implements Node {
     /** Only distinct elements */
     @FlowKey(defaultValue = "false")
     private Boolean distinct;
+
+    @FlowKey(defaultValue = "false")
+    private Boolean distinctOutput;
+
+    /** Skip missing join key elements */
+    @FlowKey(defaultValue = "false")
+    private Boolean ignoreMissingJoinKey;
 
     @NotNull @Override
     public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
@@ -73,15 +80,20 @@ public final class MapJoinNode implements Node {
         keys.forEach((joinKeyForked, joinKey) -> {
             n.log(NodeLogLevel.TRACE, "Joining {} -> {}", joinKeyForked, joinKey);
 
-            List<Object> joinResults = o.evalMaybe(new T<List<Object>>() {}).orElse(new ArrayList<>());
+            List<? super Object> joinResults = o.evalMaybe(new T<List<? super Object>>() {}).orElse(new ArrayList<>());
 
             forkedProcesses.forEach(future -> {
                 try {
                     FlowMap fm = future.get();
-                    if(fm.get(joinKeyForked).isEmpty())
-                        throw new IllegalStateException("Missing value at join key: " + joinKeyForked);
-                    joinResults.add(fm.get(joinKeyForked).get());
-                    o.output(joinKey, joinResults);
+                    if(fm.get(joinKeyForked).isEmpty()) {
+                        if(!ignoreMissingJoinKey)
+                            throw new IllegalStateException("Missing value at join key: " + joinKeyForked);
+                    } else {
+                        if (!joinResults.contains(fm.get(joinKeyForked).get()) || !distinctOutput) {
+                            joinResults.add(fm.get(joinKeyForked).get());
+                            o.output(joinKey, joinResults);
+                        }
+                    }
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                     n.log(NodeLogLevel.ERROR, "Bad join", e);

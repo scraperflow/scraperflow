@@ -1,6 +1,7 @@
 package scraper.plugins.core.flowgraph;
 
 import scraper.annotations.NotNull;
+import scraper.api.node.NodeAddress;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.specification.ScrapeInstance;
@@ -13,10 +14,7 @@ import scraper.plugins.core.flowgraph.impl.ControlFlowNodeImpl;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @SuppressWarnings("unchecked") //convention
 public class FlowUtil {
@@ -25,11 +23,17 @@ public class FlowUtil {
     public static ControlFlowGraph generateControlFlowGraph(ScrapeInstance instance) {
         ControlFlowGraphImpl cfg = new ControlFlowGraphImpl();
 
-        instance.getRoutes().forEach(((address, nodeContainer) -> {
+        Map<NodeAddress, NodeContainer<? extends Node>> nodes = new HashMap<>();
+        instance
+                .getRoutes()
+                .forEach(((address, nodeContainer) -> {
             if (address.isAbsolute()) {
-                handleNode(cfg, instance, nodeContainer);
+                if (!nodes.containsKey(nodeContainer.getAddress())) {
+                    nodes.put(nodeContainer.getAddress(), nodeContainer);
+                }
             }
         }));
+        nodes.forEach((adr, node) -> handleNode(cfg, instance, node));
 
         return cfg;
     }
@@ -44,6 +48,7 @@ public class FlowUtil {
 //
 //        return dfg;
 //    }
+
 
     private static void handleNode(ControlFlowGraphImpl cfg, ScrapeInstance instance, NodeContainer<? extends Node> node) {
         ControlFlowNode cfnode = new ControlFlowNodeImpl(node.getAddress());

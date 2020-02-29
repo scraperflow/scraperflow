@@ -5,6 +5,7 @@ import scraper.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Supplier;
 
 /**
  * Provides conflict-free synchronized access to I/O operations on the underlying file system.
@@ -18,6 +19,9 @@ public interface FileService {
 
     /** Returns the first line of the file denoted by the given path starting with given string */
     @Nullable String getFirstLineStartsWith(@NotNull String path, @NotNull String lineStart) throws IOException;
+
+    @Nullable
+    void ifNoLineFoundAppend(@NotNull String output, @NotNull String lineStart, Supplier<String> content) throws IOException;
 
     /** Appends given line to file denoted by the given path */
     void appendToFile(@NotNull String path, @NotNull String outputLine);

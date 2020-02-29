@@ -1,0 +1,11 @@
+---
+name: addr
+
+graphs:
+  start:
+    - type: EchoNode
+      goTo: "next-node"
+
+    - type: EchoNode
+      label: "next-node"
+

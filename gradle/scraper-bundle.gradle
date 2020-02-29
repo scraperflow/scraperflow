@@ -16,13 +16,11 @@ task bundleFatJar(type: Jar) { t ->
     dependsOn subprojects.collect { it.tasks.withType(Jar) }
 
     manifest { attributes 'Main-Class': 'scraper.app.Scraper' }
-    subprojects.each {s ->
-        from {
-            s.configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
-        }
-        from {
-            s.sourceSets.main.output
-        }
+    from {
+        project(':scraper-app').configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+    }
+    from {
+        project(':scraper-app').sourceSets.main.output
     }
 
 //    archiveFileName = "Scraper-${api}-${getGitHash()}-bundled.jar"

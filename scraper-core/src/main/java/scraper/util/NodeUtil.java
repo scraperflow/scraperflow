@@ -107,13 +107,8 @@ public final class NodeUtil {
     }
 
     @NotNull
-    public static NodeAddress addressOf(String instance, String graph, String node) {
-        return new NodeAddressImpl(instance, graph, node, null);
-    }
-
-    @NotNull
-    public static NodeAddress addressOf(String instance, String graph, Integer index) {
-        return new NodeAddressImpl(instance, graph, null, index);
+    public static NodeAddress addressOf(String instance, String graph, String node, Integer stage) {
+        return new NodeAddressImpl(instance, graph, node, stage);
     }
 
 

@@ -10,6 +10,7 @@ import scraper.api.service.FileService;
 import java.io.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Supplier;
 
 public class FileServiceImpl implements FileService {
     private static final @NotNull Logger log = org.slf4j.LoggerFactory.getLogger(FileServiceImpl.class);
@@ -75,6 +76,15 @@ public class FileServiceImpl implements FileService {
 
         // line not found
         return null;
+    }
+
+    @Override
+    public void ifNoLineFoundAppend(@NotNull final String output, @NotNull final String lineStart, Supplier<String> content) throws IOException {
+        synchronized (knownFiles.get(output)) {
+            String firstLine = getFirstLineStartsWith(output, lineStart);
+            if(firstLine == null)
+                appendToFile(output, content.get());
+        }
     }
 
     @Override

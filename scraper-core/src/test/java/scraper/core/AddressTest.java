@@ -29,40 +29,6 @@ public class AddressTest {
     }
 
     @Test
-    public void nodeAddressIndexEqualityTest() {
-        Assert.assertEquals(
-                addressOf("debug.graph.2"),
-                new NodeAddressImpl("debug", "graph", null, 2)
-        );
-        Assert.assertEquals(
-                new NodeAddressImpl("debug", "graph", null, 2),
-                addressOf("debug.graph.2")
-        );
-
-        Assert.assertEquals(
-                addressOf("debug.graph.2").hashCode(),
-                new NodeAddressImpl("debug", "graph", null, 2).hashCode()
-        );
-    }
-
-    @Test
-    public void nodeAddressLabelEqualityTest() {
-        Assert.assertEquals(
-                addressOf("debug.graph.node"),
-                new NodeAddressImpl("debug", "graph", "node", null)
-        );
-        Assert.assertEquals(
-                new NodeAddressImpl("debug", "graph", "node", null),
-                addressOf("debug.graph.node")
-        );
-
-        Assert.assertEquals(
-                new NodeAddressImpl("debug", "graph", "node", null).hashCode(),
-                addressOf("debug.graph.node").hashCode()
-        );
-    }
-
-    @Test
     public void nodeAddressSymmetryIndexEqualityTest() {
         Assert.assertEquals(
                 addressOf("debug.graph.0"),
@@ -71,11 +37,6 @@ public class AddressTest {
         Assert.assertEquals(
                 new NodeAddressImpl("debug", "graph", "node", 0),
                 addressOf("debug.graph.0")
-        );
-
-        Assert.assertEquals(
-                new NodeAddressImpl("debug", "graph", "node", null).hashCode(),
-                addressOf("debug.graph.node").hashCode()
         );
     }
 

@@ -1,6 +1,5 @@
 package scraper.api.specification.impl;
 
-import com.google.common.collect.Streams;
 import org.slf4j.Logger;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
@@ -24,6 +23,7 @@ import scraper.util.NodeUtil;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static scraper.api.node.container.NodeLogLevel.ERROR;
 import static scraper.utils.ClassUtil.getAllFields;
@@ -121,8 +121,16 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
 
     @Override
     public void addRoute(@NotNull Address address, @NotNull NodeContainer<? extends Node> nodeAbstractNode) {
-        assert !routes.containsKey(address) || routes.get(address) == nodeAbstractNode: "Already added " + address+ "  "+routes.get(address)+" <=> "+nodeAbstractNode;
+        assert !routes.containsKey(address) || routes.get(address) == nodeAbstractNode:
+                "Already added " + address+ "  "+routes.get(address)+" <=> "+nodeAbstractNode;
         routes.put(address, nodeAbstractNode);
+
+        if(address instanceof NodeAddress) { // add representations with only index/name
+            routes.put(((NodeAddress) address).getOnlyIndex(), nodeAbstractNode);
+            if(((NodeAddress) address).getOnlyLabel().isPresent()) {
+                routes.put(((NodeAddress) address).getOnlyLabel().get(), nodeAbstractNode);
+            }
+        }
     }
 
     @NotNull
@@ -165,7 +173,7 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
                 testAddressTargets(test, node.getC(), node.getAddress());
                 testAddressTargets(test2, node, node.getAddress());
 
-                List<String> expectedFields = Streams.concat(test.stream(), test2.stream()).map(Field::getName).collect(Collectors.toList());
+                List<String> expectedFields = Stream.concat(test.stream(), test2.stream()).map(Field::getName).collect(Collectors.toList());
 
                 node.getNodeConfiguration().forEach((k,v) ->
                         {
@@ -180,7 +188,7 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
 
             }
         } catch (Exception e){
-            throw new ValidationException(e, "Could not validate instance");
+            throw new ValidationException(e, "Could not validate instance: " + e.getMessage());
         }
     }
 

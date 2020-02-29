@@ -83,12 +83,11 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     @NotNull
     @Override
-    public Optional<Object> get(@NotNull String expected) {
+    public Optional<? super Object> get(@NotNull String expected) {
         return Optional.ofNullable(privateMap.get(expected));
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public Optional<T<?>> getType(@NotNull String key) {
         return Optional.ofNullable(privateTypeMap.get(key));
     }
@@ -378,6 +377,11 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
             TypeToken<?> commonType = inferType(oList.get(0));
             for (int i = 1; i < oList.size(); i++) {
                 TypeToken<?> nextType = inferType(oList.get(i));
+
+                // specialized common type
+                if(commonType.isSupertypeOf(nextType))
+                    continue;
+
                 if(!commonType.isSubtypeOf(nextType) || !nextType.isSubtypeOf(commonType))
                     throw new TemplateException("Types of elements of a list have to match exactly: "+commonType + " != "+ nextType);
             }

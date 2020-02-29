@@ -13,8 +13,10 @@ import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.container.StreamNodeContainer;
 import scraper.api.node.type.StreamNode;
 import scraper.api.specification.ScrapeInstance;
+import scraper.api.template.L;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -38,9 +40,9 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
     @FlowKey
     private Address streamTarget;
 
-    private final @NotNull Map<UUID, FlowMap> openStreams = new HashMap<>();
-    private final @NotNull Map<UUID, Map<String, List<Object>>> collectors = new HashMap<>();
-    private final @NotNull Map<UUID, List<String>> collectKeys = new HashMap<>();
+    private final @NotNull Map<UUID, FlowMap> openStreams = new ConcurrentHashMap<>();
+    private final @NotNull Map<UUID, Map<String, List<Object>>> collectors = new ConcurrentHashMap<>();
+    private final @NotNull Map<UUID, List<String>> collectKeys = new ConcurrentHashMap<>();
 
     @Override
     public void collect(@NotNull final FlowMap o, @NotNull final List<String> toCollect) {
@@ -75,6 +77,30 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
                 }
             });
         }
+    }
+
+    @Override
+    public <E> void streamElement(@NotNull FlowMap origin, @NotNull L<E> location, @NotNull E result) {
+        FlowMap newMap = origin.copy();
+        newMap.output(location, result);
+
+        if(!collect) {
+            // dispatch directly to stream target without collecting
+            forkDispatch(newMap, streamTarget);
+        } else {
+            collectKeys.get(origin.getId()).forEach(key -> {
+                Map<String, List<Object>> collectorForId = collectors.get(origin.getId());
+                // collect to list
+                Optional<?> element = newMap.get(key);
+                if(element.isEmpty()) {
+                    log(NodeLogLevel.ERROR, "Missing expected element at key {}, fix node implementation. Skipping", key);
+                    throw new TemplateException("Missing expected element at key " + key);
+                } else {
+                    collectorForId.get(key).add(element.get());
+                }
+            });
+        }
+
     }
 
     @NotNull

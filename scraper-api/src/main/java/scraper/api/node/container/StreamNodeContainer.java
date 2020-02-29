@@ -4,6 +4,7 @@ import scraper.annotations.NotNull;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.type.StreamNode;
+import scraper.api.template.L;
 
 import java.util.List;
 
@@ -21,8 +22,11 @@ public interface StreamNodeContainer extends NodeContainer<StreamNode> {
      */
     void collect(@NotNull FlowMap o, @NotNull List<String> toCollect);
 
+    /** Streams a single element match */
+    <E> void streamElement(@NotNull FlowMap origin, @NotNull L<E> location, @NotNull E result);
+
     /** Streams a whole FlowMap match */
-    void streamFlowMap(@NotNull FlowMap origin, @NotNull FlowMap result) throws NodeException;
+    void streamFlowMap(@NotNull FlowMap origin, @NotNull FlowMap result);
 
     /**
      * Process a stream which is used by the StreamNode to accept a FlowMap.

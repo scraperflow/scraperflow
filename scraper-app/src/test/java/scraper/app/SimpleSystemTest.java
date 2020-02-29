@@ -127,4 +127,12 @@ public class SimpleSystemTest {
         Assert.assertTrue(ff.exists());
         Scraper.main(new String[]{ff.getAbsolutePath()});
     }
+
+    @Test
+    public void addrTest() throws Exception {
+        URL f = Scraper.class.getResource("addr.yf");
+        File ff = new File(f.toURI());
+        Assert.assertTrue(ff.exists());
+        Scraper.main(new String[]{ff.getAbsolutePath()});
+    }
 }

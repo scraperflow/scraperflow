@@ -82,6 +82,7 @@ public final class JobUtil {
                 List.of(args).stream().filter(s -> s.endsWith("yf"))
         )
                 .map(c -> Path.of(c))
+                .filter(c -> c.getParent() != null)
                 .map(Path::getParent)
                 .map(Path::toString)
                 .collect(Collectors.toSet());

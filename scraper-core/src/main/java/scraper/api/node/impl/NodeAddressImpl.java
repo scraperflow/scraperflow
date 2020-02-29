@@ -6,16 +6,16 @@ import scraper.api.node.Address;
 import scraper.api.node.NodeAddress;
 import scraper.util.NodeUtil;
 
+import java.util.Optional;
+
 public class NodeAddressImpl implements NodeAddress {
     @NotNull private final String instance;
     @NotNull private final String graph;
-    @Nullable private final String label;
+    private final String label;
     /** Implementation detail of current workflows, used for debugging purposes and only available for NodeAddress of nodes, not for targeting */
-    @Nullable private final Integer index;
+    @NotNull private final Integer index;
 
-    public NodeAddressImpl(@NotNull String instance, @NotNull String graph, @Nullable String label, @Nullable Integer stageIndex) {
-        if(label == null && stageIndex == null) throw new IllegalStateException("Either label or index can be null, not both");
-
+    public NodeAddressImpl(@NotNull String instance, @NotNull String graph, @Nullable String label, @NotNull Integer stageIndex) {
         this.instance = instance;
         this.graph = graph;
         this.label = label;
@@ -53,7 +53,6 @@ public class NodeAddressImpl implements NodeAddress {
     @NotNull
     @Override
     public Address nextIndex() {
-        assert index != null;
         return new AddressImpl(instance+"."+graph+"."+(index+1));
     }
 
@@ -66,8 +65,8 @@ public class NodeAddressImpl implements NodeAddress {
     @NotNull
     @Override
     public String getNode() {
-        return ""+(label==null?index:
-                label+(index != null ? ":"+index : "")
+        return "" + (label == null ? index :
+                label + (":" + index)
         );
     }
 
@@ -81,5 +80,33 @@ public class NodeAddressImpl implements NodeAddress {
     @Override
     public String getInstance() {
         return instance;
+    }
+
+    @NotNull
+    @Override
+    public Integer getIndex() {
+        return index;
+    }
+
+    @NotNull
+    @Override
+    public Optional<String> getLabel() {
+        return Optional.ofNullable(label);
+    }
+
+    @NotNull
+    @Override
+    public Address getOnlyIndex() {
+        return new AddressImpl(instance+"."+graph+"."+index);
+    }
+
+    @NotNull
+    @Override
+    public Optional<Address> getOnlyLabel() {
+        if(label != null) {
+            return Optional.of(new AddressImpl(instance + "." + graph + "." + label));
+        }
+
+        return Optional.empty();
     }
 }

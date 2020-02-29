@@ -27,7 +27,7 @@ public interface FlowMap extends IdentityTemplateEvaluator {
     //===================
 
     /** @see Map#get(Object) */
-    @NotNull Optional<?> get(@NotNull String key);
+    @NotNull Optional<? super Object> get(@NotNull String key);
 
     /** @see Map#get(Object) */
     @NotNull Optional<T<?>> getType(@NotNull String key);

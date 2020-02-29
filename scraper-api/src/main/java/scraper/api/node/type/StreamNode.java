@@ -2,9 +2,12 @@ package scraper.api.node.type;
 
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.NodeException;
+import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
+import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.container.StreamNodeContainer;
+import scraper.api.plugin.NodeHook;
 
 /**
  * Nodes which implement this interface are able to stream (collect or emit) elements.

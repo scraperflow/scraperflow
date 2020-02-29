@@ -72,7 +72,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
 
     /** Log statement to be printed */
     @FlowKey
-    protected T<String> log = new T<>(){};
+    protected T<?> log = new T<>(){};
 
     /** Indicates if forward has any effect or not. */
     @FlowKey(defaultValue = "true")
@@ -349,6 +349,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
                         throw new RuntimeException(e);
                     }
                 } else {
+                    e.printStackTrace();
                     log(ERROR, "Fork depend to goTo '{}' terminated exceptionally.", target, e);
                     throw new RuntimeException(e);
                 }

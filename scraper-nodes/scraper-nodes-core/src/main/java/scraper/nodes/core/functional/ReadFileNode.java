@@ -11,6 +11,7 @@ import scraper.api.node.type.FunctionalNode;
 import scraper.api.template.L;
 import scraper.api.template.T;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -33,6 +34,8 @@ public final class ReadFileNode implements FunctionalNode {
 
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) throws NodeException {
         String file = o.eval(inputFile);
+
+        if(new File(file).isDirectory()) throw new NodeException("File expected, got directory at " + file);
 
         try (Stream<String> stream = Files.lines(Paths.get(file), Charset.forName("ISO_8859_1"))) {
             o.output(output,stream.collect(Collectors.joining("\n")));
