@@ -19,11 +19,11 @@ import java.util.Optional;
 public class EchoNode implements FunctionalNode {
 
     /** Multiple put operations can be specified in this map at once */
-    @FlowKey(defaultValue = "{}") @NotNull
+    @FlowKey(defaultValue = "{}")
     private final T<Map<String, ?>> puts = new T<>(){};
 
     /** All keys specified in this list will be removed from the FlowMap */
-    @FlowKey(defaultValue = "[]") @NotNull
+    @FlowKey(defaultValue = "[]")
     private T<List<String>> remove = new T<>(){};
 
     @Override

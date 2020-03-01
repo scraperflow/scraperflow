@@ -13,11 +13,11 @@ import java.util.Map;
 public class TemplateMapLookup<K> extends TemplateExpression<K> implements MapLookup<K> {
     @Override public void accept(@NotNull TVisitor visitor) { visitor.visitMapLookup(this); }
 
-    private TemplateExpression<Map<String, ? extends K>> map;
+    private TemplateExpression<Map<String, K>> map;
     private TemplateExpression<String> key;
 
     public TemplateMapLookup(
-            TemplateExpression<Map<String, ? extends K>> map,
+            TemplateExpression<Map<String, K>> map,
             TemplateExpression<String> key,
             T<K> targetType) {
         super(targetType);
@@ -27,7 +27,7 @@ public class TemplateMapLookup<K> extends TemplateExpression<K> implements MapLo
 
     public K eval(@NotNull final FlowMap o) {
         try {
-            Map<String, ? extends K> m = map.eval(o);
+            Map<String, K> m = map.eval(o);
             String k = key.eval(o);
 
             K mapElement = m.get(k);
@@ -53,7 +53,7 @@ public class TemplateMapLookup<K> extends TemplateExpression<K> implements MapLo
 
     @NotNull
     @Override
-    public Term<Map<String, ? extends K>> getMapObjectTerm() {
+    public Term<Map<String, K>> getMapObjectTerm() {
         return map;
     }
 

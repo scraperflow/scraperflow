@@ -1,6 +1,5 @@
 package scraper.api.service.impl;
 
-import com.google.common.io.Files;
 import org.slf4j.Logger;
 import org.springframework.util.FileSystemUtils;
 import scraper.annotations.NotNull;
@@ -16,14 +15,14 @@ public class FileServiceImpl implements FileService {
     private static final @NotNull Logger log = org.slf4j.LoggerFactory.getLogger(FileServiceImpl.class);
 
     private @NotNull final ConcurrentMap<String, File> knownFiles = new ConcurrentHashMap<>();
-    private @NotNull final File tempDir = Files.createTempDir();
+//    private @NotNull final File tempDir = Files.createTempDir();
 
     public FileServiceImpl() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if(!FileSystemUtils.deleteRecursively(tempDir)) {
-                log.warn("Could not delete temporary directory: {}", tempDir.getPath());
-            }
-        }));
+//        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//            if(!FileSystemUtils.deleteRecursively(tempDir)) {
+//                log.warn("Could not delete temporary directory: {}", tempDir.getPath());
+//            }
+//        }));
     }
 
     @Override
@@ -78,12 +77,48 @@ public class FileServiceImpl implements FileService {
         return null;
     }
 
+    @Nullable
     @Override
-    public void ifNoLineFoundAppend(@NotNull final String output, @NotNull final String lineStart, Supplier<String> content) throws IOException {
+    public String getFirstLineEquals(@NotNull String output, @NotNull String lineEquals) throws IOException {
+        synchronized (knownFiles.get(output)) {
+            File file = knownFiles.get(output);
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.equals(lineEquals)) {
+                        return line;
+                    }
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                throw new RuntimeException("File not found even though file is known! Check file system: "+e.getMessage());
+            }
+        }
+
+        // line not found
+        return null;
+    }
+
+    @Override
+    public boolean ifNoLineEqualsFoundAppend(@NotNull String output, @NotNull String equals, Supplier<String> content) throws IOException {
+        synchronized (knownFiles.get(output)) {
+            String firstLine = getFirstLineEquals(output, equals);
+            if(firstLine == null)
+                appendToFile(output, content.get());
+
+            return firstLine != null;
+        }
+    }
+
+    @Override
+    public boolean ifNoLineStartsWithFoundAppend(@NotNull final String output, @NotNull final String lineStart, Supplier<String> content) throws IOException {
         synchronized (knownFiles.get(output)) {
             String firstLine = getFirstLineStartsWith(output, lineStart);
             if(firstLine == null)
                 appendToFile(output, content.get());
+
+            return firstLine != null;
         }
     }
 
@@ -125,7 +160,8 @@ public class FileServiceImpl implements FileService {
     @NotNull
     @Override
     public File getTemporaryDirectory() {
-        return tempDir;
+        throw new IllegalStateException();
+//        return tempDir;
     }
 
     private void replaceFileImpl(@NotNull final File file, @NotNull final String body) throws IOException {

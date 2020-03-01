@@ -72,7 +72,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
 
     /** Log statement to be printed */
     @FlowKey
-    protected T<?> log = new T<>(){};
+    protected T<Object> log = new T<>(){};
 
     /** Indicates if forward has any effect or not. */
     @FlowKey(defaultValue = "true")

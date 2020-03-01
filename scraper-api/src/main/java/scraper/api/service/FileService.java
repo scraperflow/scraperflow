@@ -19,9 +19,10 @@ public interface FileService {
 
     /** Returns the first line of the file denoted by the given path starting with given string */
     @Nullable String getFirstLineStartsWith(@NotNull String path, @NotNull String lineStart) throws IOException;
+    @Nullable String getFirstLineEquals(@NotNull String path, @NotNull String check) throws IOException;
 
-    @Nullable
-    void ifNoLineFoundAppend(@NotNull String output, @NotNull String lineStart, Supplier<String> content) throws IOException;
+    boolean ifNoLineStartsWithFoundAppend(@NotNull String output, @NotNull String lineStart, Supplier<String> content) throws IOException;
+    boolean ifNoLineEqualsFoundAppend(@NotNull String output, @NotNull String equals, Supplier<String> content) throws IOException;
 
     /** Appends given line to file denoted by the given path */
     void appendToFile(@NotNull String path, @NotNull String outputLine);

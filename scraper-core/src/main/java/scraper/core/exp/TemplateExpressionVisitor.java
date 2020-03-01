@@ -51,8 +51,13 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
 
         // template template
         if(ctx.children.size() == 2) {
-            if(!TypeToken.of(target.get()).isSupertypeOf(TypeToken.of(String.class)))
-                throw new RuntimeException("Mixed template target has to be supertype of java.lang.String");
+            if(TypeToken.of(target.get()).toString().contains("?")) {
+                // TODO
+                l.debug("Cannot check capture type ? for {}, assume correct", target.get().getTypeName());
+            } else {
+                if(!TypeToken.of(target.get()).isSupertypeOf(TypeToken.of(String.class)))
+                    throw new RuntimeException("Mixed template target has to be supertype of java.lang.String");
+            }
 
             TemplateMixed result = new TemplateMixed();
 
@@ -78,9 +83,9 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
                 ParseTree intexp = ctx.getChild(3);
                 @SuppressWarnings("unchecked") // generics type parameter is lost with target.get() but fully reconstructed
                 TypeToken<List<Y>> listToken = TemplateUtil.listOf((TypeToken<Y>) TypeToken.of(target.get()));
-                TemplateExpressionVisitor<List<? extends Y>> listTargetVisitor = new TemplateExpressionVisitor<>(new T<>(listToken.getType()){});
+                TemplateExpressionVisitor<List<Y>> listTargetVisitor = new TemplateExpressionVisitor<>(new T<>(listToken.getType()){});
                 TemplateExpressionVisitor<Integer> intTargetVisitor = new TemplateExpressionVisitor<>(new T<>(){});
-                TemplateExpression<List<? extends Y>> templateList = listTargetVisitor.visit(listexp);
+                TemplateExpression<List<Y>> templateList = listTargetVisitor.visit(listexp);
                 TemplateExpression<Integer> templateInt = intTargetVisitor.visit(intexp);
 
 
@@ -92,9 +97,9 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
                 ParseTree strexp = ctx.getChild(2);
                 @SuppressWarnings("unchecked") // generics type parameter is lost with target.get() but fully reconstructed
                 TypeToken<Map<String, Y>> mapToken = mapOf(TypeToken.of(String.class), (TypeToken<Y>) TypeToken.of(target.get()));
-                TemplateExpressionVisitor<Map<String, ? extends Y>> mapTargetVisitor = new TemplateExpressionVisitor<>(new T<>(mapToken.getType()){});
+                TemplateExpressionVisitor<Map<String, Y>> mapTargetVisitor = new TemplateExpressionVisitor<>(new T<>(mapToken.getType()){});
                 TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(new T<>(){});
-                TemplateExpression<Map<String, ? extends Y>> templateMap = mapTargetVisitor.visit(mapexp);
+                TemplateExpression<Map<String, Y>> templateMap = mapTargetVisitor.visit(mapexp);
                 TemplateExpression<String> templateString = stringTargetVisitor.visit(strexp);
                 return new TemplateMapLookup<>(templateMap, templateString, target);
             }

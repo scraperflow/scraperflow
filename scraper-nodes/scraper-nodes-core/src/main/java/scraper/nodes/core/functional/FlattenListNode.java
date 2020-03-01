@@ -9,6 +9,7 @@ import scraper.api.node.type.FunctionalNode;
 import scraper.api.template.L;
 import scraper.api.template.T;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,7 @@ public final class FlattenListNode implements FunctionalNode {
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         List<List<?>> flatten = o.eval(this.flatten);
         List<?> flattened = flatten.stream().flatMap(List::stream).distinct().collect(Collectors.toList());
+
         o.output(output, flattened);
     }
 }

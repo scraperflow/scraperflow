@@ -403,6 +403,14 @@ public class TemplateExpTest {
     }
 
     @Test
+    public void logTest() {
+        Term<Object> log = TemplateUtil.parseTemplate( "{r}/test.o", new T<>(){});
+        o.output("r", "hello");
+        Object l = log.eval(o);
+        Assert.assertEquals("hello/test.o", l);
+    }
+
+    @Test
     public void outputGenericInputSpecificTest() {
         Term<List<?>> expectedTemplate = TemplateUtil.parseTemplate( "{{L}}[2]", new T<>(){});
         o.output("L", List.of(List.of("1"), List.of("2"), List.of("3")));

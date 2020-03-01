@@ -360,14 +360,13 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
             return castObject;
         }
 
-        log.warn("Known: {}", knownToken);
-        log.warn("Target: {}", targetToken);
+        if(targetToken.toString().contains("?")) {
+            log.debug("Assuming ? target capture is correct: {} == {}. To check type check for FlowKey has to be implemented.", targetToken, knownToken);
+            @SuppressWarnings("unchecked")
+            Optional<K> castObject = Optional.of((K) targetObject);
+            return castObject;
+        }
 
-        log.warn("K <SUB T: {}", knownToken.isSubtypeOf(targetToken));
-        log.warn("T <SUB K: {}", targetToken.isSubtypeOf(knownToken));
-
-        log.warn("K <SUP T: {}", knownToken.isSupertypeOf(targetToken));
-        log.warn("T <SUP K: {}", targetToken.isSupertypeOf(knownToken));
         throw new TemplateException(String.format("Bad typing for key %s. Expected type '%s', got type '%s'",
                 targetKey,
                 targetType.get().toString(),

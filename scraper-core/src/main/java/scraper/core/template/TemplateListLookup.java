@@ -13,11 +13,11 @@ import java.util.List;
 public class TemplateListLookup<K> extends TemplateExpression<K> implements ListLookup<K> {
     @Override public void accept(@NotNull TVisitor visitor) { visitor.visitListLookup(this); }
 
-    private TemplateExpression<List<? extends K>> list;
+    private TemplateExpression<List<K>> list;
     private TemplateExpression<Integer> index;
 
     public TemplateListLookup(
-            TemplateExpression<List<? extends K>> list,
+            TemplateExpression<List<K>> list,
             TemplateExpression<Integer> index,
             T<K> targetType) {
         super(targetType);
@@ -61,7 +61,7 @@ public class TemplateListLookup<K> extends TemplateExpression<K> implements List
 
     @NotNull
     @Override
-    public Term<List<? extends K>> getListObjectTerm() {
+    public Term<List<K>> getListObjectTerm() {
         return list;
     }
 
