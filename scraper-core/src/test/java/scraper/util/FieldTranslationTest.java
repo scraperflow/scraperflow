@@ -5,6 +5,7 @@ import org.junit.Test;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
 import scraper.api.flow.impl.FlowMapImpl;
+import scraper.api.node.Address;
 import scraper.api.template.T;
 
 import java.lang.reflect.Field;
@@ -128,14 +129,44 @@ public class FieldTranslationTest {
     private T<String> failTemplate = new T<>(){};
     private String failTemplateEval = "static";
 
+    // template list static eval
+    @FlowKey(mandatory = true)
+    @TranslationInput(jsonValue = "[1,2,3]")
+    private T<List<Integer>> listTemplate = new T<>(){};
+    private Consumer<List<Integer>> listTemplateCheck = o -> {
+        if(o.size() != 3) throw new IllegalStateException("Bad");
+        if(o.get(2) != 3) throw new IllegalStateException("Bad");
+        if(o.get(1) != 2) throw new IllegalStateException("Bad");
+        if(o.get(0) != 1) throw new IllegalStateException("Bad");
+    };
+
+    // template list address eval
+    @FlowKey(mandatory = true)
+    @TranslationInput(jsonValue = "[\"adr-1\", \"adr-2\"]")
+    private T<List<Address>> listAddressTemplate = new T<>(){};
+    @SuppressWarnings("ConstantConditions") // check for correct class, not constant
+    private Consumer<List<Address>> listAddressTemplateCheck = o -> {
+        if(o.size() != 2) throw new IllegalStateException("Bad");
+        if(!(o.get(0) instanceof Address)) throw new IllegalStateException("Not an address");
+    };
 
     // template map static eval
     @FlowKey(mandatory = true)
     @TranslationInput(jsonValue = "{\"key\":\"value\"}")
     private T<Map<String, String>> mapTemplate = new T<>(){};
-    private Consumer<Map<String, String>> mapTCheck = o -> {
+    private Consumer<Map<String, String>> mapTemplateCheck = o -> {
         if(!"value".equalsIgnoreCase(o.get("key"))) throw new IllegalStateException("Bad template evaluation");
     };
+
+    // only strings as keys are allowd
+    // TODO warn if anything other than Strings are used
+//    @FlowKey(mandatory = true)
+//    @TranslationInput(jsonValue = "{\"address\":\"?\"}")
+//    private T<Map<Address, String>> mapAddressTemplate = new T<>(){};
+//    @SuppressWarnings("ConstantConditions") // check if key is address and not a string
+//    private Consumer<Map<Address, String>> mapAddressTemplateCheck = o -> {
+//        if (!(o.keySet().iterator().next() instanceof Address)) throw new IllegalStateException("Not an address");
+//    };
 
 
     // template map args eval
@@ -216,7 +247,7 @@ public class FieldTranslationTest {
     @TranslationInput
     private T<Map<String, Integer>> multiTemplate = new T<>(){};
     private Map<String, Object> multiTemplateArgs = Map.of("id", 2);
-    private Consumer<Map<String, Integer>> multiTCheck = o -> {
+    private Consumer<Map<String, Integer>> multiTemplateCheck = o -> {
         Integer actual = 4;
         if(!actual.equals(o.get("actual"))) throw new IllegalStateException("Bad template evaluation");
         Integer replaced = 2;

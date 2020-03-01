@@ -82,9 +82,13 @@ public final class StringUtil {
         List<String> arg = new ArrayList<>();
 
         for (String argument: args) {
-            if(argument.startsWith(param)){
+            if(argument.startsWith(param) && argument.contains(":")){
                 arg.add(argument.substring(Math.min(argument.length(), param.length()+1)));
-            } else if(argument.endsWith(param)) {
+            }
+            else if(argument.equalsIgnoreCase(param)) {
+                arg.add("");
+            }
+            else if(argument.endsWith(param)) {
                 arg.add(argument);
             }
         }

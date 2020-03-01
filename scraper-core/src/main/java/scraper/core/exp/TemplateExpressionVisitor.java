@@ -77,7 +77,7 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
                 ParseTree listexp = ctx.getChild(1);
                 ParseTree intexp = ctx.getChild(3);
                 @SuppressWarnings("unchecked") // generics type parameter is lost with target.get() but fully reconstructed
-                TypeToken<List<? extends Y>> listToken = TemplateUtil.listOf((TypeToken<Y>) TypeToken.of(target.get()));
+                TypeToken<List<Y>> listToken = TemplateUtil.listOf((TypeToken<Y>) TypeToken.of(target.get()));
                 TemplateExpressionVisitor<List<? extends Y>> listTargetVisitor = new TemplateExpressionVisitor<>(new T<>(listToken.getType()){});
                 TemplateExpressionVisitor<Integer> intTargetVisitor = new TemplateExpressionVisitor<>(new T<>(){});
                 TemplateExpression<List<? extends Y>> templateList = listTargetVisitor.visit(listexp);
@@ -87,11 +87,11 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
                 return new TemplateListLookup<>(templateList, templateInt, target);
             }
 
-            if (ctx.getChild(3) instanceof TemplateParser.MaplookupContext) {
+            if (ctx.getChild(2) instanceof TemplateParser.MaplookupContext) {
                 ParseTree mapexp = ctx.getChild(1);
-                ParseTree strexp = ctx.getChild(3);
+                ParseTree strexp = ctx.getChild(2);
                 @SuppressWarnings("unchecked") // generics type parameter is lost with target.get() but fully reconstructed
-                TypeToken<Map<String, ? extends Y>> mapToken = mapOf(TypeToken.of(String.class), (TypeToken<Y>) TypeToken.of(target.get()));
+                TypeToken<Map<String, Y>> mapToken = mapOf(TypeToken.of(String.class), (TypeToken<Y>) TypeToken.of(target.get()));
                 TemplateExpressionVisitor<Map<String, ? extends Y>> mapTargetVisitor = new TemplateExpressionVisitor<>(new T<>(mapToken.getType()){});
                 TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(new T<>(){});
                 TemplateExpression<Map<String, ? extends Y>> templateMap = mapTargetVisitor.visit(mapexp);
@@ -123,7 +123,7 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
     @Override
     public TemplateExpression<Y> visitMaplookup(TemplateParser.MaplookupContext ctx) {
         return visit(ctx.getChild(1));
-//        l.info("Visiting map '{}'", ctx.getText());
+//        l.trace("Visiting map '{}'", ctx.getText());
 //        throw new IllegalStateException("Map lookup not implemented yet");
     }
 

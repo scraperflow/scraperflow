@@ -12,22 +12,19 @@ import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.Node;
 import scraper.api.template.T;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 /**
  *
  */
-@NodePlugin("0.2.0")
+@NodePlugin("0.3.0")
 public final class ForkJoinNode implements Node {
 
-    /** Expected join for each key defined in this map after a forked flow terminates */
+    /** Expected join for each target (for every key) defined in this map after a forked flow terminates */
     @FlowKey(mandatory = true)
-    private T<Map<String, String>> keys = new T<>(){};
+    private T<Map<String, Map<String, String>>> targetToKeys = new T<>(){};
 
     /** All processes to fork the current flow map to */
     @FlowKey(mandatory = true)
@@ -35,51 +32,49 @@ public final class ForkJoinNode implements Node {
 
     @NotNull @Override
     public FlowMap process(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) {
-        Map<String, String> keys = o.evalIdentity(this.keys);
+        Map<String, Map<String, String>> keys = o.evalIdentity(this.targetToKeys);
 
-        List<CompletableFuture<FlowMap>> forkedProcesses = new ArrayList<>();
+        Map<String, CompletableFuture<FlowMap>> forkedProcesses = new HashMap<>();
         o.evalIdentity(forkTargets).forEach(target -> {
             // dispatch new flow, expect future to return the modified flow map
             CompletableFuture<FlowMap> t = n.forkDepend(o, target);
-            forkedProcesses.add(t);
+            forkedProcesses.put(target.getRepresentation(), t);
         });
 
-        forkedProcesses.forEach(future -> future.whenComplete(
+        forkedProcesses.forEach((adr, future) -> future.whenComplete(
                 (result, throwable) ->
                         n.log(NodeLogLevel.DEBUG, "Fork complete")
         ));
 
         CompletableFuture
-                .allOf(forkedProcesses.toArray(new CompletableFuture[0]))
+                .allOf(forkedProcesses.values().toArray(new CompletableFuture[0]))
                 .join();
 
-
-        keys.forEach((joinKeyForked, joinKey) -> {
-            n.log(NodeLogLevel.DEBUG, "Joining {} -> {}", joinKeyForked, joinKey);
-
-            List<Object> joinResults = o.evalMaybe(new T<List<Object>>() {}).orElse(new ArrayList<>());
-
-            forkedProcesses.forEach(future -> {
-                try {
-                    FlowMap fm = future.get();
-                    Optional<?> returnResult = fm.get(joinKeyForked);
-                    if(returnResult.isEmpty()) {
-                        n.log(NodeLogLevel.ERROR, "Missing key in completed flow {}", joinKeyForked);
-                        throw new TemplateException("Completed flow does not return expected key: "+ joinKeyForked);
-                    } else {
-                        joinResults.add(returnResult.get());
-                        o.output(joinKey, joinResults);
-                    }
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                    n.log(NodeLogLevel.ERROR, "Bad join", e);
-                }
-            });
-
+        forkedProcesses.forEach((target, future) ->{
+            try {
+                handleFuture(target, future, o, n);
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+                n.log(NodeLogLevel.ERROR, "Bad join", e);
+            }
         });
 
         // continue
         return o;
     }
 
+    private void handleFuture(String target, CompletableFuture<FlowMap> future, FlowMap o, NodeContainer<?> n) throws ExecutionException, InterruptedException {
+        Map<String, String> keys = o.eval(this.targetToKeys).get(target);
+        FlowMap forkedResult = future.get();
+
+        keys.forEach((forked, main) -> {
+            Optional<? super Object> result = forkedResult.get(forked);
+            if(result.isEmpty()) {
+                n.log(NodeLogLevel.ERROR, "Missing key '{}' in completed flow '{}'", forked, target);
+                throw new TemplateException("Completed flow does not return expected key: "+ forked);
+            }
+
+            o.output(main, result.get());
+        });
+    }
 }

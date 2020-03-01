@@ -3,7 +3,6 @@ package scraper.nodes.core.stream;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
@@ -45,11 +44,11 @@ public final class RegexNode implements StreamNode {
 
     /** Default output if no matches are present */
     @FlowKey
-    private T<Map<String, Object>> noMatchDefaultOutput = new T<>(){};
+    private T<Map<String, ?>> noMatchDefaultOutput = new T<>(){};
 
     /** Where the output list will be put. If there's already a list at that key, it will be replaced. */
     @FlowKey(defaultValue = "\"output\"")
-    private L<Map<String, Object>> output = new L<>(){};
+    private L<Map<String, ?>> output = new L<>(){};
 
     /** Pattern dotall option */
     @FlowKey(defaultValue = "\"true\"")
@@ -67,7 +66,7 @@ public final class RegexNode implements StreamNode {
     }
 
     @Override
-    public void process(@NotNull StreamNodeContainer n, @NotNull FlowMap o) throws NodeException {
+    public void process(@NotNull StreamNodeContainer n, @NotNull FlowMap o) {
         n.collect(o, List.of(o.eval(output)));
 
         String content = o.eval(this.content);
@@ -88,7 +87,7 @@ public final class RegexNode implements StreamNode {
             n.streamFlowMap(o, copy);
         }
 
-        Optional<Map<String, Object>> evalDefault = o.evalMaybe(noMatchDefaultOutput);
+        Optional<Map<String, ?>> evalDefault = o.evalMaybe(noMatchDefaultOutput);
         if(evalDefault.isPresent() && m.reset().results().findAny().isEmpty()) {
             FlowMap copy = o.copy();
             copy.output(output, evalDefault.get());

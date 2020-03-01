@@ -2,16 +2,14 @@
 
     package scraper.core.exp;
 
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.atn.ATN;
-import org.antlr.v4.runtime.atn.ATNDeserializer;
-import org.antlr.v4.runtime.atn.ParserATNSimulator;
-import org.antlr.v4.runtime.atn.PredictionContextCache;
+import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.*;
+import org.antlr.v4.runtime.tree.*;
 import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class TemplateParser extends Parser {
@@ -229,9 +227,9 @@ public class TemplateParser extends Parser {
 				setState(27);
 				template(0);
 				setState(28);
-				match(RIGHTP);
-				setState(29);
 				maplookup();
+				setState(29);
+				match(RIGHTP);
 				}
 				break;
 			}
@@ -488,7 +486,7 @@ public class TemplateParser extends Parser {
 		"\2\2\17\20\5\4\3\2\20\21\7\2\2\3\21\23\3\2\2\2\22\16\3\2\2\2\22\17\3\2"+
 		"\2\2\23\3\3\2\2\2\24\25\b\3\1\2\25\"\5\f\7\2\26\"\5\6\4\2\27\30\7\3\2"+
 		"\2\30\31\5\4\3\2\31\32\7\4\2\2\32\33\5\b\5\2\33\"\3\2\2\2\34\35\7\3\2"+
-		"\2\35\36\5\4\3\2\36\37\7\4\2\2\37 \5\n\6\2 \"\3\2\2\2!\24\3\2\2\2!\26"+
+		"\2\35\36\5\4\3\2\36\37\5\n\6\2\37 \7\4\2\2 \"\3\2\2\2!\24\3\2\2\2!\26"+
 		"\3\2\2\2!\27\3\2\2\2!\34\3\2\2\2\"\'\3\2\2\2#$\f\3\2\2$&\5\4\3\4%#\3\2"+
 		"\2\2&)\3\2\2\2\'%\3\2\2\2\'(\3\2\2\2(\5\3\2\2\2)\'\3\2\2\2*+\7\3\2\2+"+
 		",\5\4\3\2,-\7\4\2\2-\7\3\2\2\2./\7\5\2\2/\60\5\4\3\2\60\61\7\6\2\2\61"+

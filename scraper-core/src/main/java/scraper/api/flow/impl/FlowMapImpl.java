@@ -343,15 +343,16 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
         assert privateTypeMap.containsKey(targetKey);
         T<?> knownType = privateTypeMap.get(targetKey);
 
+        TypeToken<?> knownToken = TypeToken.of(knownType.get());
+        TypeToken<?> targetToken = TypeToken.of(targetType.get());
 
-
-        if(TypeToken.of(targetType.get()).isSupertypeOf(TypeToken.of(knownType.get()))) {
+        if(targetToken.isSupertypeOf(knownToken)) {
             @SuppressWarnings("unchecked") // checked with subtype relation
                     K targetO = (K) targetObject;
             return Optional.of(targetO);
         }
 
-        if(TypeToken.of(targetType.get()).isSubtypeOf(TypeToken.of(knownType.get()))) {
+        if(targetToken.isSubtypeOf(knownToken)) {
             log.warn("Downcasting '{}' from '{}' -> '{}'. This may indicate a node implementation error or an insufficient type infer of that key",
                     targetKey, knownType, targetType);
             @SuppressWarnings("unchecked") // warned user about potentially bad downcast
@@ -359,6 +360,14 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
             return castObject;
         }
 
+        log.warn("Known: {}", knownToken);
+        log.warn("Target: {}", targetToken);
+
+        log.warn("K <SUB T: {}", knownToken.isSubtypeOf(targetToken));
+        log.warn("T <SUB K: {}", targetToken.isSubtypeOf(knownToken));
+
+        log.warn("K <SUP T: {}", knownToken.isSupertypeOf(targetToken));
+        log.warn("T <SUP K: {}", targetToken.isSupertypeOf(knownToken));
         throw new TemplateException(String.format("Bad typing for key %s. Expected type '%s', got type '%s'",
                 targetKey,
                 targetType.get().toString(),
@@ -379,7 +388,7 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
                 TypeToken<?> nextType = inferType(oList.get(i));
 
                 // specialized common type
-                if(commonType.isSupertypeOf(nextType))
+                if(commonType.isSupertypeOf(nextType) || nextType.isSupertypeOf(commonType))
                     continue;
 
                 if(!commonType.isSubtypeOf(nextType) || !nextType.isSubtypeOf(commonType))

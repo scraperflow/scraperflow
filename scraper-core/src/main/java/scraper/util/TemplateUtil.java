@@ -86,14 +86,14 @@ public final class TemplateUtil {
         }
     }
 
-    public static <K, V> TypeToken<Map<K, ? extends V>> mapOf(TypeToken<K> keyType, TypeToken<V> valueType) {
-        return new TypeToken<Map<K, ? extends V>>() {}
+    public static <K, V> TypeToken<Map<K, V>> mapOf(TypeToken<K> keyType, TypeToken<V> valueType) {
+        return new TypeToken<Map<K, V>>() {}
                 .where(new TypeParameter<>() {}, keyType)
                 .where(new TypeParameter<>() {}, valueType);
     }
 
-    public static <K> TypeToken<List<? extends K>> listOf(TypeToken<K> elementType) {
-        return new TypeToken<List<? extends K>>() {}.where(new TypeParameter<>() {}, elementType);
+    public static <K> TypeToken<List<K>> listOf(TypeToken<K> elementType) {
+        return new TypeToken<List<K>>() {}.where(new TypeParameter<>() {}, elementType);
     }
 
     // ==============

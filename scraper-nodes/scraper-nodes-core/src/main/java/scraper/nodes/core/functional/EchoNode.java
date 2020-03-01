@@ -20,7 +20,7 @@ public class EchoNode implements FunctionalNode {
 
     /** Multiple put operations can be specified in this map at once */
     @FlowKey(defaultValue = "{}") @NotNull
-    private final T<Map<String, ? super Object>> puts = new T<>(){};
+    private final T<Map<String, ?>> puts = new T<>(){};
 
     /** All keys specified in this list will be removed from the FlowMap */
     @FlowKey(defaultValue = "[]") @NotNull
@@ -28,7 +28,7 @@ public class EchoNode implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        Optional<Map<String, ? super Object>> puts = o.evalMaybe(this.puts);
+        Optional<Map<String, ?>> puts = o.evalMaybe(this.puts);
         List<String> remove = o.evalIdentity(this.remove);
 
         // put multiple objects/strings

@@ -45,7 +45,7 @@ public final class CleanJsonObjectNode implements FunctionalNode {
 
     /** JSON object */
     @FlowKey(mandatory = true)
-    private final T<Map<String, Object>> jsonObject = new T<>(){};
+    private final T<Map<String, ?>> jsonObject = new T<>(){};
 
     /** Clean operations */
     @FlowKey(mandatory = true)
@@ -53,11 +53,11 @@ public final class CleanJsonObjectNode implements FunctionalNode {
 
     /** cleaned JSON object location */
     @FlowKey(defaultValue = "output")
-    private final L<Map<String, Object>> cleanedObject = new L<>(){};
+    private final L<Map<String, ?>> cleanedObject = new L<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) throws NodeException {
-        Map<String, Object> json = o.eval(jsonObject);
+        Map<String, ?> json = o.eval(jsonObject);
         List<String> clean = o.evalIdentity(this.clean);
 
         for (String parts : clean) {

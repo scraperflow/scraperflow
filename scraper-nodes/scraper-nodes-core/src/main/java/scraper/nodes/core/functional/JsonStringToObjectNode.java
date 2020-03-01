@@ -28,7 +28,7 @@ public final class JsonStringToObjectNode implements FunctionalNode {
 
     /** JSON object output */
     @FlowKey(defaultValue = "\"result\"")
-    private final L<Map> jsonObject = new L<>(){};
+    private final L<Map<?, ?>> jsonObject = new L<>(){};
 
     // used to convert JSON
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -39,7 +39,7 @@ public final class JsonStringToObjectNode implements FunctionalNode {
 
         try {
             // read and clean object at argument location
-            Map obj = objectMapper.readValue(json, Map.class);
+            Map<?, ?> obj = objectMapper.readValue(json, Map.class);
             o.output(jsonObject, obj);
         }
         catch (IOException e) {

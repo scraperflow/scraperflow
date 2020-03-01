@@ -21,7 +21,7 @@ public final class AggregateListNode implements FunctionalNode {
 
     /** Evaluated content inserted into 'put' */
     @FlowKey(mandatory = true)
-    private final T<Object> aggregate = new T<>(){};
+    private final T<?> aggregate = new T<>(){};
 
     /** Expects a List object at the 'put' key or generates a new empty list if there is no list at given key */
     @FlowKey(mandatory = true)
@@ -34,7 +34,7 @@ public final class AggregateListNode implements FunctionalNode {
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         // fetch the list, or create a new one if it does not exist
-        List<Object> resultList = o.evalOrDefault(put, new LinkedList<>());
+        List<? super Object> resultList = o.evalOrDefault(put, new LinkedList<>());
 
         // evaluate T
         Object eval = o.eval(aggregate);

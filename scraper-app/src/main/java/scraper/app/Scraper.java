@@ -90,7 +90,7 @@ public class Scraper {
         if(exitWithException.equalsIgnoreCase("false")) {
             try { main.run(args); } catch (Exception e) {
                 log.error("Could not run scrape job: {}", e.getMessage());
-                if(StringUtil.getArgument(args, "debug") != null) e.printStackTrace();
+                if(StringUtil.getArgument(args, "debug-info") != null) e.printStackTrace();
             }
         } else {
             main.run(args);

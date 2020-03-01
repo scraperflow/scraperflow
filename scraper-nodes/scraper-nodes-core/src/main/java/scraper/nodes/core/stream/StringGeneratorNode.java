@@ -3,7 +3,6 @@ package scraper.nodes.core.stream;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.StreamNodeContainer;
 import scraper.api.node.type.StreamNode;
@@ -50,7 +49,7 @@ public final class StringGeneratorNode implements StreamNode {
     private L<String> generatedElement = new L<>(){};
 
     @Override
-    public void process(@NotNull StreamNodeContainer n, @NotNull FlowMap o) throws NodeException {
+    public void process(@NotNull StreamNodeContainer n, @NotNull FlowMap o) {
         // parse expression for goTo key
         // only one pattern 'X TO Y' supported, parse directly with regex
         String targetString = expression;

@@ -20,7 +20,7 @@ public final class FlattenListNode implements FunctionalNode {
 
     /** The list with list elements to flatten */
     @FlowKey(defaultValue = "\"{list}\"") @NotNull
-    private final T<List<? extends List<?>>> flatten = new T<>(){};
+    private final T<List<List<?>>> flatten = new T<>(){};
 
     /** Where the output hash is stored */
     @FlowKey(defaultValue = "\"output\"") @NotNull
@@ -28,8 +28,8 @@ public final class FlattenListNode implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        List<? extends List<?>> flatten = o.eval(this.flatten);
-        List<? super Object> flattened = flatten.stream().flatMap(List::stream).distinct().collect(Collectors.toList());
+        List<List<?>> flatten = o.eval(this.flatten);
+        List<?> flattened = flatten.stream().flatMap(List::stream).distinct().collect(Collectors.toList());
         o.output(output, flattened);
     }
 }

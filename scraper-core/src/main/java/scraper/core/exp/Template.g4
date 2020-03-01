@@ -21,7 +21,7 @@ template :
     stringcontent               // string content
     | fmlookup                  // single object fm lookup
     | LEFTP template RIGHTP arraylookup   // array lookup
-    | LEFTP template RIGHTP maplookup   // map lookup
+    | LEFTP template maplookup RIGHTP // map lookup
     | template template         // mixed template
     ;
 

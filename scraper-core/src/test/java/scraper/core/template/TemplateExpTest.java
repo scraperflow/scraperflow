@@ -7,6 +7,7 @@ import org.junit.Test;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
+import scraper.api.node.Address;
 import scraper.api.template.T;
 import scraper.api.template.Term;
 import scraper.util.TemplateUtil;
@@ -166,7 +167,7 @@ public class TemplateExpTest {
 
     @Test
     public void simpleMapLookup() {
-        String source = "{{M}}@ok";
+        String source = "{{M}@ok}";
         Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
         o.output("M", Map.of("1", "hello world", "ok", "hello ok"));
         String target = test.eval(o);
@@ -213,7 +214,7 @@ public class TemplateExpTest {
 
     @Test
     public void nestedMapAndArrayLookup() {
-        String source = "{{{array}}[0]}@module";
+        String source = "{{{array}}[0]@module}";
         Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
         o.output("array", List.of(Map.of("module", "test-module")));
         String target = test.eval(o);
@@ -222,16 +223,25 @@ public class TemplateExpTest {
 
     @Test
     public void nestedMapLookup() {
-        String source = "{{map}}@first";
+        String source = "{{map}@first}";
         Term<Map<? extends String, ? extends String>> test = TemplateUtil.parseTemplate(source, new T<>(){});
         o.output("map", Map.of("first", Map.of("module", "test-module")));
         Map<? extends String, ? extends String> target = test.eval(o);
         Assert.assertFalse(target.isEmpty());
 
-        String source2 = "{{{map}}@first}@module";
+        String source2 = "{{{map}@first}@module}";
         Term<String> test2 = TemplateUtil.parseTemplate(source2, new T<>(){});
         String target2 = test2.eval(o);
         Assert.assertEquals("test-module", target2);
+    }
+
+    @Test
+    public void concatMapLookup() {
+        String source = "{{map}@first}{{map}@second}";
+        Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
+        o.output("map", Map.of("first", "hello", "second", "world"));
+        String target = test.eval(o);
+        Assert.assertEquals("helloworld", target);
     }
 
 //    @Test(timeout = 500)
@@ -382,6 +392,14 @@ public class TemplateExpTest {
         Term<List<?>> expectedTemplate = TemplateUtil.parseTemplate( "{{L}}[2]", new T<>(){});
         o.output("L", List.of(List.of("1"), List.of("2"), List.of("3")));
         expectedTemplate.eval(o);
+    }
+
+    @Test
+    public void outputGenericInputSpecificSingleLayerTest() {
+        Term<?> expectedTemplate = TemplateUtil.parseTemplate( "{L}", new T<>(){});
+        o.output("L", List.of("1"));
+        Object l = expectedTemplate.eval(o);
+        Assert.assertNotNull(l);
     }
 
     @Test

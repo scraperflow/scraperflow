@@ -86,7 +86,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
     protected String service;
 
     /** Number of worker threads for given executor service pool {@link #service} */
-    @FlowKey(defaultValue = "100") @Argument
+    @FlowKey(defaultValue = "1000") @Argument
     protected Integer threads;
 
     /** Label of a node which can be used as a goto reference */

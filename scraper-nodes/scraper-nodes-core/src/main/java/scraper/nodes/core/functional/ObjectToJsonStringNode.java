@@ -21,7 +21,7 @@ public final class ObjectToJsonStringNode implements FunctionalNode {
 
     /** Json object */
     @FlowKey(defaultValue = "\"object\"")
-    private final T<Object> object = new T<>(){};
+    private final T<?> object = new T<>(){};
 
     /** Resulting string location */
     @FlowKey(defaultValue = "\"result\"")

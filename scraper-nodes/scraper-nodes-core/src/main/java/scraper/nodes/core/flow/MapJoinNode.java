@@ -87,7 +87,7 @@ public final class MapJoinNode implements Node {
                     FlowMap fm = future.get();
                     if(fm.get(joinKeyForked).isEmpty()) {
                         if(!ignoreMissingJoinKey)
-                            throw new IllegalStateException("Missing value at join key: " + joinKeyForked);
+                            throw new IllegalStateException(n.getAddress()+ ": Missing value at join key: " + joinKeyForked);
                     } else {
                         if (!joinResults.contains(fm.get(joinKeyForked).get()) || !distinctOutput) {
                             joinResults.add(fm.get(joinKeyForked).get());

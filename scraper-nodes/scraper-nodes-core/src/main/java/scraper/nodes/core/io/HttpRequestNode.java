@@ -133,7 +133,7 @@ public final class HttpRequestNode implements Node {
     // --------------
     /** Payload of a POST request */
     @FlowKey
-    private T<Object> payload = new T<>(){};
+    private T<?> payload = new T<>(){};
 
     @Override
     public void init(@NotNull NodeContainer<? extends Node> n, @NotNull final ScrapeInstance job) throws ValidationException {

@@ -22,7 +22,7 @@ public final class ContainedInCollectionNode implements FunctionalNode {
 
     /** Collection to be checked if the object is contained */
     @FlowKey(defaultValue = "\"{collection}\"") @NotNull
-    private final T<Collection> collection = new T<>(){};
+    private final T<Collection<?>> collection = new T<>(){};
 
     /** This evaluated object is used for checking */
     @FlowKey(defaultValue = "\"{object}\"") @NotNull
@@ -39,7 +39,7 @@ public final class ContainedInCollectionNode implements FunctionalNode {
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         Object     object     = o.eval(this.object);
-        Collection collection = o.eval(this.collection);
+        Collection<?> collection = o.eval(this.collection);
 
         // cont negate output
         // 0    0      0
