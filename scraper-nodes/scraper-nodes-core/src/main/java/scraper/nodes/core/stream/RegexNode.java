@@ -1,6 +1,7 @@
 package scraper.nodes.core.stream;
 
 import scraper.annotations.NotNull;
+import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.ValidationException;
@@ -27,11 +28,11 @@ import java.util.regex.Pattern;
  * The maps capture the content of the capture groups.
  * If groups are empty, the map is empty and the list is populated with empty maps.
  */
-@NodePlugin("0.10.0")
+@NodePlugin("0.11.0")
 public final class RegexNode implements StreamNode {
 
     /** Regex as a Java String */
-    @FlowKey(mandatory = true)
+    @FlowKey(mandatory = true) @Argument
     private String regex;
 
     /** The content to apply the regex on */
@@ -44,11 +45,11 @@ public final class RegexNode implements StreamNode {
 
     /** Default output if no matches are present */
     @FlowKey
-    private T<Map<String, ?>> noMatchDefaultOutput = new T<>(){};
+    private T<Map<String, ? super Object>> noMatchDefaultOutput = new T<>(){};
 
     /** Where the output list will be put. If there's already a list at that key, it will be replaced. */
     @FlowKey(defaultValue = "\"output\"")
-    private L<Map<String, ?>> output = new L<>(){};
+    private L<Map<String, ? super Object>> output = new L<>(){};
 
     /** Pattern dotall option */
     @FlowKey(defaultValue = "\"true\"")
@@ -87,7 +88,7 @@ public final class RegexNode implements StreamNode {
             n.streamFlowMap(o, copy);
         }
 
-        Optional<Map<String, ?>> evalDefault = o.evalMaybe(noMatchDefaultOutput);
+        Optional<Map<String, ? super Object>> evalDefault = o.evalMaybe(noMatchDefaultOutput);
         if(evalDefault.isPresent() && m.reset().results().findAny().isEmpty()) {
             FlowMap copy = o.copy();
             copy.output(output, evalDefault.get());

@@ -39,7 +39,7 @@ public abstract class WorkflowTest {
         URL baseURL = getClass().getResource(base);
         if(baseURL == null) throw new IllegalStateException("Missing base folder: " + base);
 
-        ScrapeSpecificationImpl spec = (ScrapeSpecificationImpl) JobUtil.parseJobs(new String[]{workflowSpecification.toLowerCase()}, Set.of(baseURL.getFile().toLowerCase())).get(0);
+        ScrapeSpecificationImpl spec = (ScrapeSpecificationImpl) JobUtil.parseJobs(new String[]{workflowSpecification}, Set.of(baseURL.getFile().toLowerCase())).get(0);
 
         // add fail safe to every test
         // i.e. redirect fork exceptions to the graph key 'fail', which triggers a System.setProperty set of workflow.fail = FAIL

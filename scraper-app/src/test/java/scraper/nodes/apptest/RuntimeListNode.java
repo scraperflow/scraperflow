@@ -18,12 +18,12 @@ import java.util.List;
 public final class RuntimeListNode implements Node {
 
     @FlowKey(mandatory = true)
-    private T<List<? extends String>> onlyStringsAllowed = new T<>(){};
+    private T<List<String>> onlyStringsAllowed = new T<>(){};
 
     @NotNull
     @Override
     public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
-        List<? extends String> myListWithStrings = o.eval(onlyStringsAllowed);
+        List<String> myListWithStrings = o.eval(onlyStringsAllowed);
         System.out.println(myListWithStrings);
         return o;
     }

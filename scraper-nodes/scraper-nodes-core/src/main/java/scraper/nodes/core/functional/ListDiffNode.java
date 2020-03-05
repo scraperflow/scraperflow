@@ -16,25 +16,24 @@ import java.util.Set;
 
 /**
  */
-@NodePlugin("0.1.0")
-public final class ListDiffNode implements FunctionalNode {
+@NodePlugin("0.2.0")
+public final class ListDiffNode<K> implements FunctionalNode {
 
     /** The list with list elements to flatten */
-    @FlowKey(defaultValue = "\"{universe}\"") @NotNull
-    private final T<List<?>> universe = new T<>(){};
+    @FlowKey(defaultValue = "\"{universe}\"")
+    private final T<List<K>> universe = new T<>(){};
 
     @FlowKey
-    private final T<List<?>> list = new T<>(){};
+    private final T<List<K>> list = new T<>(){};
 
     /** Where the output hash is stored */
-    @FlowKey(defaultValue = "\"output\"") @NotNull
-    private L<List<?>> output = new L<>(){};
+    @FlowKey(defaultValue = "\"output\"")
+    private L<List<K>> output = new L<>(){};
 
-    @SuppressWarnings("SuspiciousMethodCalls") // removeAll that's ok
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        Set<?> universe = new HashSet<>(o.eval(this.universe)) ;
-        Set<?> list = new HashSet<>(o.eval(this.list));
+        Set<K> universe = new HashSet<>(o.eval(this.universe)) ;
+        Set<K> list = new HashSet<>(o.eval(this.list));
 
         universe.removeAll(list);
 

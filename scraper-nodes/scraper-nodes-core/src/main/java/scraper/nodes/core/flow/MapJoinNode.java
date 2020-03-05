@@ -21,8 +21,8 @@ import java.util.concurrent.ExecutionException;
 /**
  *
  */
-@NodePlugin("0.11.0")
-public final class MapJoinNode implements Node {
+@NodePlugin("0.12.0")
+public final class MapJoinNode<K> implements Node {
 
     /** Expected join for each key defined in this map after a forked flow terminates */
     @FlowKey(mandatory = true)
@@ -30,14 +30,14 @@ public final class MapJoinNode implements Node {
 
     /** List to apply map to */
     @FlowKey(mandatory = true) @NotNull
-    private T<List<?>> list = new T<>(){};
+    private T<List<K>> list = new T<>(){};
 
     /** Label of goTo */
     @FlowKey(mandatory = true)
     private Address mapTarget;
 
     /** At which key to put the element of the list into. */
-    @FlowKey(defaultValue = "\"element\"") @NotNull
+    @FlowKey(defaultValue = "\"element\"")
     private String putElement;
 
     /** Only distinct elements */
@@ -53,7 +53,7 @@ public final class MapJoinNode implements Node {
 
     @NotNull @Override
     public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
-        List<?> list = o.eval(this.list);
+        List<K> list = o.eval(this.list);
         if(distinct) list = new ArrayList<>(new HashSet<>(list));
 
         List<CompletableFuture<FlowMap>> forkedProcesses = new ArrayList<>();

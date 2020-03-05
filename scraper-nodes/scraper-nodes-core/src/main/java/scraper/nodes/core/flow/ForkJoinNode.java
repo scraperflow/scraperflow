@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutionException;
 /**
  *
  */
-@NodePlugin("0.3.0")
+@NodePlugin("0.4.0")
 public final class ForkJoinNode implements Node {
 
     /** Expected join for each target (for every key) defined in this map after a forked flow terminates */
@@ -32,8 +32,6 @@ public final class ForkJoinNode implements Node {
 
     @NotNull @Override
     public FlowMap process(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) {
-        Map<String, Map<String, String>> keys = o.evalIdentity(this.targetToKeys);
-
         Map<String, CompletableFuture<FlowMap>> forkedProcesses = new HashMap<>();
         o.evalIdentity(forkTargets).forEach(target -> {
             // dispatch new flow, expect future to return the modified flow map

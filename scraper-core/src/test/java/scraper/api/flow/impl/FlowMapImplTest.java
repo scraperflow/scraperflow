@@ -3,11 +3,9 @@ package scraper.api.flow.impl;
 import org.junit.Assert;
 import org.junit.Test;
 import scraper.api.flow.FlowMap;
+import scraper.api.template.L;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -115,14 +113,22 @@ public class FlowMapImplTest {
 
     @Test
     public void flowContainsDescendCollectionsTest() {
-        FlowMap o1 = FlowMapImpl.origin(Map.of("k1",123, "k2", Set.of(Map.of("1",1), "ok", List.of("123", "123"))));
-        FlowMap o2 = FlowMapImpl.origin(Map.of("k1",123, "k2", Set.of(Map.of("1",1,"2","2"), "moreElementsInTheSet", "ok", List.of("listIsBigger","123", "123"))));
+        FlowMap o1 = FlowMapImpl.origin(Map.of("k1",123, "k2", List.of(Map.of("1",1), "ok", List.of("123", "123"))));
+        FlowMap o2 = FlowMapImpl.origin(Map.of("k1",123, "k2", List.of(Map.of("1",1,"2","2"), "moreElementsInTheSet", "ok", List.of("listIsBigger","123", "123"))));
 
         // o2 has at least all elements of o1
         Assert.assertTrue(o2.containsElements(o1));
         Assert.assertFalse(o1.containsElements(o2));
 
         assertNotEquals(o1.hashCode(), o2.hashCode());
+    }
+
+    @Test
+    public <V> void getWithTypeTest() {
+        FlowMap o1 = FlowMapImpl.origin(Map.of("k1",123, "k2", List.of(Map.of("1",1), "ok", List.of("123", "123"))));
+
+        Optional<List<V>> tt = o1.getWithType("k2", new L<>(){});
+        Assert.assertTrue(tt.isPresent());
     }
 
 }

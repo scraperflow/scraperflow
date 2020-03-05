@@ -22,12 +22,12 @@ import java.util.List;
  *
  * @author Albert Schimpf
  */
-@NodePlugin("0.2.0")
-public final class MapNode implements Node {
+@NodePlugin("0.3.0")
+public final class MapNode<K> implements Node {
 
     /** The expected list is located to fork on */
     @FlowKey(mandatory = true)
-    private T<List<?>> list = new T<>(){};
+    private T<List<K>> list = new T<>(){};
 
     /** At which key to put the element of the list into. */
     @FlowKey(defaultValue = "\"element\"")
@@ -39,7 +39,7 @@ public final class MapNode implements Node {
     @NotNull
     @Override
     public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
-        List<?> targetList = o.eval(list);
+        List<K> targetList = o.eval(list);
 
         targetList.forEach(t -> {
             FlowMap finalCopy = o.copy();

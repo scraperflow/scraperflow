@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.String.valueOf;
+import static scraper.api.node.container.NodeLogLevel.ERROR;
+import static scraper.api.node.container.NodeLogLevel.INFO;
 
 @NodePlugin
 public class AssertNode implements Node {
@@ -48,50 +50,51 @@ public class AssertNode implements Node {
         List<List<String>> mathCompare  = o.evalIdentity(this.mathCompare);
 
         for (String key : assertMap.keySet()) {
-//            l.info("Assert @{}: {}{}{}", (String) key, clip(valueOf(o.get(key))), (negate?" != ":" == "), assertMap.get(key));
+            n.log(INFO,"Assert @{}: {}{}{}", key, clip(valueOf(o.get(key))), (negate?" != ":" == "), assertMap.get(key));
 
             // assert does not work for Numbers (e.g. 1 == 1L) , use BigDecimal wrapper
             if(o.get(key).isPresent() && Number.class.isAssignableFrom(o.get(key).get().getClass())
                     && assertMap.get(key) != null && Number.class.isAssignableFrom(assertMap.get(key).getClass())) {
                 if(!(new BigDecimal(valueOf(assertMap.get(key))).equals(new BigDecimal(valueOf(o.get(key).get()))))) {
                     if(!negate) {
-//                        l.error("Assertion wrong: {} != {}", assertMap.get(key), clip(valueOf(o.get(key))));
+                        n.log(ERROR, "Assertion wrong: {} != {}", assertMap.get(key), clip(valueOf(o.get(key).get())));
                         success.set(false);
                     }
                 } else {
                     if(negate) {
-//                        l.error("Equals but not expected: {} == {}", assertMap.get(key), clip(valueOf(o.get(key))));
+                        n.log(ERROR, "Equals but not expected: {} == {}", assertMap.get(key), clip(valueOf(o.get(key).get())));
                         success.set(false);
                     }
                 }
             }
             else if(!assertMap.get(key).equals(o.get(key).get())) {
                 if(!negate) {
-//                    l.error("Assertion wrong: {} != {}", assertMap.get(key), clip(valueOf(o.get(key))));
+                    n.log(ERROR, "Assertion wrong: {} != {}", assertMap.get(key), clip(valueOf(o.get(key).get())));
                     success.set(false);
                 }
             } else {
                 if(negate) {
-//                    l.error("Assertion true, but not expected: {} == {}", assertMap.get(key), clip(valueOf(o.get(key))));
+                    n.log(ERROR, "Assertion true, but not expected: {} == {}", assertMap.get(key), clip(valueOf(o.get(key).get())));
                     success.set(false);
                 }
             }
         }
 
         for (String key : containsMap.keySet()) {
-//            n.log(NodeLogLevel.INFO,"Assert contains: @{} contains {}", key, clip(valueOf(o.get(key))));
+            assert o.get(key).isPresent();
+            n.log(INFO,"Assert contains: @{} contains {}", key, clip(valueOf(o.get(key).get())));
             String actual = valueOf(o.get(key).get());
             List<String> expected = containsMap.get(key);
 
             for (String s : expected) {
                 if(!actual.contains(s)) {
                     if(!negate) {
-//                        l.error("Expected not contained in actual: {}", s);
+                        n.log(ERROR, "Expected not contained in actual: {}", s);
                         success.set(false);
                     }
                 } else {
                     if(negate) {
-//                        l.error("Expected contained in actual, but not expected: {}", s);
+                        n.log(ERROR, "Expected contained in actual, but not expected: {}", s);
                         success.set(false);
                     }
                 }
@@ -100,24 +103,24 @@ public class AssertNode implements Node {
 
         for (String key : containedInMap.keySet()) {
             String actual = valueOf(o.get(key).get());
-//            n.log(INFO,"Assert contained in @{}: {}", key, actual);
+            n.log(INFO,"Assert contained in @{}: {}", key, actual);
             List<String> contained = containedInMap.get(key);
 
             if(!contained.contains(actual)) {
                 if(!negate) {
-//                    l.error("Actual not contained in expected set: {}", actual);
+                    n.log(ERROR, "Actual not contained in expected set: {}", actual);
                     success.set(false);
                 }
             } else {
                 if(negate) {
-//                    l.error("Actual contained in set but not expected: {}", actual);
+                    n.log(ERROR, "Actual contained in set but not expected: {}", actual);
                     success.set(false);
                 }
             }
         }
 
         for (List<String> eq : mathCompare) {
-            formula(eq, o);
+            formula(n, eq, o);
         }
 
         finished = true;
@@ -127,7 +130,7 @@ public class AssertNode implements Node {
 
         if (failOnError && !success.get()) throw new NodeException("Assertion error!");
 
-        return n.forward(o);
+        return o;
     }
 
     private String clip(String o) {
@@ -136,7 +139,7 @@ public class AssertNode implements Node {
         return o;
     }
 
-    private void formula(List<String> eq, FlowMap o) {
+    private void formula(NodeContainer<?> n, List<String> eq, FlowMap o) {
         String left = eq.get(0);
         if(left.startsWith("@")) left = valueOf(o.get(left.substring(1)).get());
         String right = eq.get(2);
@@ -144,39 +147,39 @@ public class AssertNode implements Node {
 
         String op = eq.get(1);
 
-//        l.info("Assert formula: {}{}{}", left, op, right);
+        n.log(INFO, "Assert formula: {}{}{}", left, op, right);
         switch (op) {
             case "<": {
                 if(!(Integer.parseInt(left) < Integer.parseInt(right))) {
-//                    l.error("{} not smaller than {}", left, right);
+                    n.log(ERROR, "{} not smaller than {}", left, right);
                     success.set(false);
                 }
                 return;
             }
             case ">": {
                 if(!(Integer.parseInt(left) > Integer.parseInt(right))) {
-//                    l.error("{} not bigger than {}", left, right);
+                    n.log(ERROR, "{} not bigger than {}", left, right);
                     success.set(false);
                 }
                 return;
             }
             case "==": {
                 if(!(Integer.parseInt(left) == Integer.parseInt(right))) {
-//                    l.error("{} not equal {}", left, right);
+                    n.log(ERROR, "{} not equal {}", left, right);
                     success.set(false);
                 }
                 return;
             }
             case "<=": {
                 if(!(Integer.parseInt(left) <= Integer.parseInt(right))) {
-//                    l.error("{} not loe {}", left, right);
+                    n.log(ERROR, "{} not loe {}", left, right);
                     success.set(false);
                 }
                 return;
             }
             case ">=": {
                 if(!(Integer.parseInt(left) >= Integer.parseInt(right))) {
-//                    l.error("{} not goe {}", left, right);
+                    n.log(ERROR, "{} not goe {}", left, right);
                     success.set(false);
                 }
             }

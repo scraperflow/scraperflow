@@ -16,16 +16,16 @@ import java.util.List;
 /**
  * Appends a T to a list.
  */
-@NodePlugin("0.1.0")
-public final class AggregateListNode implements FunctionalNode {
+@NodePlugin("0.2.0")
+public final class AggregateListNode<K> implements FunctionalNode {
 
     /** Evaluated content inserted into 'put' */
     @FlowKey(mandatory = true)
-    private final T<?> aggregate = new T<>(){};
+    private final T<K> aggregate = new T<>(){};
 
     /** Expects a List object at the 'put' key or generates a new empty list if there is no list at given key */
     @FlowKey(mandatory = true)
-    private final L<List<Object>> put = new L<>(){};
+    private final L<List<K>> put = new L<>(){};
 
     /** Only put distinct elements into list if enabled */
     @FlowKey(defaultValue = "false")
@@ -34,10 +34,10 @@ public final class AggregateListNode implements FunctionalNode {
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         // fetch the list, or create a new one if it does not exist
-        List<? super Object> resultList = o.evalOrDefault(put, new LinkedList<>());
+        List<K> resultList = o.evalOrDefault(put, new LinkedList<>());
 
         // evaluate T
-        Object eval = o.eval(aggregate);
+        K eval = o.eval(aggregate);
 
         // append
         if(!distinct) resultList.add(eval);

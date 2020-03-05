@@ -12,14 +12,13 @@ import scraper.api.template.L;
 import scraper.api.template.T;
 
 import java.io.IOException;
-import java.util.Map;
 
 import static scraper.api.node.container.NodeLogLevel.WARN;
 
 /**
  * Converts and evaluates a json string to a json object
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class JsonStringToObjectNode implements FunctionalNode {
 
     /** JSON string */
@@ -28,7 +27,7 @@ public final class JsonStringToObjectNode implements FunctionalNode {
 
     /** JSON object output */
     @FlowKey(defaultValue = "\"result\"")
-    private final L<Map<?, ?>> jsonObject = new L<>(){};
+    private final L<Object> jsonObject = new L<>(){};
 
     // used to convert JSON
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -39,7 +38,7 @@ public final class JsonStringToObjectNode implements FunctionalNode {
 
         try {
             // read and clean object at argument location
-            Map<?, ?> obj = objectMapper.readValue(json, Map.class);
+            Object obj = objectMapper.readValue(json, Object.class);
             o.output(jsonObject, obj);
         }
         catch (IOException e) {

@@ -30,6 +30,15 @@ public class FlattenListNodeTest extends FunctionalTest {
         };
     }
 
+    @Functional(FlattenListNode.class)
+    public Object[] simpleLists() {
+        return new Object[]{
+                Map.of("flatten", List.of(List.of("123120"), List.of("qweq"))),
+                Map.of(),
+                Map.of("output",List.of("123120","qweq"))
+        };
+    }
+
     @Functional(value = FlattenListNode.class, expectException = TemplateException.class)
     public Object[] badTypes() {
         return new Object[]{

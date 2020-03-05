@@ -17,16 +17,16 @@ import java.util.Collection;
  *
  * @author Albert Schimpf
  */
-@NodePlugin("0.1.0")
-public final class ContainedInCollectionNode implements FunctionalNode {
+@NodePlugin("0.2.0")
+public final class ContainedInCollectionNode<K> implements FunctionalNode {
 
     /** Collection to be checked if the object is contained */
     @FlowKey(defaultValue = "\"{collection}\"") @NotNull
-    private final T<Collection<?>> collection = new T<>(){};
+    private final T<Collection<K>> collection = new T<>(){};
 
     /** This evaluated object is used for checking */
     @FlowKey(defaultValue = "\"{object}\"") @NotNull
-    private final T<Object> object = new T<>(){};
+    private final T<K> object = new T<>(){};
 
     /** Key where the result flag will be written to */
     @FlowKey(defaultValue = "\"flag\"") @NotNull
@@ -38,8 +38,8 @@ public final class ContainedInCollectionNode implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        Object     object     = o.eval(this.object);
-        Collection<?> collection = o.eval(this.collection);
+        K             object     = o.eval(this.object);
+        Collection<K> collection = o.eval(this.collection);
 
         // cont negate output
         // 0    0      0

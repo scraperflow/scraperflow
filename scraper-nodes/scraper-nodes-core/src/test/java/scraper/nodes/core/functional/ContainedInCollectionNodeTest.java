@@ -6,8 +6,8 @@ import scraper.api.exceptions.TemplateException;
 import scraper.nodes.core.test.annotations.Functional;
 import scraper.nodes.core.test.helper.FunctionalTest;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 @RunWith(JUnitParamsRunner.class)
@@ -26,7 +26,7 @@ public class ContainedInCollectionNodeTest extends FunctionalTest {
     public Object[] simpleContains() {
         Map nIn = Map.of();
         Map fIn = Map.of(
-                "collection", Set.of("important", "notImportant"),
+                "collection", List.of("important", "notImportant"),
                 "object", "important"
         );
         Map fOut = Map.of("flag", true);
@@ -38,8 +38,8 @@ public class ContainedInCollectionNodeTest extends FunctionalTest {
     public Object[] complexObjectContains() {
         Map nIn = Map.of();
         Map fIn = Map.of(
-                "collection", Set.of("important", Set.of("hello", "world")),
-                "object", Set.of("hello", "world")
+                "collection", List.of("important", List.of("hello", "world")),
+                "object", List.of("hello", "world")
         );
         Map fOut = Map.of("flag", true);
 
@@ -50,8 +50,8 @@ public class ContainedInCollectionNodeTest extends FunctionalTest {
     public Object[] complexObjectNotContains() {
         Map nIn = Map.of();
         Map fIn = Map.of(
-                "collection", Set.of("important", Set.of("hello", "world")),
-                "object", Set.of("hello")
+                "collection", List.of("important", List.of("hello", "world")),
+                "object", List.of("hello")
         );
         Map fOut = Map.of("flag", false);
 
