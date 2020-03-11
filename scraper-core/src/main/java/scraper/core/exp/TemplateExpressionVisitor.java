@@ -36,13 +36,14 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
             return t;
         }
 
-        if(ctx.children.size() != 2) { throw new RuntimeException("Root wrong children size: " + ctx.children.size()); }
+        if(ctx.children.size() != 2) throw new AssertionError("Bad root definition");
         return visit(ctx.children.get(0));
     }
 
     @Override
     public TemplateExpression<Y> visitTemplate(TemplateParser.TemplateContext ctx) {
         l.trace("Visiting template '{}'", ctx.getText());
+
         // string content or fmlookup
         if(ctx.children.size() == 1) {
             return visit(ctx.getChild(0));
@@ -97,13 +98,13 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
         }
 
 
-        throw new RuntimeException("Template has wrong amount of children: " + ctx.getText());
+        throw new AssertionError("Template has wrong amount of children: " + ctx.getText());
     }
 
     @Override
     public TemplateExpression<Y> visitFmlookup(TemplateParser.FmlookupContext ctx) {
         l.trace("Visiting fm lookup '{}'", ctx.getText());
-        if(ctx.children.size() != 3) throw new RuntimeException("FM Lookup Template does not look like { T }");
+        if(ctx.children.size() != 3) throw new AssertionError("Bad FmlLookup");
 
         TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(new T<>(){});
         TemplateExpression<String> visited = stringTargetVisitor.visit(ctx.children.get(1));

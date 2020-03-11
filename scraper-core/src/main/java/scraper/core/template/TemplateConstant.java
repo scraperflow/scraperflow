@@ -22,7 +22,7 @@ public class TemplateConstant<K> extends TemplateExpression<K> implements Primit
     @NotNull
     @Override
     public Object getRaw() {
-        return constant;
+        return toString();
     }
 
     @Override

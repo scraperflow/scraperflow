@@ -25,34 +25,30 @@ import java.util.List;
 import java.util.Map;
 
 
-// TODO rewrite with generics
-//      I tried, very hard, to make this work with generics
-//      It didn't work
-@SuppressWarnings({"rawtypes", "unchecked"})
 public final class TemplateUtil {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(TemplateUtil.class);
 
-    public static Term parseTemplate(@NotNull final Object term, @NotNull final T targetType) throws ValidationException {
+    @SuppressWarnings("unchecked") // checked with types
+    public static <K> Term<K> parseTemplate(@NotNull final Object term, @NotNull final T<K> targetType) throws ValidationException {
         TypeToken templ = TypeToken.of(targetType.get());
 
 
         if(List.class.isAssignableFrom(term.getClass()) && (
                 List.class.isAssignableFrom(templ.getRawType()) || templ.getRawType().equals(Object.class))) {
-            return parseTemplateL((List) term, targetType);
+            return (Term<K>) parseTemplateL((List) term, (T<List<?>>) targetType);
         } // JSON map
         else if(Map.class.isAssignableFrom(term.getClass()) && (
                 Map.class.isAssignableFrom(templ.getRawType()) || templ.getRawType().equals(Object.class) // descend into object
         )) {
-            return parseTemplateM((Map<String, ?>) term, targetType);
+            return (Term<K>) parseTemplateM((Map<String, ?>) term, (T<Map<String, ?>>) targetType);
         }
         // primitives
         else {
             // raw type
             if(templ.getRawType().isAssignableFrom(term.getClass()) && !String.class.isAssignableFrom(term.getClass())) {
                 // same types, return actual object
-                //noinspection unchecked checked
-                return new TemplateConstant<>(term, targetType);
+                return new TemplateConstant<>((K) term, targetType);
             } else if (String.class.isAssignableFrom(term.getClass())) {
                 // string template found
                 return parseTemplate(((String) term), targetType);
@@ -100,6 +96,7 @@ public final class TemplateUtil {
     // descend into lists and maps helper functions
     // ==============
 
+    @SuppressWarnings("unchecked") // checked
     private static Term<Map<String, ?>> parseTemplateM(@NotNull final Map<String, ?> term,
                                                        @NotNull final T<Map<String, ?>> targetType) throws ValidationException {
         TypeToken<?> templ = TypeToken.of(targetType.get());
@@ -116,6 +113,7 @@ public final class TemplateUtil {
         return new TemplateMap(resultMap, new T<>(elementType.getType()){}, targetType);
     }
 
+    @SuppressWarnings("unchecked") // checked
     private static ListTerm<?> parseTemplateL(@NotNull final List<?> term,
                                               @NotNull final T<List<?>> listType) throws ValidationException {
         TypeToken<?> templ = TypeToken.of(listType.get());

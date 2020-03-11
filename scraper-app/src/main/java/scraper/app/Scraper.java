@@ -99,7 +99,8 @@ public class Scraper {
 
 
     private void run(@NotNull final String... args) throws Exception {
-        log.info("Loading {} addons", addons.size());
+        log.info("Loading {} addons: {}", addons.size(), addons);
+//        log.info("Discovered {} nodes, {}", plugins.getPlugins().size(), sb.append("]").toString());
         for (Addon addon : addons) addon.load(pico, args);
 
         log.info("Parsing scrape jobs in {}", System.getProperty("user.dir"));
@@ -109,7 +110,7 @@ public class Scraper {
         for (ScrapeSpecification jobDefinition : jobDefinitions)
             jobs.put(jobDefinition, jobFactory.convertScrapeJob(jobDefinition, nodeHooks));
 
-        log.info("Executing {} hooks", hooks.size());
+        log.info("Executing {} hooks: {}", hooks.size(), hooks);
         for (Hook hook : hooks) hook.execute(pico, args, jobs);
 
         if(System.getProperty("scraper.exit", "false").equalsIgnoreCase("true")) {
@@ -117,7 +118,7 @@ public class Scraper {
             return;
         }
 
-        log.info("Found {} node hooks", nodeHooks.size());
+        log.info("Found {} node hooks: {}", nodeHooks.size(), nodeHooks);
         startScrapeJobs();
     }
 

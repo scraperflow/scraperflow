@@ -33,13 +33,17 @@ task bundleCore(type: Jar, dependsOn: [':scraper-app:jar', ':scraper-core:jar'])
     subprojects.each {s ->
         // should be a better way to exclude sub projects
         if(!s.toString().contains('scraper-nodes') && !s.toString().contains('scraper-plugins')) {
-            from {
-                s.configurations.compileClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
-            }
+//            from {
+//                s.configurations.compileClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+//            }
             from {
                 s.sourceSets.main.output
             }
         }
+    }
+
+    from {
+        project(':scraper-app').configurations.compileClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
     }
 
     archiveFileName = "Scraper-${version}-core.jar"

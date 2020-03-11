@@ -8,14 +8,14 @@ dependencies {
 
 dependencies {
     // template grammar parser generator
-    implementation 'org.antlr:antlr4-runtime:4.8'
+    api 'org.antlr:antlr4-runtime:4.8'
     
     // reflection framework
     api 'io.github.classgraph:classgraph:4.8.47'
 
     // logger framework
     api group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta4'
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'
+    api group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'
 
     // type tokens
     api 'com.google.guava:guava:28.1-jre'

@@ -31,4 +31,5 @@ public class ExitHook implements Hook {
         }
     }
 
+    @Override public String toString() { return "Exit"; }
 }

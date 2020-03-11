@@ -96,7 +96,7 @@ public final class JobUtil {
 
         ScrapeSpecification parsed = parseSingleSpecification(args, canditatePaths);
         if(parsed != null) jobs.add(parsed);
-        log.info("Parsed {} scrape job definitions", jobs.size());
+        log.info("Parsed {} scrape job definitions: {}", jobs.size(), jobs);
 
         return jobs;
     }

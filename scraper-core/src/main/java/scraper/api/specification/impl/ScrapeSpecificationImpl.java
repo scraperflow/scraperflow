@@ -63,4 +63,9 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
     public void setGlobalNodeConfigurations(Map<String, Map<String, Object>> globalNodeConfigurations) {
         this.globalNodeConfigurations = globalNodeConfigurations;
     }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

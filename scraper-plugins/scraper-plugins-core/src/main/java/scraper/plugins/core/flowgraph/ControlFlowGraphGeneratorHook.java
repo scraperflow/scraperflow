@@ -67,4 +67,6 @@ public class ControlFlowGraphGeneratorHook implements Hook {
             }
         }
     }
+
+    @Override public String toString() { return "ControlFlowGraphGenerator"; }
 }

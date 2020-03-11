@@ -5,12 +5,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import scraper.api.exceptions.TemplateException;
+import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.template.T;
 import scraper.api.template.Term;
+import scraper.core.exp.TemplateExpressionVisitor;
+import scraper.core.exp.TemplateParser;
 import scraper.util.TemplateUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -170,6 +174,16 @@ public class TemplateExpTest {
         o.output("M", Map.of("1", "hello world", "ok", "hello ok"));
         String target = test.eval(o);
         Assert.assertEquals("hello ok", target);
+
+        System.out.println(test.getRaw());
+    }
+
+    @Test(expected = TemplateException.class)
+    public void simpleMapLookupFail() {
+        String source = "{{M}@ok}";
+        Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
+        o.output("M", Map.of("1", "hello world", "nk", "hello ok"));
+        test.eval(o);
     }
 
     @Test
@@ -413,6 +427,8 @@ public class TemplateExpTest {
         o.output("L", List.of(List.of("1"), List.of("2"), List.of("3")));
         List<?> l = expectedTemplate.eval(o);
         Assert.assertEquals("3", l.get(0));
+        Assert.assertEquals("{{L}}[2]", expectedTemplate.getRaw());
+        Assert.assertEquals("java.util.List<?>",expectedTemplate.getToken().get().getTypeName());
     }
 
     @Test(expected = TemplateException.class)
@@ -421,5 +437,37 @@ public class TemplateExpTest {
         o.output("L", List.of(List.of("1"), List.of("2"), List.of("3")));
         List<Map<String, Integer>> tt = expectedTemplate.eval(o);
         System.out.println(tt);
+    }
+
+    @Test
+    public void listTemplateTest() throws ValidationException {
+        Term<List<String>> listTemplate = TemplateUtil.parseTemplate( List.of("1", "2"), new T<>(){});
+        List<String> tt = listTemplate.eval(o);
+        Assert.assertEquals(tt, listTemplate.getRaw());
+        Assert.assertEquals("java.util.List<java.lang.String>", listTemplate.getToken().get().getTypeName());
+    }
+
+    @Test
+    public void mapTemplateTest() throws ValidationException {
+        Term<Map<String, String>> mapTemplate = TemplateUtil.parseTemplate( Map.of("1", "2"), new T<>(){});
+        Map<String, String> tt = mapTemplate.eval(o);
+        Assert.assertEquals(tt, mapTemplate.getRaw());
+        Assert.assertEquals("java.util.Map<java.lang.String, java.lang.String>", mapTemplate.getToken().get().getTypeName());
+    }
+
+    @Test
+    public void constantTest() throws ValidationException {
+        Term<Object> test = TemplateUtil.parseTemplate(new Object(), new T<>(){});
+        System.out.println(test.getRaw());
+        test.eval(o);
+
+        Assert.assertEquals(test.getToken(), new T<>(){});
+    }
+
+    @Test(expected = TemplateException.class)
+    public void badMixedTemplate() {
+        String source = "world {hello}";
+        Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
+        test.eval(o);
     }
 }

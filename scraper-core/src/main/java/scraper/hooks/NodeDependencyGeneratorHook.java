@@ -69,4 +69,6 @@ public class NodeDependencyGeneratorHook implements Hook {
             }
         }
     }
+
+    @Override public String toString() { return "NodeDependencyGenerator"; }
 }

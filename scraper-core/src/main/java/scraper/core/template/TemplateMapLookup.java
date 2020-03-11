@@ -58,7 +58,7 @@ public class TemplateMapLookup<K> extends TemplateExpression<K> implements MapLo
 
     @Override
     public String toString() {
-        return "{" + map.getRaw() + "}[" + key.getRaw() + "]";
+        return "{" + map.getRaw() + "@" + key.getRaw()+ "}";
     }
 
     @NotNull
