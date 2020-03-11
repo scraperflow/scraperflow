@@ -1,9 +1,5 @@
 image: adoptopenjdk/openjdk12:x86_64-ubi-minimal-jdk-12.0.2_10
 
-variables:
-  GIT_SUBMODULE_STRATEGY: recursive
-
-
 stages:
   - build
   - test
@@ -46,5 +42,3 @@ run:
   script:
     - ./gradlew run
 
-after_script:
-  - echo "End CI"

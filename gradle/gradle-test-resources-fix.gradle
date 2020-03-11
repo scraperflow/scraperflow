@@ -1,4 +1,4 @@
-// Fixes #14 by manually copying necessary files
+// Fixes resources problems by manually copying necessary files
 // The problem seems to be that gradle ignores test resources
 // it also does not find the source files in the module it tries to test
 task mainClassesFix(type: Copy) {

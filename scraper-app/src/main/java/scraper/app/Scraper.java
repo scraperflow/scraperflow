@@ -100,7 +100,6 @@ public class Scraper {
 
     private void run(@NotNull final String... args) throws Exception {
         log.info("Loading {} addons: {}", addons.size(), addons);
-//        log.info("Discovered {} nodes, {}", plugins.getPlugins().size(), sb.append("]").toString());
         for (Addon addon : addons) addon.load(pico, args);
 
         log.info("Parsing scrape jobs in {}", System.getProperty("user.dir"));
