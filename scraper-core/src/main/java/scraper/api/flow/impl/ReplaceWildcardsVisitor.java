@@ -57,8 +57,7 @@ abstract class ReplaceWildcardsVisitor {
             @Override public Type[] getActualTypeArguments() { return parameters; }
             @Override public Type getRawType() { return t.getRawType(); }
             @Override public Type getOwnerType() { return owner; }
-            @Override
-            public boolean equals(Object o) {
+            @Override public boolean equals(Object o) {
                 if (o instanceof ParameterizedType) {
                     // Check that information is equivalent
                     ParameterizedType that = (ParameterizedType) o;
@@ -85,7 +84,7 @@ abstract class ReplaceWildcardsVisitor {
     }
 
     private Type visitTypeVariable(TypeVariable<?> t) {
-        System.out.println("Replacing type variable " + t.getName() + " with wildcard ?");
+//        System.out.println("Replacing type variable " + t.getName() + " with wildcard ?");
         return new WildcardType() {
             @Override public Type[] getUpperBounds() { return new Type[]{Object.class}; }
             @Override public Type[] getLowerBounds() { return new Type[0]; }

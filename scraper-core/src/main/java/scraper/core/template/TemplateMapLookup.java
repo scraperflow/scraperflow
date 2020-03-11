@@ -1,8 +1,10 @@
 package scraper.core.template;
 
+import com.google.common.reflect.TypeToken;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
+import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.template.MapLookup;
 import scraper.api.template.T;
 import scraper.api.template.TVisitor;
@@ -13,11 +15,11 @@ import java.util.Map;
 public class TemplateMapLookup<K> extends TemplateExpression<K> implements MapLookup<K> {
     @Override public void accept(@NotNull TVisitor visitor) { visitor.visitMapLookup(this); }
 
-    private TemplateExpression<Map<String, K>> map;
+    private TemplateExpression<Map<String, ?>> map;
     private TemplateExpression<String> key;
 
     public TemplateMapLookup(
-            TemplateExpression<Map<String, K>> map,
+            TemplateExpression<Map<String, ?>> map,
             TemplateExpression<String> key,
             T<K> targetType) {
         super(targetType);
@@ -25,16 +27,24 @@ public class TemplateMapLookup<K> extends TemplateExpression<K> implements MapLo
         this.key = key;
     }
 
+    @SuppressWarnings("unchecked") // checked with map generics subtype relation
     public K eval(@NotNull final FlowMap o) {
         try {
-            Map<String, K> m = map.eval(o);
+            Map<String, ?> m = map.eval(o);
             String k = key.eval(o);
 
-            K mapElement = m.get(k);
+            Object mapElement = m.get(k);
 
-            if(mapElement == null) throw new TemplateException("Key '"+k+"' does not exist for map access '" +toString() +"'. Map has only the keys " + m.keySet()+"");
+            if(mapElement == null)
+                throw new TemplateException("Key '"+k+"' does not exist for map access '" +toString() +"'. Map has only the keys " + m.keySet()+"");
 
-            return mapElement;
+
+            TypeToken<?> known = FlowMapImpl.inferType(mapElement);
+            TypeToken<?> target = TypeToken.of(targetType.get());
+
+            FlowMapImpl.checkGenericType(known, target);
+
+            return (K) mapElement;
         } catch (Exception e) {
             throw new TemplateException(e, "Could not evaluate array/map lookup template '"+toString()+"'. " + e.getMessage());
         }
@@ -53,7 +63,7 @@ public class TemplateMapLookup<K> extends TemplateExpression<K> implements MapLo
 
     @NotNull
     @Override
-    public Term<Map<String, K>> getMapObjectTerm() {
+    public Term<Map<String, ?>> getMapObjectTerm() {
         return map;
     }
 

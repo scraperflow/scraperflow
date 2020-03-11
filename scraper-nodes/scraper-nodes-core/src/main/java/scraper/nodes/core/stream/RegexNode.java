@@ -63,7 +63,8 @@ public final class RegexNode implements StreamNode {
         try {
             if(dotAll) p = Pattern.compile(regex, Pattern.DOTALL);
             else p = Pattern.compile(regex);
-        } catch (Exception e) { throw new ValidationException(e, "Failed to compile pattern."); }
+        } catch (Exception e) {
+            throw new ValidationException(e, "Failed to compile pattern."); }
     }
 
     @Override

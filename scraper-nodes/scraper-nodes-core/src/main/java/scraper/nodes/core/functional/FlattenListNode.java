@@ -14,21 +14,21 @@ import java.util.stream.Collectors;
 
 /**
  */
-@NodePlugin("0.2.0")
-public final class FlattenListNode<V> implements FunctionalNode {
+@NodePlugin("0.3.0")
+public final class FlattenListNode implements FunctionalNode {
 
     /** The list with list elements to flatten */
     @FlowKey(defaultValue = "\"{list}\"") @NotNull
-    private final T<List<List<V>>> flatten = new T<>(){};
+    private final T<List<List<?>>> flatten = new T<>(){};
 
     /** Where the output hash is stored */
     @FlowKey(defaultValue = "\"output\"") @NotNull
-    private L<List<V>> output = new L<>(){};
+    private L<List<?>> output = new L<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        List<List<V>> flatten = o.eval(this.flatten);
-        List<V> flattened = flatten.stream().flatMap(List::stream).distinct().collect(Collectors.toList());
+        List<List<?>> flatten = o.eval(this.flatten);
+        List<?> flattened = flatten.stream().flatMap(List::stream).distinct().collect(Collectors.toList());
 
         o.output(output, flattened);
     }

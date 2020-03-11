@@ -4,7 +4,7 @@
         "start":
         [
           { "type": "EchoNode", "puts": { "before": "OK" } },
-          { "type" : "RegexNode", "regex": "", "groups": {} },
+          { "type" : "RegexNode", "regex": "a", "groups": {} },
           { "type": "EchoNode", "puts": { "before": "OK" } }
         ],
 

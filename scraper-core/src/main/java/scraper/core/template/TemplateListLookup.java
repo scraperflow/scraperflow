@@ -1,8 +1,10 @@
 package scraper.core.template;
 
+import com.google.common.reflect.TypeToken;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
+import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.template.ListLookup;
 import scraper.api.template.T;
 import scraper.api.template.TVisitor;
@@ -13,11 +15,11 @@ import java.util.List;
 public class TemplateListLookup<K> extends TemplateExpression<K> implements ListLookup<K> {
     @Override public void accept(@NotNull TVisitor visitor) { visitor.visitListLookup(this); }
 
-    private TemplateExpression<List<K>> list;
+    private TemplateExpression<List> list;
     private TemplateExpression<Integer> index;
 
     public TemplateListLookup(
-            TemplateExpression<List<K>> list,
+            TemplateExpression<List> list,
             TemplateExpression<Integer> index,
             T<K> targetType) {
         super(targetType);
@@ -27,18 +29,25 @@ public class TemplateListLookup<K> extends TemplateExpression<K> implements List
 
 
 
+    @SuppressWarnings("unchecked") // checked with generics subtype relation
     public K eval(@NotNull final FlowMap o) {
         try{
-            List<? extends K> l = list.eval(o);
+            List l = list.eval(o);
             Integer index = this.index.eval(o);
-            K element;
+            Object element;
 
             if (index < 0) {
                 element = l.get(l.size() - Math.abs(index));
             } else {
-                element =  l.get(index);
+                element = l.get(index);
             }
-            return element;
+
+            TypeToken<?> known = FlowMapImpl.inferType(element);
+            TypeToken<?> target = TypeToken.of(targetType.get());
+
+            FlowMapImpl.checkGenericType(known, target);
+
+            return (K) element;
         }
         catch (IndexOutOfBoundsException e) {
             throw new TemplateException(e, "Array index out of bounds for '"+toString()+"': "+ e.getMessage());
@@ -61,7 +70,7 @@ public class TemplateListLookup<K> extends TemplateExpression<K> implements List
 
     @NotNull
     @Override
-    public Term<List<K>> getListObjectTerm() {
+    public Term<List> getListObjectTerm() {
         return list;
     }
 

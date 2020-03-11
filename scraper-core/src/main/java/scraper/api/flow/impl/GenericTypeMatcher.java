@@ -91,11 +91,6 @@ abstract class GenericTypeMatcher {
             return false;
         }
 
-//        if(targetToken.isSubtypeOf(knownToken)) {
-//            log.warn("Down casting: {} is subtype of known {}", targetToken, knownToken);
-//            return false;
-//        }
-
         log.error("Types do not match: '{}' != '{}'", t, target);
         throw new TemplateException("Types do not match: " + t + " != " + target);
     }
@@ -115,15 +110,19 @@ abstract class GenericTypeMatcher {
         } else if(target instanceof TypeVariable) {
             log.info("Capture {} -> {}", target.getTypeName(), t);
             return false;
+        } else if(target == Object.class) {
+            log.info("Target is most generic: {} << {}", target, t);
+            return false;
         } else {
             log.error("Types do not match: '{}' != '{}'", t, target);
             throw new TemplateException("Types do not match: " + t + " != " + target);
         }
     }
 
+    @SuppressWarnings("unused") // ignored
     private boolean visitTypeVariable(TypeVariable<?> t, Type target) {
         log.error("Inferred known type should never have type variables. " +
-                "Ignoring, fix infer type implementation");
+                "Ignoring, fix infer type implementation: {}", t);
         throw new TemplateException("Known type has a type variable");
     }
 

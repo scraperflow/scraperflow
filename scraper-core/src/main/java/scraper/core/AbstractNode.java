@@ -129,10 +129,6 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
 //        Runtime.getRuntime().addShutdownHook(new Thread(this::nodeShutdown));
         this.jobPojo = job;
 
-//        // set logger name
-//        String number = String.valueOf(job.getGraph(getGraphKey()).size());
-//        int indexLength = number.toCharArray().length;
-//        initLogger(indexLength);
         initLogger();
         log(TRACE,"Start init {}", this);
 
@@ -171,14 +167,6 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
 
     public void initLogger() {
         String loggerName = getAddress().toString();
-//                        getClass().getSimpleName().substring(0, getClass().getSimpleName().length()-4));
-//        String loggerName =
-//                String.format("%s > %s%"+indexLength+"s | %s",
-//                        getJobPojo().getName(),
-//                        getAddress().getLabel() + " @ ",
-//                        getAddress().getIndex(),
-//                        getClass().getSimpleName().substring(0, getClass().getSimpleName().length()-4));
-
         l = LoggerFactory.getLogger(loggerName);
     }
 

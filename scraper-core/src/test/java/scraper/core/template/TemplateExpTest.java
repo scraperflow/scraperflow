@@ -7,7 +7,6 @@ import org.junit.Test;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.node.Address;
 import scraper.api.template.T;
 import scraper.api.template.Term;
 import scraper.util.TemplateUtil;
@@ -18,7 +17,6 @@ import java.util.Map;
 public class TemplateExpTest {
 
     private final static FlowMap o = new FlowMapImpl();
-    private List<Map<String, Integer>> t;
 
     @Before
     public void clean() { o.clear(); }
@@ -224,9 +222,9 @@ public class TemplateExpTest {
     @Test
     public void nestedMapLookup() {
         String source = "{{map}@first}";
-        Term<Map<? extends String, ? extends String>> test = TemplateUtil.parseTemplate(source, new T<>(){});
+        Term<Map<String, String>> test = TemplateUtil.parseTemplate(source, new T<>(){});
         o.output("map", Map.of("first", Map.of("module", "test-module")));
-        Map<? extends String, ? extends String> target = test.eval(o);
+        Map<String, String> target = test.eval(o);
         Assert.assertFalse(target.isEmpty());
 
         String source2 = "{{{map}@first}@module}";
@@ -291,17 +289,14 @@ public class TemplateExpTest {
         o.output("L", List.of(List.of("1"), List.of("2"), List.of("3")));
         o.output("index", 2);
 
-        try {
-            List<?> tt = test.eval(o);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+        test.eval(o);
     }
 
     @Test
     public void genericSubtyping() {
         TypeToken<List<String>> stringList  = new TypeToken<>(){};
         TypeToken<List<Object>> moreGenericList  = new TypeToken<>(){};
+        @SuppressWarnings("TypeParameterExplicitlyExtendsObject") // testing
         TypeToken<List<? extends Object>> mostGenericType  = new TypeToken<>(){};
 
         // generic subtyping requires wildcards
@@ -314,6 +309,7 @@ public class TemplateExpTest {
         Assert.assertTrue(stringList.isSubtypeOf(mostGenericType));
     }
 
+    @SuppressWarnings("TypeParameterExplicitlyExtendsObject") // testing
     @Test
     public void genericSubtypingNested() {
         // enter nested madness
@@ -336,6 +332,7 @@ public class TemplateExpTest {
         Assert.assertTrue(lessGenericList.isSupertypeOf(mostGenericType));
     }
 
+    @SuppressWarnings("Convert2Diamond") // testing
     @Test
     public void genericSubtypingWildcard() {
         TypeToken<String> string  = new TypeToken<String>(){};

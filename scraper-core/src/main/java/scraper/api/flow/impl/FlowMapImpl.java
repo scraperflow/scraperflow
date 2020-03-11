@@ -366,6 +366,8 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
             @SuppressWarnings("unchecked") // checked with type visitor
             Optional<K> castObject = Optional.of((K) targetObject);
             return castObject;
+        } catch (AssertionError e) {
+            log.warn("Recheck and infer");
         } catch (Exception e){
             log.error("Could not check type", e);
         }
@@ -377,7 +379,7 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
         ));
     }
 
-    private TypeToken<?> checkGenericType(TypeToken<?> knownToken, TypeToken<?> targetToken) {
+    public static TypeToken<?> checkGenericType(TypeToken<?> knownToken, TypeToken<?> targetToken) {
         log.info("Check Target '{}' <~> Known '{}'", targetToken, knownToken);
 
         if(new GenericTypeMatcher() {}.visit(knownToken.getType(), targetToken.getType())) {
@@ -401,19 +403,12 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
             for (int i = 1; i < oList.size(); i++) {
                 TypeToken<?> nextType = inferType(oList.get(i));
 
-                // specialized common type
-                if(commonType.isSupertypeOf(nextType) || nextType.isSupertypeOf(commonType))
+                if(commonType.equals(nextType))
                     continue;
 
-                if(commonType.isSubtypeOf(nextType) || nextType.isSubtypeOf(commonType))
-                    continue;
-
-                // inferring common super type
-                TypeToken<?> inferredCommonType = TypeToken.of(mostSpecificCommonSuperclass(commonType.getRawType(), nextType.getRawType()));
-                if(!inferredCommonType.equals(commonType)) {
-                    log.warn("Element type of list was generalized: {} U {} -> {}", commonType, nextType, inferredCommonType);
-                    commonType = inferredCommonType;
-                }
+                log.warn("Element type of list was generalized: {} U {} -> Object", commonType, nextType);
+                commonType = TypeToken.of(Object.class);
+                break;
             }
 
             return listOf(commonType);
@@ -426,15 +421,12 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
             TypeToken<?> commonType = inferType(oMap.get(iter.next()));
             while(iter.hasNext()) {
                 TypeToken<?> nextType = inferType(oMap.get(iter.next()));
-                if(commonType.isSubtypeOf(nextType) || nextType.isSubtypeOf(commonType))
+                if(commonType.equals(nextType))
                     continue;
 
-                // inferring common super type
-                TypeToken<?> inferredCommonType = TypeToken.of(mostSpecificCommonSuperclass(commonType.getRawType(), nextType.getRawType()));
-                if(!inferredCommonType.equals(commonType)) {
-                    log.warn("Element type of map was generalized: {} U {} -> {}", commonType, nextType, inferredCommonType);
-                    commonType = inferredCommonType;
-                }
+                log.warn("Element type of map was generalized: {} U {} -> Object", commonType, nextType);
+                commonType = TypeToken.of(Object.class);
+                break;
             }
 
             return mapOf(TypeToken.of(String.class), commonType);
@@ -445,41 +437,4 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
         }
     }
 
-    private static Class<?> mostSpecificCommonSuperclass(Class<?> a, Class<?> b) {
-        List<Class<?>> commonClasses = commonSuperClass(a, b);
-        if(commonClasses.size() > 1)
-            log.warn("More than 1 common class found, using first as inferred type: {} V {} => {}", a, b, commonClasses);
-        return commonClasses.get(0);
-    }
-
-    private static Set<Class<?>> getClassesBfs(Class<?> clazz) {
-        Set<Class<?>> classes = new LinkedHashSet<>();
-        Set<Class<?>> nextLevel = new LinkedHashSet<>();
-        nextLevel.add(clazz);
-        do {
-            classes.addAll(nextLevel);
-            Set<Class<?>> thisLevel = new LinkedHashSet<>(nextLevel);
-            nextLevel.clear();
-            for (Class<?> each : thisLevel) {
-                Class<?> superClass = each.getSuperclass();
-                if (superClass != null && superClass != Object.class) {
-                    nextLevel.add(superClass);
-                }
-
-                nextLevel.addAll(Arrays.asList(each.getInterfaces()));
-            }
-        } while (!nextLevel.isEmpty());
-        return classes;
-    }
-
-    private static List<Class<?>> commonSuperClass(Class<?>... classes) {
-        // start off with set from first hierarchy
-        Set<Class<?>> rollingIntersect = new LinkedHashSet<>(getClassesBfs(classes[0]));
-        // intersect with next
-        for (int i = 1; i < classes.length; i++) {
-            rollingIntersect.retainAll(getClassesBfs(classes[i]));
-        }
-        if(rollingIntersect.isEmpty()) return List.of(Object.class);
-        return new LinkedList<>(rollingIntersect);
-    }
 }
