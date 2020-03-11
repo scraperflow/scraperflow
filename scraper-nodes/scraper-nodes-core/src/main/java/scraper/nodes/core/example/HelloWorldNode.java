@@ -8,12 +8,18 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
-import scraper.api.template.T;
 import scraper.api.specification.ScrapeInstance;
+import scraper.api.template.T;
+import scraper.api.template.Term;
+import scraper.util.TemplateUtil;
 
+import java.io.File;
 import java.util.Map;
+
+import static scraper.api.node.container.NodeLogLevel.INFO;
 
 // AbstractNode provides all expected features
 @SuppressWarnings({"DefaultAnnotationParam", "RedundantThrows"}) // tutorial
@@ -46,56 +52,65 @@ public class HelloWorldNode implements Node {
     @FlowKey(defaultValue = "{}")
     private T<Map<String, Integer>> typesafeMap = new T<>(){};
 
+    // Value denotes a node address. The existence of this address is ensured at the start
+    @FlowKey(defaultValue = "\"this-label-has-to-exist\"")
+    private Address target;
+
     @Override
     public void init(@NotNull NodeContainer<? extends Node> n, @NotNull final ScrapeInstance job) throws ValidationException {
-        System.out.println("Initializing node...");
+        n.log(INFO, "Initializing node...");
         // do some init work
     }
 
     @NotNull
     @Override
     public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
-//        // processes Ts and reserves keys in the map
-//        // ensures that the file and directory structure denoted by 'sourceFile' exists
-//        // takes the evaluated T of field 'hello' and reserves the corresponding key in the map 'o'
-//        // start(o); // this method is executed before the process call in the accept(FlowMap) abstract function
-//
-//        n.log(INFO,"Hello {}!", hello);
-//
-//        // to get the raw T, one can fetch the raw JSON definition at any time
-//        n.log(INFO,"The T for field hello is: {}", n.getKeySpec("hello"));
-//
-//        // you can use Ts on the fly like this
-//        String myT = "{hello}";
-//        TemplateExpression<String> replacedT = TemplateUtil.parseTemplate(myT);
-//        n.log(INFO, "{} => {}", myT, replacedT.eval(o));
-//
-//        // Ts support a powerful grammar
-//        myT = "a prefix-{hello}-a suffix}";
-//        replacedT = TemplateUtil.parseTemplate(myT);
-//        n.log(INFO,"{} => {}", myT, replacedT);
-//
-//        // fields annotated with @Optional are null if not defined in the .scrape file
-//        n.log(INFO,"Optional parameter: {}", (name == null ? "not provided" : name));
-//
-//        n.log(INFO,"File '{}' along with its subdirectories was ensured to exist: {}",
-//                new File(sourceFile), new File(sourceFile).exists());
-//
-//        // execute this node and follow along with the l
-//        n.log(INFO,"The forward method will do the following:");
-//        n.log(INFO,"Forwarding enabled: {}", n.isForward());
-//        if (n.isForward()) {
-//            n.log(INFO,"Goto: {}", (n.getGoTo().isEmpty() ? ("next node") : "node '" + n.getGoTo() + "'"));
-//        }
-//
-//        // a node can eval to create sequential flows and modify control flow
-//        FlowMap newMap = n.eval(o, NodeUtil.addressOf("this-label-has-to-exist"));
-//
-//        // forwards to another node depending on the keys 'goTo', 'forward' of the process node
-//        // definition in the .scrape file
-//        // returns after action is completed with a modified FlowMap
-//        return n.forward(newMap);
-        // FIXME
-        throw new IllegalStateException();
+        // processes Templates and reserves keys in the map
+        // ensures that the file and directory structure denoted by 'sourceFile' exists
+        // takes the evaluated T of field 'hello' and reserves the corresponding key in the map 'o'
+        // start(o); // this method is executed before the process call in the accept(FlowMap) abstract function
+
+        n.log(INFO,"Hello {}!", hello);
+
+        // to get the raw T, one can fetch the raw JSON definition at any time
+        n.log(INFO,"The T for field hello is: {}", n.getKeySpec("hello"));
+
+        // you can use Templates on the fly like this
+        // where T is the target type token
+        String myT = "{hello}";
+        Term<String> replacedT = TemplateUtil.parseTemplate(myT, new T<>(){});
+        n.log(INFO, "{} => {}", myT, replacedT.eval(o));
+
+        // Ts support a powerful grammar
+        myT = "a prefix-{hello}-a suffix}";
+        replacedT = TemplateUtil.parseTemplate(myT, new T<>(){});
+        n.log(INFO,"{} => {}", myT, replacedT);
+
+        // fields annotated with @Optional are null if not defined in the .scrape file
+        n.log(INFO,"Optional parameter: {}", (name == null ? "not provided" : name));
+
+        n.log(INFO,"File '{}' along with its subdirectories was ensured to exist: {}",
+                new File(sourceFile), new File(sourceFile).exists());
+
+        // execute this node and follow along with the l
+        n.log(INFO,"The forward method will do the following:");
+        n.log(INFO,"Forwarding enabled: {}", n.isForward());
+        if (n.isForward()) {
+            n.log(INFO,"Goto: {}", (n.getGoTo().isEmpty() ? ("next node") : "node '" + n.getGoTo() + "'"));
+        }
+
+        // a node can eval/fork depend/fork dispatch to create nested flows and modify control flow
+        FlowMap newMap = n.eval(o, target);
+//        n.forkDispatch(o, NodeUtil.addressOf("this-label-has-to-exist"));
+//        CompletableFuture<FlowMap> future = n.forkDepend(o, NodeUtil.addressOf("this-label-has-to-exist"));
+
+        // do something with the returned map
+        System.out.println(newMap);
+
+        // after returning this map
+        // the framework forwards to another node depending on the keys 'goTo', 'forward' of the process node
+        // definition in the process definition
+        // the afterFinish hooks are executed with this map
+        return newMap;
     }
 }

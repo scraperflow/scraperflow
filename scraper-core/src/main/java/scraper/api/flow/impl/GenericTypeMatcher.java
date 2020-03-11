@@ -67,7 +67,7 @@ abstract class GenericTypeMatcher {
                 String name = ((TypeVariable) target).getName();
                 Type captured = capturedTypes.get(name);
                 if(captured == null) {
-                    log.info("Capture {} -> {}", name, t);
+                    log.trace("Capture {} -> {}", name, t);
                     capturedTypes.put(name, t);
                     return false;
                 } else {
@@ -78,7 +78,7 @@ abstract class GenericTypeMatcher {
                     }
                 }
             } else if (target instanceof WildcardType) {
-                log.info("Target is less specialized than known type");
+                log.trace("Target is less specialized than known type");
                 return false;
             }
         }
@@ -87,7 +87,7 @@ abstract class GenericTypeMatcher {
         TypeToken<?> targetToken = TypeToken.of(target);
         TypeToken<?> knownToken  = TypeToken.of(t);
         if(knownToken.isSubtypeOf(targetToken)) {
-            log.info("known {} is subtype of {}", knownToken, targetToken);
+            log.debug("known {} is subtype of {}", knownToken, targetToken);
             return false;
         }
 
@@ -103,15 +103,15 @@ abstract class GenericTypeMatcher {
     private boolean visitParameterizedType(ParameterizedType t, Type target) {
         if (target instanceof ParameterizedType) {
             visit(t.getRawType(), ((ParameterizedType) target).getRawType());
-            log.info("Target type is also parameterized");
+            log.trace("Target type is also parameterized");
             boolean a = visit(t.getOwnerType(), ((ParameterizedType) target).getOwnerType());
             boolean b = visit(t.getActualTypeArguments(), ((ParameterizedType) target).getActualTypeArguments());
             return a || b;
         } else if(target instanceof TypeVariable) {
-            log.info("Capture {} -> {}", target.getTypeName(), t);
+            log.trace("Capture {} -> {}", target.getTypeName(), t);
             return false;
         } else if(target == Object.class) {
-            log.info("Target is most generic: {} << {}", target, t);
+            log.trace("Target is most generic: {} << {}", target, t);
             return false;
         } else {
             log.error("Types do not match: '{}' != '{}'", t, target);
@@ -134,7 +134,7 @@ abstract class GenericTypeMatcher {
         }
         if(target instanceof WildcardType) return false;
         if(target instanceof TypeVariable) return false;
-        log.info("Target is more specialized than current type '{}' ~> '{}'", t, target);
+        log.trace("Target is more specialized than current type '{}' ~> '{}'", t, target);
         return true;
     }
 }

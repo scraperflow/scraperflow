@@ -41,14 +41,14 @@ public class TemplateTest {
     }
 
     @Test // ""
-    public void simpleTEmpty() throws ValidationException {
+    public void simpleTEmpty() {
         T<String> str = new T<>(){};
         str.setTerm(parseTemplate("", str));
         Assert.assertEquals("", o.eval(str));
     }
 
     @Test // "{hello}" // hello
-    public void simpleTSingle() throws ValidationException {
+    public void simpleTSingle() {
         T<String> str = new T<>(){};
         str.setTerm(parseTemplate("{hello}", str));
         o.output("hello", "eval-value");
@@ -57,7 +57,7 @@ public class TemplateTest {
     }
 
     @Test // "{int}" // hello
-    public void simpleTSingleInt() throws Exception {
+    public void simpleTSingleInt() {
         T<Integer> str = new T<>(){};
         str.setTerm(parseTemplate("{int}", str));
         o.output("int", 1);
@@ -66,7 +66,7 @@ public class TemplateTest {
     }
 
     @Test // "{hello}{hello}hello // hello
-    public void simpleTDouble() throws Exception {
+    public void simpleTDouble() {
         T<String> str = new T<>(){};
         str.setTerm(parseTemplate("{hello}{hello}hello", str));
         o.output("hello", "eval-value");
@@ -76,13 +76,13 @@ public class TemplateTest {
     }
 
     @Test(expected = TemplateException.class)
-    public void wrongTarget() throws Exception {
+    public void wrongTarget() {
         T<List<String>> str = new T<>(){};
         str.setTerm(parseTemplate("{hello}{hello}hello", str));
     }
 
     @Test // "{hello}hello{hello}hello // hello
-    public void simpleTMixed() throws Exception {
+    public void simpleTMixed() {
         T<String> str = new T<>(){};
         str.setTerm(parseTemplate("{hello}hello{hello}hello", str));
         o.output("hello", "eval-value");
@@ -117,7 +117,7 @@ public class TemplateTest {
     // == Bad
 
     @Test(expected = TemplateException.class)
-    public void simpleTMissingKey() throws Exception {
+    public void simpleTMissingKey() {
         T<String> str = new T<>(){};
         str.setTerm(parseTemplate("{hello}", str));
         o.eval(str);
@@ -133,47 +133,6 @@ public class TemplateTest {
         Assert.assertEquals((Integer) 3, eval.get("other"));
     }
 
-    // == Get keys
-
-    // FIXME
-    // "{hello}{ok2}" -> hello:String, ok2:String
-//    @Test
-//    public void simpleTGetKeys() throws ValidationException {
-//        Map<String, T<?>> expected = Map.of("hello", new T<String>() {}, "ok2", new T<String>(){});
-//        T<String> str = new T<>(){};
-//        str.setTerm(parseTemplate("{hello}{ok2}", str));
-//        Assert.assertEquals((Integer) 2, (Integer) Template.getKeysInTemplate(str, o).size());
-//
-//        Template.getKeysInTemplate(str, o).forEach((key, type) -> Assert.assertTrue(expected.containsKey(key)));
-//        expected.forEach((key, v) -> Assert.assertTrue(Template.getKeysInTemplate(str, o).containsKey(key)));
-//    }
-//
-//    @Test // "[1,2,\"{template-int}\"]" -> template-int
-//    public void simpleTNestedInListGetKeys() throws Exception {
-//        T<List<Integer>> str = new T<>(){};
-//        str.setTerm(parseTemplate(mapper.readValue("[1,2,\"{template-int}\"]", List.class, str)));
-//
-//        Map<String, T<?>> mapping = Template.getKeysInTemplate(str, o);
-//
-//        Assert.assertEquals((Integer) 1, (Integer) mapping.size());
-//        Assert.assertTrue(mapping.containsKey("template-int"));
-//
-//        Assert.assertEquals(new T<Integer>(){}, mapping.get("template-int"));
-//    }
-////
-////    @Test // "{\"1\": 2, \"other\": \"{template-int}\"}" -> template-int
-////    public void simpleTNestedInMapGetKeys() throws ValidationException, IOException {
-////        Collection<String> expected = Set.of("template-int");
-////        T<Map<String, Integer>> str = new T<>(){};
-////        str.setParsedJson(parseTemplate(mapper.readValue("{\"1\": 2, \"other\": \"{template-int}\"}", Map.class, str)));
-////        Assert.assertEquals((Integer) 1, (Integer) Template.getKeysInTemplate(str, o).size());
-////        Template.getKeysInTemplate(str, o).forEach(key -> Assert.assertTrue(expected.contains(key)));
-////        expected.forEach(key -> Assert.assertTrue(Template.getKeysInTemplate(str, o).contains(key)));
-////    }
-//
-//
-//
-//
 //    // ===============
 //    // FM Lookup
 //    // ===============

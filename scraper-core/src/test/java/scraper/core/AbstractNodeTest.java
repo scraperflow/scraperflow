@@ -183,29 +183,28 @@ public class AbstractNodeTest {
     }
 
     // inject IllegalAccessException on reflection access to get code coverage
-    // FIXME deprecated after architecture change?
-//    @Test(expected = ValidationException.class)
-//    public void reflectionCodeCoverageTest() throws Exception {
-//        SecurityManager sm = System.getSecurityManager();
-//        System.setSecurityManager(new SecurityManager() {
-//            @Override
-//            public void checkPermission(Permission perm) {
-//                if (perm instanceof ReflectPermission && "suppressAccessChecks".equals(perm.getName())) {
-//                    for (StackTraceElement elem : Thread.currentThread().getStackTrace()) {
-//                        if ("scraper.core.AbstractNode".equals(elem.getClassName()) && "initField".equals(elem.getMethodName())) {
-//                            ClassUtil.sneakyThrow(new IllegalAccessException());
-//                        }
-//                    }
-//                }
-//            }
-//        });
-//
-//        try {
-//            getInstance("abstract", "func-goto.jf");
-//        } finally {
-//            System.setSecurityManager(sm);
-//        }
-//    }
+    @Test(expected = ValidationException.class)
+    public void reflectionCodeCoverageTest() throws Exception {
+        SecurityManager sm = System.getSecurityManager();
+        System.setSecurityManager(new SecurityManager() {
+            @Override
+            public void checkPermission(Permission perm) {
+                if (perm instanceof ReflectPermission && "suppressAccessChecks".equals(perm.getName())) {
+                    for (StackTraceElement elem : Thread.currentThread().getStackTrace()) {
+                        if ("scraper.util.NodeUtil".equals(elem.getClassName()) && "initField".equals(elem.getMethodName())) {
+                            ClassUtil.sneakyThrow(new IllegalAccessException("Illegal Access!"));
+                        }
+                    }
+                }
+            }
+        });
+
+        try {
+            getInstance("abstract", "func-goto.jf");
+        } finally {
+            System.setSecurityManager(sm);
+        }
+    }
 
     // inject IllegalAccessException on reflection access to get code coverage
     @Test(expected = RuntimeException.class)
@@ -221,7 +220,7 @@ public class AbstractNodeTest {
                     if (perm instanceof ReflectPermission && "suppressAccessChecks".equals(perm.getName())) {
                         for (StackTraceElement elem : Thread.currentThread().getStackTrace()) {
                             if ("scraper.core.AbstractNode".equals(elem.getClassName()) && "start".equals(elem.getMethodName())) {
-                                ClassUtil.sneakyThrow(new IllegalAccessException());
+                                ClassUtil.sneakyThrow(new IllegalAccessException("Illegal Access!"));
                             }
                         }
                     }

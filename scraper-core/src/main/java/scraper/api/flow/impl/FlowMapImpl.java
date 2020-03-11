@@ -366,9 +366,8 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
             @SuppressWarnings("unchecked") // checked with type visitor
             Optional<K> castObject = Optional.of((K) targetObject);
             return castObject;
-        } catch (AssertionError e) {
-            log.warn("Recheck and infer");
-        } catch (Exception e){
+        }
+        catch (Exception e){
             log.error("Could not check type", e);
         }
 
@@ -380,10 +379,10 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     }
 
     public static TypeToken<?> checkGenericType(TypeToken<?> knownToken, TypeToken<?> targetToken) {
-        log.info("Check Target '{}' <~> Known '{}'", targetToken, knownToken);
+        log.trace("Check Target '{}' <~> Known '{}'", targetToken, knownToken);
 
         if(new GenericTypeMatcher() {}.visit(knownToken.getType(), targetToken.getType())) {
-            log.info("Target type is more specialized than known type. Replacing possible generic type variables with wildcards '?'");
+            log.trace("Target type is more specialized than known type. Replacing possible generic type variables with wildcards '?'");
             Type newKnownType = new ReplaceWildcardsVisitor() {}.visit(targetToken.getType());
             return TypeToken.of(newKnownType);
         }
@@ -406,7 +405,7 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
                 if(commonType.equals(nextType))
                     continue;
 
-                log.warn("Element type of list was generalized: {} U {} -> Object", commonType, nextType);
+                log.debug("Element type of list was generalized: {} U {} -> Object", commonType, nextType);
                 commonType = TypeToken.of(Object.class);
                 break;
             }
@@ -424,7 +423,7 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
                 if(commonType.equals(nextType))
                     continue;
 
-                log.warn("Element type of map was generalized: {} U {} -> Object", commonType, nextType);
+                log.debug("Element type of map was generalized: {} U {} -> Object", commonType, nextType);
                 commonType = TypeToken.of(Object.class);
                 break;
             }

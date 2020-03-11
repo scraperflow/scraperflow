@@ -18,7 +18,6 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.groupingBy;
 
-// FIXME only works for entry graph
 class GraphVisualizer {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(GraphVisualizer.class);
     private static StringBuilder graph;

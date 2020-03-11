@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import scraper.api.template.T;
 import scraper.api.template.Term;
 import scraper.core.template.*;
-import scraper.util.TemplateUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -51,13 +50,8 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
 
         // template template
         if(ctx.children.size() == 2) {
-            if(TypeToken.of(target.get()).toString().contains("?")) {
-                // TODO
-                l.debug("Cannot check capture type ? for {}, assume correct", target.get().getTypeName());
-            } else {
-                if(!TypeToken.of(target.get()).isSupertypeOf(TypeToken.of(String.class)))
-                    throw new RuntimeException("Mixed template target has to be supertype of java.lang.String");
-            }
+            if(!TypeToken.of(target.get()).isSupertypeOf(TypeToken.of(String.class)))
+                throw new RuntimeException("Mixed template target has to be supertype of java.lang.String");
 
             TemplateMixed result = new TemplateMixed();
 
@@ -78,7 +72,6 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
         // lookup or append
         if (ctx.children.size() == 4) {
             if (ctx.getChild(3) instanceof TemplateParser.ArraylookupContext) {
-                l.trace("Array lookup");
                 ParseTree listexp = ctx.getChild(1);
                 ParseTree intexp = ctx.getChild(3);
                 TypeToken<List> listToken = TypeToken.of(List.class);
@@ -126,8 +119,6 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
     @Override
     public TemplateExpression<Y> visitMaplookup(TemplateParser.MaplookupContext ctx) {
         return visit(ctx.getChild(1));
-//        l.trace("Visiting map '{}'", ctx.getText());
-//        throw new IllegalStateException("Map lookup not implemented yet");
     }
 
     @Override

@@ -1,14 +1,12 @@
 package scraper.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.reflect.TypeToken;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.Address;
 import scraper.api.node.GraphAddress;
-import scraper.api.node.InstanceAddress;
 import scraper.api.node.NodeAddress;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.impl.AddressImpl;
@@ -204,6 +202,7 @@ public final class NodeUtil {
         }
     }
 
+    @SuppressWarnings("unchecked") //needed for terms
     public static Object getValueForField(final Object instance,
                                           final Field field,
                                           final Object jsonValue,
@@ -330,132 +329,24 @@ public final class NodeUtil {
         }
     }
 
-    @SuppressWarnings({"unchecked"}) //enum runtime type cast
+    @SuppressWarnings({"unchecked", "RedundantSuppression"}) // not redundant
     private static Object getEnum(Class<?> fieldType, Object value) {
         return Enum.valueOf(fieldType.asSubclass(Enum.class), String.valueOf(value));
     }
 
-    public static Method getConverter(final Class<?> converter) throws ValidationException {
+    private static Method getConverter(final Class<?> converter) throws ValidationException {
         Method convert;
         try { convert = converter.getMethod("convert", Object.class, Class.class); }
         catch (NoSuchMethodException e) { throw new ValidationException("Unknown template converter: " + e); }
         return convert;
     }
 
-    public static Object invokeConverter(Object value, Class<?> fieldType, Method convert) throws ReflectiveOperationException {
+    private static Object invokeConverter(Object value, Class<?> fieldType, Method convert) throws ReflectiveOperationException {
         try {
             return convert.invoke(null, String.valueOf(value), fieldType);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new ReflectiveOperationException(e);
         }
-    }
-
-    public static Object convert(T<?> token, Object value) throws ValidationException {
-        TypeToken<?> templ = TypeToken.of(token.get());
-        return convert(templ, value);
-    }
-    public static <Y> Term<Y> convert(TypeToken<Y> templ, Object value) throws ValidationException {
-
-        //null: return null
-        if(value == null) return null;
-
-        //check JSON object types
-        //JSON list
-        if(List.class.isAssignableFrom(value.getClass()) && (
-                        List.class.isAssignableFrom(templ.getRawType()) || templ.getRawType().equals(Object.class)
-                )) {
-            throw new IllegalStateException("List terms not implemented yet");
-            // create a list with converted values
-//            TypeToken<?> elementType = (templ.getRawType().equals(Object.class) ? templ : templ.resolveType(List.class.getTypeParameters()[0]));
-//            List<?> valueList = (List<?>) value;
-////            log(TRACE,"Converting list: {}, expecting {}", valueList, elementType);
-//
-//            List<Object> resultList = new ArrayList<>();
-//
-//            for (Object o : valueList) {
-//                resultList.add(convert(elementType, o));
-//            }
-//
-//            return resultList;
-        } // JSON map
-        else if(Map.class.isAssignableFrom(value.getClass()) && (
-                        Map.class.isAssignableFrom(templ.getRawType()) || templ.getRawType().equals(Object.class) // descend into object
-                )) {
-            throw new IllegalStateException("Map terms not implemented yet");
-//            // create a map with checked values
-//            TypeToken<?> elementType = (templ.getRawType().equals(Object.class) ? templ : templ.resolveType(Map.class.getTypeParameters()[1]));
-//            Map<?, ?> valueMap = (Map<?, ?>) value;
-////            log(TRACE,"Converting map: {}, expecting value type {}", valueMap, elementType);
-//
-//            Map<Object, Object> resultMap = new LinkedHashMap<>();
-//            for (Object key : valueMap.keySet()) {
-//                resultMap.put(key, convert(elementType, valueMap.get(key)));
-//            }
-//
-//            return resultMap;
-        } // JSON primitive
-        else {
-            // raw type
-            if(templ.getRawType().isAssignableFrom(value.getClass()) && !String.class.isAssignableFrom(value.getClass())) {
-                throw new IllegalStateException("Same type return not implemented");
-//                // same types, return actual object
-//                return value;
-            } else if (String.class.isAssignableFrom(value.getClass())) {
-                // string template found // FIXME
-                throw new IllegalStateException("String template not implemented");
-//                return TemplateUtil.parseTemplate(((String) value), templ);
-            } else {
-                throw new ValidationException("Argument type mismatch! Expected String or "+templ+", but found "+ value.getClass());
-            }
-        }
-    }
-
-
-    public static NodeAddress getNextNode(Address origin, Address goTo, Map<GraphAddress, List<NodeContainer<? extends Node>>> graphs) {
-        throw new IllegalStateException();
-    }
-
-    public static Address getForwardTarget(Address origin, Map<GraphAddress, List<NodeContainer<? extends Node>>> graphs) {
-//        for (GraphAddress k : graphs.keySet()) {
-//            Iterator<NodeContainer<? extends Node>> it = graphs.get(k).iterator();
-//            while(it.hasNext()) {
-//                NodeContainer<? extends Node> node = it.next();
-//                if(node.getAddress().equalsTo(origin)){
-//                    if(it.hasNext()) {
-//                        return it.next().getAddress();
-//                    } else {
-//                        return null;
-//                    }
-//                }
-//            }
-//        }
-
-        throw new IllegalStateException("Origin node address not found in any graph: " + origin.getRepresentation());
-    }
-
-    public static Optional<NodeContainer<? extends Node>> getNode(Address target, Map<GraphAddress, List<NodeContainer<? extends Node>>> graphs, Map<InstanceAddress, ScrapeInstance> importedInstances) {
-//        for (InstanceAddress instanceAddress : importedInstances.keySet()) {
-//            if (target.equalsTo(instanceAddress)) {
-//                return importedInstances.get(instanceAddress).getEntryGraph().get(0);
-//            }
-//
-//            // can only resolve if instance address is correct
-//            Address insideTarget = target.resolve(instanceAddress);
-//            if(insideTarget != null) return importedInstances.get(instanceAddress).getNode(insideTarget);
-//        }
-//
-//        for (GraphAddress k : graphs.keySet()) {
-//            if(k.equalsTo(target)) {
-//                return graphs.get(k).get(0);
-//            }
-//
-//            for (NodeContainer<? extends Node> node : graphs.get(k)) {
-//                if(node.getAddress().equalsTo(target))
-//                    return node;
-//            }
-//        }
-
-        throw new IllegalArgumentException("Node address not existing! "+target);
     }
 
     public static Map<String, T<?>> extractMapFromFields(List<Field> outputData, NodeContainer<?> target) {
@@ -480,7 +371,9 @@ public final class NodeUtil {
         try {
             Optional<NodeContainer<? extends Node>> localTarget;
             if (goTo.isAbsolute()) {
-                return jobInstance.getNode(goTo).get();
+                var gotoAddress = jobInstance.getNode(goTo);
+                if(gotoAddress.isEmpty()) throw new IllegalStateException("Address does not exist: " + goTo);
+                return gotoAddress.get();
             } else if(goTo.isRelative()) {
                 // local graph node, not self
                 Address local = origin.replace(goTo.getRepresentation());
@@ -517,7 +410,6 @@ public final class NodeUtil {
                 Optional<NodeContainer<? extends Node>> inTarget = maybeInstance.getNode(goTo);
                 if(inTarget.isEmpty())
                     throw new IllegalStateException(origin+": Neither graph relative address nor imported instance found for " + goTo);
-//                Optional<NodeContainer<? extends Node>> imported = importedInstance.getNode(addressOf(goTo.getRepresentation() + ".0"));
                 return inTarget.get();
             }
         } catch (NoSuchElementException e) {

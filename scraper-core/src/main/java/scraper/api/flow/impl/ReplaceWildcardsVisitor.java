@@ -83,7 +83,7 @@ abstract class ReplaceWildcardsVisitor {
         };
     }
 
-    private Type visitTypeVariable(TypeVariable<?> t) {
+    private Type visitTypeVariable(@SuppressWarnings("unused") TypeVariable<?> t) {
 //        System.out.println("Replacing type variable " + t.getName() + " with wildcard ?");
         return new WildcardType() {
             @Override public Type[] getUpperBounds() { return new Type[]{Object.class}; }
