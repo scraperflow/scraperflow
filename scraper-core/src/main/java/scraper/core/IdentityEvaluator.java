@@ -3,7 +3,7 @@ package scraper.core;
 import scraper.annotations.NotNull;
 import scraper.api.flow.IdentityTemplateEvaluator;
 import scraper.api.template.T;
-import scraper.utils.IdentityFlowMap;
+import scraper.api.flow.impl.IdentityFlowMap;
 
 
 /**

@@ -137,7 +137,6 @@ public class TemplateTest {
 //    // FM Lookup
 //    // ===============
 
-    @SuppressWarnings("unchecked")
     @Test(expected = ValidationException.class)
     public void badConversionTest() throws ValidationException {
         class TNotImplemented implements Serializable {}

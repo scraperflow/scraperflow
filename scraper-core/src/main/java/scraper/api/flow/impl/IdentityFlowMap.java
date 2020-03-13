@@ -1,4 +1,4 @@
-package scraper.utils;
+package scraper.api.flow.impl;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;

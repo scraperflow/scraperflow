@@ -10,7 +10,6 @@ import scraper.api.template.L;
 import scraper.api.template.Primitive;
 import scraper.api.template.T;
 import scraper.core.IdentityEvaluator;
-import scraper.utils.IdentityFlowMap;
 
 import java.lang.reflect.Type;
 import java.util.*;

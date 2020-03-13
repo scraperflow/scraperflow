@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 
 
 /**
- * Test cases of possible annotation combinations on fields concerning .scrape definition
+ * Test cases of possible annotation combinations on fields concerning scrape definition
  */
 @SuppressWarnings("unused") // reflective access by convention
 public class FieldTranslationTest {
@@ -158,7 +158,7 @@ public class FieldTranslationTest {
         if(!"value".equalsIgnoreCase(o.get("key"))) throw new IllegalStateException("Bad template evaluation");
     };
 
-    // only strings as keys are allowd
+    // only strings as keys are allowed, currently not checked
     // TODO warn if anything other than Strings are used
 //    @FlowKey(mandatory = true)
 //    @TranslationInput(jsonValue = "{\"address\":\"?\"}")

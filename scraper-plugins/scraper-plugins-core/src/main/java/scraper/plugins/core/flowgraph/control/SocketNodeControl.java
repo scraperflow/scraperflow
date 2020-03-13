@@ -12,7 +12,7 @@ import scraper.plugins.core.flowgraph.FlowUtil;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.Version;
 import scraper.util.NodeUtil;
-import scraper.utils.IdentityFlowMap;
+import scraper.api.flow.impl.IdentityFlowMap;
 
 import java.util.List;
 import java.util.Map;
