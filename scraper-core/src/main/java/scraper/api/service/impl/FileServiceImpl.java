@@ -1,7 +1,6 @@
 package scraper.api.service.impl;
 
 import org.slf4j.Logger;
-import org.springframework.util.FileSystemUtils;
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.api.service.FileService;
@@ -160,7 +159,7 @@ public class FileServiceImpl implements FileService {
     @NotNull
     @Override
     public File getTemporaryDirectory() {
-        throw new IllegalStateException();
+        throw new IllegalStateException("Temporary dirs not implemented");
 //        return tempDir;
     }
 

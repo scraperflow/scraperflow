@@ -2,8 +2,6 @@ package scraper.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
-import org.springframework.plugin.metadata.PluginMetadata;
-import org.springframework.plugin.metadata.SimplePluginMetadata;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.InstanceAddress;
@@ -187,10 +185,13 @@ public class JobFactory {
                 String vers = jobNodeDependencies
                         .getOrDefault(jobDefinition, new LinkedHashMap<>())
                         .getOrDefault(nodeType, "0.0.0");
-                PluginMetadata metadata = new SimplePluginMetadata(nodeType, vers);
 
-                List<? extends AbstractMetadata> processPlugins = plugins.getPlugins().getPluginsFor(metadata);
-                Node n = getHighestMatchingPlugin(processPlugins, metadata);
+                List<AbstractMetadata> processPlugins = plugins
+                        .getPlugins()
+                        .stream()
+                        .filter(p -> p.supports(nodeType, vers))
+                        .collect(Collectors.toList());
+                Node n = getHighestMatchingPlugin(processPlugins, nodeType, vers);
 
                 NodeContainer<? extends Node> nn = getMatchingNodeContainer(
                         job.getName(), graphKey, nodeAddress, i, n
@@ -341,8 +342,8 @@ public class JobFactory {
     }
 
     @NotNull
-    public List<? extends AbstractMetadata> getPlugins() {
-        return plugins.getPlugins().getPlugins();
+    public List<AbstractMetadata> getPlugins() {
+        return plugins.getPlugins();
     }
 
     // export currently not used
@@ -356,7 +357,7 @@ public class JobFactory {
 
     @NotNull
     private Node getHighestMatchingPlugin(@NotNull final List<? extends AbstractMetadata> processPlugins,
-                                          @NotNull final PluginMetadata metadata) throws ValidationException {
+                                          @NotNull final String type, @NotNull final String version) throws ValidationException {
         AbstractMetadata curr = null;
 
         for (AbstractMetadata processPlugin : processPlugins) {
@@ -368,7 +369,7 @@ public class JobFactory {
         }
 
         if(curr == null) {
-            String msg = "No plugin for "+metadata.getName()+" (v"+metadata.getVersion()+") found! " +
+            String msg = "No plugin for "+type+" (v"+version+") found! " +
                     "Provide an implementation with qualifying version number.";
             throw new ValidationException(msg);
         }

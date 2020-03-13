@@ -19,10 +19,7 @@ open module scraper.core {
     requires scraper.utils;
 
 
-    requires spring.core;
     requires io.github.classgraph;
-    requires spring.plugin.core;
-    requires spring.plugin.metadata;
     requires com.google.common;
     requires java.net.http;
 

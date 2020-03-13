@@ -64,7 +64,7 @@ public class NodeDependencyGeneratorHook implements Hook {
                 if(((AbstractMetadata) plugin).isDeprecated())
                     continue;
                 pw.println(
-                        ((AbstractMetadata) plugin).getMetadata().getName()+":"+((AbstractMetadata) plugin).getMetadata().getVersion()
+                        ((AbstractMetadata) plugin).getName()+":"+((AbstractMetadata) plugin).getVersion()
                 );
             }
         }

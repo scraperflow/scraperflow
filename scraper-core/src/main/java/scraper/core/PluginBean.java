@@ -5,8 +5,6 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
 import org.slf4j.Logger;
-import org.springframework.plugin.core.PluginRegistry;
-import org.springframework.plugin.metadata.PluginMetadata;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.ValidationException;
@@ -18,7 +16,7 @@ import java.util.List;
 
 public class PluginBean {
     private @NotNull static final Logger log = org.slf4j.LoggerFactory.getLogger("NodeDiscovery");
-    private @NotNull final PluginRegistry<? extends AbstractMetadata, PluginMetadata> plugins;
+    private @NotNull final List<AbstractMetadata> plugins;
 
     public PluginBean() {
         List<AbstractMetadata> nodePlugins = new ArrayList<>();
@@ -56,7 +54,7 @@ public class PluginBean {
             }
         }
 
-        plugins = PluginRegistry.of(nodePlugins);
+        plugins = nodePlugins;
 
         printDiscovery();
     }
@@ -67,12 +65,12 @@ public class PluginBean {
         for (AbstractMetadata metadata : getPlugins()) {
             if(metadata.isDeprecated()) continue;
             if(sb.length() != 1) sb.append(", ");
-            sb.append(metadata.getMetadata().getName()).append(" [").append(metadata.getMetadata().getVersion()).append("]");
+            sb.append(metadata.getName()).append(" [").append(metadata.getVersion()).append("]");
         }
-        log.info("Discovered {} nodes, {}", plugins.getPlugins().size(), sb.append("]").toString());
+        log.info("Discovered {} nodes, {}", plugins.size(), sb.append("]").toString());
     }
 
-    @NotNull PluginRegistry<? extends AbstractMetadata, PluginMetadata> getPlugins() {
+    @NotNull List<AbstractMetadata> getPlugins() {
         return this.plugins;
     }
 }
