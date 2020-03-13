@@ -15,7 +15,6 @@ import java.util.List;
 
 /**
  * Pipe to nodes and continue with sequential result
- * @author Albert Schimpf
  */
 @NodePlugin("1.0.0")
 public final class PipeNode implements Node {

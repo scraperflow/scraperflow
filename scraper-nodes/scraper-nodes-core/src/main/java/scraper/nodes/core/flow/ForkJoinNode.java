@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 /**
- *
+ * Forks to targets and uses specified keys to join into the original flow.
  */
 @NodePlugin("0.4.0")
 public final class ForkJoinNode implements Node {

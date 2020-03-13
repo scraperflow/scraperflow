@@ -6,7 +6,6 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
-import scraper.api.template.L;
 import scraper.api.template.T;
 
 import java.util.HashMap;
@@ -14,13 +13,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Cleans the current flow map.
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class CleanNode implements FunctionalNode {
 
-    /** What not to remove */
-    @FlowKey(defaultValue = "[]") @NotNull
-    private T<List<String>> except = new L<>(){};
+    /** Whitelist, what not to remove */
+    @FlowKey(defaultValue = "[]")
+    private T<List<String>> except = new T<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {

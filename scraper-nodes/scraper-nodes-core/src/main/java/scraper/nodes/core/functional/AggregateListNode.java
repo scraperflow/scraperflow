@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Appends a T to a list.
+ * Appends an element to a list containing objects of the same type.
  */
 @NodePlugin("0.2.0")
 public final class AggregateListNode<K> implements FunctionalNode {

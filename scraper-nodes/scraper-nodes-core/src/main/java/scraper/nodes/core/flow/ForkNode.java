@@ -13,7 +13,7 @@ import scraper.api.template.T;
 import java.util.List;
 
 /**
- *
+ * Forks to targets.
  */
 @NodePlugin("0.2.0")
 public final class ForkNode implements Node {

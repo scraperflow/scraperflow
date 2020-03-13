@@ -10,22 +10,22 @@ import scraper.api.template.L;
 import scraper.api.template.T;
 
 /**
- * Hashes a values
+ * Hashes a value of any content
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class HashNode implements FunctionalNode {
 
     /** The content to apply the hash on */
-    @FlowKey(defaultValue = "\"{input}\"") @NotNull
-    private final T<String> content = new T<>(){};
+    @FlowKey(defaultValue = "\"{input}\"")
+    private final T<?> content = new T<>(){};
 
     /** Where the output hash is stored */
-    @FlowKey(defaultValue = "\"output\"") @NotNull
+    @FlowKey(defaultValue = "\"output\"")
     private L<String> output = new L<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        String content = o.eval(this.content);
+        Object content = o.eval(this.content);
 
         int hash = content.hashCode();
 

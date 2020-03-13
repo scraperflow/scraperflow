@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 /**
- *
+ * Applies a map to every element of a given list and joins the result keys into a list.
  */
 @NodePlugin("0.12.0")
 public final class MapJoinNode<K> implements Node {
@@ -29,7 +29,7 @@ public final class MapJoinNode<K> implements Node {
     private T<Map<String, String>> keys = new T<>(){};
 
     /** List to apply map to */
-    @FlowKey(mandatory = true) @NotNull
+    @FlowKey(mandatory = true)
     private T<List<K>> list = new T<>(){};
 
     /** Label of goTo */
@@ -40,10 +40,11 @@ public final class MapJoinNode<K> implements Node {
     @FlowKey(defaultValue = "\"element\"")
     private String putElement;
 
-    /** Only distinct elements */
+    /** Only distinct input elements */
     @FlowKey(defaultValue = "false")
     private Boolean distinct;
 
+    /** Only distinct output elements */
     @FlowKey(defaultValue = "false")
     private Boolean distinctOutput;
 

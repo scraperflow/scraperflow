@@ -15,18 +15,20 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Takes a universe and removes all elements in a given list from it.
  */
 @NodePlugin("0.2.0")
 public final class ListDiffNode<K> implements FunctionalNode {
 
-    /** The list with list elements to flatten */
+    /** The universe from which to remove all elements of another list */
     @FlowKey(defaultValue = "\"{universe}\"")
     private final T<List<K>> universe = new T<>(){};
 
-    @FlowKey
+    /** Elements to remove */
+    @FlowKey(defaultValue = "[]")
     private final T<List<K>> list = new T<>(){};
 
-    /** Where the output hash is stored */
+    /** Where the difference list is stored */
     @FlowKey(defaultValue = "\"output\"")
     private L<List<K>> output = new L<>(){};
 

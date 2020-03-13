@@ -15,9 +15,11 @@ import scraper.api.template.L;
 @NodePlugin("0.9.0")
 public final class FlowKeyExistsNode implements FunctionalNode {
 
+    /** Key to check */
     @FlowKey(mandatory = true)
     private String key;
 
+    /** Where to put the result of the check */
     @FlowKey(defaultValue = "\"flag\"")
     private L<Boolean> flag = new L<>(){};
 

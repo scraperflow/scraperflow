@@ -9,7 +9,6 @@ import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.template.L;
 import scraper.api.template.T;
-import scraper.core.AbstractNode;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,26 +17,20 @@ import java.util.Map;
 /**
  * Reads a JSON string, converts it to a JSON object. Cleans the object and returns a cleaned JSON string.
  *
- * <p>Example .scrape definition:
+ * <p>Example  definition:
  *
  * <pre>
- * {
- *   "type" : "CleanJsonNode",
- *   "__comment" : "Removes personal and image related metadata. Removes for every tag the url, count, and id",
- *   "content" : "{body}",
- *   "clean" : [
- *     "num_favorites", "images",
- *     "[]tags|url",
- *     "[]tags|count",
- *     "[]tags|id"
- *   ],
- *   "put" : "body",
- * }
+ * type: CleanJsonNode
+ * content: "{body}"
+ * clean:
+ *   - "num_favorites"
+ *   - "images"
+ *   - "[]tags|url"
+ *   - "[]tags|count"
+ *   - "[]tags|id"
+ * put: body
  * </pre>
  * </p>
- *
- * @see AbstractNode
- * @author Albert Schimpf
  */
 // TODO api doc; | descends into maps, [] descends into arrays
 @NodePlugin("0.1.0")
@@ -72,6 +65,8 @@ public final class CleanJsonObjectNode implements FunctionalNode {
         o.output(cleanedObject, json);
     }
 
+    // types do not matter
+    @SuppressWarnings("rawtypes")
     private void cleanObject(Map obj, String[] parts) {
         for (int i = 0; i < parts.length; i++) {
             String node = parts[i];
@@ -91,6 +86,8 @@ public final class CleanJsonObjectNode implements FunctionalNode {
         }
     }
 
+    // types do not matter
+    @SuppressWarnings("rawtypes")
     private void cleanArray(List array, String[] subParts) {
         for (Object o : array) {
             String node = subParts[0];

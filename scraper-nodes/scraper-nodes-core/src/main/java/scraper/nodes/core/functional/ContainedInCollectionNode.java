@@ -14,22 +14,20 @@ import java.util.Collection;
 
 /**
  * Sets a flag depending if the goTo object is contained in the collection.
- *
- * @author Albert Schimpf
  */
-@NodePlugin("0.2.0")
-public final class ContainedInCollectionNode<K> implements FunctionalNode {
+@NodePlugin("0.3.0")
+public final class ContainedInCollectionNode implements FunctionalNode {
 
     /** Collection to be checked if the object is contained */
-    @FlowKey(defaultValue = "\"{collection}\"") @NotNull
-    private final T<Collection<K>> collection = new T<>(){};
+    @FlowKey(defaultValue = "\"{collection}\"")
+    private final T<Collection<?>> collection = new T<>(){};
 
     /** This evaluated object is used for checking */
-    @FlowKey(defaultValue = "\"{object}\"") @NotNull
-    private final T<K> object = new T<>(){};
+    @FlowKey(defaultValue = "\"{object}\"")
+    private final T<?> object = new T<>(){};
 
     /** Key where the result flag will be written to */
-    @FlowKey(defaultValue = "\"flag\"") @NotNull
+    @FlowKey(defaultValue = "\"flag\"")
     private L<Boolean> flag = new L<>(){};
 
     /** Determines if the contains or contains not operation is used */
@@ -38,8 +36,8 @@ public final class ContainedInCollectionNode<K> implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        K             object     = o.eval(this.object);
-        Collection<K> collection = o.eval(this.collection);
+        Object        object     = o.eval(this.object);
+        Collection<?> collection = o.eval(this.collection);
 
         // cont negate output
         // 0    0      0

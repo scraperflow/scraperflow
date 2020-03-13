@@ -8,7 +8,6 @@ import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
-import scraper.core.AbstractNode;
 
 import static scraper.api.node.container.NodeLogLevel.ERROR;
 import static scraper.api.node.container.NodeLogLevel.INFO;
@@ -17,16 +16,15 @@ import static scraper.api.node.container.NodeLogLevel.INFO;
 
 /**
  * Provides a try-catch mechanism
- *
- * @see AbstractNode
- * @author Albert Schimpf
  */
 @NodePlugin("0.3.0")
 public final class RetryNode implements Node {
 
+    /** How many times the flow is retried */
     @FlowKey(defaultValue = "5")
     private Integer retry;
 
+    /** Target of the retry */
     @FlowKey(mandatory = true)
     private Address retryTarget;
 

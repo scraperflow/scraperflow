@@ -13,16 +13,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Flattens a list of lists into a flattened list.
+ * Can be used to merge lists by using templates.
  */
 @NodePlugin("0.3.0")
 public final class FlattenListNode implements FunctionalNode {
 
     /** The list with list elements to flatten */
-    @FlowKey(defaultValue = "\"{list}\"") @NotNull
+    @FlowKey(defaultValue = "\"{list}\"")
     private final T<List<List<?>>> flatten = new T<>(){};
 
     /** Where the output hash is stored */
-    @FlowKey(defaultValue = "\"output\"") @NotNull
+    @FlowKey(defaultValue = "\"output\"")
     private L<List<?>> output = new L<>(){};
 
     @Override

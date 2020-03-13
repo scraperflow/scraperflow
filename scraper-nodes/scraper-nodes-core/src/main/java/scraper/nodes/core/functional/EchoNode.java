@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Can modify the current argument map.
+ * Can modify the current flow map.
  */
 @NodePlugin("1.2.1")
 public class EchoNode implements FunctionalNode {

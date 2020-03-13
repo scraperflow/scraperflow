@@ -9,18 +9,14 @@ import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.template.T;
-import scraper.core.AbstractNode;
 
 /**
  * Provides if-then-else routing
- *
- * @see AbstractNode
- * @author Albert Schimpf
  */
 @NodePlugin("0.1.0")
 public final class IfThenElseNode implements Node {
 
-    @FlowKey(mandatory = true) @NotNull
+    @FlowKey(mandatory = true)
     private T<Boolean> condition = new T<>(){};
 
     @FlowKey

@@ -13,7 +13,6 @@ import scraper.api.template.T;
 import java.util.List;
 
 
-
 /**
  * Expects a list at goTo key.
  * Forks new flows for every element in the goTo list.
@@ -29,12 +28,13 @@ public final class MapNode<K> implements Node {
     @FlowKey(mandatory = true)
     private T<List<K>> list = new T<>(){};
 
+    /** Target address to fork to */
+    @FlowKey(mandatory = true)
+    private Address mapTarget;
+
     /** At which key to put the element of the list into. */
     @FlowKey(defaultValue = "\"element\"")
     private String putElement;
-
-    @FlowKey(mandatory = true)
-    private Address mapTarget;
 
     @NotNull
     @Override

@@ -118,6 +118,7 @@ public final class HttpRequestNode implements Node {
     /** TTL for cache files in Long format in ms. Default is forever. Null means caching forever. */
     @FlowKey @Argument
     private Long cacheTTLms;
+    /** Path to a proxy file */
     @FlowKey @Argument
     private String proxyFile;
 
@@ -272,7 +273,6 @@ public final class HttpRequestNode implements Node {
                     request.POST(HttpRequest.BodyPublishers.ofString(payload));
                     break;
                 case DELETE:
-//                    payload = mapper.writeValueAsString(this.payload.eval(o));
                     request.DELETE();
                     break;
                 case PUT:

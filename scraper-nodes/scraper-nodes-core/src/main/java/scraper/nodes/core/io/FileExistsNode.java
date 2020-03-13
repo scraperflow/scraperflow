@@ -8,26 +8,24 @@ import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.template.L;
 import scraper.api.template.T;
-import scraper.core.AbstractNode;
 
 import java.io.File;
 
 /**
  * Checks if file exists
- *
- * @see AbstractNode
- * @author Albert Schimpf
  */
 @NodePlugin("0.1.0")
 public final class FileExistsNode implements FunctionalNode {
 
     /** Path of the file to be cleared */
-    @FlowKey(mandatory = true) @NotNull
+    @FlowKey(mandatory = true)
     private final T<String> path = new T<>(){};
 
-    @FlowKey(defaultValue = "\"exists\"") @NotNull
+    /** Where the result of the check */
+    @FlowKey(defaultValue = "\"exists\"")
     private final L<Boolean> result = new L<>(){};
 
+    /** Treat empty files as not existing flag */
     @FlowKey(defaultValue = "true")
     private Boolean treatEmptyAsNonExisting;
 
