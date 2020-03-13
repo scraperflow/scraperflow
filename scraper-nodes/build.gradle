@@ -28,7 +28,7 @@ subprojects {
 
     configurations {
         provided
-        implementation.extendsFrom provided
+        api.extendsFrom provided
     }
 
     dependencies {

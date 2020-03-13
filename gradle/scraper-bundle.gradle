@@ -10,6 +10,20 @@ def api = '0.9'
 //    return stdout.toString().trim()
 //}
 
+// output module jars
+subprojects {
+    apply plugin: 'java'
+    tasks.withType(Jar) {
+        destinationDir = file("$rootDir/build/modules")
+    }
+
+    task copyDependencies(type: Copy) {
+        from configurations.default
+        into "$rootDir/build/module-deps"
+    }
+}
+
+
 task bundleAll(dependsOn: [':bundleFatJar', ':bundleApi', ':bundleCore']) { }
 
 task bundleFatJar(type: Jar) { t ->
