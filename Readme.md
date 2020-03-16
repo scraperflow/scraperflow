@@ -1,12 +1,12 @@
 Scraper - A Composable Workflow Framework
 =========================================
 
-![version](https://img.shields.io/badge/version-0.9.0-green.svg)
+![version](https://img.shields.io/badge/version-0.11.0-green.svg)
 ![language](https://img.shields.io/badge/language-java12-blue.svg)
 ![build](https://img.shields.io/badge/build-gradle-yellowgreen.svg)
 
-[![pipeline status](https://git.server1.link/scraper/scraper/badges/develop/pipeline.svg)](https://git.server1.link/scraper/scraper/commits/develop)
-[![coverage report](https://git.server1.link/scraper/scraper/badges/develop/coverage.svg)](https://git.server1.link/scraper/scraper/commits/develop)
+[![pipeline status](https://git.server1.link/scraper/scraper/badges/master/pipeline.svg)](https://git.server1.link/scraper/scraper/commits/master)
+[![coverage report](https://git.server1.link/scraper/scraper/badges/master/coverage.svg)](https://git.server1.link/scraper/scraper/commits/master)
 
 Scraper is a framework which enables flow-based programming in a declarative way. 
 It is based on two main components: 
@@ -20,9 +20,10 @@ managing control flow of programs in an easy way (declarative workflow specifica
 
 # Links
 
+* [Scraper Node Documentation](https://docs.scraper.server1.link)
 * [Scraper Wiki](https://wiki.scraper.server1.link)
-* [Scraper Editor](https://editor.scraper.server1.link)
 * [Scraper Binaries](https://binaries.scraper.server1.link)
+* [Scraper Editor (prototype, deprecated)](https://editor.scraper.server1.link)
 
 # Documentation
 
