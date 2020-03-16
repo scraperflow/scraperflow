@@ -61,7 +61,7 @@ import static scraper.api.node.container.NodeLogLevel.*;
  *
  * If multiple HttpRequestNodes are used with a similar configuration, globalNodeConfigurations can be used.
  */
-@NodePlugin("1.1.1")
+@NodePlugin("1.1.2")
 @Io
 public final class HttpRequestNode implements Node {
 
@@ -86,7 +86,7 @@ public final class HttpRequestNode implements Node {
     @FlowKey(defaultValue = "{}")
     private final T<Map<String, String>> requestHeaders = new T<>(){};
     /** User agent of the request */
-    @FlowKey(defaultValue = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0")
+    @FlowKey(defaultValue = "\"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0\"")
     @Argument
     private String userAgent;
     /** Timeout for every HTTP request */
