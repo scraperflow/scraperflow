@@ -31,7 +31,8 @@ The documentation can be found at the [Scraper Wiki](https://wiki.scraper.server
 
 # Quickstart - APT
 
-Scraper is deployed to a [PPA](https://launchpad.net/~albsch/+archive/ubuntu/scraper). To install it the PPA:
+Scraper is deployed to a [PPA](https://launchpad.net/~albsch/+archive/ubuntu/scraper). 
+To install it the PPA:
 
     sudo add-apt-repository ppa:albsch/scraper
     sudo apt-get update
@@ -60,12 +61,12 @@ Scraper will use following locations:
 
 Using
 
-      gradle bundle
+      gradle bundleAll
 
 will
 
 * compile the project 
-* package the project core as a runnable jar in the `build/libs` folder
+* package the project core and project with all found nodes and plugins as a runnable jar in the `build/libs` folder
   * If the core jar is used, plugins needs to be provided explicitly on the class path
   
-         java -cp "/usr/lib/scraper/core/scraper-0.9.0.jar:/usr/lib/scraper/addons/*:/usr/lib/scraper/nodes/*" scraper.app.Scraper
+         java -cp "/usr/lib/scraper/core/scraper-0.11.0.jar:/usr/lib/scraper/addons/*:/usr/lib/scraper/nodes/*" scraper.app.Scraper
