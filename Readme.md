@@ -1,7 +1,7 @@
 Scraper - A Composable Workflow Framework
 =========================================
 
-![version](https://img.shields.io/badge/version-0.11.0-green.svg)
+![version](https://img.shields.io/badge/version-0.11.1-green.svg)
 ![language](https://img.shields.io/badge/language-java12-blue.svg)
 ![build](https://img.shields.io/badge/build-gradle-yellowgreen.svg)
 
@@ -42,7 +42,7 @@ To install it the PPA:
     
 This will install the complete scraper application with all available plugins and all available nodes. 
 Scraper can then be executed with the command `scraper`. 
-A valid Java 11 environment is needed.
+A valid Java 12 environment is needed.
 To check it, type `java -version` in your terminal.
 [sdkman](https://sdkman.io) is recommended.
 
@@ -69,4 +69,4 @@ will
 * package the project core and project with all found nodes and plugins as a runnable jar in the `build/libs` folder
   * If the core jar is used, plugins needs to be provided explicitly on the class path
   
-         java -cp "/usr/lib/scraper/core/scraper-0.11.0.jar:/usr/lib/scraper/addons/*:/usr/lib/scraper/nodes/*" scraper.app.Scraper
+         java -cp "/usr/lib/scraper/core/scraper.jar:/usr/lib/scraper/addons/*:/usr/lib/scraper/nodes/*" scraper.app.Scraper
