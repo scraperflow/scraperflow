@@ -30,6 +30,9 @@ import static java.util.Objects.requireNonNull;
 import static scraper.util.DependencyInjectionUtil.getDIContainer;
 import static scraper.util.JobUtil.parseJobs;
 
+/**
+ * Entry application for the Scraper workflow runtime.
+ */
 @ArgsCommand(
         value = "debug-info",
         doc = "Returns more information about unexpected errors",

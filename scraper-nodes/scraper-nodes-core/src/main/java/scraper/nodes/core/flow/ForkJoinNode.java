@@ -18,6 +18,18 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * Forks to targets and uses specified keys to join into the original flow.
+ * Example:
+ * <pre>
+ * # retrieves the key fileinfo from the 'get-java-classes' target
+ * # retrieves the key package from the 'get-source-info' target
+ * type: ForkJoinNode
+ * forkTargets: [get-java-classes, get-source-info]
+ * targetToKeys:
+ *   get-java-classes:
+ *     fileinfo: fileinfo
+ *   get-source-info:
+ *     package: package
+ * </pre>
  */
 @NodePlugin("0.4.0")
 public final class ForkJoinNode implements Node {

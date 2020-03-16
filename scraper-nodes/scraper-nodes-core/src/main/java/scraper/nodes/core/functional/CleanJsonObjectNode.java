@@ -32,20 +32,19 @@ import java.util.Map;
  * </pre>
  * </p>
  */
-// TODO api doc; | descends into maps, [] descends into arrays
 @NodePlugin("0.1.0")
 public final class CleanJsonObjectNode implements FunctionalNode {
 
-    /** JSON object */
+    /** JSON map object to clean */
     @FlowKey(mandatory = true)
     private final T<Map<String, ?>> jsonObject = new T<>(){};
 
-    /** Clean operations */
+    /** Clean operations where <code>|</code> descends into maps and <code>[]</code> descends into arrays */
     @FlowKey(mandatory = true)
     private T<List<String>> clean = new T<>(){};
 
-    /** cleaned JSON object location */
-    @FlowKey(defaultValue = "output")
+    /** Where the cleaned JSON object will be stored */
+    @FlowKey(defaultValue = "\"output\"")
     private final L<Map<String, ?>> cleanedObject = new L<>(){};
 
     @Override

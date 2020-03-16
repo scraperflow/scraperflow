@@ -3,6 +3,7 @@ package scraper.nodes.core.io;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.EnsureFile;
 import scraper.annotations.node.FlowKey;
+import scraper.annotations.node.Io;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
@@ -18,10 +19,9 @@ import static scraper.api.node.container.NodeLogLevel.ERROR;
 
 /**
  * Appends or writes a line to a file.
- *
- * @author Albert Schimpf
  */
 @NodePlugin("0.1.0")
+@Io
 public final class WriteLineToFileNode implements FunctionalNode {
 
     /** Output file path */

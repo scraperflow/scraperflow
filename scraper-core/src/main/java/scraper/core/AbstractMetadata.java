@@ -95,4 +95,9 @@ public abstract class AbstractMetadata {
     public String getVersion() {
         return version;
     }
+
+    @Override
+    public String toString() {
+        return name+":"+version;
+    }
 }

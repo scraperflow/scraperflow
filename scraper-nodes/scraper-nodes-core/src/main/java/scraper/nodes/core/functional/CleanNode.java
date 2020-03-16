@@ -18,7 +18,7 @@ import java.util.Map;
 @NodePlugin("0.2.0")
 public final class CleanNode implements FunctionalNode {
 
-    /** Whitelist, what not to remove */
+    /** Whitelist, what keys not to remove */
     @FlowKey(defaultValue = "[]")
     private T<List<String>> except = new T<>(){};
 

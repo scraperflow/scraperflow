@@ -9,14 +9,11 @@ import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.template.L;
 import scraper.api.template.T;
-import scraper.core.AbstractNode;
 
 
 /**
- * Executes node target given specified difference in ms
- *
- * @see AbstractNode
- * @author Albert Schimpf
+ * Evaluates a long timestamp in string format and checks if adding the <var>differenceMs</var>
+ * is greater than the current system timestamp.
  */
 @NodePlugin("0.1.0")
 public final class TimestampDifferenceNode implements FunctionalNode {
@@ -25,10 +22,11 @@ public final class TimestampDifferenceNode implements FunctionalNode {
     @FlowKey(mandatory = true)
     private T<String> timestamp = new T<>() {};
 
-    /** time difference in ms */
+    /** Time difference in ms */
     @FlowKey(mandatory = true) @Argument
     private Integer differenceMs;
 
+    /** Result location */
     @FlowKey(mandatory = true)
     private L<Boolean> put = new L<>(){};
 

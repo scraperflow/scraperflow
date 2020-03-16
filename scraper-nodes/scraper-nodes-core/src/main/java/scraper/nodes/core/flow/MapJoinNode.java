@@ -20,9 +20,20 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * Applies a map to every element of a given list and joins the result keys into a list.
+ * Example:
+ * <pre>
+ *
+ * type: MapJoinNode
+ * keys:
+ *   package: package
+ * list: "{output}"
+ * putElement: "unzip-package-list"
+ * mapTarget: unzip-package
+ * ignoreMissingJoinKey: true
+ * </pre>
  */
 @NodePlugin("0.12.0")
-public final class MapJoinNode<K> implements Node {
+public final class MapJoinNode implements Node {
 
     /** Expected join for each key defined in this map after a forked flow terminates */
     @FlowKey(mandatory = true)
@@ -30,7 +41,7 @@ public final class MapJoinNode<K> implements Node {
 
     /** List to apply map to */
     @FlowKey(mandatory = true)
-    private T<List<K>> list = new T<>(){};
+    private T<List<?>> list = new T<>(){};
 
     /** Label of goTo */
     @FlowKey(mandatory = true)
@@ -54,7 +65,7 @@ public final class MapJoinNode<K> implements Node {
 
     @NotNull @Override
     public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
-        List<K> list = o.eval(this.list);
+        List<?> list = o.eval(this.list);
         if(distinct) list = new ArrayList<>(new HashSet<>(list));
 
         List<CompletableFuture<FlowMap>> forkedProcesses = new ArrayList<>();

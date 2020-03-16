@@ -19,7 +19,7 @@ import java.util.List;
 @NodePlugin("1.0.0")
 public final class PipeNode implements Node {
 
-    /** List of goTo labels */
+    /** List of addresses */
     @FlowKey(mandatory = true)
     private T<List<Address>> pipeTargets = new T<>(){};
 

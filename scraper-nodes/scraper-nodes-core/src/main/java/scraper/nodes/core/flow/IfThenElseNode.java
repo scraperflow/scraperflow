@@ -16,12 +16,15 @@ import scraper.api.template.T;
 @NodePlugin("0.1.0")
 public final class IfThenElseNode implements Node {
 
+    /** Boolean condition*/
     @FlowKey(mandatory = true)
     private T<Boolean> condition = new T<>(){};
 
+    /** True target address */
     @FlowKey
     private Address trueTarget;
 
+    /** False target address */
     @FlowKey
     private Address falseTarget;
 

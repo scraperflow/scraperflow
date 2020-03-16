@@ -245,7 +245,7 @@ public class JobFactory {
             @Override public StreamNode getC() { return (StreamNode) n; } };
         } else {
             // default, generic node
-            return new GenericNode(instance, graph, node, index) { @NotNull
+            return new AbstractNode<>(instance, graph, node, index) { @NotNull
             @Override public Node getC() { return n; } };
         }
     }

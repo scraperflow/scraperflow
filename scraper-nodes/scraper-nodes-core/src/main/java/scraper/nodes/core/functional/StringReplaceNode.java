@@ -15,21 +15,21 @@ import scraper.api.template.T;
 @NodePlugin("0.1.0")
 public final class StringReplaceNode implements FunctionalNode {
 
+    /** All occurrences of this regex will be replaced */
+    @FlowKey(mandatory = true)
+    private String replace;
+
+    /** This is the replacement for each occurrence */
+    @FlowKey(mandatory = true)
+    private String with;
+
     /** The content to apply the regex on */
     @FlowKey(defaultValue = "\"{content}\"")
     private final T<String> content = new T<>(){};
 
-    /** Where the output list will be put. If there's already a list at that key, it will be replaced. */
+    /** Replaced string output */
     @FlowKey(defaultValue = "\"output\"")
     private final L<String> output = new L<>(){};
-
-    /** This string occurrence will be replaced */
-    @FlowKey(mandatory = true)
-    private String replace;
-
-    /** This is the replacement */
-    @FlowKey(mandatory = true)
-    private String with;
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {

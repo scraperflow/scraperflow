@@ -4,12 +4,14 @@ package scraper.nodes.core.time;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
+import scraper.annotations.node.Stateful;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.node.type.Node;
+import scraper.api.template.L;
 import scraper.api.template.T;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,48 +20,54 @@ import static scraper.api.node.container.NodeLogLevel.*;
 
 
 /**
- * Execute a node after a timeout. TimerNode is initially dormant and has to be started with a start Action.
+ * Execute a node after a timeout.
+ * TimerNode is initially dormant and has to be started with a start Action.
  * Timer can be stopped and status can be queried with other Actions (e.g. with prior
  * EchoNode invocations).
  *
- * <p>Example .scrape definition:
+ * <p>Example:
  *
  * <pre>
- * {
- *    "type"     : "TimerNode",
- *    "__comment": "Provides a timer for the error timeout.",
- *    "label"    : "errorTimer",
- *    "name"     : "error timer",
- *    "timeout"  : "{error-timeout}",
- *    "put"      : "result",
- *    "onTimeout": "fridgeOn",
- *    "action"   : "{error-action}",
- *    "forward"  : false
- * }</pre>
- *
+ *  type     : TimerNode
+ *  name     : error timer
+ *  timeout  : {error-timeout}
+ *  put      : result
+ *  onTimeout: fridgeOn
+ *  action   : {error-action}
+ * </pre>
  */
 @NodePlugin(value = "0.2.0")
+@Stateful
 public final class TimerNode implements FunctionalNode {
 
-    /** timeout in ms for this node */
+    /** Timeout in ms for this node */
     @FlowKey(mandatory = true)
     private final T<Integer> timeout = new T<>(){};
 
-    /** go to node if timeout occurs */
+    /** Go to node if timeout occurs */
     @FlowKey(mandatory = true)
     private Address onTimeout;
 
-    /** descriptive name of this timer */
+    /** Descriptive name of this timer. Used for logging. */
     @FlowKey(mandatory = true)
     private String name;
 
-    /** action to be taken when this node accepts a call */
-    @FlowKey(defaultValue = "\"NoOP\"")
-    private final T<Action> action = new T<>(){};
-
-    /** time location */
+    /** Where to put the remaining timeout time on request */
     @FlowKey(mandatory = true)
-    private String put;
+    private L<Long> put = new L<>(){};
+
+    /** Action to be taken when this node accepts a call.
+     * <ul>
+     *     <li>TIME_LEFT: request timeout time left and save it to <var>put</var></li>
+     *     <li>TIME_ELAPSED: request timeout time elapsed and save it to <var>put</var></li>
+     *     <li>START: starts the timer if it is not started yet with given timeout </li>
+     *     <li>FORCE_START: starts and possibly resets the timer even if it is started already with given timeout </li>
+     *     <li>STOP: stops the timer if it is running, does nothing if it is stopped already </li>
+     *     <li>NoOP: does nothing </li>
+     * </ul>
+     */
+    @FlowKey(mandatory = true)
+    private final T<Action> action = new T<>(){};
 
 
     private Long elapsedTimestamp = null;
@@ -170,10 +178,10 @@ public final class TimerNode implements FunctionalNode {
 
     private void checkState(final FlowMap o) {
         if(elapsedTimestamp != null) {
-            long time = (System.nanoTime()/1000000 - elapsedTimestamp);
+            Long time = (System.nanoTime()/1000000 - elapsedTimestamp);
             o.output(put, time);
         } else {
-            o.output(put, 0);
+            o.output(put, 0L);
         }
     }
 
@@ -187,10 +195,10 @@ public final class TimerNode implements FunctionalNode {
 
     private void checkTimeout(FlowMap o) {
         if(timeoutTimestamp != null) {
-            long time = lastTimeout - (System.nanoTime()/1000000 - timeoutTimestamp);
+            Long time = lastTimeout - (System.nanoTime()/1000000 - timeoutTimestamp);
             o.output(put, time);
         } else {
-            o.output(put, 0);
+            o.output(put, 0L);
         }
     }
 

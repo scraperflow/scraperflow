@@ -2,6 +2,7 @@ package scraper.nodes.unstable.pass.dialog;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
+import scraper.annotations.node.Io;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
@@ -15,20 +16,25 @@ import static scraper.api.node.container.NodeLogLevel.INFO;
 
 /**
  * Ensures that a key is set, either pre-set or by user input.
- * User input prefers console, otherwise pops up a user prompt.
+ * User input prefers console, otherwise pops up a graphical user prompt.
  */
 @NodePlugin("0.1.0")
+@Io
 public final class UserInputNode implements FunctionalNode {
 
+    /** Which key to ensure */
     @FlowKey(mandatory = true)
     private L<String> key = new L<>(){};
 
+    /** Prompt message */
     @FlowKey(mandatory = true)
     private String prompt;
 
+    /** Can hide echo for sensitive inputs */
     @FlowKey(defaultValue = "false")
     private Boolean hidden;
 
+    /** If the key already exists, do nothing */
     @FlowKey(defaultValue = "true")
     private Boolean noPromptIfExists;
 

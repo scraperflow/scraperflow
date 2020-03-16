@@ -19,11 +19,11 @@ import java.util.List;
 @NodePlugin("0.2.0")
 public final class AggregateListNode<K> implements FunctionalNode {
 
-    /** Evaluated content inserted into 'put' */
+    /** Evaluated content inserted into <var>put</var> */
     @FlowKey(mandatory = true)
     private final T<K> aggregate = new T<>(){};
 
-    /** Expects a List object at the 'put' key or generates a new empty list if there is no list at given key */
+    /** Expects a List object at the <var>put</var> key or generates a new empty list if there is no list present */
     @FlowKey(mandatory = true)
     private final L<List<K>> put = new L<>(){};
 

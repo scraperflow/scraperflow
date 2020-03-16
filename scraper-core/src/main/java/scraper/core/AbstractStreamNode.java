@@ -20,11 +20,20 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
- * Fixes accept method for functional nodes
+ * Provides a streaming mechanism for a node.
+ * Either collects results to a list or stream each individual element to a specified target.
  */
 @NodePlugin("0.1.0")
 public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implements StreamNodeContainer {
     AbstractStreamNode(@NotNull String instance, @NotNull String graph, @Nullable String node, int index) { super(instance, graph, node, index); }
+
+    /** If enabled, collects elements as a list without streaming */
+    @FlowKey(defaultValue = "\"true\"")
+    private Boolean collect;
+
+    /** If collect is disabled, this is the target a single stream element is streamed to */
+    @FlowKey
+    private Address streamTarget;
 
     @Override
     public void init(@NotNull ScrapeInstance job) throws ValidationException {
@@ -32,13 +41,6 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
         if(!collect)
             if(streamTarget == null) throw new ValidationException("Stream target has to be set for streaming mode");
     }
-
-    @FlowKey(defaultValue = "\"true\"")
-    private Boolean collect;
-
-    /** Where the stream is dispatched */
-    @FlowKey
-    private Address streamTarget;
 
     private final @NotNull Map<UUID, FlowMap> openStreams = new ConcurrentHashMap<>();
     private final @NotNull Map<UUID, Map<String, List<Object>>> collectors = new ConcurrentHashMap<>();

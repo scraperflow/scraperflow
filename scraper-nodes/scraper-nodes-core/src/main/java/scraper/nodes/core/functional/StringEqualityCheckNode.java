@@ -10,19 +10,20 @@ import scraper.api.template.L;
 import scraper.api.template.T;
 
 /**
- * Checks string equality
+ * Checks string equality for two inputs.
  */
 @NodePlugin("0.1.0")
-public final class StringEqualityCheck implements FunctionalNode {
+public final class StringEqualityCheckNode implements FunctionalNode {
 
-    /** The content to apply the regex on */
-    @FlowKey(defaultValue = "\"{content}\"")
+    /** String 1 */
+    @FlowKey(mandatory = true)
     private final T<String> string = new T<>(){};
 
+    /** String 2 */
     @FlowKey(mandatory = true)
     private final T<String> check = new T<>(){};
 
-    /** Where the output list will be put. If there's already a list at that key, it will be replaced. */
+    /** Result location */
     @FlowKey(defaultValue = "\"output\"")
     private final L<Boolean> output = new L<>(){};
 

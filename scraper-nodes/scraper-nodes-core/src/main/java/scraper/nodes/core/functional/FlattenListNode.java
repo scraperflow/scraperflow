@@ -14,7 +14,12 @@ import java.util.stream.Collectors;
 
 /**
  * Flattens a list of lists into a flattened list.
- * Can be used to merge lists by using templates.
+ * <p>
+ * Can be used to merge lists by using templates:
+ * <pre>
+ *   type: FlattenListNode
+ *   flatten: ["{list1}", "{list2}"]
+ * </pre>
  */
 @NodePlugin("0.3.0")
 public final class FlattenListNode implements FunctionalNode {
@@ -23,7 +28,7 @@ public final class FlattenListNode implements FunctionalNode {
     @FlowKey(defaultValue = "\"{list}\"")
     private final T<List<List<?>>> flatten = new T<>(){};
 
-    /** Where the output hash is stored */
+    /** Where the flattened list is stored */
     @FlowKey(defaultValue = "\"output\"")
     private L<List<?>> output = new L<>(){};
 

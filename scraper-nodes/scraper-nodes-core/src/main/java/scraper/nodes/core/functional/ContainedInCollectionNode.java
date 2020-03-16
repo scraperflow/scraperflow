@@ -13,7 +13,7 @@ import scraper.api.template.T;
 import java.util.Collection;
 
 /**
- * Sets a flag depending if the goTo object is contained in the collection.
+ * Sets a flag depending if the goTo object is contained in the collection (i.e. in the list or map).
  */
 @NodePlugin("0.3.0")
 public final class ContainedInCollectionNode implements FunctionalNode {
@@ -30,7 +30,7 @@ public final class ContainedInCollectionNode implements FunctionalNode {
     @FlowKey(defaultValue = "\"flag\"")
     private L<Boolean> flag = new L<>(){};
 
-    /** Determines if the contains or contains not operation is used */
+    /** Determines if the <code>contains</code> or <code>not contains</code> operation is used */
     @FlowKey(defaultValue = "false")
     private Boolean negate;
 

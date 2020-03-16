@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
+import scraper.annotations.node.Io;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.template.T;
-import scraper.core.AbstractNode;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -21,15 +21,14 @@ import java.net.http.HttpResponse;
 import java.util.List;
 
 /**
- * Message something to a Telegram account
- *
- * @see AbstractNode
- * @author Albert Schimpf
+ * Message something to a Telegram account.
+ * Failures to send will not result in exceptions, they are just logged.
  */
 @NodePlugin("1.0.0")
+@Io
 public final class TelegramNode implements FunctionalNode {
 
-    /** Message */
+    /** Message as a String */
     @FlowKey(defaultValue = "\"{message}\"")
     private final T<String> message = new T<>(){};
 
@@ -37,7 +36,7 @@ public final class TelegramNode implements FunctionalNode {
     @FlowKey(defaultValue = "\"{bot-token}\"") @Argument
     private String botToken;
 
-    /** Message recipient. User or group chat id */
+    /** Message recipients. User or group chat id */
     @FlowKey(mandatory = true)
     private T<List<String>> recipients = new T<>(){};
 

@@ -18,7 +18,7 @@ import java.util.Date;
 
 
 /**
- * Echoes date in given format. Default is ISO 8601: yyyy-MM-dd'T'HH:mm:ss
+ * Echoes date in given format.
  */
 @NodePlugin("0.1.0")
 public final class DateNode implements FunctionalNode {

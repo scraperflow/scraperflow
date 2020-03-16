@@ -8,7 +8,7 @@ import scraper.api.node.type.FunctionalNode;
 
 
 /**
- * Fixes accept method for functional nodes
+ * No special configuration for functional nodes available.
  */
 @NodePlugin("0.1.0")
 public abstract class AbstractFunctionalNode extends AbstractNode<FunctionalNode> implements FunctionalNodeContainer {

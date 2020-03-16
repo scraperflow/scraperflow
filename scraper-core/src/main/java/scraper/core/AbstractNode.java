@@ -42,21 +42,8 @@ import static scraper.utils.ClassUtil.getAllFields;
 
 
 /**
- * Basic abstract implementation of a Node with labeling and goTo support.
- * <p>
- * Provides following utility functions:
- * <ul>
- *     <li>Node factory method depending on the defined type</li>
- *     <li>Node coordination</li>
- *     <li>Argument evaluation</li>
- *     <li>Key reservation</li>
- *     <li>Ensure file</li>
- *     <li>Basic ControlFlow implementation</li>
- *     <li>Thread service pool management</li>
- * </ul>
- * </p>
+ * Basic functionality of a Node with labeling and goTo support.
  */
-@SuppressWarnings({"WeakerAccess", "unused"}) // abstract implementation
 @NodePlugin("1.0.2")
 public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator implements NodeContainer<NODE> {
     /** Logger with the actual class name */
@@ -66,39 +53,41 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
     @FlowKey(mandatory = true)
     protected String type;
 
-    /** Decide log level threshold for this node */
+    /** Log level threshold for this node */
     @FlowKey(defaultValue = "\"INFO\"")
     protected NodeLogLevel logLevel = INFO;
 
     /** Log statement to be printed */
     @FlowKey
-    protected T<Object> log = new T<>(){};
+    protected T<?> log = new T<>(){};
 
-    /** Indicates if forward has any effect or not. */
+    /** Indicates if the flow continues after this node or not */
     @FlowKey(defaultValue = "true")
     protected Boolean forward;
 
     /** Target label */
-    @FlowKey protected Address goTo;
+    @FlowKey
+    protected Address goTo;
 
-    /** If set, returns a thread pool with given name and {@link #threads} */
+    /** If set and a node creates flows, the node uses a thread pool denoted by this name and <var>threads</var> */
     @FlowKey
     protected String service;
 
-    /** Number of worker threads for given executor service pool {@link #service} */
-    @FlowKey(defaultValue = "1000") @Argument
+    /** Number of worker threads for given executor service pool <var>service</var> */
+    @FlowKey(defaultValue = "100") @Argument
     protected Integer threads;
 
-    /** Label of a node which can be used as a goto reference */
-    @FlowKey // not used for anything at the moment
+    /** Label of a node which can be used as a goTo reference */
+    @FlowKey
     private String label;
     private NodeAddress absoluteAddress;
 
+    /** Target if a fork (dispatch or depend) flow exception occurs */
+    @FlowKey
+    protected Address onForkException;
+
     /** Reference to its parent job */
     protected ScrapeInstance jobPojo;
-
-    /** Index of the node in the process list. Is set on init. */
-    protected int stageIndex;
 
     /** All ensureFile fields of this node */
     private final ConcurrentMap<Field, EnsureFile> ensureFileFields = new ConcurrentHashMap<>();
@@ -109,16 +98,13 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
     /** Set during init of node */
     private GraphAddress graphKey;
 
-    /** Target if a dispatched flow exception occurs */
-    @FlowKey
-    protected Address onForkException;
 
     public AbstractNode(@NotNull String instance, @NotNull String graph, @Nullable String node, int index) {
         this.absoluteAddress = new NodeAddressImpl(instance, graph, node, index);
     }
 
     /**
-     * Initializes the {@link #stageIndex} and all fields marked with {@link FlowKey}. Evaluates
+     * Initializes the stageIndex and all fields marked with {@link FlowKey}. Evaluates
      * actual values for fields marked with {@link Argument} with the initial argument map.
      *
      * @param job Job that this node belongs to
@@ -178,6 +164,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
      *
      * @param map The current forwarded map
      */
+    @SuppressWarnings("unused")
     protected void start(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap map) throws NodeException {
         // evaluate and write log message if any
         try {
@@ -228,6 +215,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
     /**
      * @param o The current map
      */
+    @SuppressWarnings("unused") // unused
     protected void finish(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap o) {
     }
 
@@ -422,8 +410,6 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
 
     @NotNull
     public Logger getL() { return l; }
-
-    public int getStageIndex() { return this.stageIndex; }
 
     @NotNull
     @Override

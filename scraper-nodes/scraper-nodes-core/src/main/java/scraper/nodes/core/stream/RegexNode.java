@@ -27,11 +27,25 @@ import java.util.regex.Pattern;
  * Produces a list of maps.
  * The maps capture the content of the capture groups.
  * If groups are empty, the map is empty and the list is populated with empty maps.
+ * <p>
+ *     The String needs to be properly escaped in the specification.
+ * </p>
+ * Example:
+ * <pre>
+ * type: RegexNode
+ * regex: "((.*?\\/)(\\w*)\\.java)"
+ * groups:
+ *   path: 1
+ *   folder: 2
+ *   classname: 3
+ * content: "{filename}"
+ * output: fileinfo
+ * </pre>
  */
-@NodePlugin("0.11.0")
+@NodePlugin("0.11.1")
 public final class RegexNode implements StreamNode {
 
-    /** Regex as a Java String */
+    /** Regex as a (properly escaped JSON) Java String */
     @FlowKey(mandatory = true) @Argument
     private String regex;
 
@@ -45,13 +59,18 @@ public final class RegexNode implements StreamNode {
 
     /** Default output if no matches are present */
     @FlowKey
-    private T<Map<String, ? super Object>> noMatchDefaultOutput = new T<>(){};
+    private T<Map<String, ?>> noMatchDefaultOutput = new T<>(){};
 
     /** Where the output list will be put. If there's already a list at that key, it will be replaced. */
     @FlowKey(defaultValue = "\"output\"")
-    private L<Map<String, ? super Object>> output = new L<>(){};
+    private L<Map<String, ?>> output = new L<>(){};
 
-    /** Pattern dotall option */
+    /**
+     * Pattern dotall option.
+     * <p>In this mode the expression <code>.</code> matches any character,
+     * including a line terminator.
+     * By default, this expression does not match line terminators.
+     */
     @FlowKey(defaultValue = "\"true\"")
     private Boolean dotAll;
 
@@ -68,7 +87,7 @@ public final class RegexNode implements StreamNode {
     }
 
     @Override
-    public void process(@NotNull StreamNodeContainer n, @NotNull FlowMap o) {
+    public void process(@NotNull final StreamNodeContainer n, @NotNull final FlowMap o) {
         n.collect(o, List.of(o.eval(output)));
 
         String content = o.eval(this.content);
@@ -89,7 +108,7 @@ public final class RegexNode implements StreamNode {
             n.streamFlowMap(o, copy);
         }
 
-        Optional<Map<String, ? super Object>> evalDefault = o.evalMaybe(noMatchDefaultOutput);
+        Optional<Map<String, ?>> evalDefault = o.evalMaybe(noMatchDefaultOutput);
         if(evalDefault.isPresent() && m.reset().results().findAny().isEmpty()) {
             FlowMap copy = o.copy();
             copy.output(output, evalDefault.get());

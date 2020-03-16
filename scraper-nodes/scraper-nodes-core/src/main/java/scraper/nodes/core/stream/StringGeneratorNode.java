@@ -14,38 +14,44 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Generate strings based on a generator string and a map which specifies expressions to apply to T parts.
+ * <p>
+ * Generate strings based on a generator string and an expression which specifies a range to be generated.
+ * </p>
  *
- * Currently only one key expression is supported. A map with size greater than 1 will throw a RuntimeException.
+ * <p>
+ * Currently only one key expression is supported.
+ * </p>
  *
- * Currently, only the 'TO' expression is implemented.
- *
+ * <p>
  * Example:
  *
+ * <pre>
  *  generator: "page={range}"
+ *  expression: "range 2 TO 10"
+ * </pre>
  *
- *  keysToExpressions: {"range": "2 TO 300"}
- *
- * will generate a list [{"generated": "page=2", "range": "2"},  ... ,{"generated": "page=300", "range": "300"}]
+ * will generate a list/will stream the following Strings
+ * <pre>
+ *     "page=2"
+ *     ...
+ *     "page=10"
+ * </pre>
  * with generated strings and the expression used and the current value.
- *
- * @author Albert Schimpf
+ * </p>
  */
 @NodePlugin("0.10.0")
 public final class StringGeneratorNode implements StreamNode {
 
-    /** String used to generate a list of more strings */
-    @FlowKey(mandatory = true) @NotNull
+    /** String used to generate a list of more strings. Should contain the KEY part of <var>expression</var>. */
+    @FlowKey(mandatory = true)
     private final T<String> generator = new T<>(){};
 
-    /** Target key in T to (String) expression map.
-     * Expression currently supported: "KEY X TO Y", where X and Y are Integers.
-     */
+    /** Expression currently supported: "KEY X TO Y", where X and Y are Integers. */
     @FlowKey(mandatory = true)
     private String expression;
 
-    /** Output list key */
-    @FlowKey(defaultValue = "\"generated\"") @NotNull
+    /** Where the generated String is stored */
+    @FlowKey(defaultValue = "\"generated\"")
     private L<String> generatedElement = new L<>(){};
 
     @Override

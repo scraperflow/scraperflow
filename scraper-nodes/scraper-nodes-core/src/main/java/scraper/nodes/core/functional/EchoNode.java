@@ -14,6 +14,15 @@ import java.util.Optional;
 
 /**
  * Can modify the current flow map.
+ * Can be used to construct user defined JSON objects.
+ * <p>
+ * Example
+ * <pre>
+ * type: EchoNode
+ * puts:
+ *   id: "{id}"
+ *   body: "{parsed-body}"
+ * </pre>
  */
 @NodePlugin("1.2.1")
 public class EchoNode implements FunctionalNode {

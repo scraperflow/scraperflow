@@ -21,7 +21,6 @@ import java.util.Map;
 
 import static scraper.api.node.container.NodeLogLevel.INFO;
 
-// AbstractNode provides all expected features
 @SuppressWarnings({"DefaultAnnotationParam", "RedundantThrows"}) // tutorial
 @NodePlugin(deprecated = true)
 public class HelloWorldNode implements Node {

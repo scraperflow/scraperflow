@@ -2,10 +2,7 @@ package scraper.nodes.core.io;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import scraper.annotations.NotNull;
-import scraper.annotations.node.Argument;
-import scraper.annotations.node.EnsureFile;
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.NodePlugin;
+import scraper.annotations.node.*;
 import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
@@ -44,21 +41,36 @@ import static scraper.api.node.container.NodeLogLevel.*;
  *     <li>POST (json body)</li>
  *     <li>POST (form)</li>
  * </ul>
+ * Example:
+ * <pre>
+ * type: HttpRequestNode
+ * proxyFile: "/tmp/proxies.csv"
+ * proxyGroup: g1
+ * proxyMode: PROXY
+ * banResponses:
+ *   - 403
+ * exceptionContaining:
+ *   - "Attention Required! | Cloudflare"
+ *   - "522: Connection timed out"
+ *   - "will be temporarily banned"
+ * cache: "/tmp/cache/"
+ * timeout: 50000
+ * holdOnReservation: 30000
+ * holdOnForward: 4000
+ * </pre>
  *
- * @author Albert Schimpf
+ * If multiple HttpRequestNodes are used with a similar configuration, globalNodeConfigurations can be used.
  */
-@NodePlugin("1.1.0")
+@NodePlugin("1.1.1")
+@Io
 public final class HttpRequestNode implements Node {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    // TODO make userAgent modifiable
-    private static final String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36";
-
     // --------------
     // REQUEST
     // --------------
-    /** Target URL */
+    /** Target URL. If URL starts with // without a schema, <var>defaultSchema</var> will be used as the schema */
     @FlowKey(defaultValue = "\"{url}\"")
     private final T<String> url = new T<>(){};
     /** Default schema if url starts with // */
@@ -67,16 +79,21 @@ public final class HttpRequestNode implements Node {
     /** Response location if successful */
     @FlowKey(defaultValue = "\"response\"")
     private String put;
-    /** Type of request */
+    /** Type of request: GET, POST, DELETE, PUT */
     @FlowKey(defaultValue = "\"GET\"")
     private RequestType requestType;
     /** Inserts name value pair request headers */
     @FlowKey(defaultValue = "{}")
     private final T<Map<String, String>> requestHeaders = new T<>(){};
+    /** User agent of the request */
+    @FlowKey(defaultValue = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0")
+    @Argument
+    private String userAgent;
     /** Timeout for every HTTP request */
     @FlowKey(defaultValue = "5000") @Argument
     private Integer timeout;
-    /** Use proxy or not */
+    /** Use proxy or not. Possible values:
+     * <code> LOCAL, PROXY, BOTH_PREFER_PROXY, BOTH_PREFER_LOCAL</code> */
     @FlowKey(defaultValue = "\"LOCAL\"")
     private ProxyMode proxyMode;
     /** Shared proxy group */
@@ -89,10 +106,10 @@ public final class HttpRequestNode implements Node {
     /** Expected response type, STRING_BODY, JSON, or FILE */
     @FlowKey(defaultValue = "\"STRING_BODY\"")
     private ResponseType expectedResponse;
-    /** How long the used proxy or local connection is made unusable by other nodes */
+    /** How long the used proxy or local connection is made unusable by other nodes. This can used to reduce the requests for a single IP. */
     @FlowKey(defaultValue = "1000") @Argument
     private Integer holdOnReservation;
-    /** How long to wait after a request has completed */
+    /** How long to wait after a request has completed but after the token has been freed. This can be used to not overload the target server. */
     @FlowKey(defaultValue = "1000") @Argument
     private Integer holdOnForward;
     /** Checks the response body of a string response for bad phrases, throwing an exception if one is found */
@@ -112,7 +129,8 @@ public final class HttpRequestNode implements Node {
     // --------------
     // CACHING
     // --------------
-    /** Caching of results to specified folder on a best-effort basis ignoring IO errors with a TTL of cacheTTLms */
+    /** Caching of results to specified folder on a best-effort basis ignoring IO errors with a TTL of cacheTTLms.
+     * Needs to end with a folder separator */
     @FlowKey @Argument @EnsureFile
     private String cache;
     /** TTL for cache files in Long format in ms. Default is forever. Null means caching forever. */

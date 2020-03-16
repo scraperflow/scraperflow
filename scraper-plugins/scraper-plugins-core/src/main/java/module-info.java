@@ -10,6 +10,8 @@ open module scraper.plugins.core {
 
     requires org.slf4j;
 
+    requires jdk.javadoc;
+
 //    // FIXME why is this needed so that reflections can find all nodes?
     provides Hook with ControlFlowGraphGeneratorHook;
 }

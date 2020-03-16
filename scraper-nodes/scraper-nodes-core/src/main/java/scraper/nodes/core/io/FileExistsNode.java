@@ -2,6 +2,7 @@ package scraper.nodes.core.io;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
+import scraper.annotations.node.Io;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
@@ -12,9 +13,10 @@ import scraper.api.template.T;
 import java.io.File;
 
 /**
- * Checks if file exists
+ * Checks if a file exists.
  */
 @NodePlugin("0.1.0")
+@Io
 public final class FileExistsNode implements FunctionalNode {
 
     /** Path of the file to be cleared */

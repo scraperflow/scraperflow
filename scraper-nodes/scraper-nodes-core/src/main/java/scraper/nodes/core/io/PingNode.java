@@ -4,6 +4,7 @@ package scraper.nodes.core.io;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
+import scraper.annotations.node.Io;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
@@ -23,12 +24,13 @@ import java.util.concurrent.TimeoutException;
 /**
  * Pings a given hostname on the given port.
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
+@Io
 public final class PingNode implements FunctionalNode {
 
-    /** Argument ping address */
+    /** Argument ping hostname */
     @FlowKey(mandatory = true) @Argument
-    private String address;
+    private String hostname;
 
     /** Argument ping port */
     @FlowKey(mandatory = true) @Argument
@@ -45,7 +47,7 @@ public final class PingNode implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        boolean ping = isReachable(n, address, port, timeout);
+        boolean ping = isReachable(n, hostname, port, timeout);
         o.output(result, ping);
     }
 

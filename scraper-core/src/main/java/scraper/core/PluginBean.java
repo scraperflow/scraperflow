@@ -11,16 +11,14 @@ import scraper.api.exceptions.ValidationException;
 import scraper.api.node.type.Node;
 import scraper.utils.ClassUtil;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class PluginBean {
     private @NotNull static final Logger log = org.slf4j.LoggerFactory.getLogger("NodeDiscovery");
-    private @NotNull final List<AbstractMetadata> plugins;
+    private @NotNull final List<AbstractMetadata> plugins = new LinkedList<>();
 
     public PluginBean() {
-        List<AbstractMetadata> nodePlugins = new ArrayList<>();
-
         String pkg = "scraper";
         String routeAnnotation = NodePlugin.class.getName();
         try (ScanResult scanResult =
@@ -50,11 +48,9 @@ public class PluginBean {
                     }
                 };
 
-                nodePlugins.add(metadata);
+                plugins.add(metadata);
             }
         }
-
-        plugins = nodePlugins;
 
         printDiscovery();
     }
@@ -70,7 +66,7 @@ public class PluginBean {
         log.info("Discovered {} nodes, {}", plugins.size(), sb.append("]").toString());
     }
 
-    @NotNull List<AbstractMetadata> getPlugins() {
+    public @NotNull List<AbstractMetadata> getPlugins() {
         return this.plugins;
     }
 }

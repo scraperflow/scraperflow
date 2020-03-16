@@ -14,12 +14,9 @@ import java.util.List;
 
 
 /**
- * Expects a list at goTo key.
- * Forks new flows for every element in the goTo list.
+ * Forks new flows for every element in <var>list</var>.
  * Does not wait or join the forked flows.
- * The element is put on a specified key.
- *
- * @author Albert Schimpf
+ * The element is saved to <var>putElement</var>
  */
 @NodePlugin("0.3.0")
 public final class MapNode<K> implements Node {

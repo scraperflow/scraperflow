@@ -3,6 +3,7 @@ package scraper.nodes.core.time;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
+import scraper.annotations.node.Stateful;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
 import scraper.api.node.container.FunctionalNodeContainer;
@@ -24,6 +25,7 @@ import static scraper.api.node.container.NodeLogLevel.DEBUG;
  * Periodic execution can start at initialization or on first accept call, controlled via the flag.
  */
 @NodePlugin(value = "1.1.0")
+@Stateful
 public final class PeriodicNode implements FunctionalNode {
 
     /** Period time in ms */

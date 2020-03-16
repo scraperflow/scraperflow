@@ -2,6 +2,7 @@ package scraper.nodes.core.os;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
+import scraper.annotations.node.Io;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
@@ -23,35 +24,30 @@ import static scraper.api.node.container.NodeLogLevel.DEBUG;
 import static scraper.api.node.container.NodeLogLevel.ERROR;
 
 /**
- * Executes a command defined in the .scrape file. Parameters can be Ts.
+ * Executes a command defined in the workflow in the current system environment.
  *
  * <ol>
  *     <li>Executes the command <tt>exec</tt></li>
  *     <li>Waits for completion</li>
- *     <li>Logs if an error occurs. If {@code failOnException} is enabled, throws a {@code NodeException}</li>
+ *     <li>Logs if an error occurs. If failOnException is enabled, throws a NodeException</li>
  * </ol>
  *
- * <p>Example .scrape definition:
+ * <p>Example definition:
  *
  * <pre>
- * {
- *   "type":"ExecNode",
- *   "__comment":"Executes the 'ls -la' command and stops forwarding.",
- *   "label":"lsCommand",
- *   "exec":[
- *     "ls", "-la", "{path}"
- *   ],
- *   "forward":false
- * }
+ *   type: ExecNode
+ *   exec: ["ls", "-la", "{path}"]
  * </pre>
  */
 @NodePlugin("0.3.0")
+@Io
 public final class ExecNode implements FunctionalNode {
 
     /** Command to execute. Every element is handled as one argument. Argument strings are evaluated. */
     @FlowKey
     private final T<List<String>> exec = new T<>(){};
 
+    /** Single String alternative to <var>exec</var>, will get executed if <var>exec</var> is not specified */
     @FlowKey
     private final T<String> execStr = new T<>(){};
 
