@@ -117,7 +117,7 @@ public class Scraper {
 
         if(System.getProperty("scraper.exit", "false").equalsIgnoreCase("true")) {
             log.info("Exiting Scraper because system property 'scraper.exit' is true");
-            return;
+            System.exit(0);
         }
 
         log.info("Found {} node hooks: {}", nodeHooks.size(), nodeHooks);
