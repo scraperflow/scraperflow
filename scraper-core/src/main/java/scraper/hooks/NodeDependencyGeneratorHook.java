@@ -3,12 +3,11 @@ package scraper.hooks;
 import org.slf4j.Logger;
 import scraper.annotations.ArgsCommand;
 import scraper.annotations.NotNull;
+import scraper.annotations.node.NodePlugin;
 import scraper.api.di.DIContainer;
 import scraper.api.plugin.Hook;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
-import scraper.core.AbstractMetadata;
-import scraper.core.JobFactory;
 import scraper.utils.StringUtil;
 
 import java.io.File;
@@ -16,7 +15,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Hook to generate a node dependency file for the currently parsed workflow specifications
@@ -29,13 +30,10 @@ import java.util.Map;
 public class NodeDependencyGeneratorHook implements Hook {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger("NodeVersioning");
-    private JobFactory jobFactory;
 
     @Override
     public void execute(@NotNull final DIContainer dependencies, @NotNull final String[] args,
                         @NotNull final Map<ScrapeSpecification, ScrapeInstance> jobs) throws Exception {
-        this.jobFactory = dependencies.get(JobFactory.class);
-
         // ==
         // node dependency generation
         // ==
@@ -51,21 +49,24 @@ public class NodeDependencyGeneratorHook implements Hook {
                     path = Path.of(createNodeDependencies, job.getName()+".ndep");
 
                 log.info("Creating node dependencies file at {}", path.toString());
-                generateNodeDependencies(path.toString());
+                generateNodeDependencies(jobs.get(job), path.toString());
             }
         }
     }
 
-    private void generateNodeDependencies(String path) throws FileNotFoundException {
+    private void generateNodeDependencies(ScrapeInstance scrapeInstance, String path) throws FileNotFoundException {
         File f = new File(path);
+        Set<String> nodes = new HashSet<>();
+
+        scrapeInstance.getRoutes().forEach(((address, nodeContainer) -> {
+            String type = nodeContainer.getC().getClass().getSimpleName();
+            String version = nodeContainer.getC().getClass().getDeclaredAnnotation(NodePlugin.class).value();
+            nodes.add(type+":"+version);
+        }));
 
         try(PrintWriter pw = new PrintWriter(new FileOutputStream(f))) {
-            for (Object plugin : jobFactory.getPlugins()) {
-                if(((AbstractMetadata) plugin).isDeprecated())
-                    continue;
-                pw.println(
-                        ((AbstractMetadata) plugin).getName()+":"+((AbstractMetadata) plugin).getVersion()
-                );
+            for (String node : nodes) {
+                pw.println(node);
             }
         }
     }
