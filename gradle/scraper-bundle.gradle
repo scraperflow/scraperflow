@@ -1,4 +1,4 @@
-def version = '0.11.1'
+def version = '0.11.2'
 def api = '0.11'
 
 //def getGitHash = { ->
@@ -38,7 +38,7 @@ task bundleFatJar(type: Jar) { t ->
     }
 
 //    archiveFileName = "Scraper-${api}-${getGitHash()}-bundled.jar"
-    archiveFileName = "Scraper-${api}-bundled.jar"
+    archiveFileName = "scraper-${version}-bundled.jar"
     destinationDirectory = file("$rootDir/build/libs")
 }
 
@@ -57,7 +57,7 @@ task bundleCore(type: Jar, dependsOn: [':scraper-app:jar', ':scraper-core:jar'])
         project(':scraper-app').configurations.compileClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
     }
 
-    archiveFileName = "Scraper-${version}-core.jar"
+    archiveFileName = "scraper-${version}-core.jar"
     destinationDirectory = file("$rootDir/build/libs")
 }
 
@@ -66,7 +66,7 @@ task bundleApi(type: Jar, dependsOn: ':scraper-api:jar') {
         project(":scraper-api").sourceSets.main.output
     }
 
-    archiveFileName = "Scraper-${api}-api.jar"
+    archiveFileName = "scraper-${api}-api.jar"
     destinationDirectory = file("$rootDir/build/libs")
 }
 
