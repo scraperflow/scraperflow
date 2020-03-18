@@ -29,6 +29,20 @@ managing control flow of programs in an easy way (declarative workflow specifica
 
 The documentation can be found at the [Scraper Wiki](https://wiki.scraper.server1.link).
 
+# Quickstart - Docker
+
+Scraper is deployed to [Dockerhub](https://hub.docker.com/repository/docker/albsch/scraper).
+
+To use a Scraper container once, use
+
+    docker run -v "$PWD":/rt/ -v "$PWD":/nodes -v "$PWD":/plugins --rm albsch/scraper:latest help
+
+and place your workflow in the current workflow directory. 
+'$PWD' can be changed to another working directory if needed.
+If custom nodes or plugins are to be supplied (like [dev-nodes](https://github.com/scraperflow/scraper-nodes/releases)),
+place the jar(s) in the current working directory (or change '$PWD'), too.
+
+
 # Quickstart - APT
 
 Scraper is deployed to a [PPA](https://launchpad.net/~albsch/+archive/ubuntu/scraper). 
@@ -69,4 +83,4 @@ will
 * package the project core and project with all found nodes and plugins as a runnable jar in the `build/libs` folder
   * If the core jar is used, plugins needs to be provided explicitly on the class path
   
-         java -cp "/usr/lib/scraper/core/scraper.jar:/usr/lib/scraper/addons/*:/usr/lib/scraper/nodes/*" scraper.app.Scraper
+         java -cp "/usr/lib/scraper/core/scraper.jar:/usr/lib/scraper/plugins/*:/usr/lib/scraper/nodes/*" scraper.app.Scraper
