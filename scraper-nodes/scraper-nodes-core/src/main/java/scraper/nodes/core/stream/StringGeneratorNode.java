@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
  * with generated strings and the expression used and the current value.
  * </p>
  */
-@NodePlugin("0.10.0")
+@NodePlugin("0.10.1")
 public final class StringGeneratorNode implements StreamNode {
 
     /** String used to generate a list of more strings. Should contain the KEY part of <var>expression</var>. */
@@ -68,12 +68,12 @@ public final class StringGeneratorNode implements StreamNode {
         int from = Integer.parseInt(m.group(2));
         int to = Integer.parseInt(m.group(3));
 
-        n.collect(o, List.of(String.valueOf(generatedElement.getTerm().getRaw()), key));
+        n.collect(o, List.of(String.valueOf(generatedElement.getLocation().getRaw()), key));
 
         for (int i = from; i <= to; i++) {
             FlowMap copy = o.copy();
             // used to evaluate generator T
-            copy.output(key, i);
+            copy.output(key, String.valueOf(i));
 
             String generatedString = copy.eval(generator);
             copy.output(generatedElement, generatedString);
