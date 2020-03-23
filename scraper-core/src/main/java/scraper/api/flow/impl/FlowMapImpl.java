@@ -351,8 +351,8 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
         }
 
         if(targetToken.isSubtypeOf(knownToken)) {
-            log.warn("Downcasting '{}' from '{}' -> '{}'. This may indicate a node implementation error or an insufficient type infer of that key",
-                    targetKey, knownType, targetType);
+            log.warn("Downcasting '{}' from '{}' -> '{}' ('{}'). This may indicate a node implementation error or an insufficient type infer of that key",
+                    targetKey, knownType.get(), targetType.get(), targetType);
             @SuppressWarnings("unchecked") // warned user about potentially bad downcast
                     Optional<K> castObject = Optional.of((K) targetObject);
             return castObject;

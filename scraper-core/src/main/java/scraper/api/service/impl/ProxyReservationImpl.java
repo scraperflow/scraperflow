@@ -155,7 +155,18 @@ public class ProxyReservationImpl implements ProxyReservation {
             GroupInfoImpl group = allProxies.get(info.group);
             if (!group.usedProxies.remove(info)) log.error("Released proxy which was not in use: {}", info);
 
-            if(info.score < 2L) log.warn("Proxy too low score: {}", info);
+            if(info.score < 2L) {
+                Timer timer = new Timer(false);
+                int randomMinute = new Random().nextInt(30);
+                log.info("Proxy too low score, releasing in {} minutes: {}", randomMinute, info);
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        log.info("Score reset for {}", info.address);
+                        info.score = 50L;
+                    }
+                }, randomMinute*60*1000); // 15 minutes
+            }
             else if(!group.freeProxies.contains(info)) group.freeProxies.offer(info);
         }
     }
