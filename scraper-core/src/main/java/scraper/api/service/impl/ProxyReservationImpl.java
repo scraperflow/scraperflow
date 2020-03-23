@@ -110,6 +110,7 @@ public class ProxyReservationImpl implements ProxyReservation {
         return allProxies.get(group);
     }
 
+    @NotNull
     @Override
     public Map<String, GroupInfo> getAllGroups() {
         return new HashMap<>(allProxies);
@@ -210,7 +211,7 @@ public class ProxyReservationImpl implements ProxyReservation {
                 }
             });
         } catch (Exception e){
-            log.error("Bad proxy format: {}", line);
+            log.error("Bad proxy format: {}: {}", line, e.getMessage());
         }
     };
 

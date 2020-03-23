@@ -34,6 +34,6 @@ public interface ProxyReservation {
 
     /** Retrieves proxy info for given group */
     @Nullable GroupInfo getInfoForGroup(@NotNull String group);
-    @Nullable Map<String, GroupInfo> getAllGroups();
+    @NotNull Map<String, GroupInfo> getAllGroups();
 
 }
