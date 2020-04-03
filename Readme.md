@@ -1,7 +1,7 @@
 Scraper - A Composable Workflow Framework
 =========================================
 
-![version](https://img.shields.io/badge/version-0.11.2-green.svg)
+![version](https://img.shields.io/badge/version-0.11.4-green.svg)
 ![language](https://img.shields.io/badge/language-java12-blue.svg)
 ![build](https://img.shields.io/badge/build-gradle-yellowgreen.svg)
 
@@ -59,6 +59,20 @@ Scraper can then be executed with the command `scraper`.
 A valid Java 12 environment is needed.
 To check it, type `java -version` in your terminal.
 [sdkman](https://sdkman.io) is recommended.
+
+
+To run scraper, run
+
+    scraper
+
+If you need to set JVM options, set them as the environment variable `JAVA_TOOL_OPTIONS`. 
+Example:
+
+    export JAVA_TOOL_OPTIONS="-Xms64m -Xmx128m"
+    scraper
+
+The console should notify the user if it picked up the options.
+
 
 You can also inspect the plugins and nodes and install them manually by
 
