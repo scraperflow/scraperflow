@@ -13,7 +13,6 @@ import scraper.api.specification.impl.ScrapeSpecificationImpl;
 import scraper.core.JobFactory;
 import scraper.nodes.core.test.annotations.Workflow;
 import scraper.util.DependencyInjectionUtil;
-import scraper.util.JobUtil;
 
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -39,7 +38,7 @@ public abstract class WorkflowTest {
         URL baseURL = getClass().getResource(base);
         if(baseURL == null) throw new IllegalStateException("Missing base folder: " + base);
 
-        ScrapeSpecificationImpl spec = (ScrapeSpecificationImpl) JobUtil.parseJobs(new String[]{workflowSpecification}, Set.of(baseURL.getFile().toLowerCase())).get(0);
+        ScrapeSpecificationImpl spec = InstanceHelper.getSpec(baseURL, workflowSpecification);
 
         // add fail safe to every test
         // i.e. redirect fork exceptions to the graph key 'fail', which triggers a System.setProperty set of workflow.fail = FAIL

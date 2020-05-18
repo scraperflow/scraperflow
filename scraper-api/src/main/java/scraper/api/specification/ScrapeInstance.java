@@ -80,5 +80,4 @@ public interface ScrapeInstance extends IdentityTemplateEvaluator {
     @NotNull HttpService getHttpService();
     @NotNull ProxyReservation getProxyReservation();
     @NotNull FileService getFileService();
-
 }

@@ -4,6 +4,9 @@ dependencies {
     // core api + transitive dependencies
     api project(':scraper-api')
     api project(':scraper-utils')
+
+    // for core parser
+    testRuntime project(':scraper-plugins:scraper-plugins-core')
 }
 
 dependencies {

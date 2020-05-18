@@ -1,0 +1,12 @@
+---
+name: extened
+graphs:
+  start:
+    - type: SimpleNode
+      goTo: extended2.start
+
+---
+name: extended2
+graphs:
+  start:
+    - type: SimpleNode

@@ -10,20 +10,21 @@ import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.Node;
+import scraper.api.plugin.ScrapeSpecificationParser;
 import scraper.api.specification.ScrapeInstance;
+import scraper.api.specification.ScrapeSpecification;
 import scraper.api.specification.impl.ScrapeInstaceImpl;
-import scraper.api.specification.impl.ScrapeSpecificationImpl;
 import scraper.util.DependencyInjectionUtil;
-import scraper.util.JobUtil;
 import scraper.utils.ClassUtil;
 
+import java.io.IOException;
 import java.lang.reflect.ReflectPermission;
 import java.net.URL;
+import java.nio.file.Path;
 import java.security.Permission;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -32,12 +33,9 @@ import static scraper.util.NodeUtil.addressOf;
 @SuppressWarnings("rawtypes") // testing abstract node
 public class AbstractNodeTest {
 
-    private final DIContainer deps = DependencyInjectionUtil.getDIContainer();
-
-    private ScrapeInstaceImpl getInstance(String basePath, String scrapeFile) throws Exception {
-        URL base = getClass().getResource(basePath);
-        ScrapeSpecificationImpl spec = (ScrapeSpecificationImpl) JobUtil.parseJobs(new String[]{scrapeFile}, Set.of(base.getFile())).get(0);
-        return Objects.requireNonNull(deps.get(JobFactory.class)).convertScrapeJob(spec);
+    private ScrapeInstaceImpl getInstance(String base, String file) throws IOException, ValidationException {
+        URL baseurl = getClass().getResource(base);
+        return InstanceHelper.getInstance(baseurl, file);
     }
 
     @Test

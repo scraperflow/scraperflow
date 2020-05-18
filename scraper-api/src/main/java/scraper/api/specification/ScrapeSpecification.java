@@ -28,9 +28,10 @@ public interface ScrapeSpecification {
     @NotNull Optional<String> getDependencies();
 
     /** Arguments used */
+    @Deprecated
     @NotNull List<String> getArguments();
 
-    /** .scrape file reference -> ScrapeImportSpecification */
+    /** spec `name -> ScrapeImportSpecification */
     @NotNull Map<String, ScrapeImportSpecification> getImports();
 
     /** Entry graph address */
@@ -40,4 +41,5 @@ public interface ScrapeSpecification {
     @NotNull Map<String, Map<String, Object>> getGlobalNodeConfigurations();
 
 
+    ScrapeSpecification with(String arg);
 }

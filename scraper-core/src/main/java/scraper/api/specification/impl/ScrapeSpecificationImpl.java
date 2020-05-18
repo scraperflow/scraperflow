@@ -15,7 +15,7 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
     private List<Path> paths = new ArrayList<>();
     @JsonProperty("dependencies")
     private String dependencies;
-    private List<String> arguments = List.of();
+    private List<String> arguments = new LinkedList<>();
     private Map<String, ScrapeImportSpecification> imports = Map.of();
     private String entry = "start";
     private Map<String, List<Map<String, Object>>> graphs = Map.of();
@@ -58,6 +58,12 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
     @Override
     public Map<String, Map<String, Object>> getGlobalNodeConfigurations() {
         return globalNodeConfigurations;
+    }
+
+    @Override
+    public ScrapeSpecification with(String arg) {
+        arguments.add(arg);
+        return this;
     }
 
     public void setGlobalNodeConfigurations(Map<String, Map<String, Object>> globalNodeConfigurations) {

@@ -14,6 +14,7 @@ import scraper.api.node.type.Node;
 import scraper.api.plugin.Addon;
 import scraper.api.plugin.Hook;
 import scraper.api.plugin.NodeHook;
+import scraper.api.plugin.ScrapeSpecificationParser;
 import scraper.api.service.ExecutorsService;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
@@ -25,10 +26,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static scraper.util.DependencyInjectionUtil.getDIContainer;
-import static scraper.util.JobUtil.parseJobs;
 
 /**
  * Entry application for the Scraper workflow runtime.
@@ -52,6 +53,8 @@ public class Scraper {
     private @NotNull final Collection<Hook> hooks;
     // node hooks
     private @NotNull final Collection<NodeHook> nodeHooks;
+    // spec parsers
+    private @NotNull final Collection<ScrapeSpecificationParser> parsers;
 
     // DI container
     private DIContainer pico;
@@ -62,12 +65,15 @@ public class Scraper {
     public Scraper(@NotNull JobFactory jobFactory, @NotNull ExecutorsService executorsService,
                    @NotNull @DITarget(Hook.class) Collection<Hook> hooks,
                    @NotNull @DITarget(Addon.class) Collection<Addon> addons,
-                   @NotNull @DITarget(NodeHook.class) Collection<NodeHook> nodeHooks) {
+                   @NotNull @DITarget(NodeHook.class) Collection<NodeHook> nodeHooks,
+                   @NotNull @DITarget(ScrapeSpecificationParser.class) Collection<ScrapeSpecificationParser> parsers
+                   ) {
         this.jobFactory = jobFactory;
         this.executorsService = executorsService;
         this.hooks = hooks;
         this.addons = addons;
         this.nodeHooks = nodeHooks;
+        this.parsers = parsers;
     }
 
 
@@ -105,8 +111,12 @@ public class Scraper {
         log.info("Loading {} addons: {}", addons.size(), addons);
         for (Addon addon : addons) addon.load(pico, args);
 
+        log.info("Loading {} parsers: {}", parsers.size(), parsers);
         log.info("Parsing scrape jobs in {}", System.getProperty("user.dir"));
-        List<ScrapeSpecification> jobDefinitions = parseJobs(args);
+        List<ScrapeSpecification> jobDefinitions = parsers.stream().map((scrapeSpecificationParser -> scrapeSpecificationParser.parse(pico, args)))
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+        log.info("Parsed {} specifications", jobDefinitions.size());
 
         log.debug("Converting scrape jobs");
         for (ScrapeSpecification jobDefinition : jobDefinitions)

@@ -20,11 +20,16 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 
+import static scraper.api.node.container.NodeLogLevel.ERROR;
+
 /**
  * Message something to a Telegram account.
  * Failures to send will not result in exceptions, they are just logged.
+ * <p>
+ *     Note that the Telegram API has a limit on how big a message is allowed to be.
+ * </p>
  */
-@NodePlugin("1.0.0")
+@NodePlugin("1.0.1")
 @Io
 public final class TelegramNode implements FunctionalNode {
 
@@ -47,7 +52,7 @@ public final class TelegramNode implements FunctionalNode {
     private ObjectMapper mapper = new ObjectMapper();
     private final HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build();
 
-    private void trySend(String msg, String id) throws IOException, InterruptedException {
+    private void trySend(FunctionalNodeContainer n, String msg, String id) throws IOException, InterruptedException {
         /// Create Http POST method and set correct headers
         String url = api + botToken + "/sendmessage";
         String jsonString = mapper.writeValueAsString(new SendMessage("/sendmessage", id, msg));
@@ -60,16 +65,19 @@ public final class TelegramNode implements FunctionalNode {
                 .POST(HttpRequest.BodyPublishers.ofString(jsonString))
                 .build();
 
-        client.send(request, HttpResponse.BodyHandlers.discarding());
+        HttpResponse<Void> Response = client.send(request, HttpResponse.BodyHandlers.discarding());
+        if(Response.statusCode() < 200 || Response.statusCode() > 300) {
+            n.log(ERROR, "Could not send telegram message: {}",Response.statusCode());
+        }
     }
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) {
         for (String id : o.eval(recipients)) {
             try {
-                trySend(o.eval(message), id);
+                trySend(n, o.eval(message), id);
             } catch (IOException | InterruptedException e) {
-                n.log(NodeLogLevel.ERROR, "Could not send message to {}: {}", id, e);
+                n.log(ERROR, "Could not send message to {}: {}", id, e);
             }
         }
     }

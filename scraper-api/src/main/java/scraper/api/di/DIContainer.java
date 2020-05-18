@@ -3,6 +3,8 @@ package scraper.api.di;
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 
+import java.util.Collection;
+
 /**
  * Minimal dependency injection container. It can handle single beans and beans in a collection.
  */
@@ -33,4 +35,12 @@ public interface DIContainer {
      * @return instance, or null if not available or still waiting for unmet dependencies
      */
     @Nullable <T> T get(@NotNull Class<T> targetClass);
+
+    /**
+     * Get all available instances of target class.
+     *
+     * @param targetClass target class
+     * @return instances of target class
+     */
+    @Nullable <T> Collection<T> getCollection(@NotNull Class<T> targetClass);
 }

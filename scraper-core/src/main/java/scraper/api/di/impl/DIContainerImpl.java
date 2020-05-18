@@ -90,6 +90,16 @@ public class DIContainerImpl implements DIContainer {
         return (T) instances.get(targetClass);
     }
 
+    @Override
+    public <T> Collection<T> getCollection(Class<T> targetClass) {
+        for (Class<?> a : multiInstances.keySet()) {
+            if(a.equals(targetClass)) return (Collection<T>) multiInstances.get(a);
+        }
+
+        return Set.of();
+    }
+
+
     private @Nullable Object[] getInitArgs(@NotNull final Constructor<?> constructor) {
         if(constructor.getParameterCount() == 0) return new Object[0];
 

@@ -6,6 +6,11 @@ subprojects.each {
             runtimeOnly project(":scraper-nodes:${plugin}")
         }
     }
+
+    dependencies {
+        // for core parser
+        testRuntime project(':scraper-plugins:scraper-plugins-core')
+    }
 }
 
 subprojects {

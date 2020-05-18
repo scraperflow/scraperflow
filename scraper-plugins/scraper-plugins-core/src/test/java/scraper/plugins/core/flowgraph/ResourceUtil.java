@@ -5,8 +5,8 @@ import scraper.api.di.DIContainer;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
 import scraper.core.JobFactory;
+import scraper.plugins.core.flowgraph.helper.InstanceHelper;
 import scraper.util.DependencyInjectionUtil;
-import scraper.util.JobUtil;
 
 import java.io.File;
 import java.net.URL;
@@ -20,7 +20,7 @@ public class ResourceUtil {
         URL resource = ResourceUtil.class.getResource("/scraper/plugins/core/flowgraph/"+path);
         File scrapeFile = new File(resource.toURI());
 
-        ScrapeSpecification spec = JobUtil.parseSingleSpecification(scrapeFile, List.of());
+        ScrapeSpecification spec = InstanceHelper.getInstance(scrapeFile);
         DIContainer dibean = DependencyInjectionUtil.getDIContainer();
 
         return dibean.get(JobFactory.class).convertScrapeJob(spec);

@@ -8,6 +8,7 @@ import scraper.api.di.impl.DIContainerImpl;
 import scraper.api.plugin.Addon;
 import scraper.api.plugin.Hook;
 import scraper.api.plugin.NodeHook;
+import scraper.api.plugin.ScrapeSpecificationParser;
 import scraper.api.service.impl.ExecutorsServiceImpl;
 import scraper.api.service.impl.FileServiceImpl;
 import scraper.api.service.impl.HttpServiceImpl;
@@ -39,6 +40,7 @@ public class DependencyInjectionUtil {
             List.of(
                     scanResult.getClassesImplementing(Addon.class.getName()),
                     scanResult.getClassesImplementing(Hook.class.getName()),
+                    scanResult.getClassesImplementing(ScrapeSpecificationParser.class.getName()),
                     scanResult.getClassesImplementing(NodeHook.class.getName())
             ).stream()
                     .filter(o -> !o.isEmpty())
