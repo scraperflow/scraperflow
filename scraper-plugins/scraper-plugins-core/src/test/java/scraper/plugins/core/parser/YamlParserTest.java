@@ -3,7 +3,6 @@ package scraper.plugins.core.parser;
 import org.junit.Assert;
 import org.junit.Test;
 import scraper.api.exceptions.ValidationException;
-import scraper.api.specification.ScrapeSpecification;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +18,7 @@ public class YamlParserTest {
         File[] validFiles = new File(folder.getPath()).listFiles();
         Assert.assertNotNull(validFiles);
         for (File validFile : validFiles) {
-            ScrapeSpecification result = p.parseSingle(validFile);
+            Assert.assertTrue(p.parseSingle(validFile).isPresent());
         }
     }
 
@@ -29,10 +28,7 @@ public class YamlParserTest {
         File[] validFiles = new File(folder.getPath()).listFiles();
         Assert.assertNotNull(validFiles);
         for (File validFile : validFiles) {
-            try {
-                p.parseSingle(validFile);
-                Assert.fail("Expected exception for file " + validFile.getPath());
-            } catch (Exception ignored) {}
+            Assert.assertFalse(p.parseSingle(validFile).isPresent());
         }
     }
 }

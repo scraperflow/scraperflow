@@ -18,7 +18,7 @@ public class JsonParserTest {
         File[] validFiles = new File(folder.getPath()).listFiles();
         Assert.assertNotNull(validFiles);
 
-        Arrays.stream(validFiles).forEach(p::parseSingle);
+        Arrays.stream(validFiles).forEach(f -> Assert.assertTrue(p.parseSingle(f).isPresent()));
     }
 
     @Test
@@ -27,10 +27,7 @@ public class JsonParserTest {
         File[] validFiles = new File(folder.getPath()).listFiles();
         Assert.assertNotNull(validFiles);
         for (File validFile : validFiles) {
-            try {
-                p.parseSingle(validFile);
-                Assert.fail("Expected exception for file " + validFile.getPath());
-            } catch (Exception ignored) {}
+            Assert.assertFalse( p.parseSingle(validFile).isPresent() );
         }
     }
 }

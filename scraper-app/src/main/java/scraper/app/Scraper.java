@@ -2,33 +2,29 @@ package scraper.app;
 
 import io.github.classgraph.*;
 import org.slf4j.Logger;
-import scraper.annotations.ArgsCommand;
-import scraper.annotations.ArgsCommands;
-import scraper.annotations.NotNull;
+
+import scraper.annotations.*;
+import scraper.api.plugin.*;
+import scraper.api.flow.*;
+
 import scraper.annotations.di.DITarget;
 import scraper.api.di.DIContainer;
-import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
-import scraper.api.plugin.Addon;
-import scraper.api.plugin.Hook;
-import scraper.api.plugin.NodeHook;
-import scraper.api.plugin.ScrapeSpecificationParser;
 import scraper.api.service.ExecutorsService;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
 import scraper.core.JobFactory;
 import scraper.utils.StringUtil;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 import static scraper.util.DependencyInjectionUtil.getDIContainer;
 
 /**
@@ -111,11 +107,36 @@ public class Scraper {
         log.info("Loading {} addons: {}", addons.size(), addons);
         for (Addon addon : addons) addon.load(pico, args);
 
+        String userDir = System.getProperty("user.dir");
         log.info("Loading {} parsers: {}", parsers.size(), parsers);
-        log.info("Parsing scrape jobs in {}", System.getProperty("user.dir"));
-        List<ScrapeSpecification> jobDefinitions = parsers.stream().map((scrapeSpecificationParser -> scrapeSpecificationParser.parse(pico, args)))
+        log.info("Parsing scrape jobs in {}", userDir);
+        List<ScrapeSpecification> jobDefinitions =
+                parsers.stream().map((scrapeSpecificationParser -> scrapeSpecificationParser.parse(pico, args)))
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
+
+        if(jobDefinitions.isEmpty()) {
+            // check for implicit location
+            // merge all accepted file endings
+            List<ScrapeSpecification> specs = parsers.stream()
+                    .map(parser -> parser.filterFiles(
+                            ofNullable(new File(userDir).list())
+                                    .orElse(new String[0])
+                            ).stream()
+                            .map(parser::parseSingle)
+                            .flatMap(Optional::stream)
+                            .collect(Collectors.toList())
+                    )
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+
+            if(specs.size() != 1) {
+                log.warn("Too many or no implied taskflow specifications found: {}", specs);
+            } else {
+                log.info("Using implied taskflow specification '{}'", specs.get(0));
+                jobDefinitions.addAll(specs);
+            }
+        }
         log.info("Parsed {} specifications", jobDefinitions.size());
 
         log.debug("Converting scrape jobs");

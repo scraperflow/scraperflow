@@ -7,10 +7,10 @@ import scraper.api.specification.ScrapeImportSpecification;
 import scraper.api.specification.ScrapeSpecification;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -50,9 +50,10 @@ public interface ScrapeSpecificationParser {
                         Map.entry(
                                 scrapeImportSpecification,
                                 parseSingle( Path.of(workingDirectory , scrapeImportSpecification).toFile())
+                                        .orElseThrow()
                         )
                 ).collect(Collectors.toMap(Map.Entry::getKey, e -> asImport.apply(e.getValue())));
     }
 
-    ScrapeSpecification parseSingle(File id);
+    Optional<ScrapeSpecification> parseSingle(File id);
 }

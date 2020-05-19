@@ -21,7 +21,7 @@ public class InstanceHelper {
         ScrapeSpecification spec = null;
         for (ScrapeSpecificationParser p : deps.getCollection(ScrapeSpecificationParser.class)) {
             try {
-                spec = p.parseSingle(scrapeFile);
+                spec = p.parseSingle(scrapeFile).get();
             } catch (Exception ignored){}
         }
 

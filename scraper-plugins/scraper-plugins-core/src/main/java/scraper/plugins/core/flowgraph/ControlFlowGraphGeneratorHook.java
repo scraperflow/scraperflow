@@ -1,6 +1,7 @@
 package scraper.plugins.core.flowgraph;
 
 
+import org.slf4j.Logger;
 import scraper.annotations.ArgsCommand;
 import scraper.annotations.NotNull;
 import scraper.api.di.DIContainer;
@@ -12,7 +13,7 @@ import scraper.utils.StringUtil;
 import java.util.Map;
 
 @ArgsCommand(
-        value = "cfg-dot",
+        value = "cfg-dot | cfg",
         doc = "Generates a .dot control flow graph out of the currently known scrape jobs.",
         example = "java -jar scraper.jar app.scrape cfg exit"
         )
@@ -43,7 +44,7 @@ import java.util.Map;
 )
 public class ControlFlowGraphGeneratorHook implements Hook {
 
-//    private static final Logger log = org.slf4j.LoggerFactory.getLogger(ControlFlowGraphGeneratorHook.class);
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(ControlFlowGraphGeneratorHook.class);
 
     @Override
     public void execute(@NotNull DIContainer dependencies, @NotNull String[] args, @NotNull Map<ScrapeSpecification, ScrapeInstance> jobs) throws Exception {
@@ -51,6 +52,8 @@ public class ControlFlowGraphGeneratorHook implements Hook {
         // control flow graph generation
         // ==
         String createCF = StringUtil.getArgument(args, "cfg");
+        if(createCF == null) createCF = StringUtil.getArgument(args, "cfg-dot");
+
         if (StringUtil.getArgument(args, "cfg-absolute") != null) GraphVisualizer.absolute = true;
         if (StringUtil.getArgument(args, "cfg-abs-no-instance") != null) GraphVisualizer.includeInstance = false;
         if (StringUtil.getArgument(args, "cfg-abs-no-graph") != null) GraphVisualizer.includeGraph = false;
@@ -62,7 +65,7 @@ public class ControlFlowGraphGeneratorHook implements Hook {
                 ScrapeInstance job = jobs.get(def);
                 String path = job.getName().concat(".dot");
 
-                System.out.println("Creating graph for {}" + def.getScrapeFile());
+                log.info("Creating graph for {}", def.getScrapeFile());
                 GraphVisualizer.visualize(job, path);
             }
         }

@@ -18,6 +18,7 @@ import scraper.api.specification.impl.ScraperImportSpecificationImpl;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -27,6 +28,8 @@ import java.util.stream.Collectors;
         example = "scraper app.jf"
 )
 public final class JsonParser implements ScrapeSpecificationParser {
+
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger("JsonParser");
 
     // JSON mapper
     private static final ObjectMapper jsonMapper = new ObjectMapper();
@@ -41,8 +44,6 @@ public final class JsonParser implements ScrapeSpecificationParser {
         jsonMapper.registerModule(module);
     }
 
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger("JsonParser");
-
     @Override
     public List<String> acceptedFileEndings() {
         return List.of("json", "jf");
@@ -51,22 +52,22 @@ public final class JsonParser implements ScrapeSpecificationParser {
     @Override
     public List<ScrapeSpecification> parse(DIContainer loadedDependencies, String[] args) {
         List<File> jsonSpecs = filterFiles(args);
-        return jsonSpecs.stream().map(this::parseSingle).collect(Collectors.toList());
+        return jsonSpecs.stream().map(this::parseSingle).flatMap(Optional::stream).collect(Collectors.toList());
     }
 
-    public ScrapeSpecification parseSingle(File file) {
+    public Optional<ScrapeSpecification> parseSingle(File file) {
         try {
             ScrapeSpecificationImpl spec = jsonMapper.readValue(file, ScrapeSpecificationImpl.class);
             spec.setScrapeFile(file.toPath());
 
             spec.setImports(validateAndImport(spec, ScraperImportSpecificationImpl::new));
 
-            return spec;
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Could not parse " + file + ": " + e.getMessage(), e);
-        } catch (ValidationException e) {
-            throw new IllegalArgumentException("Invalid specification " + file + ": " + e.getMessage(), e);
+            return Optional.of(spec);
+        } catch (IOException | ValidationException e) {
+            log.error("Could not parse {}: {}", file, e.getMessage());
         }
+
+        return Optional.empty();
     }
 
 
