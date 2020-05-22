@@ -9,9 +9,12 @@ import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
  * @since 1.0.0
  */
 public class ControlFlowEdgeImpl implements ControlFlowEdge {
-    @NotNull private final NodeAddress fromAddress;
-    @NotNull private final NodeAddress toAddress;
-    @NotNull private final String displayLabel;
+    public void setFromAddress(NodeAddress fromAddress) { this.fromAddress = fromAddress; }
+    public void setToAddress(NodeAddress toAddress) { this.toAddress = toAddress; }
+
+    @NotNull private NodeAddress fromAddress;
+    @NotNull private NodeAddress toAddress;
+    @NotNull private String displayLabel;
 
     private final boolean multiple;
     private final boolean dispatched;

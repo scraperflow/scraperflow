@@ -3,6 +3,7 @@ package scraper.plugins.core.flowgraph.impl;
 
 import scraper.annotations.NotNull;
 import scraper.api.node.Address;
+import scraper.api.node.container.NodeContainer;
 import scraper.plugins.core.flowgraph.api.ControlFlowNode;
 
 /**
@@ -10,18 +11,20 @@ import scraper.plugins.core.flowgraph.api.ControlFlowNode;
  */
 public class ControlFlowNodeImpl implements ControlFlowNode {
 
-    public ControlFlowNodeImpl(Address address) {
-        this.address = address;
+    Address address;
+    String type;
+
+    public ControlFlowNodeImpl(NodeContainer<?> node) {
+        this.address = node.getAddress();
+        this.type = node.getC().getClass().getSimpleName();
     }
 
-    Address address;
-
-    @NotNull
-    @Override
-    public Address getAddress() {
+    @NotNull @Override public Address getAddress() {
         return address;
     }
-
     public void setAddress(Address address) { this.address = address; }
+
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 }
 

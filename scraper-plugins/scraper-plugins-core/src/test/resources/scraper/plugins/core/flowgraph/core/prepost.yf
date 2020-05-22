@@ -1,0 +1,65 @@
+---
+name: linear
+
+graphs:
+  start:
+    - { type: IoNode, input: "T_STRING", output: "generated", goTo: page-extract }           # G1 = { generated : String }
+
+  page-extract:
+    - type: PipeNode
+      pipeTargets:
+        - fetch-dashboard       # with G1
+        - dashboard-to-gids     # with G2
+
+  fetch-dashboard:
+    - type: RetryNode
+      retry: 50
+      retryTarget: get-main-http
+
+  get-main-http:
+    - {type: IoNode, input: "{generated}", output: "response" }      # G2 = G1 U { response : String }
+
+  dashboard-to-gids:
+    - {type: IoNode, input: "{response}"}                            #
+    - type: MapNode
+      list: "{output}"
+      mapTarget: gallery-extract
+
+  gallery-extract:
+    - type: EchoNode
+    - type: ForkNode
+      forkTargets:
+        - download-thumbs
+        - download-metadata
+
+
+  download-thumbs:
+    - type: IfThenElseNode
+      condition: "{exists}"
+      falseTarget: download-thumbs-new
+
+  download-thumbs-new:
+    - {type: RetryNode, retryTarget: download-thumb-http}
+
+  download-thumb-http:
+    - type: IoNode
+
+  download-metadata:
+    - type: IoNode
+    - {type: IfThenElseNode, condition: "{exists}", falseTarget: download-metadata-new }
+
+  download-metadata-new:
+    - type: RetryNode
+      retryTarget: download-metadata-http
+
+  download-metadata-http:
+    - type: IoNode
+    - type: MapNode
+      list: "{output}"
+      mapTarget: clean-metadata
+
+  clean-metadata:
+    - type: IoNode
+    - type: IoNode
+    - type: IoNode
+    - type: IoNode

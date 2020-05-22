@@ -38,7 +38,7 @@ public class TemplateString<K> extends TemplateExpression<K> implements Primitiv
             K result = (K) convert(stringContent.toString(), TypeToken.of(targetType.get()).getRawType());
             return result;
         } catch (ValidationException e) {
-            throw new TemplateException("Could not convert string content to " + targetType);
+            throw new TemplateException("Could not convert string content to " + targetType.get());
         }
     }
 

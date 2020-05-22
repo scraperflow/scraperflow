@@ -255,11 +255,16 @@ public class ProxyReservationImpl implements ProxyReservation {
                                                            int holdOnReservation, LocalChannelInfo info) {
         return new ReservationTokenImpl(info.id, 0L, 0L, null,
                 () -> {
-                    try { Thread.sleep(holdOnReservation); } catch (InterruptedException e) { throw new RuntimeException(e); }
-                    info.inUse.set(false);
-                    synchronized (allLocalChannels.get(proxyGroup)) {
-                        allLocalChannels.get(proxyGroup).notify();
-                    }
+                    // sleep in another thread other than the tokens local thread
+                    Thread sleepThread = new Thread(() -> {
+                        try { Thread.sleep(holdOnReservation); } catch (InterruptedException e) { throw new RuntimeException(e); }
+                        info.inUse.set(false);
+                        synchronized (allLocalChannels.get(proxyGroup)) {
+                            allLocalChannels.get(proxyGroup).notify();
+                        }
+                    });
+                    sleepThread.setDaemon(true);
+                    sleepThread.start();
                 },
                 () -> {}
         );

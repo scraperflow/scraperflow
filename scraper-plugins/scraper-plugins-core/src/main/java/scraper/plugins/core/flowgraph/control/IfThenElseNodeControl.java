@@ -2,14 +2,18 @@ package scraper.plugins.core.flowgraph.control;
 
 import scraper.annotations.NotNull;
 import scraper.api.node.Address;
+import scraper.api.node.NodeAddress;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.specification.ScrapeInstance;
 import scraper.plugins.core.flowgraph.FlowUtil;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
+import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.plugins.core.flowgraph.api.Version;
+import scraper.plugins.core.flowgraph.impl.ControlFlowEdgeImpl;
 import scraper.util.NodeUtil;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,5 +40,44 @@ public final class IfThenElseNodeControl {
                 previous.stream(),
                 additionalOutput
         ).collect(Collectors.toList());
+    }
+
+    @Version("0.1.0")
+    public static void propagate(NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec) throws Exception {
+        List<ControlFlowEdge> edges = cfg.getOutgoingEdges(node.getAddress());
+
+
+        LinkedList<ControlFlowEdge> newEdges = new LinkedList<>();
+
+        if(edges.size() == 1) return; // nothing to reroute
+
+        // at least one
+        ControlFlowEdge forward = edges.get(0);
+
+        ControlFlowEdge oneEdge = edges.get(1);
+
+        {
+            NodeAddress nextNode = oneEdge.getToAddress();
+            while (spec.getNode(nextNode).getGoTo().isPresent()) {
+                nextNode = spec.getNode(nextNode).getGoTo().get().getAddress();
+            }
+
+            newEdges.add(new ControlFlowEdgeImpl(nextNode, forward.getToAddress(), forward.getDisplayLabel(), forward.isMultiple(), forward.isDispatched()));
+        }
+
+        if(edges.size() == 2) return; // nothing to reroute
+        ControlFlowEdge twoEdge = edges.get(2);
+
+        {
+            NodeAddress nextNode = twoEdge.getToAddress();
+            while (spec.getNode(nextNode).getGoTo().isPresent()) {
+                nextNode = spec.getNode(nextNode).getGoTo().get().getAddress();
+            }
+
+            newEdges.add(new ControlFlowEdgeImpl(nextNode, forward.getToAddress(), forward.getDisplayLabel(), forward.isMultiple(), forward.isDispatched()));
+        }
+
+        cfg.getEdges().remove(forward);
+        cfg.getEdges().addAll(newEdges);
     }
 }

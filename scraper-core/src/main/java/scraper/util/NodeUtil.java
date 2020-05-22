@@ -18,6 +18,7 @@ import scraper.api.specification.ScrapeInstance;
 import scraper.api.template.L;
 import scraper.api.template.T;
 import scraper.api.template.Term;
+import scraper.core.AbstractNode;
 import scraper.core.converter.StringToClassConverter;
 import scraper.core.template.TemplateConstant;
 import scraper.utils.ClassUtil;
@@ -159,13 +160,18 @@ public final class NodeUtil {
         if(globalConfigurations != null) {
             String nodeName = field.getDeclaringClass().getSimpleName();
 
+
             //check if regex matches, and apply if valid
             for (String maybeRegex : globalConfigurations.keySet()) {
                 if (maybeRegex.startsWith("/") && maybeRegex.endsWith("/")) {
                     String regex = maybeRegex.substring(1, maybeRegex.length() - 1);
 
-                    boolean result = Pattern.compile(regex).matcher(nodeName).results()
-                            .findAny().isPresent();
+                    boolean result = Pattern.compile(regex).matcher(nodeName).results().findAny().isPresent();
+
+                    try { // TODO hack to get the container name
+                        String name = ((AbstractNode) instance).getC().getClass().getSimpleName();
+                        result = result || Pattern.compile(regex).matcher(name).results().findAny().isPresent();
+                    } catch (Exception ignored){}
 
                     if (result) allFields = globalConfigurations.get(maybeRegex);
 
@@ -180,6 +186,13 @@ public final class NodeUtil {
             }
 
             allFields = globalConfigurations.get(nodeName);
+            try { // TODO hack to get the container name
+                  //      because we want top level configurations be configured for an implementation
+                  //      that means setting 'log' globally for 'EchoNode' should word
+                String name = ((AbstractNode) instance).getC().getClass().getSimpleName();
+                if(allFields == null) allFields = new HashMap<>();
+                allFields.putAll(globalConfigurations.get(name));
+            } catch (Exception ignored){}
 
             // fetch global value, if any
             if (allFields != null) {
@@ -349,7 +362,25 @@ public final class NodeUtil {
         }
     }
 
-    public static Map<String, T<?>> extractMapFromFields(List<Field> outputData, NodeContainer<?> target) {
+    public static Map<String, L<?>> extractMapFromFields(List<Field> outputData, NodeContainer<?> target) {
+        Map<String, L<?>> outputResult = new HashMap<>();
+        for (Field output : outputData) {
+            String name = output.getName();
+            output.setAccessible(true);
+            try {
+                L<?> token = (L<?>) output.get(target.getC());
+
+                outputResult.put(name, token);
+            } catch (IllegalAccessException e) {
+                // TODO handle exception differently
+                throw new RuntimeException(e);
+            }
+        }
+
+        return outputResult;
+    }
+
+    public static Map<String, T<?>> extractInputFromFields(List<Field> outputData, NodeContainer<?> target) {
         Map<String, T<?>> outputResult = new HashMap<>();
         for (Field output : outputData) {
             String name = output.getName();

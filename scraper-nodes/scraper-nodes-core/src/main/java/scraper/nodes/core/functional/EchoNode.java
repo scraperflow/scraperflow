@@ -24,7 +24,7 @@ import java.util.Optional;
  *   body: "{parsed-body}"
  * </pre>
  */
-@NodePlugin("1.2.1")
+@NodePlugin("1.2.2")
 public class EchoNode implements FunctionalNode {
 
     /** Multiple put operations can be specified in this map at once */
@@ -33,7 +33,7 @@ public class EchoNode implements FunctionalNode {
 
     /** All keys specified in this list will be removed from the FlowMap */
     @FlowKey(defaultValue = "[]")
-    private T<List<String>> remove = new T<>(){};
+    private final T<List<String>> remove = new T<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
@@ -42,7 +42,7 @@ public class EchoNode implements FunctionalNode {
 
         // put multiple objects/strings
         if(puts.isPresent()) for (String key : puts.get().keySet()) {
-            o.output(key, puts.get().get(key));
+            echo(key, puts.get().get(key), o);
         }
 
         // remove keys
@@ -50,4 +50,28 @@ public class EchoNode implements FunctionalNode {
             o.remove(key);
         }
     }
+
+    // x :: A
+    public <A> void echo(String key, A value, FlowMap o) {
+        o.output(key, value);
+    }
 }
+
+/*
+
+
+x : "a"   ::    _
+
+
+
+
+
+
+
+
+
+
+
+ */
+
+

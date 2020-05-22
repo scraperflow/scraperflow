@@ -2,6 +2,8 @@ package scraper.plugins.core.flowgraph;
 
 import org.junit.Assert;
 import scraper.api.di.DIContainer;
+import scraper.api.node.Address;
+import scraper.api.node.impl.AddressImpl;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
 import scraper.core.JobFactory;
@@ -30,6 +32,10 @@ public class ResourceUtil {
         Optional<T> result = o.get();
         Assert.assertTrue(result.isPresent());
         return result.get();
+    }
+
+    public static Address of(String address) {
+        return new AddressImpl(address);
     }
 }
 

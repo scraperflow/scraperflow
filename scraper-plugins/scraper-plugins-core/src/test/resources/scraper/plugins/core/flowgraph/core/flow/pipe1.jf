@@ -9,7 +9,8 @@
         ],
 
       "line1": [
-        { "type": "EchoNode", "puts": { "line1":  "OK"} }
+          { "type" : "PipeNode", "pipeTargets": ["line2", "line2", "line2"] },
+          { "type": "EchoNode", "puts": { "before": "OK" } }
       ],
 
       "line2": [

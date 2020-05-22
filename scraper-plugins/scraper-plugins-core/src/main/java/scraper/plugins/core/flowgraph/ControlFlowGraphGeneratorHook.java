@@ -18,6 +18,11 @@ import java.util.Map;
         example = "java -jar scraper.jar app.scrape cfg exit"
         )
 @ArgsCommand(
+        value = "cfg-real",
+        doc = "Generates the graph with real control flow",
+        example = "java -jar scraper.jar app.scrape cfg cfg-real exit"
+)
+@ArgsCommand(
         value = "cfg-absolute",
         doc = "Generates the graph without nesting and clustering nodes by instance and graphs",
         example = "java -jar scraper.jar app.scrape cfg cfg-absolute exit"
@@ -54,11 +59,15 @@ public class ControlFlowGraphGeneratorHook implements Hook {
         String createCF = StringUtil.getArgument(args, "cfg");
         if(createCF == null) createCF = StringUtil.getArgument(args, "cfg-dot");
 
+        boolean realControlFlow = false;
+
         if (StringUtil.getArgument(args, "cfg-absolute") != null) GraphVisualizer.absolute = true;
         if (StringUtil.getArgument(args, "cfg-abs-no-instance") != null) GraphVisualizer.includeInstance = false;
         if (StringUtil.getArgument(args, "cfg-abs-no-graph") != null) GraphVisualizer.includeGraph = false;
         if (StringUtil.getArgument(args, "cfg-abs-no-node-type") != null) GraphVisualizer.includeNodeType = false;
         if (StringUtil.getArgument(args, "cfg-abs-no-node-address") != null) GraphVisualizer.includeNodeAddress = false;
+        if (StringUtil.getArgument(args, "cfg-real") != null) realControlFlow = true;
+
 
         if(createCF != null) {
             for (ScrapeSpecification def : jobs.keySet()) {
@@ -66,7 +75,7 @@ public class ControlFlowGraphGeneratorHook implements Hook {
                 String path = job.getName().concat(".dot");
 
                 log.info("Creating graph for {}", def.getScrapeFile());
-                GraphVisualizer.visualize(job, path);
+                GraphVisualizer.visualize(job, path, realControlFlow);
             }
         }
     }

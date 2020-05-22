@@ -9,18 +9,19 @@ import scraper.api.specification.ScrapeInstance;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.plugins.core.flowgraph.api.ControlFlowNode;
+import scraper.util.NodeUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Map;
 
 import static java.util.stream.Collectors.groupingBy;
 
-class GraphVisualizer {
+public class GraphVisualizer {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(GraphVisualizer.class);
-    private static StringBuilder graph;
 
     static Boolean includeInstance = true;
     static Boolean includeGraph = true;
@@ -28,21 +29,32 @@ class GraphVisualizer {
     static Boolean includeNodeAddress = true;
     static Boolean absolute = false;
 
-    static void visualize(ScrapeInstance job, String createCF) throws FileNotFoundException {
-        ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(job);
+    static void visualize(ScrapeInstance job, String createCF, boolean realControlflow) throws FileNotFoundException {
+        ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(job, realControlflow);
+
+        System.out.println(cfg);
+        String graph = visualize(cfg);
+
+        Collection<ControlFlowNode> pree = cfg.pre(NodeUtil.addressOf("Nhen Scraper", "clean-metadata", null, 0));
+
 
         log.info("Output: {}", createCF);
-        graph = new StringBuilder();
+        try (PrintWriter writer = new PrintWriter(new FileOutputStream(new File(createCF), false))) {
+            writer.write(graph);
+        }
+    }
 
-        write("digraph G {");
+    public static String visualize(ControlFlowGraph cfg) {
+        StringBuilder graphBuilder = new StringBuilder();
 
+        write(graphBuilder, "digraph G {");
         cfg.getNodes().entrySet().stream()
                 .collect(groupingBy(e -> ((NodeAddress) e.getKey()).getInstance()))
                 .forEach((instance, entries) -> {
                     if(absolute) {
-                        write(instanceStartAbs);
+                        write(graphBuilder, instanceStartAbs);
                     } else {
-                        write(String.format(instanceStart, instance, instance));
+                        write(graphBuilder, String.format(instanceStart, instance, instance));
                     }
                     // instance -> addresses belonging to instance
                     entries.stream()
@@ -55,41 +67,37 @@ class GraphVisualizer {
                                                 .append("\"")
                                                 .append(e.getKey().getRepresentation())
                                                 .append("\" [shape=rectangle, label=\"")
-                                                .append(getNodeLabelForAddress(absolute, e, job))
+                                                .append(getNodeLabelForAddress(absolute, e))
                                                 .append("\"]; "));
                                         if(absolute) {
-                                            write(String.format(subgraphTemplateAbs, nodes.toString()));
+                                            write(graphBuilder, String.format(subgraphTemplateAbs, nodes.toString()));
                                         } else {
-                                            write(String.format(subgraphTemplate, graph, nodes.toString(), graph));
+                                            write(graphBuilder, String.format(subgraphTemplate, graph, nodes.toString(), graph));
                                         }
                                     }
-                    );
+                            );
                     if(absolute) {
-                        write(instanceEndAbs);
+                        write(graphBuilder, instanceEndAbs);
                     } else {
-                        write(instanceEnd);
+                        write(graphBuilder, instanceEnd);
                     }
-        });
+                });
 
         cfg.getEdges().forEach(controlFlowEdge -> {
                     String style = getStyle(controlFlowEdge);
-                    NodeContainer<? extends Node> addr = job.getNode(controlFlowEdge.getToAddress());
-                    write("\""+controlFlowEdge.getFromAddress().getRepresentation()+"\" -> "+"\""+addr.getAddress().getRepresentation()+"\" "+style);
+//                    NodeContainer<? extends Node> addr = job.getNode(controlFlowEdge.getToAddress());
+                    write(graphBuilder, "\""+controlFlowEdge.getFromAddress().getRepresentation()+"\" -> "+"\""+controlFlowEdge.getToAddress().getRepresentation()+"\" "+style);
                 }
         );
 
-        write("}");
+        write(graphBuilder, "}");
 
-        try (PrintWriter writer = new PrintWriter(new FileOutputStream(new File(createCF), false))) {
-            writer.write(graph.toString());
-        }
-
+        return graphBuilder.toString();
     }
 
-    private static String getNodeLabelForAddress(Boolean abs, Map.Entry<Address, ControlFlowNode> e, ScrapeInstance job) {
+    private static String getNodeLabelForAddress(Boolean abs, Map.Entry<Address, ControlFlowNode> e) {
         NodeAddress adr = (NodeAddress) e.getKey();
-        NodeContainer<? extends Node> node = job.getNode(adr);
-        String simpleName = node.getC().getClass().getSimpleName();
+        String simpleName = e.getValue().getType();
         if(abs) {
             return
                     (includeInstance ? adr.getInstance()+"\\n" : "") +
@@ -134,7 +142,7 @@ class GraphVisualizer {
     private static final String instanceEndAbs = "";
     private static final String instanceEnd = "\t}";
 
-    private static void write(String line) {
+    private static void write(StringBuilder graph, String line) {
         graph.append(line).append("\n");
     }
 }

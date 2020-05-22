@@ -54,5 +54,21 @@ public class ControlFlowTest {
     }
 
 
+
+    @Test
+    public void ioGraphsTest() throws Exception {
+        ScrapeInstance spec = read("io/big.yf");
+        ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(spec);
+
+        System.out.println(cfg);
+//        Assert.assertEquals(3, cfg.getNodes().size());
+//        Assert.assertEquals(2, cfg.getEdges().size());
+//
+//        Address firstNode = opt(() -> spec.getNode("<twographs>")).getAddress();
+//        Assert.assertEquals(1, cfg.getIncomingEdges(firstNode).size());
+//        Assert.assertEquals(1, cfg.getOutgoingEdges(firstNode).size());
+//        Address secondNode = opt(() -> spec.getNode("<twographs.start.1>")).getAddress();
+//        Assert.assertEquals(0, cfg.getOutgoingEdges(secondNode).size());
+    }
 }
 
