@@ -2,7 +2,9 @@ package scraper.app;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import scraper.api.exceptions.ValidationException;
 import scraper.utils.ClassUtil;
 
@@ -12,6 +14,9 @@ import java.net.URL;
 import java.security.Permission;
 
 public class SimpleSystemTest {
+
+    @Rule
+    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
     @BeforeClass
     public static void enableExceptionExit() {
@@ -57,9 +62,10 @@ public class SimpleSystemTest {
 
     @Test
     public void exitTest() throws Exception {
-        try {
+        exit.expectSystemExit();
+
+        try{
             Scraper.main(new String[]{"exit"});
-            Assert.assertTrue(true);
         } finally {
             System.setProperty("scraper.exit", "false");
         }

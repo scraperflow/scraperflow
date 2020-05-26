@@ -33,7 +33,7 @@ import static scraper.util.DependencyInjectionUtil.getDIContainer;
 @ArgsCommand(
         value = "debug-info",
         doc = "Returns more information about unexpected errors",
-        example = "scraper debug-info app.yt"
+        example = "scraper debug-info app.yf"
 )
 public class Scraper {
 
