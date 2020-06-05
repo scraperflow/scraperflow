@@ -3,19 +3,15 @@ package scraper.plugins.core.flowgraph;
 import org.slf4j.Logger;
 import scraper.api.node.Address;
 import scraper.api.node.NodeAddress;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.type.Node;
 import scraper.api.specification.ScrapeInstance;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.plugins.core.flowgraph.api.ControlFlowNode;
-import scraper.util.NodeUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
-import java.util.Collection;
 import java.util.Map;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -29,14 +25,11 @@ public class GraphVisualizer {
     static Boolean includeNodeAddress = true;
     static Boolean absolute = false;
 
-    static void visualize(ScrapeInstance job, String createCF, boolean realControlflow) throws FileNotFoundException {
+    public static void visualize(ScrapeInstance job, String createCF, boolean realControlflow) throws FileNotFoundException {
         ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(job, realControlflow);
 
         System.out.println(cfg);
         String graph = visualize(cfg);
-
-        Collection<ControlFlowNode> pree = cfg.pre(NodeUtil.addressOf("Nhen Scraper", "clean-metadata", null, 0));
-
 
         log.info("Output: {}", createCF);
         try (PrintWriter writer = new PrintWriter(new FileOutputStream(new File(createCF), false))) {

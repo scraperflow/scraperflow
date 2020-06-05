@@ -6,10 +6,9 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
+import scraper.api.template.L;
 import scraper.api.template.T;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -19,59 +18,25 @@ import java.util.Optional;
  * Example
  * <pre>
  * type: EchoNode
- * puts:
- *   id: "{id}"
- *   body: "{parsed-body}"
+ * put: id
+ * value: "{id}"
  * </pre>
  */
-@NodePlugin("1.2.2")
-public class EchoNode implements FunctionalNode {
+@NodePlugin("2.0.0")
+public class EchoNode <A> implements FunctionalNode {
 
-    /** Multiple put operations can be specified in this map at once */
-    @FlowKey(defaultValue = "{}")
-    private final T<Map<String, ?>> puts = new T<>(){};
+    /** Element to output */
+    @FlowKey
+    private final T<A> value = new T<>(){};
 
-    /** All keys specified in this list will be removed from the FlowMap */
-    @FlowKey(defaultValue = "[]")
-    private final T<List<String>> remove = new T<>(){};
+    /** Location of output */
+    @FlowKey(defaultValue = "\"output\"")
+    private final L<A> put = new L<>(value){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        Optional<Map<String, ?>> puts = o.evalMaybe(this.puts);
-        List<String> remove = o.evalIdentity(this.remove);
-
-        // put multiple objects/strings
-        if(puts.isPresent()) for (String key : puts.get().keySet()) {
-            echo(key, puts.get().get(key), o);
-        }
-
-        // remove keys
-        for (String key : remove) {
-            o.remove(key);
-        }
-    }
-
-    // x :: A
-    public <A> void echo(String key, A value, FlowMap o) {
-        o.output(key, value);
+        Optional<A> value = o.evalMaybe(this.value);
+        // put object
+        value.ifPresent(v -> o.output(put, v));
     }
 }
-
-/*
-
-
-x : "a"   ::    _
-
-
-
-
-
-
-
-
-
-
-
- */
-
-

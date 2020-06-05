@@ -1,0 +1,16 @@
+---
+name: echo-composition
+graphs:
+  start:
+    - type: EchoNode
+      put: A
+      value: 1
+
+    - type: EchoNode
+      put: B
+      value: ["{A}"]
+
+    - type: StringContainsNode
+      regex: "notimportant"
+      content: "{{B}}[0]" # content :: String
+

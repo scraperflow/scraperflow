@@ -33,7 +33,7 @@ import java.util.concurrent.ExecutionException;
  * </pre>
  */
 @NodePlugin("0.12.0")
-public final class MapJoinNode implements Node {
+public final class MapJoinNode <A> implements Node {
 
     /** Expected join for each key defined in this map after a forked flow terminates */
     @FlowKey(mandatory = true)
@@ -41,7 +41,7 @@ public final class MapJoinNode implements Node {
 
     /** List to apply map to */
     @FlowKey(mandatory = true)
-    private T<List<?>> list = new T<>(){};
+    private T<List<A>> list = new T<>(){};
 
     /** Label of goTo */
     @FlowKey(mandatory = true)

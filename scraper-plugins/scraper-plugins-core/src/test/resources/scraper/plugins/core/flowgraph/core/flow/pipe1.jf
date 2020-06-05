@@ -3,18 +3,18 @@
     "graphs" : {
         "start":
         [
-          { "type": "EchoNode", "puts": { "before": "OK" } },
+          { "type": "EchoNode", "put": "before", "value": "OK"  },
           { "type" : "PipeNode", "pipeTargets": ["line1", "line2"] },
-          { "type": "EchoNode", "puts": { "before": "OK" } }
+          { "type": "EchoNode", "put": "before", "value": "OK"  }
         ],
 
       "line1": [
           { "type" : "PipeNode", "pipeTargets": ["line2", "line2", "line2"] },
-          { "type": "EchoNode", "puts": { "before": "OK" } }
+          { "type": "EchoNode", "put": "before", "value": "OK"  }
       ],
 
       "line2": [
-        { "type": "EchoNode", "puts": { "line2": "OK"} }
+          { "type": "EchoNode", "put": "line2", "value": "OK"  }
       ]
     }
 }

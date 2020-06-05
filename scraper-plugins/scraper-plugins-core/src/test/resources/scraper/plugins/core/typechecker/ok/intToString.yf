@@ -1,0 +1,11 @@
+---
+name: full
+graphs:
+  start:
+     - type: IntRangeNode
+       from: 1
+       to: 10
+
+     - type: StringContainsNode
+       regex: "notimportant"
+       content: "{{i}}[0]" # content :: String

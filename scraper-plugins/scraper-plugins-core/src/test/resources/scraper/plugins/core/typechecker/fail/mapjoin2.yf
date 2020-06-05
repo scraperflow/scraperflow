@@ -1,0 +1,20 @@
+---
+name: mapjoin
+graphs:
+  start:
+    - type: MapJoinNode
+      list: [A,B]
+      mapTarget: X
+      keys:
+        key: key
+
+    - type: StringContainsNode
+      regex: ""
+      content: "{keyfromx}" # content :: String
+
+  X:
+    - type: EchoNode
+      put: key
+      value: "1"
+
+

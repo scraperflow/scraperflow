@@ -11,8 +11,14 @@ import java.lang.reflect.Type;
  */
 public abstract class L<TYPE> extends T<TYPE> {
 	private Term<String> termLocation;
+	private T<?> ref;
 
 	public L() { super(); }
+	public L(Type t) { super(t); }
+	public L(T<?> ref) {
+		super();
+		this.ref = ref;
+	}
 
 	@Override
 	protected Type resolveType() {

@@ -5,7 +5,6 @@ import org.junit.Test;
 import scraper.api.node.Address;
 import scraper.api.specification.ScrapeInstance;
 import scraper.plugins.core.flowgraph.FlowUtil;
-import scraper.plugins.core.flowgraph.GraphVisualizer;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 
 import static scraper.plugins.core.flowgraph.ResourceUtil.opt;

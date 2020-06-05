@@ -102,7 +102,7 @@ public class FlowUtil {
         output.forEach(cfg::addEdge);
     }
 
-    private static List<Class<?>> getReverseOrderHierarchy(NodeContainer<? extends Node> node) {
+    public static List<Class<?>> getReverseOrderHierarchy(NodeContainer<?> node) {
         List<Class<?>> result = new LinkedList<>();
         result.add(node.getC().getClass());
         Class<?> current = node.getClass();
@@ -128,17 +128,6 @@ public class FlowUtil {
         Field f = clazz.getDeclaredField(field);
         f.setAccessible(true);
         return Optional.ofNullable((T) f.get(instance));
-    }
-
-    private static Map<String, L<?>> getDefaultDataFlowOutput(NodeContainer<?> node) {
-        //noinspection RedundantOperationOnEmptyContainer what is this warning about???
-        List<Field> outputData = ClassUtil.getAllFields(new LinkedList<>(), node.getClass()).stream()
-                // only templates
-                .filter(field -> field.getType().isAssignableFrom(L.class))
-                // only annotated by flow keys
-                .filter(field -> field.getAnnotation(FlowKey.class) != null)
-                .collect(Collectors.toList());
-        return NodeUtil.extractMapFromFields(outputData, node);
     }
 }
 

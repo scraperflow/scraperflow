@@ -214,15 +214,16 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
 
                     ScrapeInstance instance = this;
                     if(t.getTerm() != null) {
-                        t.getTerm().accept(new DefaultVisitor(){
+                        t.getTerm().accept(new DefaultVisitor<Void>(){
                             @Override
-                            public void visitPrimitive(@NotNull Primitive<?> primitive) {
+                            public Void visitPrimitive(@NotNull Primitive<?> primitive) {
                                 Object address = primitive.eval(new FlowMapImpl());
 
                                 if(address instanceof Address) {
                                     Address add = (Address) address;
                                     NodeUtil.getTarget(origin, add, instance);
                                 }
+                                return null;
                             }
                         });
                     }

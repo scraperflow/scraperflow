@@ -277,7 +277,7 @@ public class TemplateExpTest {
         Assert.assertEquals("hello world", target);
     }
 
-    @Test(expected = TemplateException.class)
+    @Test // this should evaluate but is prohibited by static type checking
     public void complexGenericTemplateFail() {
         String source = "{{L}}[{index}]";
         Term<List<Integer>> test = TemplateUtil.parseTemplate(source, new T<>(){});
@@ -431,7 +431,7 @@ public class TemplateExpTest {
         Assert.assertEquals("java.util.List<?>",expectedTemplate.getToken().get().getTypeName());
     }
 
-    @Test(expected = TemplateException.class)
+    @Test // this should evaluate but is prohibited by static type checking
     public void outputGenericInputSpecificBadTest() {
         Term<List<Map<String, Integer>>> expectedTemplate = TemplateUtil.parseTemplate( "{{L}}[2]", new T<>(){});
         o.output("L", List.of(List.of("1"), List.of("2"), List.of("3")));

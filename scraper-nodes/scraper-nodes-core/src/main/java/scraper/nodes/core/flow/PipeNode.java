@@ -21,7 +21,7 @@ public final class PipeNode implements Node {
 
     /** List of addresses */
     @FlowKey(mandatory = true)
-    private T<List<Address>> pipeTargets = new T<>(){};
+    private final T<List<Address>> pipeTargets = new T<>(){};
 
     @NotNull
     @Override

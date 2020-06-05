@@ -111,7 +111,7 @@ public class TypeVisitorTest {
         Assert.assertTrue(new GenericTypeMatcher(){}.visit(known, target));
     }
 
-    @Test(expected = TemplateException.class)
+    @Test(expected = SpecializeException.class)
     public void knownIsSubtypeFailTest() {
         var known = new T<>(){}.get();
         var target = new T<Map<String, Integer>>(){}.get();

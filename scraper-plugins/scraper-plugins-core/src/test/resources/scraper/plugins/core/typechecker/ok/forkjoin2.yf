@@ -1,0 +1,25 @@
+---
+name: forkjoin-composition
+graphs:
+  start:
+    - type: ForkJoinNode
+      forkTargets: [A]
+      targetToKeys:
+        A: { keyfroma: keyfroma }
+
+    - type: StringContainsNode
+      regex: ""
+      content: "{keyfroma}" # content :: String
+
+  A:
+    - type: ForkJoinNode
+      forkTargets: [B]
+      targetToKeys:
+        B: { keyfromb: keyfroma }
+
+  B:
+    - type: EchoNode
+      put: keyfromb
+      value: "1"
+
+

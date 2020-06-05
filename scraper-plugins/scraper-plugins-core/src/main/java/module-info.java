@@ -4,6 +4,7 @@ import scraper.plugins.core.flowgraph.ControlFlowGraphGeneratorHook;
 import scraper.plugins.core.parser.JsonParser;
 
 open module scraper.plugins.core {
+
     requires scraper.annotations;
     requires scraper.api;
     requires scraper.core;

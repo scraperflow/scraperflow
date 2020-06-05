@@ -1,0 +1,19 @@
+---
+name: complex
+graphs:
+  start:
+    # jsonobj :: Object
+    - type: JsonStringToObjectNode
+      jsonString: "someobjectstring"
+      jsonObject: "jsonobj"
+
+    # specialize Object -> List<Object>
+    - type: EchoNode
+      put: item
+      value: "{{jsonobj}}[0]"
+
+    # jsonobj cant be Map after being specialized to List
+    - type: EchoNode
+      put: item
+      value: "{{jsonobj}@key}"
+

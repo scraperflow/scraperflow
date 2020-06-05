@@ -44,11 +44,11 @@ public final class ForkJoinNode implements Node {
 
     @NotNull @Override
     public FlowMap process(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) {
-        Map<String, CompletableFuture<FlowMap>> forkedProcesses = new HashMap<>();
+        Map<Address, CompletableFuture<FlowMap>> forkedProcesses = new HashMap<>();
         o.evalIdentity(forkTargets).forEach(target -> {
             // dispatch new flow, expect future to return the modified flow map
             CompletableFuture<FlowMap> t = n.forkDepend(o, target);
-            forkedProcesses.put(target.getRepresentation(), t);
+            forkedProcesses.put(target, t);
         });
 
         forkedProcesses.forEach((adr, future) -> future.whenComplete(
@@ -73,7 +73,7 @@ public final class ForkJoinNode implements Node {
         return o;
     }
 
-    private void handleFuture(String target, CompletableFuture<FlowMap> future, FlowMap o, NodeContainer<?> n) throws ExecutionException, InterruptedException {
+    private void handleFuture(Address target, CompletableFuture<FlowMap> future, FlowMap o, NodeContainer<?> n) throws ExecutionException, InterruptedException {
         Map<String, String> keys = o.eval(this.targetToKeys).get(target);
         FlowMap forkedResult = future.get();
 

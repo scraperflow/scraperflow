@@ -1,5 +1,5 @@
-def version = '0.11.4'
-def api = '0.11'
+def version = '0.12.0'
+def api = '0.10'
 
 //def getGitHash = { ->
 //    def stdout = new ByteArrayOutputStream()

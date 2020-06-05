@@ -2,8 +2,8 @@ name: "regex"
 graphs:
   start:
     - type: EchoNode
-      puts:
-        content: "https://www.domain.org/ok-2/"
+      put: content
+      value: "https://www.domain.org/ok-2/"
 
     - type: RegexNode
       regex: "^.*\\/(.*?)\\/$"

@@ -1,5 +1,6 @@
 package scraper.core.template;
 
+import com.google.common.reflect.TypeToken;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
@@ -10,9 +11,12 @@ import scraper.api.template.Term;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import static scraper.core.converter.StringToClassConverter.convert;
 
 public class TemplateMixed extends TemplateExpression<String> implements Concatenation {
-    @Override public void accept(@NotNull TVisitor visitor) { visitor.visitConcatenation(this); }
+    @Override public <X> X accept(@NotNull TVisitor<X> visitor) { return visitor.visitConcatenation(this); }
     private List<Term<String>> concatTemplatesOrStrings = new ArrayList<>();
 
     @NotNull
@@ -27,7 +31,7 @@ public class TemplateMixed extends TemplateExpression<String> implements Concate
         try{
             StringBuilder lookup = new StringBuilder();
             for (Term<String> term : concatTemplatesOrStrings) {
-                String toConcat = term.eval(o);
+                String toConcat = (String) convert(term.eval(o), TypeToken.of(targetType.get()).getRawType());
                 lookup.append(toConcat);
             }
 
@@ -57,4 +61,16 @@ public class TemplateMixed extends TemplateExpression<String> implements Concate
         concatTemplatesOrStrings.add(intermediateTemplate);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TemplateMixed that = (TemplateMixed) o;
+        return concatTemplatesOrStrings.equals(that.concatTemplatesOrStrings);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(concatTemplatesOrStrings);
+    }
 }

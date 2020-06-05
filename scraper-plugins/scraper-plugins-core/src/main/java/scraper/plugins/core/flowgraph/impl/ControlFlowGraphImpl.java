@@ -65,7 +65,7 @@ public class ControlFlowGraphImpl implements ControlFlowGraph {
 
     @Override
     public Collection<ControlFlowNode> post(Address node) {
-        return Set.of();
+        throw new IllegalStateException("Not yet implemented");
     }
 
     public void addNode(Address address, ControlFlowNode node) { this.nodes.put(address, node); }

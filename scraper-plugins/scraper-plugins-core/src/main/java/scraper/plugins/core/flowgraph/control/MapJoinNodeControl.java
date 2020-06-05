@@ -37,27 +37,27 @@ public final class MapJoinNodeControl {
     }
 
 
-    @Version("0.1.0")
-    public static void propagate(NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec) throws Exception {
-        // assume fork ... fork join edge list sorted
-        List<ControlFlowEdge> edges = cfg.getOutgoingEdges(node.getAddress());
-
-        if(edges.size() == 1) return; // nothing to reroute
-
-
-        ControlFlowEdge joinEdge = edges.get(0);
-        cfg.getEdges().remove(joinEdge);
-
-        // skip join
-        List<ControlFlowEdge> newEdges = edges.stream().skip(1).map(edge -> {
-            NodeAddress nextNode = edge.getToAddress();
-            while (spec.getNode(nextNode).getGoTo().isPresent()) {
-                nextNode = spec.getNode(nextNode).getGoTo().get().getAddress();
-            }
-
-            return new ControlFlowEdgeImpl(nextNode, joinEdge.getToAddress(), joinEdge.getDisplayLabel(), joinEdge.isMultiple(), true);
-        }).collect(Collectors.toList());
-
-        cfg.getEdges().addAll(newEdges);
-    }
+//    @Version("0.1.0")
+//    public static void propagate(NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec) throws Exception {
+//        // assume fork ... fork join edge list sorted
+//        List<ControlFlowEdge> edges = cfg.getOutgoingEdges(node.getAddress());
+//
+//        if(edges.size() == 1) return; // nothing to reroute
+//
+//
+//        ControlFlowEdge joinEdge = edges.get(0);
+//        cfg.getEdges().remove(joinEdge);
+//
+//        // skip join
+//        List<ControlFlowEdge> newEdges = edges.stream().skip(1).map(edge -> {
+//            NodeAddress nextNode = edge.getToAddress();
+//            while (spec.getNode(nextNode).getGoTo().isPresent()) {
+//                nextNode = spec.getNode(nextNode).getGoTo().get().getAddress();
+//            }
+//
+//            return new ControlFlowEdgeImpl(nextNode, joinEdge.getToAddress(), joinEdge.getDisplayLabel(), joinEdge.isMultiple(), true);
+//        }).collect(Collectors.toList());
+//
+//        cfg.getEdges().addAll(newEdges);
+//    }
 }

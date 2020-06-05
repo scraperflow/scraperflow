@@ -11,10 +11,10 @@ import java.util.Map;
 @RunWith(JUnitParamsRunner.class)
 public class EchoNodeTest extends FunctionalTest {
     @Functional(EchoNode.class)
-    public Object[] putsTest() {
+    public Object[] putTest() {
         return new Object[]{
-                Map.of("puts", Map.of("ok", "hello"), "remove", List.of("keyToBeDeleted")),
-                Map.of("keyToBeDeleted", "notnull"),
+                Map.of("put", "ok", "value", "hello"),
+                Map.of(),
                 Map.of("ok","hello")
         };
     }

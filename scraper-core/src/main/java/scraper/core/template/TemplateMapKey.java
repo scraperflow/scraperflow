@@ -11,7 +11,7 @@ import scraper.api.template.Term;
 import java.util.*;
 
 public class TemplateMapKey<K> extends TemplateExpression<K> implements FlowKeyLookup<K> {
-    @Override public void accept(@NotNull TVisitor visitor) { visitor.visitFlowKeyLookup(this); }
+    @Override public <X> X accept(@NotNull TVisitor<X> visitor) { return visitor.visitFlowKeyLookup(this); }
 
     @NotNull
     @Override
@@ -48,4 +48,16 @@ public class TemplateMapKey<K> extends TemplateExpression<K> implements FlowKeyL
         return "{" + keyLookup.getRaw().toString() + "}";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TemplateMapKey<?> that = (TemplateMapKey<?>) o;
+        return keyLookup.equals(that.keyLookup);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(keyLookup);
+    }
 }

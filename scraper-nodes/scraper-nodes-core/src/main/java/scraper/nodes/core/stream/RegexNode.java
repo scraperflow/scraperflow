@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  * output: fileinfo
  * </pre>
  */
-@NodePlugin("0.11.1")
+@NodePlugin("0.12.0")
 public final class RegexNode implements StreamNode {
 
     /** Regex as a (properly escaped JSON) Java String */
@@ -59,11 +59,11 @@ public final class RegexNode implements StreamNode {
 
     /** Default output if no matches are present */
     @FlowKey
-    private T<Map<String, ?>> noMatchDefaultOutput = new T<>(){};
+    private T<Map<String, String>> noMatchDefaultOutput = new T<>(){};
 
     /** Where the output list will be put. If there's already a list at that key, it will be replaced. */
     @FlowKey(defaultValue = "\"output\"")
-    private L<Map<String, ?>> output = new L<>(){};
+    private L<Map<String, String>> output = new L<>(){};
 
     /**
      * Pattern dotall option.
@@ -97,7 +97,7 @@ public final class RegexNode implements StreamNode {
 
         // match regex until no matches found
         while (m.find()) {
-            Map<String, Object> singleCapture = new HashMap<>(groups.keySet().size());
+            Map<String, String> singleCapture = new HashMap<>(groups.keySet().size());
             for (String name : groups.keySet()) {
                 Integer group = groups.get(name);
                 singleCapture.put(name, m.group(group));
@@ -108,7 +108,7 @@ public final class RegexNode implements StreamNode {
             n.streamFlowMap(o, copy);
         }
 
-        Optional<Map<String, ?>> evalDefault = o.evalMaybe(noMatchDefaultOutput);
+        Optional<Map<String, String>> evalDefault = o.evalMaybe(noMatchDefaultOutput);
         if(evalDefault.isPresent() && m.reset().results().findAny().isEmpty()) {
             FlowMap copy = o.copy();
             copy.output(output, evalDefault.get());

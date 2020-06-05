@@ -1,0 +1,23 @@
+---
+name: complex
+graphs:
+  start:
+    - type: ReadFileNode
+      inputFile: "../all.json"
+      output: jsonstr
+      charset: 'utf-8'
+
+    - type: JsonStringToObjectNode
+      jsonString: "{jsonstr}"
+      jsonObject: "jsonobj"
+
+    - type: EchoNode
+      put: item
+      value: "{{jsonobj}}[0]"
+
+    - type: HttpRequestNode
+      holdOnForward: 2000
+      url: "{{item}@img}"
+      expectedResponse: "FILE"
+      path: "{{item}@uid}.png"
+

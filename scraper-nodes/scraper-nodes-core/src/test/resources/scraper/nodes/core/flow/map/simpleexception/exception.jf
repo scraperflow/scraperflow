@@ -3,7 +3,7 @@
     "graphs" : {
         "start":
         [
-          { "type": "EchoNode", "puts": { "fork":  ["a","b"]} },
+          { "type": "EchoNode", "put": "fork", "value":  ["a","b"] },
           { "type" : "MapNode", "list": "{fork}", "mapTarget": "target", "forward": false },
           {
             "type": "ExceptionNode",

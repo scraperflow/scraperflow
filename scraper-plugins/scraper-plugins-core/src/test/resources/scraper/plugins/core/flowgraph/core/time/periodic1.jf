@@ -3,17 +3,17 @@
     "graphs" : {
         "start":
         [
-          { "type": "EchoNode", "puts": { "before": "OK" } },
+          { "type": "EchoNode", "put": "before", "value": "OK"  },
           { "type" : "PeriodicNode", "onPeriod": "line1", "period": 1000 },
-          { "type": "EchoNode", "puts": { "before": "OK" } }
+          { "type": "EchoNode", "put": "before", "value": "OK"  }
         ],
 
       "line1": [
-        { "type": "EchoNode", "puts": { "line1":  "OK"} }
+        { "type": "EchoNode", "put": "line1", "value":  "OK" }
       ],
 
       "line2": [
-        { "type": "EchoNode", "puts": { "line2": "OK"} }
+        { "type": "EchoNode", "put": "line2", "value": "OK" }
       ]
     }
 }

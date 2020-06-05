@@ -3,12 +3,15 @@ package scraper.api.flow.impl;
 import com.google.common.reflect.TypeToken;
 import org.slf4j.Logger;
 import scraper.api.exceptions.TemplateException;
+import scraper.api.template.T;
 
 import java.lang.reflect.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Visitor class for a Java Type to descend into and visit generic types.
@@ -17,7 +20,7 @@ import java.util.Set;
  * Returns true, if the target type is more specialized than the known type,
  * e.g. String is more specialized than ?
  */
-abstract class GenericTypeMatcher {
+public abstract class GenericTypeMatcher {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger("TypeDescent");
 
     private final Set<Type> visited = new HashSet<>();
@@ -25,6 +28,26 @@ abstract class GenericTypeMatcher {
 
     public final boolean visit(Type knownType, Type targetType) {
         return visit(new Type[]{knownType}, new Type[]{targetType});
+    }
+
+    public final Map<String, T<?>> visitAndReturnCaptures(Map<String, T<?>> captures, Type knownType, Type targetType) {
+        for (String typevariable : captures.keySet()) {
+            capturedTypes.put(typevariable, captures.get(typevariable).get());
+        }
+
+        visit(new Type[]{knownType}, new Type[]{targetType});
+        return capturedTypes.entrySet().stream()
+                .map(
+                        e -> Map.entry(e.getKey(), new T<>(e.getValue()){})
+                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    public final Map<String, T<?>> visitAndReturnCaptures(Type knownType, Type targetType) {
+        visit(new Type[]{knownType}, new Type[]{targetType});
+        return capturedTypes.entrySet().stream()
+                .map(
+                        e -> Map.entry(e.getKey(), new T<>(e.getValue()){})
+                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     /**
@@ -37,7 +60,7 @@ abstract class GenericTypeMatcher {
             Type known = knownTypes[i];
             Type target = targetTypes[i];
 
-            if (known == null || !visited.add(known)) return false;
+            if (known == null) return false;
 
             if (known instanceof TypeVariable) {
                 if(visitTypeVariable((TypeVariable<?>) known, target)) return true;
@@ -83,12 +106,32 @@ abstract class GenericTypeMatcher {
             }
         }
 
-        // last resort: sub relation
+        // check sub relation
         TypeToken<?> targetToken = TypeToken.of(target);
         TypeToken<?> knownToken  = TypeToken.of(t);
         if(knownToken.isSubtypeOf(targetToken)) {
             log.debug("known {} is subtype of {}", knownToken, targetToken);
             return false;
+        }
+
+        // check Number -> String
+        if(knownToken.isSubtypeOf(TypeToken.of(Number.class))
+                && targetToken.isSubtypeOf(TypeToken.of(String.class))) {
+            log.debug("Known token is a number and convertible to String");
+            return false;
+        }
+
+        // check Boolean -> String
+        if(knownToken.isSubtypeOf(TypeToken.of(Boolean.class))
+                && targetToken.isSubtypeOf(TypeToken.of(String.class))) {
+            log.debug("Known token is a bool and convertible to String");
+            return false;
+        }
+
+        // specialize?
+        if(targetToken.isSubtypeOf(knownToken)) {
+            log.debug("Target type {} is subtype of known type {}, can be specialized ", targetToken, knownToken);
+            throw new SpecializeException();
         }
 
         log.error("Types do not match: '{}' != '{}'", t, target);
@@ -108,6 +151,12 @@ abstract class GenericTypeMatcher {
             boolean b = visit(t.getActualTypeArguments(), ((ParameterizedType) target).getActualTypeArguments());
             return a || b;
         } else if(target instanceof TypeVariable) {
+            Type knownCapture = capturedTypes.get(((TypeVariable) target).getName());
+            if(knownCapture != null && !knownCapture.equals(target)) {
+                throw new TemplateException("Types do not match: " + knownCapture + " != " + target);
+            }
+
+            capturedTypes.put(((TypeVariable<?>) target).getName(), t);
             log.trace("Capture {} -> {}", target.getTypeName(), t);
             return false;
         } else if(target == Object.class) {
@@ -121,9 +170,13 @@ abstract class GenericTypeMatcher {
 
     @SuppressWarnings("unused") // ignored
     private boolean visitTypeVariable(TypeVariable<?> t, Type target) {
-        log.error("Inferred known type should never have type variables. " +
-                "Ignoring, fix infer type implementation: {}", t);
-        throw new TemplateException("Known type has a type variable");
+        // capture
+        Type knownCapture = capturedTypes.get(t.getTypeName());
+        if(knownCapture != null && !knownCapture.equals(target)) {
+            throw new TemplateException("Types do not match: " + knownCapture + " != " + target);
+        }
+        capturedTypes.put(t.getName(), target);
+        return false;
     }
 
     private boolean visitWildcardType(WildcardType t, Type target) {
@@ -137,4 +190,5 @@ abstract class GenericTypeMatcher {
         log.trace("Target is more specialized than current type '{}' ~> '{}'", t, target);
         return true;
     }
+
 }

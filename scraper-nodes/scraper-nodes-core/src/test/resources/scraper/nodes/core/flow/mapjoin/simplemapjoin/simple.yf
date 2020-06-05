@@ -2,8 +2,9 @@ name: mapJoin
 graphs:
   start:
     - type: EchoNode
-      puts:
-        fork: ["a","b"]
+      put: fork
+      value: ["a","b"]
+
     - type: MapJoinNode
       list: "{fork}"
       mapTarget: target
@@ -13,6 +14,6 @@ graphs:
   target:
     - type: EchoNode
       log: "Doing my part: {element}"
-      puts:
-        e: "OK"
+      put: e
+      value: "OK"
 

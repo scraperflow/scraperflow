@@ -1,0 +1,6 @@
+---
+name: log
+graphs:
+  start:
+    - type: EchoNode
+      log: "Just a log message"

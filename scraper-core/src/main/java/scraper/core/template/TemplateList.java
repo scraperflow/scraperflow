@@ -9,20 +9,29 @@ import scraper.api.template.Term;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class TemplateList<K> implements ListTerm<K> {
-    @Override public void accept(@NotNull TVisitor visitor) { visitor.visitListTerm(this); }
+
+    @Override public <X> X accept(@NotNull TVisitor<X> visitor) { return visitor.visitListTerm(this); }
 
     private final List<Term<K>> termList;
-    private final T<List<K>> listType;
+    private T<List<K>> listType;
+    private final boolean fromTypeVariable;
 
     @Override @NotNull
     public List<Term<K>> getTerms(){ return termList; }
 
-    public TemplateList(@NotNull List<Term<K>> termList, @NotNull T<List<K>> listType) {
+    @Override
+    public boolean isTypeVariable() {
+        return fromTypeVariable;
+    }
+
+    public TemplateList(@NotNull List<Term<K>> termList, @NotNull T<List<K>> listType, boolean fromTypeVariable) {
         this.termList = termList;
         this.listType = listType;
+        this.fromTypeVariable = fromTypeVariable;
     }
 
     public @NotNull List<K> eval(@NotNull final FlowMap o) {
@@ -41,5 +50,24 @@ public class TemplateList<K> implements ListTerm<K> {
     @Override
     public T<List<K>> getToken() {
         return listType;
+    }
+
+    @Override
+    public void setToken(T<List<K>> t) {
+        listType = t;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TemplateList<?> that = (TemplateList<?>) o;
+        return termList.equals(that.termList) &&
+                listType.get().equals(that.listType.get());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(termList, listType.get());
     }
 }

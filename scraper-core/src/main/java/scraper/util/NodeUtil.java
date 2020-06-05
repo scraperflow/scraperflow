@@ -392,6 +392,8 @@ public final class NodeUtil {
             } catch (IllegalAccessException e) {
                 // TODO handle exception differently
                 throw new RuntimeException(e);
+            } catch (IllegalArgumentException ignore){
+                System.out.println();
             }
         }
 

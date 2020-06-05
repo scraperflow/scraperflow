@@ -8,6 +8,7 @@ import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
+import scraper.api.template.L;
 import scraper.api.template.T;
 import scraper.api.service.HttpService;
 import scraper.api.service.HttpService.RequestType;
@@ -61,7 +62,7 @@ import static scraper.api.node.container.NodeLogLevel.*;
  *
  * If multiple HttpRequestNodes are used with a similar configuration, globalNodeConfigurations can be used.
  */
-@NodePlugin("1.1.2")
+@NodePlugin("2.0.0")
 @Io
 public final class HttpRequestNode implements Node {
 
@@ -78,7 +79,7 @@ public final class HttpRequestNode implements Node {
     private String defaultSchema;
     /** Response location if successful */
     @FlowKey(defaultValue = "\"response\"")
-    private String put;
+    private final L<String> put = new L<>(){};
     /** Type of request: GET, POST, DELETE, PUT */
     @FlowKey(defaultValue = "\"GET\"")
     private RequestType requestType;
@@ -103,7 +104,7 @@ public final class HttpRequestNode implements Node {
     // --------------
     // RESPONSE HANDLING
     // --------------
-    /** Expected response type, STRING_BODY, JSON, or FILE */
+    /** Expected response type, STRING_BODY, or FILE */
     @FlowKey(defaultValue = "\"STRING_BODY\"")
     private ResponseType expectedResponse;
     /** How long the used proxy or local connection is made unusable by other nodes. This can used to reduce the requests for a single IP. */
@@ -199,7 +200,6 @@ public final class HttpRequestNode implements Node {
             HttpResponse.BodyHandler handler = null;
 
             switch (expectedResponse) {
-                case JSON: // continue
                 case STRING_BODY:
                     handler = HttpResponse.BodyHandlers.ofString();
                     break;
@@ -224,11 +224,7 @@ public final class HttpRequestNode implements Node {
             if(cache != null && body instanceof String)
                 cacheResponse(n, cache, url, (String) body);
 
-            // convert to JSON if specified
-            if(expectedResponse.equals(ResponseType.JSON) && (body instanceof String))
-                body = mapper.readValue((String) body, Object.class);
-
-            o.output(put, body);
+            if(expectedResponse.equals(ResponseType.STRING_BODY)) o.output(put, (String) body);
 
         } catch (InterruptedException e) {
             n.log(WARN, "Interrupted while waiting for token: {}", url);
@@ -350,7 +346,7 @@ public final class HttpRequestNode implements Node {
     // ==================
 
     enum ResponseType {
-        STRING_BODY, FILE, JSON
+        STRING_BODY, FILE
     }
 
     /** Checks if file is already downloaded at expected location (for RequestType.FILE) */

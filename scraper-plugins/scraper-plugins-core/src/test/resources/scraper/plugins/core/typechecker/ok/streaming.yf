@@ -1,0 +1,21 @@
+---
+name: streaming
+graphs:
+  start:
+    - type: RegexNode
+      content: "x"
+      regex: "x"
+      groups:
+
+    - type: MapNode
+      list: "{output}"
+      mapTarget: D
+
+  D:
+    - type: EchoNode
+      put: "gid"
+      value: "{{element}@gid}"
+
+    - type: StringContainsNode
+      regex: "notimportant"
+      content: "{gid}" # content :: String

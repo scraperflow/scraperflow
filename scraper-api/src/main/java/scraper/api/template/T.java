@@ -19,7 +19,7 @@ public abstract class T<TYPE> implements Supplier<Type> {
 	// parsed JSON object which is supplied at a later time
 	protected Term<TYPE> term;
 
-	public T() { this.type = resolveType(); }
+    public T() { this.type = resolveType(); }
 	public T(Type t) { this.type = t; }
 
 	@Override @NotNull public Type get() { return type; }

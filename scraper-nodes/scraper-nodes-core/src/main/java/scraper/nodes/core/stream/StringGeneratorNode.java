@@ -52,7 +52,7 @@ public final class StringGeneratorNode implements StreamNode {
 
     /** Where the generated String is stored */
     @FlowKey(defaultValue = "\"generated\"")
-    private L<String> generatedElement = new L<>(){};
+    private final L<String> generatedElement = new L<>(){};
 
     @Override
     public void process(@NotNull StreamNodeContainer n, @NotNull FlowMap o) {

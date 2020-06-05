@@ -19,6 +19,7 @@ import scraper.core.template.TemplateExpression;
 import scraper.core.template.TemplateList;
 import scraper.core.template.TemplateMap;
 
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,19 +30,29 @@ public final class TemplateUtil {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(TemplateUtil.class);
 
-    @SuppressWarnings("unchecked") // checked with types
+    @SuppressWarnings({"unchecked", "rawtypes"}) // checked with types
     public static <K> Term<K> parseTemplate(@NotNull final Object term, @NotNull final T<K> targetType) throws ValidationException {
         TypeToken templ = TypeToken.of(targetType.get());
 
 
         if(List.class.isAssignableFrom(term.getClass()) && (
                 List.class.isAssignableFrom(templ.getRawType()) || templ.getRawType().equals(Object.class))) {
-            return (Term<K>) parseTemplateL((List) term, (T<List<?>>) targetType);
+            if ((targetType.get() instanceof TypeVariable)) {
+                log.warn("Making type variable more precise: {} => {}", targetType.get(), "List<"+targetType.get().getTypeName()+">");
+                return (Term<K>) parseTemplateL((List) term, (T<List<?>>) targetType, true);
+            } else {
+                return (Term<K>) parseTemplateL((List) term, (T<List<?>>) targetType, false);
+            }
         } // JSON map
         else if(Map.class.isAssignableFrom(term.getClass()) && (
                 Map.class.isAssignableFrom(templ.getRawType()) || templ.getRawType().equals(Object.class) // descend into object
         )) {
-            return (Term<K>) parseTemplateM((Map<String, ?>) term, (T<Map<String, ?>>) targetType);
+            if ((targetType.get() instanceof TypeVariable)) {
+                log.warn("Making type variable more precise: {} => {}", targetType.get(), "Map<String, " + targetType.get().getTypeName() + ">");
+                return (Term<K>) parseTemplateM((Map<String, ?>) term, (T<Map<String, ?>>) targetType, true);
+            } else {
+                return (Term<K>) parseTemplateM((Map<String, ?>) term, (T<Map<String, ?>>) targetType, false);
+            }
         }
         // primitives
         else {
@@ -92,13 +103,23 @@ public final class TemplateUtil {
         return new TypeToken<List<K>>() {}.where(new TypeParameter<>() {}, elementType);
     }
 
+    public static <K> T<List<K>> listOf(T<K> elementType) {
+        TypeToken<List<K>> list = listOf((TypeToken<K>) TypeToken.of(elementType.get()));
+        return new T<>(list.getType()){};
+    }
+
+    public static <K, V> T<Map<K, V>> mapOf(T<K> keyType, T<V> elementType) {
+        TypeToken<Map<K, V>> list = mapOf((TypeToken<K>) TypeToken.of(keyType.get()),(TypeToken<V>) TypeToken.of(elementType.get()));
+        return new T<>(list.getType()){};
+    }
+
     // ==============
     // descend into lists and maps helper functions
     // ==============
 
     @SuppressWarnings("unchecked") // checked
     private static Term<Map<String, ?>> parseTemplateM(@NotNull final Map<String, ?> term,
-                                                       @NotNull final T<Map<String, ?>> targetType) throws ValidationException {
+                                                       @NotNull final T<Map<String, ?>> targetType, boolean fromTypeVariable) throws ValidationException {
         TypeToken<?> templ = TypeToken.of(targetType.get());
         // create a map with checked values
         TypeToken<?> elementType = (templ.getRawType().equals(Object.class) ? templ : templ.resolveType(Map.class.getTypeParameters()[1]));
@@ -110,12 +131,12 @@ public final class TemplateUtil {
 
         }
 
-        return new TemplateMap(resultMap, new T<>(elementType.getType()){}, targetType);
+        return new TemplateMap(resultMap, new T<>(elementType.getType()){}, targetType, fromTypeVariable);
     }
 
     @SuppressWarnings("unchecked") // checked
     private static ListTerm<?> parseTemplateL(@NotNull final List<?> term,
-                                              @NotNull final T<List<?>> listType) throws ValidationException {
+                                              @NotNull final T<List<?>> listType, boolean fromTypeVariable) throws ValidationException {
         TypeToken<?> templ = TypeToken.of(listType.get());
         // create a list with converted values
         TypeToken<?> elementType = (templ.getRawType().equals(Object.class) ? templ : templ.resolveType(List.class.getTypeParameters()[0]));
@@ -126,7 +147,7 @@ public final class TemplateUtil {
             resultList.add(parseTemplate(o, new T<>(elementType.getType()){}));
         }
 
-        return new TemplateList(resultList, listType);
+        return new TemplateList(resultList, listType, fromTypeVariable);
     }
 }
 

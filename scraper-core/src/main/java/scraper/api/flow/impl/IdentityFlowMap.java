@@ -19,12 +19,6 @@ public class IdentityFlowMap implements FlowMap {
 
     @NotNull
     @Override
-    public Optional<T<?>> getType(@NotNull String key) {
-        return Optional.empty();
-    }
-
-    @NotNull
-    @Override
     public <K> Optional<K> getWithType(@NotNull String targetKey, @NotNull T<K> targetType) {
         return Optional.empty();
     }
