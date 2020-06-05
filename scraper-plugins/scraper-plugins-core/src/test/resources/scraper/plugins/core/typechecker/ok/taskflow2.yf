@@ -2,7 +2,7 @@
 name: complex
 graphs:
   start:
-    - type: ReadFileNode
+    - type: ReadFileDummyNode
       inputFile: "../all.json"
       output: jsonstr
       charset: 'utf-8'

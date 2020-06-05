@@ -1,0 +1,24 @@
+digraph G {
+	subgraph "cluster_mapjoin" {
+		style=filled;
+		color=grey;
+		label = "mapjoin";
+
+		subgraph "cluster_X" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"mapjoin.X.0" [shape=rectangle, label="EchoNode\n<0>"]; 
+			label = "X";
+		}
+		subgraph "cluster_start" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"mapjoin.start.0" [shape=rectangle, label="MapJoinNode\n<0>"]; "mapjoin.start.1" [shape=rectangle, label="StringContainsNode\n<1>"]; 
+			label = "start";
+		}
+	}
+"mapjoin.start.0" -> "mapjoin.start.1" [ xlabel="join",]
+"mapjoin.start.0" -> "mapjoin.X.0" [ xlabel="map",color=red]
+}
