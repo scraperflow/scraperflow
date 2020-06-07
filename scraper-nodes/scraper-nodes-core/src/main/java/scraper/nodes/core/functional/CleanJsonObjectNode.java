@@ -32,24 +32,24 @@ import java.util.Map;
  * </pre>
  * </p>
  */
-@NodePlugin("0.1.0")
-public final class CleanJsonObjectNode implements FunctionalNode {
+@NodePlugin("0.2.0")
+public final class CleanJsonObjectNode <A> implements FunctionalNode {
 
     /** JSON map object to clean */
     @FlowKey(mandatory = true)
-    private final T<Map<String, ?>> jsonObject = new T<>(){};
+    private final T<Map<String, A>> jsonObject = new T<>(){};
 
     /** Clean operations where <code>|</code> descends into maps and <code>[]</code> descends into arrays */
     @FlowKey(mandatory = true)
-    private T<List<String>> clean = new T<>(){};
+    private final T<List<String>> clean = new T<>(){};
 
     /** Where the cleaned JSON object will be stored */
     @FlowKey(defaultValue = "\"output\"")
-    private final L<Map<String, ?>> cleanedObject = new L<>(){};
+    private final L<Map<String, A>> cleanedObject = new L<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) throws NodeException {
-        Map<String, ?> json = o.eval(jsonObject);
+        Map<String, A> json = o.eval(jsonObject);
         List<String> clean = o.evalIdentity(this.clean);
 
         for (String parts : clean) {

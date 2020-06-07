@@ -38,7 +38,7 @@ public final class PeriodicNode implements FunctionalNode {
 
     /** If true, enables dispatch of the periodic task. If false, stops dispatch of the periodic task */
     @FlowKey(defaultValue = "true")
-    private T<Boolean> flag = new T<>(){};
+    private final T<Boolean> flag = new T<>(){};
 
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicBoolean dispatch = new AtomicBoolean(false);

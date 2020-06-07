@@ -86,6 +86,11 @@ public class ReplaceCapturesOrCrashVisitor {
                         Objects.hashCode(getOwnerType()) ^
                         Objects.hashCode(getRawType());
             }
+            @Override
+            public String toString() {
+                String arr = Arrays.toString(getActualTypeArguments());
+                return getRawType().getTypeName()+"<"+arr.substring(1, arr.length()-1)+">";
+            }
         };
     }
 

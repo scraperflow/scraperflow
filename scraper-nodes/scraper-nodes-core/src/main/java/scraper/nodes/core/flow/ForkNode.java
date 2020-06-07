@@ -20,7 +20,7 @@ public final class ForkNode implements Node {
 
     /** All nodes to fork the current flow map to */
     @FlowKey(mandatory = true)
-    private T<List<Address>> forkTargets = new T<>() {};
+    private final T<List<Address>> forkTargets = new T<>(){};
 
     @NotNull
     @Override

@@ -37,11 +37,11 @@ public final class MapJoinNode <A> implements Node {
 
     /** Expected join for each key defined in this map after a forked flow terminates */
     @FlowKey(mandatory = true)
-    private T<Map<String, String>> keys = new T<>(){};
+    private final T<Map<String, String>> keys = new T<>(){};
 
     /** List to apply map to */
     @FlowKey(mandatory = true)
-    private T<List<A>> list = new T<>(){};
+    private final T<List<A>> list = new T<>(){};
 
     /** Label of goTo */
     @FlowKey(mandatory = true)

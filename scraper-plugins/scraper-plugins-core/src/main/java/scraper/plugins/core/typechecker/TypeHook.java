@@ -21,7 +21,7 @@ import java.util.Map;
         )
 public class TypeHook implements Hook {
 
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(TypeHook.class);
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger("TypeChecker");
 
     @Override
     public void execute(@NotNull DIContainer dependencies, @NotNull String[] args, @NotNull Map<ScrapeSpecification, ScrapeInstance> jobs) {
@@ -42,5 +42,5 @@ public class TypeHook implements Hook {
         }
     }
 
-    @Override public String toString() { return "ControlFlowGraphGenerator"; }
+    @Override public String toString() { return "StaticTypeCheck"; }
 }

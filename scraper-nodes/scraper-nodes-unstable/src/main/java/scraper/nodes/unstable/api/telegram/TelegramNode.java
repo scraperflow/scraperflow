@@ -8,7 +8,6 @@ import scraper.annotations.node.Io;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
-import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.template.T;
 
@@ -43,13 +42,13 @@ public final class TelegramNode implements FunctionalNode {
 
     /** Message recipients. User or group chat id */
     @FlowKey(mandatory = true)
-    private T<List<String>> recipients = new T<>(){};
+    private final T<List<String>> recipients = new T<>(){};
 
     /** Telegram bot api link */
     @FlowKey(defaultValue = "\"https://api.telegram.org/bot\"") @Argument
     private String api;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
     private final HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build();
 
     private void trySend(FunctionalNodeContainer n, String msg, String id) throws IOException, InterruptedException {

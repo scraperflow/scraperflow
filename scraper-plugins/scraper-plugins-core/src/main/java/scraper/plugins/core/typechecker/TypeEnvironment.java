@@ -18,6 +18,7 @@ public class TypeEnvironment {
     public TypeEnvironment() {}
     public TypeEnvironment(TypeEnvironment typeEnvironment) {
         this.env = new HashMap<>(typeEnvironment.env);
+        this.templateToKnownTargets = new HashMap<>(typeEnvironment.templateToKnownTargets);
     }
 
     public T<?> get(Term<?> key) {

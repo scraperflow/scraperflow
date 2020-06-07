@@ -5,11 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.exceptions.ValidationException;
-import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.flow.impl.IdentityFlowMap;
 import scraper.api.template.T;
 
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -488,5 +485,19 @@ public class TypeCheckerTest {
                 "java.util.List<java.lang.String>",
                 check.captures.get("X").get().getTypeName()
         );
+    }
+
+    @Test
+    public <X> void replaceTypeVariableWithStaticType() {
+        T<X> t = new T<>(){};
+        t.setTerm(parseTemplate("static", t));
+
+        check.typeTemplate(t);
+        check.add(t.getTerm());
+        Assert.assertEquals(
+                "java.lang.String",
+                check.env.get(t.getTerm()).get().getTypeName()
+        );
+
     }
 }

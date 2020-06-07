@@ -12,16 +12,16 @@ import scraper.api.template.T;
 /**
  * Hashes a value of any content
  */
-@NodePlugin("0.2.0")
-public final class HashNode implements FunctionalNode {
+@NodePlugin("0.3.0")
+public final class HashNode <A> implements FunctionalNode {
 
     /** The content to apply the hash on */
     @FlowKey(defaultValue = "\"{input}\"")
-    private final T<?> content = new T<>(){};
+    private final T<A> content = new T<>(){};
 
     /** Where the output hash is stored */
     @FlowKey(defaultValue = "\"output\"")
-    private L<String> output = new L<>(){};
+    private final L<String> output = new L<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {

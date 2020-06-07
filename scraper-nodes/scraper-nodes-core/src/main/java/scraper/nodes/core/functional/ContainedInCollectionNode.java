@@ -13,22 +13,22 @@ import scraper.api.template.T;
 import java.util.Collection;
 
 /**
- * Sets a flag depending if the goTo object is contained in the collection (i.e. in the list or map).
+ * Sets a flag depending if the object is contained in the collection
  */
-@NodePlugin("0.3.0")
-public final class ContainedInCollectionNode implements FunctionalNode {
+@NodePlugin("0.3.1")
+public final class ContainedInCollectionNode <A> implements FunctionalNode {
 
     /** Collection to be checked if the object is contained */
     @FlowKey(defaultValue = "\"{collection}\"")
-    private final T<Collection<?>> collection = new T<>(){};
+    private final T<Collection<A>> collection = new T<>(){};
 
     /** This evaluated object is used for checking */
     @FlowKey(defaultValue = "\"{object}\"")
-    private final T<?> object = new T<>(){};
+    private final T<A> object = new T<>(){};
 
     /** Key where the result flag will be written to */
     @FlowKey(defaultValue = "\"flag\"")
-    private L<Boolean> flag = new L<>(){};
+    private final L<Boolean> flag = new L<>(){};
 
     /** Determines if the <code>contains</code> or <code>not contains</code> operation is used */
     @FlowKey(defaultValue = "false")
@@ -36,8 +36,8 @@ public final class ContainedInCollectionNode implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        Object        object     = o.eval(this.object);
-        Collection<?> collection = o.eval(this.collection);
+        A             object     = o.eval(this.object);
+        Collection<A> collection = o.eval(this.collection);
 
         // cont negate output
         // 0    0      0

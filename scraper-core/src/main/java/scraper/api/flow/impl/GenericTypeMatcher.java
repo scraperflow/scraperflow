@@ -95,7 +95,14 @@ public abstract class GenericTypeMatcher {
                     return false;
                 } else {
                     if(t != captured) {
-                        throw new TemplateException("Captured type mismatch: " + t + " != " + captured + " (~> "+name+")");
+                        if(captured instanceof TypeVariable) {
+                            log.debug("Capturing {} -> {}", captured, t);
+                            capturedTypes.put(name, t);
+
+                            return false;
+                        } else {
+                            throw new TemplateException("Captured type mismatch: " + t + " != " + captured + " (~> "+name+")");
+                        }
                     } else {
                         return false;
                     }
@@ -173,7 +180,14 @@ public abstract class GenericTypeMatcher {
         // capture
         Type knownCapture = capturedTypes.get(t.getTypeName());
         if(knownCapture != null && !knownCapture.equals(target)) {
-            throw new TemplateException("Types do not match: " + knownCapture + " != " + target);
+            if(target instanceof TypeVariable) {
+                log.debug("Capturing {} -> {}", target, t);
+                capturedTypes.put(target.getTypeName(), t);
+
+                return false;
+            } else {
+                throw new TemplateException("Types do not match: " + knownCapture + " != " + target);
+            }
         }
         capturedTypes.put(t.getName(), target);
         return false;

@@ -24,7 +24,7 @@ public final class MapNode<K> implements Node {
 
     /** The expected list is located to fork on */
     @FlowKey(mandatory = true)
-    private T<List<K>> list = new T<>(){};
+    private final T<List<K>> list = new T<>(){};
 
     /** Target address to fork to */
     @FlowKey(mandatory = true)

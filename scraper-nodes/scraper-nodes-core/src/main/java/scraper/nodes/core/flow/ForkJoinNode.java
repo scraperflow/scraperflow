@@ -36,19 +36,19 @@ public final class ForkJoinNode implements Node {
 
     /** Expected join for each target (for every key) defined in this map after a forked flow terminates */
     @FlowKey(mandatory = true)
-    private T<Map<String, Map<String, String>>> targetToKeys = new T<>(){};
+    private final T<Map<String, Map<String, String>>> targetToKeys = new T<>(){};
 
     /** All processes to fork the current flow map to */
     @FlowKey(mandatory = true)
-    private T<List<Address>> forkTargets = new T<>(){};
+    private final T<List<Address>> forkTargets = new T<>(){};
 
     @NotNull @Override
     public FlowMap process(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) {
-        Map<Address, CompletableFuture<FlowMap>> forkedProcesses = new HashMap<>();
+        Map<String, CompletableFuture<FlowMap>> forkedProcesses = new HashMap<>();
         o.evalIdentity(forkTargets).forEach(target -> {
             // dispatch new flow, expect future to return the modified flow map
             CompletableFuture<FlowMap> t = n.forkDepend(o, target);
-            forkedProcesses.put(target, t);
+            forkedProcesses.put(target.getRepresentation(), t);
         });
 
         forkedProcesses.forEach((adr, future) -> future.whenComplete(
@@ -73,7 +73,7 @@ public final class ForkJoinNode implements Node {
         return o;
     }
 
-    private void handleFuture(Address target, CompletableFuture<FlowMap> future, FlowMap o, NodeContainer<?> n) throws ExecutionException, InterruptedException {
+    private void handleFuture(String target, CompletableFuture<FlowMap> future, FlowMap o, NodeContainer<?> n) throws ExecutionException, InterruptedException {
         Map<String, String> keys = o.eval(this.targetToKeys).get(target);
         FlowMap forkedResult = future.get();
 

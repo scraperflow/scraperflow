@@ -54,7 +54,7 @@ public final class TimerNode implements FunctionalNode {
 
     /** Where to put the remaining timeout time on request */
     @FlowKey(mandatory = true)
-    private L<Long> put = new L<>(){};
+    private final L<Long> put = new L<>(){};
 
     /** Action to be taken when this node accepts a call.
      * <ul>

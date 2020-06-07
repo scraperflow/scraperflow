@@ -21,7 +21,7 @@ public final class FlowKeyExistsNode implements FunctionalNode {
 
     /** Where to put the result of the check */
     @FlowKey(defaultValue = "\"flag\"")
-    private L<Boolean> flag = new L<>(){};
+    private final L<Boolean> flag = new L<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) {

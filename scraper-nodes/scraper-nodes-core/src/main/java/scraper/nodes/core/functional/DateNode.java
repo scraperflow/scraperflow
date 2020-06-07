@@ -29,7 +29,7 @@ public final class DateNode implements FunctionalNode {
 
     /** Where to put the date */
     @FlowKey(defaultValue = "\"date\"") @NotNull
-    private L<String> put = new L<>(){};
+    private final L<String> put = new L<>(){};
 
     private DateFormat parsedDateFormat;
 

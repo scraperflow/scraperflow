@@ -1,27 +1,22 @@
 package scraper.plugins.core.typechecker.data;
 
 
-import org.slf4j.Logger;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.Address;
-import scraper.api.node.NodeAddress;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.template.T;
 import scraper.plugins.core.flowgraph.FlowUtil;
-import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.plugins.core.flowgraph.api.Version;
 import scraper.plugins.core.typechecker.TypeChecker;
 import scraper.util.NodeUtil;
 import scraper.util.TemplateUtil;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static scraper.util.TemplateUtil.parseTemplate;
 

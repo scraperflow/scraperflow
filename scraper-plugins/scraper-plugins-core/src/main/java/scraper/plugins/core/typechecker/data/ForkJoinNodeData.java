@@ -1,7 +1,6 @@
 package scraper.plugins.core.typechecker.data;
 
 
-import org.slf4j.Logger;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.Address;

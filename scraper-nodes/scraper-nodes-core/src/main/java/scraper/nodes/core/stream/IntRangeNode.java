@@ -22,14 +22,14 @@ import java.util.stream.IntStream;
  * output: page
  * </pre>
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class IntRangeNode implements StreamNode {
 
-    /** */
+    /** Start index, inclusive */
     @FlowKey(mandatory = true) @Argument
     private Integer from;
 
-    /** */
+    /** End index, inclusive */
     @FlowKey(mandatory = true) @Argument
     private Integer to;
 
@@ -40,7 +40,7 @@ public final class IntRangeNode implements StreamNode {
 
     @Override
     public void process(@NotNull final StreamNodeContainer n, @NotNull final FlowMap o) {
-        n.collect(o, List.of(o.eval(output)));
+        n.collect(o, List.of(o.evalLocation(output)));
 
         IntStream.rangeClosed(from, to).forEach(i ->{
             FlowMap copy = o.copy();

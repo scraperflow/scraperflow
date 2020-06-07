@@ -1,0 +1,11 @@
+---
+name: contains
+graphs:
+  start:
+    - {type: EchoNode, put: list, value: ["1","2"]}
+    - {type: EchoNode, put: list2, value: []}
+    - type: FlattenListNode
+      flatten: ["{list}", "{list2}", "{list2}"]
+      output: "mergedlists"
+
+

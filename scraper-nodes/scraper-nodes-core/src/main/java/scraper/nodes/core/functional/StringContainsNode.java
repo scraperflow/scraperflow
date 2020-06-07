@@ -23,7 +23,7 @@ public final class StringContainsNode implements FunctionalNode {
 
     /** Regex as a (properly escaped JSON) Java String */
     @FlowKey(mandatory = true)
-    private T<String> regex = new T<>(){};
+    private final T<String> regex = new T<>(){};
 
     /** The content to apply the regex on */
     @FlowKey(defaultValue = "\"{content}\"")
@@ -31,7 +31,7 @@ public final class StringContainsNode implements FunctionalNode {
 
     /** Where the output will be */
     @FlowKey(defaultValue = "\"output\"")
-    private L<Boolean> output = new L<>(){};
+    private final L<Boolean> output = new L<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) throws NodeException {
@@ -45,10 +45,6 @@ public final class StringContainsNode implements FunctionalNode {
 
         Matcher m = p.matcher(content);
 
-        if(m.results().findAny().isEmpty()) {
-            o.output(output, true);
-        } else {
-            o.output(output, false);
-        }
+        o.output(output, m.results().findAny().isEmpty());
     }
 }

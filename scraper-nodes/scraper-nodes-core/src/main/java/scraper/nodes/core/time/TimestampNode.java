@@ -17,7 +17,7 @@ public final class TimestampNode implements FunctionalNode {
 
     /** Result location */
     @FlowKey(defaultValue = "\"timestamp\"")
-    private L<Long> put = new L<>(){};
+    private final L<Long> put = new L<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {

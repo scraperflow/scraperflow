@@ -20,7 +20,7 @@ public final class TimestampDifferenceNode implements FunctionalNode {
 
     /** Long timestamp in string format */
     @FlowKey(mandatory = true)
-    private T<String> timestamp = new T<>() {};
+    private final T<String> timestamp = new T<>() {};
 
     /** Time difference in ms */
     @FlowKey(mandatory = true) @Argument
@@ -28,7 +28,7 @@ public final class TimestampDifferenceNode implements FunctionalNode {
 
     /** Result location */
     @FlowKey(mandatory = true)
-    private L<Boolean> put = new L<>(){};
+    private final L<Boolean> put = new L<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {

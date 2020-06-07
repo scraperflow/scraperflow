@@ -1,0 +1,9 @@
+---
+name: contains
+graphs:
+  start:
+    - {type: EchoNode, put: list, value: []}
+    - type: ContainedInCollectionNode
+      collection: "{list}"
+      object: "hello"
+

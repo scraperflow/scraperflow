@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  * output: fileinfo
  * </pre>
  */
-@NodePlugin("0.12.0")
+@NodePlugin("0.13.0")
 public final class RegexNode implements StreamNode {
 
     /** Regex as a (properly escaped JSON) Java String */
@@ -55,15 +55,15 @@ public final class RegexNode implements StreamNode {
 
     /** Key: location of where to put the group; Value: Group number of the regex. */
     @FlowKey(defaultValue = "{}")
-    private T<Map<String, Integer>> groups = new T<>(){};
+    private final T<Map<String, Integer>> groups = new T<>(){};
 
     /** Default output if no matches are present */
     @FlowKey
-    private T<Map<String, String>> noMatchDefaultOutput = new T<>(){};
+    private final T<Map<String, String>> noMatchDefaultOutput = new T<>(){};
 
     /** Where the output list will be put. If there's already a list at that key, it will be replaced. */
     @FlowKey(defaultValue = "\"output\"")
-    private L<Map<String, String>> output = new L<>(){};
+    private final L<Map<String, String>> output = new L<>(){};
 
     /**
      * Pattern dotall option.
@@ -88,7 +88,7 @@ public final class RegexNode implements StreamNode {
 
     @Override
     public void process(@NotNull final StreamNodeContainer n, @NotNull final FlowMap o) {
-        n.collect(o, List.of(o.eval(output)));
+        n.collect(o, List.of(o.evalLocation(output)));
 
         String content = o.eval(this.content);
         Map<String, Integer> groups = o.evalIdentity(this.groups);

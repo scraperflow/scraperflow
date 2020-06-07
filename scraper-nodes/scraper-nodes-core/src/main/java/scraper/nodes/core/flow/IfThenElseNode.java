@@ -18,7 +18,7 @@ public final class IfThenElseNode implements Node {
 
     /** Boolean condition*/
     @FlowKey(mandatory = true)
-    private T<Boolean> condition = new T<>(){};
+    private final T<Boolean> condition = new T<>(){};
 
     /** True target address */
     @FlowKey

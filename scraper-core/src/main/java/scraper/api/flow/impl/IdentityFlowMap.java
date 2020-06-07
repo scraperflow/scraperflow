@@ -44,13 +44,13 @@ public class IdentityFlowMap implements FlowMap {
 
     @NotNull
     @Override
-    public <A> String eval(@NotNull L<A> template) {
+    public <A> String evalLocation(@NotNull L<A> template) {
         return null;
     }
 
     @NotNull
     @Override
-    public <A> Optional<String> evalMaybe(@NotNull L<A> template) {
+    public <A> Optional<String> evalLocationMaybe(@NotNull L<A> template) {
         return Optional.empty();
     }
 
@@ -67,12 +67,6 @@ public class IdentityFlowMap implements FlowMap {
     @Override
     public <A> Optional<A> evalIdentityMaybe(@NotNull T<A> template) {
         throw new IllegalStateException();
-    }
-
-    @NotNull
-    @Override
-    public <A> A evalOrDefault(@NotNull T<A> template, @NotNull A defaultEval) {
-        return null;
     }
 
     @Override

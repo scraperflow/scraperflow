@@ -38,7 +38,7 @@ public final class PingNode implements FunctionalNode {
 
     /** List of targets with additional parameters */
     @FlowKey
-    private L<Boolean> result = new L<>(){};
+    private final L<Boolean> result = new L<>(){};
 
     /** Enforced ping timeout time in ms. Default: 500 */
     @FlowKey(defaultValue = "500") @Argument

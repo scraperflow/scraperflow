@@ -41,19 +41,17 @@ public interface FlowMap extends IdentityTemplateEvaluator {
 
     /** Evaluates the given template with this flowmap's content, enforces non-null return */
     @NotNull <A> A eval(@NotNull T<A> template);
-    /** Evaluates the given location template with this flowmap's content, enforces non-null return */
-    @NotNull <A> String eval(@NotNull L<A> template);
-    /** Evaluates the given location template with this flowmap's content, returns empty optional if template is null */
-    @NotNull <A> Optional<String> evalMaybe(@NotNull L<A> template);
     /** Evaluates the given template with this flowmap's content, returns empty optional if template is null */
     @NotNull <A> Optional<A> evalMaybe(@NotNull T<A> template);
     /** Evaluates the given template where templates are replaced by their string identity, i.e. no evaluation at all. Enforces non-null return */
     @NotNull <A> A evalIdentity(@NotNull T<A> template);
     /** Evaluates the given template where templates are replaced by their string identity, i.e. no evaluation at all */
     @NotNull <A> Optional<A> evalIdentityMaybe(@NotNull T<A> template);
-    /** Evaluates the given template with this flowmap's content, returns default eval if return would be null */
-    @NotNull <A> A evalOrDefault(@NotNull T<A> template, @NotNull A defaultEval);
 
+    /** Evaluates the given location template with this flowmap's content, enforces non-null return */
+    @NotNull <A> String evalLocation(@NotNull L<A> template);
+    /** Evaluates the given location template with this flowmap's content, returns empty optional if template is null */
+    @NotNull <A> Optional<String> evalLocationMaybe(@NotNull L<A> template);
 
     //===================
     // Write

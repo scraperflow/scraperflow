@@ -1,0 +1,15 @@
+---
+name: aggregate-self
+graphs:
+  start:
+    - {type: EchoNode, put: list, value: []}
+    - type: AggregateListNode
+      aggregate: "firstelement"
+      aggregateList: "{list}"
+      put: "list"
+
+    - type: AggregateListNode
+      aggregate: "{{list}}[0]"
+      aggregateList: "{list}"
+      put: "list"
+

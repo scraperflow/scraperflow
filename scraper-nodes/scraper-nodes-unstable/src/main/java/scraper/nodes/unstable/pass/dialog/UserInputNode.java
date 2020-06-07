@@ -24,7 +24,7 @@ public final class UserInputNode implements FunctionalNode {
 
     /** Which key to ensure */
     @FlowKey(mandatory = true)
-    private L<String> key = new L<>(){};
+    private final L<String> key = new L<>(){};
 
     /** Prompt message */
     @FlowKey(mandatory = true)

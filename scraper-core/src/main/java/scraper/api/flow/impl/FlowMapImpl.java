@@ -143,16 +143,24 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     @NotNull @Override
     public <A> A eval(@NotNull T<A> template) {
-        A evaluated = template.getTerm().eval(this);
-        if(evaluated == null)
-            throw new TemplateException("Template was evaluated to null but not expected, " +
-                    "either wrong node implementation/usage or type safety violated");
-        return evaluated;
+        if(template instanceof L) {
+            String location = ((L<A>) template).getLocation().eval(this);
+            return getWithType(location, template).get();
+        } else {
+            if(template.getTerm() == null)
+                throw new TemplateException("Template was not set but not expected, " +
+                        "wrong node implementation");
+            A evaluated = template.getTerm().eval(this);
+            if(evaluated == null)
+                throw new TemplateException("Template was evaluated to null but not expected, " +
+                        "either wrong node implementation/usage or type safety violated");
+            return evaluated;
+        }
     }
 
     @NotNull
     @Override
-    public <A> String eval(@NotNull L<A> template) {
+    public <A> String evalLocation(@NotNull L<A> template) {
         if(template.getLocation().getClass().isAssignableFrom(Primitive.class))
             throw new TemplateException("A location template has to be a primitive: " + template.getLocation().getClass()); // for now
         String location = template.getLocation().eval(this);
@@ -163,44 +171,49 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
 
     @NotNull @Override
-    public <A> A evalOrDefault(@NotNull T<A> template, @NotNull A object) {
-        A eval = template.getTerm().eval(this);
-        if(eval == null) return object;
-        return eval;
-    }
-
-    @NotNull @Override
     public <A> Optional<A> evalMaybe(@NotNull T<A> template) {
-        if(template.getTerm()==null) return Optional.empty();
-        return Optional.ofNullable(template.getTerm().eval(this));
+        if(template instanceof L) {
+            String location = ((L<A>) template).getLocation().eval(this);
+            return getWithType(location, template);
+        } else {
+            if(template.getTerm() == null) return Optional.empty();
+            A eval = template.getTerm().eval(this);
+            return Optional.ofNullable(eval);
+        }
     }
 
     @NotNull
     @Override
-    public <A> Optional<String> evalMaybe(@NotNull L<A> template) {
-        if(template.getTerm()==null) return Optional.empty();
+    public <A> Optional<String> evalLocationMaybe(@NotNull L<A> template) {
         return Optional.ofNullable(template.getLocation().eval(this));
     }
 
 
     @NotNull @Override
     public <A> A evalIdentity(@NotNull T<A> t) {
-        A evaluated = t.getTerm().eval(new IdentityFlowMap());
-        if(evaluated == null)
-            throw new TemplateException("Template was evaluated to null but not expected, " +
-                    "either wrong node implementation/usage or type safety violated");
-        return evaluated;
+        if(t instanceof L) {
+            String location = ((L<A>) t).getLocation().eval(new IdentityFlowMap());
+            return getWithType(location, t).get();
+        } else {
+            if(t.getTerm() == null)
+                throw new TemplateException("Template was set to null but not expected, " +
+                        "wrong node implementation");
+            A eval = t.getTerm().eval(new IdentityFlowMap());
+            if(eval == null)
+                throw new TemplateException("Template was evaluated to null but not expected, " +
+                        "either wrong node implementation/usage or type safety violated");
+            return eval;
+        }
     }
 
     @NotNull @Override
     public <A> Optional<A> evalIdentityMaybe(@NotNull T<A> template) {
-        return Optional.ofNullable(template.getTerm().eval(new IdentityFlowMap()));
+        return Optional.ofNullable(evalIdentity(template));
     }
 
     @Override
     public <A> void output(@NotNull L<A> locationAndType, A object) {
-        // always infer type
-        String location = eval(locationAndType);
+        String location = evalLocation(locationAndType);
         output(location, object);
 //        privateMap.put(location, object);
 //        privateTypeMap.put(location, locationAndType);

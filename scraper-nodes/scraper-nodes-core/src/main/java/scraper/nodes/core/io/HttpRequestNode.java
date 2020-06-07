@@ -62,7 +62,7 @@ import static scraper.api.node.container.NodeLogLevel.*;
  *
  * If multiple HttpRequestNodes are used with a similar configuration, globalNodeConfigurations can be used.
  */
-@NodePlugin("2.0.0")
+@NodePlugin("2.0.1")
 @Io
 public final class HttpRequestNode implements Node {
 
@@ -115,7 +115,7 @@ public final class HttpRequestNode implements Node {
     private Integer holdOnForward;
     /** Checks the response body of a string response for bad phrases, throwing an exception if one is found */
     @FlowKey(defaultValue = "[]")
-    private T<List<String>> exceptionContaining = new T<>(){};
+    private final T<List<String>> exceptionContaining = new T<>(){};
 
     // --------------
     // COOKIES
@@ -146,14 +146,14 @@ public final class HttpRequestNode implements Node {
     // --------------
     /** Save path in case of file download */
     @FlowKey
-    private T<String> path = new T<>(){};
+    private final T<String> path = new T<>(){};
 
     // --------------
     // POST SPECIFIC
     // --------------
     /** Payload of a POST request */
     @FlowKey
-    private T<?> payload = new T<>(){};
+    private final T<Object> payload = new T<>(){};
 
     @Override
     public void init(@NotNull NodeContainer<? extends Node> n, @NotNull final ScrapeInstance job) throws ValidationException {

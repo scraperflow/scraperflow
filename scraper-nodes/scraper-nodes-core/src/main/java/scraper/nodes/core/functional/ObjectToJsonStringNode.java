@@ -16,12 +16,12 @@ import java.io.IOException;
 /**
  * Converts a Json object (map) to a String representation
  */
-@NodePlugin("0.1.0")
-public final class ObjectToJsonStringNode implements FunctionalNode {
+@NodePlugin("0.2.0")
+public final class ObjectToJsonStringNode <A> implements FunctionalNode {
 
     /** Json object */
     @FlowKey(defaultValue = "\"object\"")
-    private final T<Object> object = new T<>(){};
+    private final T<A> object = new T<>(){};
 
     /** Resulting string location */
     @FlowKey(defaultValue = "\"result\"")
@@ -32,7 +32,7 @@ public final class ObjectToJsonStringNode implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) throws NodeException {
-        Object object = o.eval(this.object);
+        A object = o.eval(this.object);
 
         try {
             // read object at argument location
