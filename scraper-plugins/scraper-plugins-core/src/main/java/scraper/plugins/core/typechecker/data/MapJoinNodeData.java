@@ -15,6 +15,7 @@ import scraper.plugins.core.typechecker.TypeChecker;
 import scraper.util.NodeUtil;
 import scraper.util.TemplateUtil;
 
+import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,14 +43,14 @@ public final class MapJoinNodeData {
             T<String> fromFork = new T<>(){};
             fromFork.setTerm(parseTemplate(key, fromFork));
 
-            T<?> fromForkToken = newChecker.env.get(fromFork.getTerm());
+            Type fromForkToken = newChecker.env.get(fromFork.getTerm());
             if (fromForkToken == null)
                 throw new TemplateException("Map join target does not produce key at " + key);
 
             T<String> toJoin = new T<>() {};
             toJoin.setTerm(parseTemplate(value, toJoin));
 
-            t.env.add(toJoin.getTerm(), TemplateUtil.listOf(fromForkToken));
+            t.env.add(toJoin.getTerm(), TemplateUtil.listOf(fromForkToken).get());
         });
 
     }

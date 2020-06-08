@@ -250,7 +250,7 @@ public final class NodeUtil {
             if(!mandatory && value == null) {
                 Object converted;
                 // TODO document what this code block does
-                if(T.class.isAssignableFrom(fieldType)) {
+                if(T.class.isAssignableFrom(fieldType) || L.class.isAssignableFrom(fieldType)) {
                     converted = mapper.readValue(defaultAnnotationValue, Object.class);
                     value = converted;
                 } else if (Enum.class.isAssignableFrom(fieldType)) {

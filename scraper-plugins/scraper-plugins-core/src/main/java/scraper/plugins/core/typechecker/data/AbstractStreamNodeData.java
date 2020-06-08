@@ -25,7 +25,7 @@ public final class AbstractStreamNodeData {
         if(!collect) return; // types do not change
 
         getDefaultDataFlowOutput(node).forEach((fieldName, output) ->
-                env.env.add(output.getLocation(), TemplateUtil.listOf(output))
+                env.env.add(output.getLocation(), TemplateUtil.listOf(output.get()).get())
         );
     }
 }

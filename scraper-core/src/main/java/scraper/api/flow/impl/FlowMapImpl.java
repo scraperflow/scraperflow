@@ -11,6 +11,7 @@ import scraper.api.template.Primitive;
 import scraper.api.template.T;
 import scraper.core.IdentityEvaluator;
 
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -143,19 +144,14 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     @NotNull @Override
     public <A> A eval(@NotNull T<A> template) {
-        if(template instanceof L) {
-            String location = ((L<A>) template).getLocation().eval(this);
-            return getWithType(location, template).get();
-        } else {
-            if(template.getTerm() == null)
-                throw new TemplateException("Template was not set but not expected, " +
-                        "wrong node implementation");
-            A evaluated = template.getTerm().eval(this);
-            if(evaluated == null)
-                throw new TemplateException("Template was evaluated to null but not expected, " +
-                        "either wrong node implementation/usage or type safety violated");
-            return evaluated;
-        }
+        if(template.getTerm() == null)
+            throw new TemplateException("Template was not set but not expected, " +
+                    "wrong node implementation");
+        A evaluated = template.getTerm().eval(this);
+        if(evaluated == null)
+            throw new TemplateException("Template was evaluated to null but not expected, " +
+                    "either wrong node implementation/usage or type safety violated");
+        return evaluated;
     }
 
     @NotNull
@@ -172,14 +168,9 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     @NotNull @Override
     public <A> Optional<A> evalMaybe(@NotNull T<A> template) {
-        if(template instanceof L) {
-            String location = ((L<A>) template).getLocation().eval(this);
-            return getWithType(location, template);
-        } else {
-            if(template.getTerm() == null) return Optional.empty();
-            A eval = template.getTerm().eval(this);
-            return Optional.ofNullable(eval);
-        }
+        if(template.getTerm() == null) return Optional.empty();
+        A eval = template.getTerm().eval(this);
+        return Optional.ofNullable(eval);
     }
 
     @NotNull
@@ -191,19 +182,14 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     @NotNull @Override
     public <A> A evalIdentity(@NotNull T<A> t) {
-        if(t instanceof L) {
-            String location = ((L<A>) t).getLocation().eval(new IdentityFlowMap());
-            return getWithType(location, t).get();
-        } else {
-            if(t.getTerm() == null)
-                throw new TemplateException("Template was set to null but not expected, " +
-                        "wrong node implementation");
-            A eval = t.getTerm().eval(new IdentityFlowMap());
-            if(eval == null)
-                throw new TemplateException("Template was evaluated to null but not expected, " +
-                        "either wrong node implementation/usage or type safety violated");
-            return eval;
-        }
+        if(t.getTerm() == null)
+            throw new TemplateException("Template was set to null but not expected, " +
+                    "wrong node implementation");
+        A eval = t.getTerm().eval(new IdentityFlowMap());
+        if(eval == null)
+            throw new TemplateException("Template was evaluated to null but not expected, " +
+                    "either wrong node implementation/usage or type safety violated");
+        return eval;
     }
 
     @NotNull @Override
@@ -326,7 +312,7 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     @NotNull
     @Override
-    public <K> Optional<K> getWithType(@NotNull String targetKey, @NotNull T<K> targetType) {
+    public <K> Optional<K> getWithType(@NotNull String targetKey, @NotNull Type targetType) {
         Object targetObject = privateMap.get(targetKey);
         if(targetObject == null) return Optional.empty();
 
@@ -353,7 +339,7 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
 
         try {
-            K converted = (K) convert(targetObject, TypeToken.of(targetType.get()).getRawType());
+            K converted = (K) convert(targetObject, TypeToken.of(targetType).getRawType());
             Optional<K> castObject = Optional.of((K) converted);
             return castObject;
         }
@@ -363,8 +349,8 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
         }
     }
 
-    public static Map<String, T<?>> checkGenericTypeAndCapture(Map<String, T<?>> captures, T<?> known, T<?> target) {
-        return new GenericTypeMatcher() {}.visitAndReturnCaptures(captures, known.get(), target.get());
+    public static Map<String, T<?>> checkGenericTypeAndCapture(Map<String, T<?>> captures, Type known, T<?> target) {
+        return new GenericTypeMatcher() {}.visitAndReturnCaptures(captures, known, target.get());
     }
 
     public static Map<String, T<?>> checkGenericTypeAndCapture(T<?> known, T<?> target) {

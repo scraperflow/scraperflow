@@ -15,6 +15,7 @@ import scraper.plugins.core.flowgraph.api.Version;
 import scraper.plugins.core.typechecker.TypeChecker;
 import scraper.util.NodeUtil;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,7 +60,7 @@ public final class ForkJoinNodeData {
                         };
                         fromFork.setTerm(parseTemplate(e.getKey(), fromFork));
 
-                        T<?> fromForkToken = newChecker.env.get(fromFork.getTerm());
+                        Type fromForkToken = newChecker.env.get(fromFork.getTerm());
                         if (fromForkToken == null)
                             throw new TemplateException("Fork join target does not produce key at " + e.getKey());
 

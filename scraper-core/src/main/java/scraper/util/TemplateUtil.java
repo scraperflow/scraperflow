@@ -19,6 +19,7 @@ import scraper.core.template.TemplateExpression;
 import scraper.core.template.TemplateList;
 import scraper.core.template.TemplateMap;
 
+import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -101,6 +102,10 @@ public final class TemplateUtil {
 
     public static <K> TypeToken<List<K>> listOf(TypeToken<K> elementType) {
         return new TypeToken<List<K>>() {}.where(new TypeParameter<>() {}, elementType);
+    }
+
+    public static <K> T<List<K>> listOf(Type t) {
+        return new T<>(listOf(TypeToken.of(t)).getType()){};
     }
 
     public static <K> T<List<K>> listOf(T<K> elementType) {

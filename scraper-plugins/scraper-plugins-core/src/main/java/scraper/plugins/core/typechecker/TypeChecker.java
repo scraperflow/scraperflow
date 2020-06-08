@@ -42,7 +42,7 @@ public class TypeChecker extends DefaultVisitor<Map<String, T<?>>> {
         if(simpleString.getTerm() != null) simpleString.getTerm().accept(this);
         else {
             // This is a corner case for optional template evaluation, carry the type variables on
-            Map<String, T<?>> captures = FlowMapImpl.checkGenericTypeAndCapture(this.captures, simpleString, simpleString);
+            Map<String, T<?>> captures = FlowMapImpl.checkGenericTypeAndCapture(this.captures, simpleString.get(), simpleString);
             this.captures.putAll(captures);
         }
     }
@@ -55,7 +55,7 @@ public class TypeChecker extends DefaultVisitor<Map<String, T<?>>> {
 
         // capture type variables
         T<?> known = FlowMapImpl.inferTypeToken(evalObj);
-        Map<String, T<?>> captures = FlowMapImpl.checkGenericTypeAndCapture(this.captures, known, primitive.getToken());
+        Map<String, T<?>> captures = FlowMapImpl.checkGenericTypeAndCapture(this.captures, known.get(), primitive.getToken());
         if(!captures.isEmpty()) log.debug("Capturing {}", captures);
         this.captures.putAll(captures);
 
@@ -83,7 +83,7 @@ public class TypeChecker extends DefaultVisitor<Map<String, T<?>>> {
                 this.captures.putAll(captures);
             } catch (SpecializeException e) {
                 log.info("Specializing {} -> {}", known, mapKey.getToken());
-                env.add(keyTemplate, mapKey.getToken());
+                env.add(keyTemplate, mapKey.getToken().get());
             }
 
 
@@ -95,7 +95,7 @@ public class TypeChecker extends DefaultVisitor<Map<String, T<?>>> {
     @Override public Map<String, T<?>> visitListTerm(ListTerm<?> list) {
         if(list.isTypeVariable()) {
             if(list.getTerms().isEmpty()) {
-                Map<String, T<?>> captures = FlowMapImpl.checkGenericTypeAndCapture(this.captures, list.getToken(), list.getToken());
+                Map<String, T<?>> captures = FlowMapImpl.checkGenericTypeAndCapture(this.captures, list.getToken().get(), list.getToken());
                 Map<String, T<?>> toListTransform = captures
                         .entrySet().stream()
                         .map(e -> entry(e.getKey(), TemplateUtil.listOf(e.getValue())) )
@@ -137,7 +137,7 @@ public class TypeChecker extends DefaultVisitor<Map<String, T<?>>> {
     @Override public Map<String, T<?>> visitMapTerm(MapTerm<?> mapTerm) {
         if(mapTerm.isTypeVariable()) {
             if(mapTerm.getTerms().isEmpty()){
-                Map<String, T<?>> captures = FlowMapImpl.checkGenericTypeAndCapture(this.captures, mapTerm.getToken(), mapTerm.getToken());
+                Map<String, T<?>> captures = FlowMapImpl.checkGenericTypeAndCapture(this.captures, mapTerm.getToken().get(), mapTerm.getToken());
                 Map<String, T<?>> toMapTransform = captures
                         .entrySet().stream()
                         .map(e -> entry(e.getKey(), TemplateUtil.mapOf(new T<String>(){}, e.getValue())) )
@@ -261,7 +261,7 @@ public class TypeChecker extends DefaultVisitor<Map<String, T<?>>> {
 
                 {
                     log.debug("Adding location data {} :: {}", output.getLocation(), output);
-                    env.add(output.getLocation(), output);
+                    env.add(output.getLocation(), output.get());
                 }
             } catch (TemplateException e){
                 log.error("{} type error for field '{}': {}", n, fieldName, e.getMessage());
@@ -359,6 +359,6 @@ public class TypeChecker extends DefaultVisitor<Map<String, T<?>>> {
 
     public void add(Term<?> known) {
         Type tt = new ReplaceCapturesOrCrashVisitor(captures).visit(known.getToken().get());
-        env.add(known, new T<>(tt){});
+        env.add(known, tt);
     }
 }

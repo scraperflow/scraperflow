@@ -6,6 +6,7 @@ import scraper.api.flow.FlowMap;
 import scraper.api.template.L;
 import scraper.api.template.T;
 
+import java.lang.reflect.Type;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -19,7 +20,7 @@ public class IdentityFlowMap implements FlowMap {
 
     @NotNull
     @Override
-    public <K> Optional<K> getWithType(@NotNull String targetKey, @NotNull T<K> targetType) {
+    public <K> Optional<K> getWithType(@NotNull String targetKey, @NotNull Type targetType) {
         return Optional.empty();
     }
 

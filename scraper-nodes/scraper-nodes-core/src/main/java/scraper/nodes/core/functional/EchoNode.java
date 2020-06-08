@@ -22,7 +22,7 @@ import java.util.Optional;
  * value: "{id}"
  * </pre>
  */
-@NodePlugin("2.0.0")
+@NodePlugin("2.0.1")
 public class EchoNode <A> implements FunctionalNode {
 
     /** Element to output */
@@ -31,7 +31,7 @@ public class EchoNode <A> implements FunctionalNode {
 
     /** Location of output */
     @FlowKey(defaultValue = "\"output\"")
-    private final L<A> put = new L<>(value){};
+    private final L<A> put = new L<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {

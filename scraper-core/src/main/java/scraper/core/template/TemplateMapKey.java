@@ -26,7 +26,7 @@ public class TemplateMapKey<K> extends TemplateExpression<K> implements FlowKeyL
     public K eval(@NotNull final FlowMap o) {
         try{
             String targetKey = keyLookup.eval(o);
-            Optional<K> targetValue = o.getWithType(targetKey, targetType);
+            Optional<K> targetValue = o.getWithType(targetKey, targetType.get());
 
             if(targetValue.isEmpty())
                 throw new IllegalStateException("FlowMap has no element at key " + targetKey);

@@ -496,7 +496,7 @@ public class TypeCheckerTest {
         check.add(t.getTerm());
         Assert.assertEquals(
                 "java.lang.String",
-                check.env.get(t.getTerm()).get().getTypeName()
+                check.env.get(t.getTerm()).getTypeName()
         );
 
     }

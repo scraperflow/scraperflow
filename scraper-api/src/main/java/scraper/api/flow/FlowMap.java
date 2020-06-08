@@ -7,6 +7,7 @@ import scraper.api.node.container.NodeContainer;
 import scraper.api.template.L;
 import scraper.api.template.T;
 
+import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -29,7 +30,7 @@ public interface FlowMap extends IdentityTemplateEvaluator {
     /** @see Map#get(Object) */
     @NotNull Optional<? super Object> get(@NotNull String key);
 
-    @NotNull <K> Optional<K> getWithType(@NotNull String targetKey, @NotNull T<K> targetType);
+    @NotNull <K> Optional<K> getWithType(@NotNull String targetKey, @NotNull Type targetType);
 
     /** @see Map#size() */
     int size();

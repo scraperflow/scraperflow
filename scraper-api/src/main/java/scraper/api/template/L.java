@@ -4,24 +4,20 @@ import scraper.annotations.NotNull;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.function.Supplier;
 
 /**
  * Token class which saves the type with generics at runtime.
  * The type specifies the output type.
  */
-public abstract class L<TYPE> extends T<TYPE> {
+public abstract class L<TYPE> implements Supplier<Type> {
 	private Term<String> termLocation;
-	private T<?> ref;
+	private final Type type;
 
-	public L() { super(); }
-	public L(Type t) { super(t); }
-	public L(T<?> ref) {
-		super();
-		this.ref = ref;
-	}
+	public L() { type = resolveType(); }
+	public L(Type t) { this.type = t; }
 
-	@Override
-	protected Type resolveType() {
+	private Type resolveType() {
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		final Class<L<TYPE>> superclass = (Class) L.class;
 		@SuppressWarnings("unchecked")
@@ -41,4 +37,5 @@ public abstract class L<TYPE> extends T<TYPE> {
 
 	public void setLocation(Term<String> location) { termLocation = location; }
 	public @NotNull Term<String> getLocation(){ return termLocation; }
+	@Override @NotNull public Type get() { return type; }
 }

@@ -18,7 +18,7 @@ import static scraper.api.node.container.NodeLogLevel.INFO;
  * Ensures that a key is set, either pre-set or by user input.
  * User input prefers console, otherwise pops up a graphical user prompt.
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 @Io
 public final class UserInputNode implements FunctionalNode {
 
@@ -42,12 +42,12 @@ public final class UserInputNode implements FunctionalNode {
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) {
         if (noPromptIfExists) {
             // return if output is present
-            String loc = o.eval(key);
+            String loc = o.evalLocation(key);
             if(o.get(loc).isPresent()) {
                 if(!hidden) {
-                    n.log(INFO, "{}: {}", o.eval(key), o.get(loc).get());
+                    n.log(INFO, "{}: {}", o.evalLocation(key), o.get(loc).get());
                 } else {
-                    n.log(INFO, "{} is present", o.eval(key));
+                    n.log(INFO, "{} is present", o.evalLocation(key));
                 }
                 return;
             }

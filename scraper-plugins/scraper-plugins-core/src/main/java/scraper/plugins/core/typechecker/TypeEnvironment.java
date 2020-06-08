@@ -5,6 +5,7 @@ import scraper.annotations.NotNull;
 import scraper.api.template.T;
 import scraper.api.template.Term;
 
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class TypeEnvironment {
@@ -13,7 +14,7 @@ public class TypeEnvironment {
 
     Map<String, T<?>> env = new HashMap<>();
 
-    Map<Term<?>, T<?>> templateToKnownTargets = new HashMap<>();
+    Map<Term<?>, Type> templateToKnownTargets = new HashMap<>();
 
     public TypeEnvironment() {}
     public TypeEnvironment(TypeEnvironment typeEnvironment) {
@@ -21,7 +22,7 @@ public class TypeEnvironment {
         this.templateToKnownTargets = new HashMap<>(typeEnvironment.templateToKnownTargets);
     }
 
-    public T<?> get(Term<?> key) {
+    public Type get(Term<?> key) {
         return templateToKnownTargets.get(key);
     }
 
@@ -29,8 +30,8 @@ public class TypeEnvironment {
         return new TypeEnvironment(this);
     }
 
-    public void add(@NotNull Term<?> term, @NotNull T<?> typeToken) {
-        log.info("=> {} :: {}", term, typeToken.get());
+    public void add(@NotNull Term<?> term, @NotNull Type typeToken) {
+        log.info("=> {} :: {}", term, typeToken);
         templateToKnownTargets.put(term, typeToken);
     }
 }
