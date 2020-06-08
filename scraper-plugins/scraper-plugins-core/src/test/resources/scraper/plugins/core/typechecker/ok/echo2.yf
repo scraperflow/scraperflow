@@ -1,0 +1,6 @@
+---
+name: complex
+graphs:
+  start:
+    - type: EchoNode
+      log: "no op"

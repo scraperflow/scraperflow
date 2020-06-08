@@ -1,0 +1,9 @@
+---
+name: complex
+graphs:
+  start:
+    - type: EchoNode
+      put: obj
+      value:
+        str: "I'm a string"
+        list: ["I'm a list"]

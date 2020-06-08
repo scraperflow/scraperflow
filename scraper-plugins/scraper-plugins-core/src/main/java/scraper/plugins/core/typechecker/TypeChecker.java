@@ -129,6 +129,7 @@ public class TypeChecker extends DefaultVisitor<Map<String, T<?>>> {
                 // capture after list has been processed
                 this.captures.putAll(allElements);
                 if(!allElements.isEmpty()) log.debug("Capturing {}", allElements);
+                return allElements;
             }
         } else {
             list.getTerms().forEach(r -> r.accept(this));

@@ -30,7 +30,7 @@ public class EchoNode <A> implements FunctionalNode {
     private final T<A> value = new T<>(){};
 
     /** Location of output */
-    @FlowKey(defaultValue = "\"output\"")
+    @FlowKey(defaultValue = "\"_\"")
     private final L<A> put = new L<>(){};
 
     @Override

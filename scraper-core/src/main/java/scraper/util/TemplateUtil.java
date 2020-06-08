@@ -154,6 +154,9 @@ public final class TemplateUtil {
             resultList.add(parseTemplate(o, new T<>(elementType.getType()){}));
         }
 
+        System.out.println();
+
+
         return new TemplateList(resultList, listType, fromTypeVariable);
     }
 }

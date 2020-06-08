@@ -20,16 +20,16 @@ import java.util.Objects;
 
 public class TypeCheckerFlowTest {
 
-//    @Test
-//    public void singleTest() throws Exception {
-//        URL resource = TypeCheckerFlowTest.class.getResource("ok/mapjoin.yf");
-//        File file = new File(resource.toURI());
-//        TypeChecker t = new TypeChecker();
-//        ScrapeInstance spec = read(file);
-//        ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(spec, true);
-//        GraphVisualizer.visualize(spec, "test", true);
-//        t.typeTaskflow(spec, cfg);
-//    }
+    @Test
+    public void singleTest() throws Exception {
+        URL resource = TypeCheckerFlowTest.class.getResource("ok/complexobject.yf");
+        File file = new File(resource.toURI());
+        TypeChecker t = new TypeChecker();
+        ScrapeInstance spec = read(file);
+        ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(spec, true);
+        GraphVisualizer.visualize(spec, "test", true);
+        t.typeTaskflow(spec, cfg);
+    }
 
     @Test
     public void okTest() throws Exception {
