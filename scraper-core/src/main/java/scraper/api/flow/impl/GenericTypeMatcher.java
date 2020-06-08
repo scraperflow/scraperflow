@@ -160,7 +160,14 @@ public abstract class GenericTypeMatcher {
         } else if(target instanceof TypeVariable) {
             Type knownCapture = capturedTypes.get(((TypeVariable) target).getName());
             if(knownCapture != null && !knownCapture.equals(target)) {
-                throw new TemplateException("Types do not match: " + knownCapture + " != " + target);
+                if(target instanceof TypeVariable) {
+                    log.debug("Capturing {} -> {}", target, t);
+                    capturedTypes.put(target.getTypeName(), t);
+
+                    return false;
+                } else {
+                    throw new TemplateException("Types do not match: " + knownCapture + " != " + target);
+                }
             }
 
             capturedTypes.put(((TypeVariable<?>) target).getName(), t);

@@ -60,7 +60,9 @@ public final class TemplateUtil {
             // raw type
             if(templ.getRawType().isAssignableFrom(term.getClass()) && !String.class.isAssignableFrom(term.getClass())) {
                 // same types, return actual object
-                return new TemplateConstant<>((K) term, targetType);
+                TemplateConstant<K> constant = new TemplateConstant<>((K) term, targetType);
+//                constant.eval();
+                return constant;
             } else if (String.class.isAssignableFrom(term.getClass())) {
                 // string template found
                 return parseTemplate(((String) term), targetType);

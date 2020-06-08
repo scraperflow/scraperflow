@@ -45,7 +45,7 @@ public class TemplateConstant<K> extends TemplateExpression<K> implements Primit
             K result = (K) convert(constant, TypeToken.of(targetType.get()).getRawType());
             return result;
         } catch (ValidationException e) {
-            throw new TemplateException("Could not convert constant to " + targetType.get());
+            throw new TemplateException("Could not convert constant '"+constant+"' to " + targetType.get());
         }
 
     }

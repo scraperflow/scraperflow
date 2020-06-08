@@ -7,10 +7,12 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scraper.api.exceptions.TemplateException;
 import scraper.api.template.T;
 import scraper.api.template.Term;
 import scraper.core.template.*;
 
+import java.lang.reflect.TypeVariable;
 import java.util.List;
 import java.util.Map;
 
@@ -50,8 +52,11 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
 
         // template template
         if(ctx.children.size() == 2) {
-            if(!TypeToken.of(target.get()).isSupertypeOf(TypeToken.of(String.class)))
-                throw new RuntimeException("Mixed template target has to be supertype of java.lang.String");
+            if(
+                    !TypeToken.of(target.get()).isSupertypeOf(TypeToken.of(String.class))
+                    && !(target.get() instanceof TypeVariable)
+            )
+                throw new RuntimeException("Mixed template target has to be supertype of java.lang.String or a Type variable");
 
             TemplateMixed result = new TemplateMixed();
 
@@ -115,12 +120,20 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
 
     @Override
     public TemplateExpression<Y> visitArraylookup(TemplateParser.ArraylookupContext ctx) {
-        return visit(ctx.getChild(1));
+        try {
+            return visit(ctx.getChild(1));
+        } catch (Exception e){
+            throw new TemplateException(e, "Bad array lookup template: " + ctx.getText());
+        }
     }
 
     @Override
     public TemplateExpression<Y> visitMaplookup(TemplateParser.MaplookupContext ctx) {
-        return visit(ctx.getChild(1));
+        try {
+            return visit(ctx.getChild(1));
+        } catch (Exception e){
+            throw new TemplateException(e, "Bad map lookup template" + ctx.getText());
+        }
     }
 
     @Override
@@ -134,6 +147,7 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
                 ;
         // TODO check if Y is String else error
         TemplateConstant<Y> content = new TemplateConstant<>((Y) unescape, target);
+//        content.eval();
         return content;
     }
 

@@ -193,33 +193,33 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
     }
 
     private void testAddressTargets(List<Field> fields, Object node, NodeAddress origin) throws Exception {
-        try {
-            for (Field field : fields) {
+        for (Field field : fields) {
+            try {
                 field.setAccessible(true);
 
                 // if just an Address.class target raw value of field
-                if(field.getType() == Address.class) {
+                if (field.getType() == Address.class) {
                     Address address = (Address) field.get(node);
-                    if(address != null)
+                    if (address != null)
                         NodeUtil.getTarget(origin, address, this);
                 }
 
 
                 // descend into template to get all Address.class targets
-                if(field.getType() == T.class) {
+                if (field.getType() == T.class) {
                     T<?> t = (T<?>) field.get(node);
-                    if(t == null)
+                    if (t == null)
                         throw new ValidationException("Fix implementation, T<> " +
                                 "field was not created for " + node.getClass());
 
                     ScrapeInstance instance = this;
-                    if(t.getTerm() != null) {
-                        t.getTerm().accept(new DefaultVisitor<Void>(){
+                    if (t.getTerm() != null) {
+                        t.getTerm().accept(new DefaultVisitor<Void>() {
                             @Override
                             public Void visitPrimitive(@NotNull Primitive<?> primitive) {
                                 Object address = primitive.eval(new FlowMapImpl());
 
-                                if(address instanceof Address) {
+                                if (address instanceof Address) {
                                     Address add = (Address) address;
                                     NodeUtil.getTarget(origin, add, instance);
                                 }
@@ -228,10 +228,10 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
                         });
                     }
                 }
+            } catch (Exception e) {
+                log.error("{}:{} failed: {}", origin, field.getName(), e.getMessage());
+                throw e;
             }
-        } catch (Exception e) {
-            log.error("{}", e.getMessage());
-            throw e;
         }
     }
 

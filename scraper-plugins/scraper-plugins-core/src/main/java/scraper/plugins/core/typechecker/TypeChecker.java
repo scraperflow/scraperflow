@@ -84,6 +84,9 @@ public class TypeChecker extends DefaultVisitor<Map<String, T<?>>> {
             } catch (SpecializeException e) {
                 log.info("Specializing {} -> {}", known, mapKey.getToken());
                 env.add(keyTemplate, mapKey.getToken().get());
+            } catch (Exception e) {
+                log.error("Could not type key lookup {}: {}", mapKey.getKeyLookup(), e.getMessage());
+                throw e;
             }
 
 
