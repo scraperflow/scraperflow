@@ -9,7 +9,10 @@ subprojects.each {
 
     dependencies {
         // for core parser
-        testRuntime project(':scraper-plugins:scraper-plugins-core')
+        implementation project(':scraper-plugins:scraper-plugins-core')
+
+//        // for core type checker
+//        testImplementation project(':scraper-plugins:scraper-plugins-core')
     }
 }
 
