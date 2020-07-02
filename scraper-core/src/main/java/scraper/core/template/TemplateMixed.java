@@ -19,6 +19,8 @@ public class TemplateMixed extends TemplateExpression<String> implements Concate
     @Override public <X> X accept(@NotNull TVisitor<X> visitor) { return visitor.visitConcatenation(this); }
     private List<Term<String>> concatTemplatesOrStrings = new ArrayList<>();
 
+
+    @Override public int getTypevarindex() { throw new IllegalStateException(); }
     @NotNull
     @Override
     public List<Term<String>> getConcatenationTerms() {
@@ -26,6 +28,12 @@ public class TemplateMixed extends TemplateExpression<String> implements Concate
     }
 
     public TemplateMixed() { super(new T<>(String.class){}); }
+
+
+    @Override
+    public String getTypeString() {
+        return "String";
+    }
 
     public String eval(@NotNull final FlowMap o) {
         try{

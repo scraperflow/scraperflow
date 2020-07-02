@@ -16,10 +16,18 @@ import java.util.stream.Collectors;
 public class TemplateMap<K> implements MapTerm<K> {
 
 
+    @Override public int getTypevarindex() { throw new IllegalStateException(); }
+
     @Override public <X> X accept(@NotNull TVisitor<X> visitor) { return visitor.visitMapTerm(this); }
 
     private final Map<String, Term<K>> termMap;
     private final boolean fromTypeVariable;
+
+    @Override
+    public T<K> getElementType() {
+        return elementType;
+    }
+
     private T<K> elementType;
     private T<Map<String, K>> mapType;
 
@@ -28,16 +36,30 @@ public class TemplateMap<K> implements MapTerm<K> {
         return fromTypeVariable;
     }
 
+    @Override
+    public Term<Map<String, K>> withTypeVar(String suffix) {
+        return this;
+    }
+
     @NotNull
     @Override
     public Map<String, Term<K>> getTerms(){
         return termMap;
     }
 
-    public TemplateMap(Map<String, Term<K>> termMap, T<K> targetType, T<Map<String, K>> mapType, boolean fromTypeVariable) {
+    @Override
+    public String getTypeString() {
+//        if(fromTypeVariable) {
+//            return "Map<String, "+elementType.getTypeString()+">";
+//        } else {
+        return mapType.get().getTypeName();
+//        }
+    }
+
+    public TemplateMap(Map<String, Term<K>> termMap, T<K> elementType, T<Map<String, K>> targetType, boolean fromTypeVariable) {
         this.termMap = termMap;
-        this.elementType = targetType;
-        this.mapType = mapType;
+        this.elementType = elementType;
+        this.mapType = targetType;
         this.fromTypeVariable = fromTypeVariable;
     }
 

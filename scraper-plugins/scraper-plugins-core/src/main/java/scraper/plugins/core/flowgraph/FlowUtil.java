@@ -31,6 +31,8 @@ public class FlowUtil {
 
     @NotNull
     public static ControlFlowGraph generateControlFlowGraph(ScrapeInstance instance, boolean realControlFlow) {
+        visited.clear();
+
         ControlFlowGraphImpl cfg = new ControlFlowGraphImpl();
 
         Map<NodeAddress, NodeContainer<? extends Node>> nodes = new HashMap<>();
@@ -46,11 +48,11 @@ public class FlowUtil {
         nodes.forEach((adr, node) -> handleNode(cfg, instance, node));
 
 
-
-        if (realControlFlow && instance.getEntry().isPresent()) {
-            Address addr = instance.getEntry().get().getAddress();
-            propagateRealControlFlow(cfg, addr, instance);
-        }
+//
+//        if (realControlFlow && instance.getEntry().isPresent()) {
+//            Address addr = instance.getEntry().get().getAddress();
+//            propagateRealControlFlow(cfg, addr, instance);
+//        }
 
         return cfg;
     }
@@ -58,9 +60,12 @@ public class FlowUtil {
     static Collection<Address> visited = new HashSet<>();
     private static void propagateRealControlFlow(ControlFlowGraphImpl cfg, Address addr, ScrapeInstance instance) {
         if(visited.contains(addr)) return;
+        visited.add(addr);
+
 
         ControlFlowNode n = cfg.getNodes().get(addr);
         String type = (n == null ? "none" : n.getType());
+
         // assume only direct type handles control flow changes
         String controlClass = "scraper.plugins.core.flowgraph.control."+type+"Control";
         try {
@@ -74,8 +79,7 @@ public class FlowUtil {
             throw new RuntimeException(e);
         }
 
-        visited.add(addr);
-        cfg.getOutgoingEdges(addr).forEach(o -> propagateRealControlFlow(cfg, o.getToAddress(), instance));
+        cfg.getOutgoingEdges(addr).forEach(o -> propagateRealControlFlow(cfg, o.getToAddress(), instance) );
     }
 
     private static void handleNode(ControlFlowGraphImpl cfg, ScrapeInstance instance, NodeContainer<? extends Node> node) {

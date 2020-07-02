@@ -14,6 +14,7 @@ import scraper.api.template.T;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 
 import static scraper.api.node.container.NodeLogLevel.ERROR;
 
@@ -42,7 +43,7 @@ public final class WriteLineToFileNode implements FunctionalNode {
         String output = o.eval(this.output);
 
         // TODO use file service instead
-        try (PrintWriter fos = new PrintWriter(new FileOutputStream(output, !overwrite))){
+        try (PrintWriter fos = new PrintWriter(new FileOutputStream(output, !overwrite), true, StandardCharsets.ISO_8859_1)){
             if(!content.isEmpty()) fos.println(content);
         } catch (IOException e) {
             n.log(ERROR,"IO read error: {}", e.getMessage());

@@ -19,6 +19,18 @@ public class TemplateList<K> implements ListTerm<K> {
     private final List<Term<K>> termList;
     private T<List<K>> listType;
     private final boolean fromTypeVariable;
+    private final T<K> elementType;
+    private final int typevarindex;
+
+    @Override
+    public int getTypevarindex() {
+        return typevarindex;
+    }
+
+    @Override
+    public T<K> getElementType() {
+        return elementType;
+    }
 
     @Override @NotNull
     public List<Term<K>> getTerms(){ return termList; }
@@ -28,10 +40,17 @@ public class TemplateList<K> implements ListTerm<K> {
         return fromTypeVariable;
     }
 
-    public TemplateList(@NotNull List<Term<K>> termList, @NotNull T<List<K>> listType, boolean fromTypeVariable) {
+    @Override
+    public Term<List<K>> withTypeVar(String suffix) {
+        return this;
+    }
+
+    public TemplateList(@NotNull List<Term<K>> termList, @NotNull T<List<K>> listType, T<K> elementType, boolean fromTypeVariable) {
         this.termList = termList;
         this.listType = listType;
+        this.elementType = elementType;
         this.fromTypeVariable = fromTypeVariable;
+        this.typevarindex = -1;
     }
 
     public @NotNull List<K> eval(@NotNull final FlowMap o) {
@@ -55,6 +74,11 @@ public class TemplateList<K> implements ListTerm<K> {
     @Override
     public void setToken(T<List<K>> t) {
         listType = t;
+    }
+
+    @Override
+    public String getTypeString() {
+        return listType.get().getTypeName();
     }
 
     @Override

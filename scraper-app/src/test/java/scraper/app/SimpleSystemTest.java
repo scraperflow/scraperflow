@@ -118,13 +118,18 @@ public class SimpleSystemTest {
         Scraper.main(new String[]{ff.getAbsolutePath()});
     }
 
-    // runtime type check with generics
+    // static type check with generics
     @Test
     public void genericsTestValid() throws Exception {
         URL f = Scraper.class.getResource("runtime.yf");
         File ff = new File(f.toURI());
         Assert.assertTrue(ff.exists());
-        Scraper.main(new String[]{ff.getAbsolutePath()});
+        try {
+            Scraper.main(new String[]{ff.getAbsolutePath()});
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @Test(expected = Exception.class)

@@ -5,6 +5,7 @@ subprojects.each {
         dependencies {
             // for runtime
             runtimeOnly project(":scraper-plugins:${plugin}")
+            testRuntimeOnly project(":scraper-plugins:${plugin}")
         }
     }
 }

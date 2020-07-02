@@ -78,7 +78,7 @@ public final class HttpRequestNode implements Node {
     @FlowKey(defaultValue = "\"https:\"")
     private String defaultSchema;
     /** Response location if successful */
-    @FlowKey(defaultValue = "\"response\"")
+    @FlowKey(defaultValue = "\"_\"")
     private final L<String> put = new L<>(){};
     /** Type of request: GET, POST, DELETE, PUT */
     @FlowKey(defaultValue = "\"GET\"")

@@ -1,0 +1,9 @@
+---
+name: socket
+graphs:
+  start:
+    - type: SocketNode
+      expected: "{initial}"
+      # initial can never be written
+      hostMap:
+

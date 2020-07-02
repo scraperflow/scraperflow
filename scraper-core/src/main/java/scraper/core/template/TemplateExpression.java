@@ -8,6 +8,7 @@ import scraper.api.template.Term;
 public abstract class TemplateExpression<K> implements Term<K> {
 
     @NotNull T<K> targetType;
+    protected String typevarsuffix;
 
     TemplateExpression(@NotNull T<K> targetType) { this.targetType = targetType; }
 
@@ -18,4 +19,10 @@ public abstract class TemplateExpression<K> implements Term<K> {
     public void setToken(T<K> token) { targetType = token; }
 
     public abstract K eval(@NotNull FlowMap o);
+
+    @Override
+    public Term<K> withTypeVar(String typevarsuffix) {
+        this.typevarsuffix = typevarsuffix;
+        return this;
+    }
 }

@@ -11,6 +11,7 @@ import scraper.api.template.L;
 import scraper.api.template.T;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Sets a flag depending if the object is contained in the collection
@@ -20,7 +21,7 @@ public final class ContainedInCollectionNode <A> implements FunctionalNode {
 
     /** Collection to be checked if the object is contained */
     @FlowKey(defaultValue = "\"{collection}\"")
-    private final T<Collection<A>> collection = new T<>(){};
+    private final T<List<A>> collection = new T<>(){};
 
     /** This evaluated object is used for checking */
     @FlowKey(defaultValue = "\"{object}\"")
@@ -37,7 +38,7 @@ public final class ContainedInCollectionNode <A> implements FunctionalNode {
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         A             object     = o.eval(this.object);
-        Collection<A> collection = o.eval(this.collection);
+        List<A> collection = o.eval(this.collection);
 
         // cont negate output
         // 0    0      0

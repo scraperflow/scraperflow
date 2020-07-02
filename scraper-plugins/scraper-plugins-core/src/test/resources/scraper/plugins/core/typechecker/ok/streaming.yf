@@ -5,6 +5,7 @@ graphs:
     - type: RegexNode
       content: "x"
       regex: "x"
+      output: output
       groups:
 
     - type: MapNode

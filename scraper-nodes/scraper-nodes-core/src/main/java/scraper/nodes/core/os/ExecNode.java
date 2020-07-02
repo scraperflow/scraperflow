@@ -10,12 +10,10 @@ import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.node.type.Node;
+import scraper.api.template.L;
 import scraper.api.template.T;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +37,7 @@ import static scraper.api.node.container.NodeLogLevel.ERROR;
  *   exec: ["ls", "-la", "{path}"]
  * </pre>
  */
-@NodePlugin("0.3.0")
+@NodePlugin("0.4.0")
 @Io
 public final class ExecNode implements FunctionalNode {
 
@@ -56,12 +54,18 @@ public final class ExecNode implements FunctionalNode {
     private Boolean failOnException;
 
     /** Redirects process output to this string */
-    @FlowKey
-    private String put;
+    @FlowKey(defaultValue = "\"_\"")
+    private final L<String> put = new L<>(){};
 
     /** Redirects process error output to this string */
-    @FlowKey
-    private String putErr;
+    @FlowKey(defaultValue = "\"_\"")
+    private final L<String> putErr = new L<>(){};
+
+
+    /** Byte buffer size */
+    @FlowKey(defaultValue = "1000")
+    private Integer ByteBuffer;
+
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) throws NodeException {
@@ -78,13 +82,15 @@ public final class ExecNode implements FunctionalNode {
 
             ProcessBuilder pb = new ProcessBuilder(exec);
             Process b = pb.start();
-            b.waitFor();
-            if(b.exitValue() != 0) n.log(ERROR,"{} finished with non-zero exit code: {}", exec, b.exitValue());
 
             String stdOut = readStream(b.getInputStream());
             String stdErr = readStream(b.getErrorStream());
-            if(put    != null) o.output(put   , stdOut);
-            if(putErr != null) o.output(putErr, stdErr);
+
+            b.waitFor();
+            if(b.exitValue() != 0) n.log(ERROR,"{} finished with non-zero exit code: {}", exec, b.exitValue());
+
+            o.output(put   , stdOut);
+            o.output(putErr, stdErr);
 
             b.destroy();
             b.waitFor();
@@ -95,17 +101,23 @@ public final class ExecNode implements FunctionalNode {
     }
 
     private String readStream(InputStream inputStream) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        final InputStream in = new BufferedInputStream(inputStream);
+        final byte[] buf = new byte[ByteBuffer];
+
         StringBuilder builder = new StringBuilder();
-        String line;
-        while ( (line = reader.readLine()) != null) {
-            builder.append(line);
-            builder.append(System.getProperty("line.separator"));
+
+        int bytesRead = in.read(buf);
+        while(bytesRead != -1) {
+
+            for (int i = 0; i < bytesRead; i++) {
+                builder.append((char) buf[i]);
+            }
+
+            bytesRead = in.read(buf);
         }
-        String result = builder.toString();
 
-        reader.close();
+        in.close();
 
-        return result;
+        return builder.toString();
     }
 }

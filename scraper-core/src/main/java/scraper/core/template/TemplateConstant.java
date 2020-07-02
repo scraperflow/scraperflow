@@ -32,6 +32,13 @@ public class TemplateConstant<K> extends TemplateExpression<K> implements Primit
         return toString();
     }
 
+    @Override public int getTypevarindex() { throw new IllegalStateException(); }
+
+    @Override
+    public String getTypeString() {
+        return targetType.get().getTypeName();
+    }
+
     @Override
     public String toString() {
         return constant.toString();
@@ -48,6 +55,11 @@ public class TemplateConstant<K> extends TemplateExpression<K> implements Primit
             throw new TemplateException("Could not convert constant '"+constant+"' to " + targetType.get());
         }
 
+    }
+
+    @Override
+    public boolean isTypeVariable() {
+        return (getToken().get().getTypeName().length() == 1);
     }
 
     @Override

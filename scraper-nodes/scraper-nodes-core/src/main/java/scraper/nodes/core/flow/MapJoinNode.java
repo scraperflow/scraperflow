@@ -9,6 +9,7 @@ import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.Node;
+import scraper.api.template.L;
 import scraper.api.template.T;
 
 import java.util.ArrayList;
@@ -48,8 +49,8 @@ public final class MapJoinNode <A> implements Node {
     private Address mapTarget;
 
     /** At which key to put the element of the list into. */
-    @FlowKey(defaultValue = "\"element\"")
-    private String putElement;
+    @FlowKey(defaultValue = "\"_\"")
+    private final L<A> putElement = new L<>(){};
 
     /** Only distinct input elements */
     @FlowKey(defaultValue = "false")
@@ -65,7 +66,7 @@ public final class MapJoinNode <A> implements Node {
 
     @NotNull @Override
     public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
-        List<?> list = o.eval(this.list);
+        List<A> list = o.eval(this.list);
         if(distinct) list = new ArrayList<>(new HashSet<>(list));
 
         List<CompletableFuture<FlowMap>> forkedProcesses = new ArrayList<>();

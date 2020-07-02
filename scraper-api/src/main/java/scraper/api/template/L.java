@@ -38,4 +38,8 @@ public abstract class L<TYPE> implements Supplier<Type> {
 	public void setLocation(Term<String> location) { termLocation = location; }
 	public @NotNull Term<String> getLocation(){ return termLocation; }
 	@Override @NotNull public Type get() { return type; }
+
+	public T<?> getTarget() {
+		return new T<>(type){};
+	}
 }

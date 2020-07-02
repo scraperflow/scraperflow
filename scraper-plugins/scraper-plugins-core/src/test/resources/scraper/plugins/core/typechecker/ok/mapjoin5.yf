@@ -1,0 +1,26 @@
+---
+name: mapjoin
+graphs:
+  start:
+    - type: RegexNode
+      regex: "a"
+      content: "content"
+      groups: {}
+      output: details
+
+    - type: MapJoinNode
+      list: "{details}"
+      mapTarget: X
+      putElement: actdetail
+      keys:
+        enriched: final
+
+  X:
+    - type: EchoNode
+      put: enriched
+      value:
+        url: "mypage.com{{actdetail}@url}"
+        name: "{{actdetail}@name}"
+        id: "{{actdetail}@id}"
+
+

@@ -14,7 +14,7 @@ public class TypeEnvironment {
 
     Map<String, T<?>> env = new HashMap<>();
 
-    Map<Term<?>, Type> templateToKnownTargets = new HashMap<>();
+    Map<Term<?>, T<?>> templateToKnownTargets = new HashMap<>();
 
     public TypeEnvironment() {}
     public TypeEnvironment(TypeEnvironment typeEnvironment) {
@@ -22,7 +22,7 @@ public class TypeEnvironment {
         this.templateToKnownTargets = new HashMap<>(typeEnvironment.templateToKnownTargets);
     }
 
-    public Type get(Term<?> key) {
+    public T<?> get(Term<?> key) {
         return templateToKnownTargets.get(key);
     }
 
@@ -30,8 +30,13 @@ public class TypeEnvironment {
         return new TypeEnvironment(this);
     }
 
-    public void add(@NotNull Term<?> term, @NotNull Type typeToken) {
-        log.info("=> {} :: {}", term, typeToken);
+    public void add(@NotNull Term<?> term, @NotNull T<?> typeToken) {
+//        log.info("=> {} :: {}", term, typeToken.getTypeString());
         templateToKnownTargets.put(term, typeToken);
+    }
+
+    public void merge(TypeEnvironment newEnvironment) {
+        this.env.putAll(newEnvironment.env);
+        this.templateToKnownTargets.putAll(newEnvironment.templateToKnownTargets);
     }
 }

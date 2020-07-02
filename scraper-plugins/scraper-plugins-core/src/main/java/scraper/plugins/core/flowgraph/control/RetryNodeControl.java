@@ -27,10 +27,12 @@ public final class RetryNodeControl {
     public static List<ControlFlowEdge> getOutput(List<ControlFlowEdge> previous, NodeContainer<? extends Node> node, ScrapeInstance spec) throws Exception {
         NodeAddress mapTarget = NodeUtil.getTarget(node.getAddress(), (Address) FlowUtil.getField("retryTarget", node.getC()).get(), spec).getAddress();
 
-        return Stream.concat(
+        List<ControlFlowEdge> out = Stream.concat(
                 previous.stream(),
                 Stream.of(edge(node.getAddress(), mapTarget, "retry", false, false))
         ).collect(Collectors.toList());
+
+        return out;
     }
 
     @Version("0.1.0")

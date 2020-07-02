@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  *   flatten: ["{list1}", "{list2}"]
  * </pre>
  */
-@NodePlugin("0.4.0")
+@NodePlugin("0.4.1")
 public final class FlattenListNode <A> implements FunctionalNode {
 
     /** The list with list elements to flatten */
@@ -29,7 +29,7 @@ public final class FlattenListNode <A> implements FunctionalNode {
     private final T<List<List<A>>> flatten = new T<>(){};
 
     /** Where the flattened list is stored */
-    @FlowKey(defaultValue = "\"output\"")
+    @FlowKey(defaultValue = "\"_\"")
     private final L<List<A>> output = new L<>(){};
 
     @Override

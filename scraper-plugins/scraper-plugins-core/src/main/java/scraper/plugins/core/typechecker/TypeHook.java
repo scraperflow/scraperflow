@@ -8,6 +8,7 @@ import scraper.api.di.DIContainer;
 import scraper.api.plugin.Hook;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
+import scraper.api.template.T;
 import scraper.plugins.core.flowgraph.FlowUtil;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.utils.StringUtil;
@@ -36,7 +37,10 @@ public class TypeHook implements Hook {
 
                 log.info("Static type check for {}", def.getScrapeFile());
                 ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(job, false);
+
+
                 TypeChecker t = new TypeChecker();
+
                 t.typeTaskflow(job, cfg);
             }
         }

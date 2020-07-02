@@ -1,0 +1,22 @@
+---
+name: mapjoin
+graphs:
+  start:
+    - type: MapJoinNode
+      list: [{"key": "movie"}, {"key": "movie2"}]
+      mapTarget: X
+      putElement: movie
+      keys:
+        movieWithLargeImg: moviesListLargeImg
+
+    - type: EchoNode
+      log: "{moviesListLargeImg}"
+
+  X:
+    - type: JsonObjectNode
+      put: movieWithLargeImg
+      value:
+        complex: "mysimplestring"
+        type: ["my", "list"]
+
+

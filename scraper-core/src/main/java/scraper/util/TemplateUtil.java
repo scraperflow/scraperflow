@@ -8,49 +8,45 @@ import org.slf4j.Logger;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.exceptions.ValidationException;
-import scraper.api.template.ListTerm;
-import scraper.api.template.T;
-import scraper.api.template.Term;
+import scraper.api.template.*;
 import scraper.core.exp.TemplateExpressionVisitor;
 import scraper.core.exp.TemplateLexer;
 import scraper.core.exp.TemplateParser;
-import scraper.core.template.TemplateConstant;
-import scraper.core.template.TemplateExpression;
-import scraper.core.template.TemplateList;
-import scraper.core.template.TemplateMap;
+import scraper.core.template.*;
 
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public final class TemplateUtil {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(TemplateUtil.class);
 
+
     @SuppressWarnings({"unchecked", "rawtypes"}) // checked with types
     public static <K> Term<K> parseTemplate(@NotNull final Object term, @NotNull final T<K> targetType) throws ValidationException {
         TypeToken templ = TypeToken.of(targetType.get());
 
 
-        if(List.class.isAssignableFrom(term.getClass()) && (
+        if (List.class.isAssignableFrom(term.getClass()) && (
                 List.class.isAssignableFrom(templ.getRawType()) || templ.getRawType().equals(Object.class))) {
             if ((targetType.get() instanceof TypeVariable)) {
-                log.warn("Making type variable more precise: {} => {}", targetType.get(), "List<"+targetType.get().getTypeName()+">");
-                return (Term<K>) parseTemplateL((List) term, (T<List<?>>) targetType, true);
+                Term<K> tt = (Term<K>) parseTemplateL((List) term, (T<List<?>>) targetType, true);
+                log.warn("Making type variable more precise: {} => {}", tt.getTypeString(), "List<" + ((ListTerm) tt).getElementType().getTypeString() + ">");
+                return tt;
             } else {
                 return (Term<K>) parseTemplateL((List) term, (T<List<?>>) targetType, false);
             }
         } // JSON map
-        else if(Map.class.isAssignableFrom(term.getClass()) && (
+        else if (Map.class.isAssignableFrom(term.getClass()) && (
                 Map.class.isAssignableFrom(templ.getRawType()) || templ.getRawType().equals(Object.class) // descend into object
         )) {
             if ((targetType.get() instanceof TypeVariable)) {
-                log.warn("Making type variable more precise: {} => {}", targetType.get(), "Map<String, " + targetType.get().getTypeName() + ">");
-                return (Term<K>) parseTemplateM((Map<String, ?>) term, (T<Map<String, ?>>) targetType, true);
+                Term<K> tt = (Term<K>) parseTemplateM((Map<String, ?>) term, (T<Map<String, ?>>) targetType, true);
+                log.warn("Making type variable more precise: {} => {}", tt.getTypeString(), "Map<String, "+ ((MapTerm) tt).getElementType().getTypeString()+">");
+                return tt;
             } else {
                 return (Term<K>) parseTemplateM((Map<String, ?>) term, (T<Map<String, ?>>) targetType, false);
             }
@@ -58,7 +54,7 @@ public final class TemplateUtil {
         // primitives
         else {
             // raw type
-            if(templ.getRawType().isAssignableFrom(term.getClass()) && !String.class.isAssignableFrom(term.getClass())) {
+            if (templ.getRawType().isAssignableFrom(term.getClass()) && !String.class.isAssignableFrom(term.getClass())) {
                 // same types, return actual object
                 TemplateConstant<K> constant = new TemplateConstant<>((K) term, targetType);
 //                constant.eval();
@@ -67,7 +63,7 @@ public final class TemplateUtil {
                 // string template found
                 return parseTemplate(((String) term), targetType);
             } else {
-                throw new ValidationException("Argument type mismatch! Expected String or "+templ+", but found "+ term.getClass());
+                throw new ValidationException("Argument type mismatch! Expected String or " + templ + ", but found " + term.getClass());
             }
         }
     }
@@ -97,9 +93,12 @@ public final class TemplateUtil {
     }
 
     public static <K, V> TypeToken<Map<K, V>> mapOf(TypeToken<K> keyType, TypeToken<V> valueType) {
-        return new TypeToken<Map<K, V>>() {}
-                .where(new TypeParameter<>() {}, keyType)
-                .where(new TypeParameter<>() {}, valueType);
+        return new TypeToken<Map<K, V>>() {
+        }
+                .where(new TypeParameter<>() {
+                }, keyType)
+                .where(new TypeParameter<>() {
+                }, valueType);
     }
 
     public static <K> TypeToken<List<K>> listOf(TypeToken<K> elementType) {
@@ -107,17 +106,27 @@ public final class TemplateUtil {
     }
 
     public static <K> T<List<K>> listOf(Type t) {
-        return new T<>(listOf(TypeToken.of(t)).getType()){};
+        return new T<>(listOf(TypeToken.of(t)).getType()) {
+        };
     }
 
     public static <K> T<List<K>> listOf(T<K> elementType) {
         TypeToken<List<K>> list = listOf((TypeToken<K>) TypeToken.of(elementType.get()));
-        return new T<>(list.getType()){};
+        return new T<>(list.getType()) {};
+    }
+
+    public static <K> T<List<K>> listOfSuff(T<K> elementType) {
+        TypeToken<List<K>> list = listOf((TypeToken<K>) TypeToken.of(elementType.get()));
+        return new T<>(list.getType(), "ListOf") {};
     }
 
     public static <K, V> T<Map<K, V>> mapOf(T<K> keyType, T<V> elementType) {
-        TypeToken<Map<K, V>> list = mapOf((TypeToken<K>) TypeToken.of(keyType.get()),(TypeToken<V>) TypeToken.of(elementType.get()));
-        return new T<>(list.getType()){};
+        TypeToken<Map<K, V>> map = mapOf((TypeToken<K>) TypeToken.of(keyType.get()), (TypeToken<V>) TypeToken.of(elementType.get()));
+
+        T<Map<K, V>> token = new T<>(map.getType()) {};
+        if(elementType.get() instanceof TypeVariable)
+            token = new T<>(new TypeReplacer("MapOf"){}.visit(token.get())){};
+        return token;
     }
 
     // ==============
@@ -134,11 +143,17 @@ public final class TemplateUtil {
         Map<String, Term<?>> resultMap = new HashMap<>();
 
         for (String k : term.keySet()) {
-            resultMap.put(k, parseTemplate(term.get(k), new T<>(elementType.getType()) {}));
-
+            if(fromTypeVariable) {
+                resultMap.put(k, parseTemplate(term.get(k), new T<>(elementType.getType(), targetType.getSuffix()+"MapOf") {}));
+            } else {
+                resultMap.put(k, parseTemplate(term.get(k), new T<>(elementType.getType()) {}));
+            }
         }
 
-        return new TemplateMap(resultMap, new T<>(elementType.getType()){}, targetType, fromTypeVariable);
+        return new TemplateMap(resultMap,
+                new T<>(elementType.getType(), fromTypeVariable ? targetType.getSuffix() + "MapOf" : targetType.getSuffix()) {},
+                targetType,
+                fromTypeVariable);
     }
 
     @SuppressWarnings("unchecked") // checked
@@ -151,14 +166,17 @@ public final class TemplateUtil {
         List<Term<?>> resultList = new ArrayList<>();
 
         for (Object o : term) {
-            resultList.add(parseTemplate(o, new T<>(elementType.getType()){}));
+            if(fromTypeVariable) {
+                resultList.add(parseTemplate(o, new T<>(elementType.getType(), listType.getSuffix() + "ListOf") {}));
+            } else {
+                resultList.add(parseTemplate(o, new T<>(elementType.getType()) {}));
+            }
         }
 
-        System.out.println();
-
-
-        return new TemplateList(resultList, listType, fromTypeVariable);
+        return new TemplateList(resultList, listType, new T<>(elementType.getType(), fromTypeVariable ? listType.getSuffix() + "ListOf" : listType.getSuffix()){}, fromTypeVariable);
     }
+
+
 }
 
 class ThrowingErrorListener extends BaseErrorListener {

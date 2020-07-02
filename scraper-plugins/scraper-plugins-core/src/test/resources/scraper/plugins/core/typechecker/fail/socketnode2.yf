@@ -1,0 +1,31 @@
+---
+name: mapjoin
+graphs:
+  start:
+    - { type: EchoNode, put: initial, value: 42 }
+
+    - type: SocketNode
+      # this is initial :: String because its separate from the forwarding
+      expected: "{initial}"
+      # both request and request2 should provide initial :: String
+      hostMap:
+        request: request
+        request2: request2
+
+    # this has nothing to do with requests going off the socket node
+    # so {initial} :: Integer
+    - type: IntToStringNode
+      integer: "{initial}"
+      string: "_"
+
+  request:
+    - type: EchoNode
+      put: initial
+      value: "1"
+
+  request2:
+    - type: IntToStringNode
+      integer: "{initial}"
+      string: "initia"
+
+

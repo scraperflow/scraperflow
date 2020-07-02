@@ -15,7 +15,7 @@ public class FlattenListNodeTest extends FunctionalTest {
     @Functional(FlattenListNode.class)
     public Object[] emptyLists() {
         return new Object[]{
-                Map.of("flatten", List.of(List.of(), List.of())),
+                Map.of("output", "output","flatten", List.of(List.of(), List.of())),
                 Map.of(),
                 Map.of("output",List.of())
         };
@@ -24,7 +24,7 @@ public class FlattenListNodeTest extends FunctionalTest {
     @Functional(FlattenListNode.class)
     public Object[] singletonList() {
         return new Object[]{
-                Map.of("flatten", List.of(List.of(), List.of(50))),
+                Map.of("output", "output","flatten", List.of(List.of(), List.of(50))),
                 Map.of(),
                 Map.of("output",List.of(50))
         };
@@ -33,7 +33,7 @@ public class FlattenListNodeTest extends FunctionalTest {
     @Functional(FlattenListNode.class)
     public Object[] simpleLists() {
         return new Object[]{
-                Map.of("flatten", List.of(List.of("123120"), List.of("qweq"))),
+                Map.of("output", "output", "flatten", List.of(List.of("123120"), List.of("qweq"))),
                 Map.of(),
                 Map.of("output",List.of("123120","qweq"))
         };
@@ -42,7 +42,7 @@ public class FlattenListNodeTest extends FunctionalTest {
     @Functional(value = FlattenListNode.class, expectException = TemplateException.class)
     public Object[] badTypes() {
         return new Object[]{
-                Map.of("flatten", List.of(List.of("wontwork"), List.of(50))),
+                Map.of("output", "output","flatten", List.of(List.of("wontwork"), List.of(50))),
                 Map.of(),
                 Map.of()
         };

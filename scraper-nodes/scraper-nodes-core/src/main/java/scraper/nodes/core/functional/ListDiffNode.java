@@ -29,7 +29,7 @@ public final class ListDiffNode<K> implements FunctionalNode {
     private final T<List<K>> list = new T<>(){};
 
     /** Where the difference list is stored */
-    @FlowKey(defaultValue = "\"output\"")
+    @FlowKey(defaultValue = "\"_\"")
     private final L<List<K>> output = new L<>(){};
 
     @Override

@@ -199,4 +199,5 @@ public class TemplateTest {
         Assert.assertEquals("hello", eval);
         Assert.assertNotNull(simpleString.toString());
     }
+
 }

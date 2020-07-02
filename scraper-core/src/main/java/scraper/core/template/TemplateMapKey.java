@@ -13,14 +13,42 @@ import java.util.*;
 public class TemplateMapKey<K> extends TemplateExpression<K> implements FlowKeyLookup<K> {
     @Override public <X> X accept(@NotNull TVisitor<X> visitor) { return visitor.visitFlowKeyLookup(this); }
 
+
+    @Override public int getTypevarindex() { throw new IllegalStateException(); }
     @NotNull
     @Override
     public Term<String> getKeyLookup() { return keyLookup; }
+
+    private final boolean fromTypeVariable;
+
+    @Override
+    public boolean isTypeVariable() {
+        return fromTypeVariable;
+    }
+
     private Term<String> keyLookup;
 
-    public TemplateMapKey(@NotNull final TemplateExpression<String> keyLookup, @NotNull final T<K> targetType) {
+    private String typeSuffix = "";
+
+    @Override
+    public Term<K> withTypeVar(String suffix) {
+        System.out.println("WITH VAR SUFFIX " + suffix);
+
+//        this.targetType = new T<>(targetType.){};
+
+        return this;
+    }
+
+    public TemplateMapKey(@NotNull final TemplateExpression<String> keyLookup, @NotNull final T<K> targetType, String suffix, boolean fromTypeVariable) {
         super(targetType);
         this.keyLookup = keyLookup;
+        this.fromTypeVariable = fromTypeVariable;
+        this.typeSuffix = suffix;
+    }
+
+    @Override
+    public String getTypeString() {
+        return targetType.get().getTypeName();
     }
 
     public K eval(@NotNull final FlowMap o) {

@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  * output: fileinfo
  * </pre>
  */
-@NodePlugin("0.13.0")
+@NodePlugin("0.14.0")
 public final class RegexNode implements StreamNode {
 
     /** Regex as a (properly escaped JSON) Java String */
@@ -62,7 +62,7 @@ public final class RegexNode implements StreamNode {
     private final T<Map<String, String>> noMatchDefaultOutput = new T<>(){};
 
     /** Where the output list will be put. If there's already a list at that key, it will be replaced. */
-    @FlowKey(defaultValue = "\"output\"")
+    @FlowKey(defaultValue = "\"_\"")
     private final L<Map<String, String>> output = new L<>(){};
 
     /**

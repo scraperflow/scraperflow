@@ -1,0 +1,16 @@
+---
+name: mapjoin
+graphs:
+  start:
+    - type: MapJoinNode
+      list: [["A"], ["B"]]
+      mapTarget: X
+      putElement: "element"
+      keys: {}
+
+  X:
+    - type: StringContainsNode
+      regex: ""
+      content: "{element}"
+
+

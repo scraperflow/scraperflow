@@ -6,6 +6,10 @@ graphs:
       put: A
       value: 1
 
+    - type: IntToStringNode
+      integer: "{A}"
+      string: A
+
     - type: EchoNode
       put: B
       value: ["{A}"]

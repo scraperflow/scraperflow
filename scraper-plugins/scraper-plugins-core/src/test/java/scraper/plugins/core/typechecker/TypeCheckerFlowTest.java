@@ -22,40 +22,12 @@ public class TypeCheckerFlowTest {
 
     @Test
     public void singleTest() throws Exception {
-        URL resource = TypeCheckerFlowTest.class.getResource("ok/complexobject.yf");
+        URL resource = TypeCheckerFlowTest.class.getResource("ok/mapjoin5.yf");
         File file = new File(resource.toURI());
         TypeChecker t = new TypeChecker();
         ScrapeInstance spec = read(file);
         ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(spec, true);
-        GraphVisualizer.visualize(spec, "test", true);
         t.typeTaskflow(spec, cfg);
-    }
-
-    @Test
-    public void okTest() throws Exception {
-        URL resource = TypeCheckerFlowTest.class.getResource("ok");
-        File files = new File(resource.toURI());
-        Arrays.stream(Objects.requireNonNull(files.listFiles())).forEach(file -> {
-            TypeChecker t = new TypeChecker();
-            ScrapeInstance spec = read(file);
-            ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(spec, true);
-            t.typeTaskflow(spec, cfg);
-        });
-    }
-
-    @Test
-    public void failTest() throws Exception {
-        URL resource = TypeCheckerFlowTest.class.getResource("fail");
-        File files = new File(resource.toURI());
-        Arrays.stream(Objects.requireNonNull(files.listFiles())).forEach(file -> {
-            try {
-                TypeChecker t = new TypeChecker();
-                ScrapeInstance spec = read(file);
-                ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(spec, true);
-                t.typeTaskflow(spec, cfg);
-                Assert.fail();
-            } catch (TemplateException e){}
-        });
     }
 
     private ScrapeInstance read(File f) {

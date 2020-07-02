@@ -3,15 +3,16 @@ package scraper.plugins.core.typechecker;
 import org.slf4j.Logger;
 import scraper.annotations.node.FlowKey;
 import scraper.api.exceptions.TemplateException;
-import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.flow.impl.SpecializeException;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.specification.ScrapeInstance;
-import scraper.api.template.*;
+import scraper.api.template.L;
+import scraper.api.template.T;
+import scraper.api.template.Term;
+import scraper.api.template.TypeGeneralizer;
+import scraper.core.template.TemplateConstant;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.plugins.core.typechecker.visitors.ReplaceCapturesOrCrashVisitor;
 import scraper.util.NodeUtil;
-import scraper.util.TemplateUtil;
 import scraper.utils.ClassUtil;
 
 import java.lang.reflect.Field;
@@ -21,184 +22,20 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.Map.entry;
 import static scraper.plugins.core.flowgraph.FlowUtil.getReverseOrderHierarchy;
 
-public class TypeChecker extends DefaultVisitor<Map<String, T<?>>> {
-
+public class TypeChecker {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger("TypeChecker");
-
-    public TypeEnvironment env = new TypeEnvironment();
     public Map<String, T<?>> captures = new HashMap<>();
+    public List<String> ignore = new ArrayList<>();
+    private Map<L<?>, T<?>> save = new HashMap<>();
 
-    /*
-     * =====================
-     * Template Typing Rules
-     * =====================
-     */
+    public TypeChecker() {}
 
-    // T-Template
-    public void typeTemplate(T<?> simpleString) {
-        if(simpleString.getTerm() != null) simpleString.getTerm().accept(this);
-        else {
-            // This is a corner case for optional template evaluation, carry the type variables on
-            Map<String, T<?>> captures = FlowMapImpl.checkGenericTypeAndCapture(this.captures, simpleString.get(), simpleString);
-            this.captures.putAll(captures);
-        }
+    public TypeChecker(TypeChecker t) {
+        this.captures = new HashMap<>(t.captures);
+        this.ignore = new ArrayList<>(t.ignore);
     }
-
-    // T-Constant-Template
-    @Override public Map<String, T<?>> visitPrimitive(Primitive<?> primitive) {
-        log.trace("Checking primitive {} with target type {}", primitive, primitive.getToken().get().getTypeName());
-        // eval is also type check, but not needed
-        Object evalObj = primitive.eval();
-
-        // capture type variables
-        T<?> known = FlowMapImpl.inferTypeToken(evalObj);
-        Map<String, T<?>> captures = FlowMapImpl.checkGenericTypeAndCapture(this.captures, known.get(), primitive.getToken());
-        if(!captures.isEmpty()) log.debug("Capturing {}", captures);
-        this.captures.putAll(captures);
-
-        return captures;
-    }
-
-    // T-Key-Lookup-Template
-    @Override public Map<String, T<?>> visitFlowKeyLookup(FlowKeyLookup<?> mapKey) {
-        { // (1) check string type
-            mapKey.getKeyLookup().accept(this);
-        }
-
-        { // (2) check if inner template is in env
-            Term<String> keyTemplate = mapKey.getKeyLookup();
-            log.debug("Checking env({}) = {} rule", keyTemplate, mapKey.getToken().get());
-
-            var known = env.get(keyTemplate);
-
-            if(known == null)
-                throw new TemplateException("Template term not in environment: " + keyTemplate);
-
-            try {
-                Map<String, T<?>> captures = FlowMapImpl.checkGenericTypeAndCapture(this.captures, known, mapKey.getToken());
-                if(!captures.isEmpty()) log.debug("Capturing {}", captures);
-                this.captures.putAll(captures);
-            } catch (SpecializeException e) {
-                log.info("Specializing {} -> {}", known, mapKey.getToken());
-                env.add(keyTemplate, mapKey.getToken().get());
-            } catch (Exception e) {
-                log.error("Could not type key lookup {}: {}", mapKey.getKeyLookup(), e.getMessage());
-                throw e;
-            }
-
-
-            return captures;
-        }
-    }
-
-    // T-List-Template
-    @Override public Map<String, T<?>> visitListTerm(ListTerm<?> list) {
-        if(list.isTypeVariable()) {
-            if(list.getTerms().isEmpty()) {
-                Map<String, T<?>> captures = FlowMapImpl.checkGenericTypeAndCapture(this.captures, list.getToken().get(), list.getToken());
-                Map<String, T<?>> toListTransform = captures
-                        .entrySet().stream()
-                        .map(e -> entry(e.getKey(), TemplateUtil.listOf(e.getValue())) )
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-                this.captures.putAll(toListTransform);
-                if(!toListTransform.isEmpty()) log.debug("Capturing {}", toListTransform);
-            } else {
-                Map<String, T<?>> allElements = new HashMap<>();
-                list.getTerms().forEach(term -> {
-                    Map<String, T<?>> captured = term.accept(this);
-                    Map<String, T<?>> toListTransform = captured
-                            .entrySet().stream()
-                            .map(e -> entry(e.getKey(), TemplateUtil.listOf(e.getValue())) )
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-
-                    for (var e : toListTransform.entrySet()) {
-                        if(allElements.get(e.getKey()) != null) {
-                            if(!allElements.get(e.getKey()).equals(e.getValue()))
-                                throw new TemplateException("Elements in list have a different type");
-                        }
-                    }
-                    allElements.putAll(toListTransform);
-                    if(!toListTransform.isEmpty()) log.debug("Capturing {}", toListTransform);
-                });
-
-                // capture after list has been processed
-                this.captures.putAll(allElements);
-                if(!allElements.isEmpty()) log.debug("Capturing {}", allElements);
-                return allElements;
-            }
-        } else {
-            list.getTerms().forEach(r -> r.accept(this));
-        }
-        return Map.of();
-    }
-
-    // T-Map-Template
-    @Override public Map<String, T<?>> visitMapTerm(MapTerm<?> mapTerm) {
-        if(mapTerm.isTypeVariable()) {
-            if(mapTerm.getTerms().isEmpty()){
-                Map<String, T<?>> captures = FlowMapImpl.checkGenericTypeAndCapture(this.captures, mapTerm.getToken().get(), mapTerm.getToken());
-                Map<String, T<?>> toMapTransform = captures
-                        .entrySet().stream()
-                        .map(e -> entry(e.getKey(), TemplateUtil.mapOf(new T<String>(){}, e.getValue())) )
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-                this.captures.putAll(toMapTransform);
-                if(!toMapTransform.isEmpty()) log.debug("Capturing {}", toMapTransform);
-            } else {
-                Map<String, T<?>> allElements = new HashMap<>();
-                mapTerm.getTerms().forEach((key, term) -> {
-                    Map<String, T<?>> captured = term.accept(this);
-                    Map<String, T<?>> toMapTransforms = captured
-                            .entrySet().stream()
-                            .map(e -> entry(e.getKey(), TemplateUtil.mapOf(new T<String>(){},e.getValue())) )
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-                    for (var e : toMapTransforms.entrySet()) {
-                        if(allElements.get(e.getKey()) != null) {
-                            if(!allElements.get(e.getKey()).equals(e.getValue()))
-                                throw new TemplateException("Elements in map have a different type");
-                        }
-                    }
-
-                    allElements.putAll(toMapTransforms);
-                    if(!allElements.isEmpty()) log.debug("Capturing {}", allElements);
-                });
-
-                // capture after list has been processed
-                this.captures.putAll(allElements);
-                if(!allElements.isEmpty()) log.debug("Capturing {}", allElements);
-            }
-        } else {
-            mapTerm.getTerms().forEach((k,v) -> v.accept(this));
-        }
-        return Map.of();
-    }
-
-    // T-Map-Lookup-Template
-    @Override public Map<String, T<?>> visitMapLookup(MapLookup<?> mapLookup) {
-        mapLookup.getMapObjectTerm().accept(this);
-        mapLookup.getKeyTerm().accept(this);
-        return Map.of();
-    }
-
-    // T-List-Lookup
-    @Override public Map<String, T<?>> visitListLookup(ListLookup<?> listLookup) {
-        listLookup.getIndexTerm().accept(this);
-        listLookup.getListObjectTerm().accept(this);
-        return Map.of();
-    }
-
-    // T-Concat-Lookup
-    @Override public Map<String, T<?>> visitConcatenation(Concatenation concat) {
-        concat.getConcatenationTerms().forEach(e -> e.accept(this));
-        return Map.of();
-    }
-
 
     /*
      * =====================
@@ -206,26 +43,66 @@ public class TypeChecker extends DefaultVisitor<Map<String, T<?>>> {
      * =====================
      */
 
+    // T-Flow
     public void typeTaskflow(ScrapeInstance spec, ControlFlowGraph cfg) {
+
+        TypeEnvironment env = new TypeEnvironment();
+        // args add initial arguments
+        for (Map.Entry<String, Object> stringObjectEntry : spec.getEntryArguments().entrySet()) {
+            if(!(stringObjectEntry.getValue() instanceof String)) {
+                throw new IllegalStateException("Non-String initial arguments not supported");
+            }
+
+            log.info("<initial> {} :: {}", stringObjectEntry.getKey(), "String");
+            L<String> loc = new L<>() {};
+            loc.setLocation( new TemplateConstant<>(stringObjectEntry.getKey(), new T<>(){}) );
+            env.add(loc.getLocation(), new T<String>(){});
+        }
+
+        log.info("========================================");
+
         Set<NodeContainer<?>> visited = new HashSet<>();
         spec.getEntry().ifPresent(n -> propagate(n, env, spec, cfg, visited));
     }
 
+    // T-Flow-Propagate
     public void propagate(NodeContainer<?> n, TypeEnvironment env, ScrapeInstance spec, ControlFlowGraph cfg, Set<NodeContainer<?>> visited) {
         if(visited.contains(n)) return;
-        visited.add(n);
+        // TODO acyclic assumption
+//        visited.add(n);
 
+        ignore.clear();
         captures.clear();
 
-        typeNode(n);
+        // for special nodes that do very special things
+        // e.g. SocketNode evaluates its template after forkDepend returns
+        addNodeInfoBefore(env, n, cfg, spec, visited);
 
-        addNodeInfo(n, cfg, spec, visited);
+        typeNode(env, n);
 
+        // can create sub-type checkers
+        // e.g. fork join, map join
+        addNodeInfo(env, n, cfg, spec, visited);
+
+        // clear capture only after finish
         captures.clear();
+        ignore.clear();
 
         cfg.getOutgoingEdges(n.getAddress()).forEach(e -> {
-            NodeContainer<?> nextNode = spec.getNode(e.getToAddress());
-            propagate(nextNode, env.copy(), spec, cfg, visited);
+            if(e.isDispatched()) {
+                NodeContainer<?> nextNode = spec.getNode(e.getToAddress());
+                propagate(nextNode, env.copy(), spec, cfg, visited);
+            } else {
+                if(
+                        e.getDisplayLabel().equalsIgnoreCase("forward")
+                                || e.getDisplayLabel().equalsIgnoreCase("join")
+                ) {
+                    NodeContainer<?> nextNode = spec.getNode(e.getToAddress());
+                    propagate(nextNode, env, spec, cfg, visited);
+                } else {
+                    System.out.println("Not propagating: " + e.getDisplayLabel());
+                }
+            }
         });
     }
 
@@ -235,13 +112,24 @@ public class TypeChecker extends DefaultVisitor<Map<String, T<?>>> {
      * =====================
      */
 
-    private void typeNode(NodeContainer<?> n) {
-        log.debug("==== Typing node {} ({})", n, n.getC().getClass().getSimpleName());
+    // T-Template
+    public T<?> typeTemplate(TypeEnvironment env, T<?> t) {
+        return new TypeRules(env, this).typeTemplate(t);
+    }
+
+    // T-Node
+    private void typeNode(TypeEnvironment env, NodeContainer<?> n) {
+//        log.info("==== Typing node {} ({})", n, n.getC().getClass().getSimpleName());
 
         getDefaultDataFlowInputTemplates(n)
                 .forEach((fieldName, template) -> {
+                    if(ignore.contains(fieldName)) {
+//                        log.info("Ignoring field as requested: {}", fieldName);
+                        return;
+                    }
+
                     try {
-                        typeTemplate(template);
+                        typeTemplate(env, template);
                     } catch (TemplateException e) {
                         log.error("{} type error for field '{}': {}", n, fieldName, e.getMessage());
                         throw e;
@@ -250,22 +138,56 @@ public class TypeChecker extends DefaultVisitor<Map<String, T<?>>> {
                 );
     }
 
-    private void addNodeInfo(NodeContainer<?> n, ControlFlowGraph cfg, ScrapeInstance spec, Set<NodeContainer<?>> visited) {
-        log.debug("=== Adding node info {}", n);
+    /*
+     * =====================
+     * Auxiliary
+     * =====================
+     */
+
+    private void addNodeInfoBefore(TypeEnvironment env, NodeContainer<?> n, ControlFlowGraph cfg, ScrapeInstance spec, Set<NodeContainer<?>> visited) {
+        List<Class<?>> classesToCheck = getReverseOrderHierarchy(n);
+        Collections.reverse(classesToCheck);
+
+        for (Class<?> nodeClass : classesToCheck) {
+            String controlClass = "scraper.plugins.core.typechecker.data."+nodeClass.getSimpleName()+"Data";
+            try {
+                Class<?> control = Class.forName(controlClass);
+                Method method = control.getDeclaredMethod("infoBefore",
+                        TypeChecker.class,
+                        TypeEnvironment.class,
+                        NodeContainer.class,
+                        ControlFlowGraph.class,
+                        ScrapeInstance.class,
+                        Set.class);
+                method.invoke(null, this, env, n, cfg, spec, visited);
+            } catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException ignored) {
+//                System.out.println("[Skip] Could not find control for " + nodeClass + ": " + controlClass);
+            } catch (InvocationTargetException e) {
+                if(e.getCause() instanceof TemplateException) {
+                    log.error("{} type error for field: {}", n, e.getCause().getMessage());
+                    throw (TemplateException) e.getCause();
+                }
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void addNodeInfo(TypeEnvironment env, NodeContainer<?> n, ControlFlowGraph cfg, ScrapeInstance spec, Set<NodeContainer<?>> visited) {
+        // log.info("=== Adding node info {}", n);
 
         getDefaultDataFlowOutput(n).forEach((fieldName, output) -> {
             try {
                 Type tt = new ReplaceCapturesOrCrashVisitor(captures).visit(output.get());
                 if (!tt.equals(output.get())) {
-                    log.debug("Captured types {} ==> {}", output, tt);
+//                    log.info("Captured types {} ==> {}", output.getLocation(), tt);
                     Term<String> loc = output.getLocation();
                     output = new L<>(tt){};
                     output.setLocation(loc);
                 }
 
                 {
-                    log.debug("Adding location data {} :: {}", output.getLocation(), output);
-                    env.add(output.getLocation(), output.get());
+                    log.info("<{}> {} :: {}", n.getAddress(), output.getLocation(), output.getTarget().getTypeString());
+                    env.add(output.getLocation(), new T<>(output.get()){});
                 }
             } catch (TemplateException e){
                 log.error("{} type error for field '{}': {}", n, fieldName, e.getMessage());
@@ -283,12 +205,14 @@ public class TypeChecker extends DefaultVisitor<Map<String, T<?>>> {
             String controlClass = "scraper.plugins.core.typechecker.data."+nodeClass.getSimpleName()+"Data";
             try {
                 Class<?> control = Class.forName(controlClass);
-                Method method = control.getDeclaredMethod("infoAfter", TypeChecker.class,
+                Method method = control.getDeclaredMethod("infoAfter",
+                        TypeChecker.class,
+                        TypeEnvironment.class,
                         NodeContainer.class,
                         ControlFlowGraph.class,
                         ScrapeInstance.class,
                         Set.class);
-                method.invoke(null, this, n, cfg, spec, visited);
+                method.invoke(null, this, env, n, cfg, spec, visited);
             } catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException ignored) {
 //                System.out.println("[Skip] Could not find control for " + nodeClass + ": " + controlClass);
             } catch (InvocationTargetException e) {
@@ -300,23 +224,6 @@ public class TypeChecker extends DefaultVisitor<Map<String, T<?>>> {
             }
         }
     }
-
-    // for nodes that do special things
-//    private void addNodeInfoSpecial(TypeEnvironment env, NodeContainer<?> n, ScrapeInstance inst) {
-//
-//        String nodeName = n.getC().getClass().getSimpleName();
-//        String controlClass = "scraper.plugins.core.typechecker.data."+nodeName+"Data";
-//        try {
-//            Class<?> control = Class.forName(controlClass);
-//            Method method = control.getDeclaredMethod("infoBefore", TypeEnvironment.class, NodeContainer.class, ScrapeInstance.class);
-//            method.invoke(null, env, n, inst);
-//        } catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException ignored) {
-////                System.out.println("[Skip] Could not find control for " + nodeClass + ": " + controlClass);
-//        } catch (InvocationTargetException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
 
     public static Map<String, T<?>> getDefaultDataFlowInputTemplates(NodeContainer<?> node) {
         List<Class<?>> classesToCheck = getReverseOrderHierarchy(node);
@@ -361,8 +268,109 @@ public class TypeChecker extends DefaultVisitor<Map<String, T<?>>> {
         return NodeUtil.extractMapFromFields(outputData, node);
     }
 
-    public void add(Term<?> known) {
-        Type tt = new ReplaceCapturesOrCrashVisitor(captures).visit(known.getToken().get());
-        env.add(known, tt);
+    public void add(TypeEnvironment env, Term<?> term, T<?> token) {
+        T<?> newToken = fixpoint(List.of(token));
+        env.add(term, newToken);
+    }
+
+    public T<?> fixpoint(List<T<?>> fixpoint) {
+        // make mutable
+        fixpoint = new ArrayList<>(fixpoint);
+
+        boolean changed = true;
+        while(changed) {
+            changed = false;
+            for (int i = 0; i < fixpoint.size(); i++) {
+                T<?> t = fixpoint.get(i);
+
+                Type tt = new ReplaceCapturesOrCrashVisitor(captures).visit(t.get());
+
+                if(!t.equalsType(new T<>(tt){})){
+                    changed = true;
+                    fixpoint.set(i, new T<>(tt){});
+                }
+
+                if(t.equalsType(new T<>(tt){}) && !tt.getTypeName().equalsIgnoreCase(t.getTypeString())){
+                    changed = true;
+                    fixpoint.set(i, new T<>(tt){});
+                }
+            }
+        }
+
+        // every term has to evaluate to the same Type T
+        T<?> last = null;
+        for (T<?> t : fixpoint) {
+            if(last == null) { last = t; continue; }
+
+            Type newToken = new TypeGeneralizer( captures ){}.visit(last.get(), t.get());
+            if(newToken == null) {
+                throw new TemplateException("Terms type variable resolves to different types: " + fixpoint);
+            } else {
+                last = new T<>(newToken){};
+            }
+        }
+
+        return last;
+    }
+
+    public T<?> resolve(String var) {
+        T<?> current = captures.get(var);
+        T<?> last = captures.get(var);
+        while(last != null) {
+            current = last;
+            last = captures.get(current.getTypeString());
+            if(current == last) break;
+        }
+
+        return current;
+    }
+
+    public T<?> putIfNotConflicting(String typeString, T<?> token) {
+        T<?> knownToken = resolve(typeString);
+        if(knownToken == null) {
+            log.debug("{} ~> {}", typeString, token);
+            return putAndResolve(typeString, token);
+        }
+
+        Type newToken = new TypeGeneralizer( captures ){}.visit(knownToken.get(), token.get());
+
+        if(newToken != null) {
+            log.debug("{} ~> {}", typeString, newToken);
+            return putAndResolve(typeString, new T<>(newToken){});
+        }
+
+        throw new TemplateException("Capture at " + typeString + " :: "+ knownToken.getTypeString() + " does not match the to-put capture " + token.getTypeString());
+    }
+
+    private T<?> putAndResolve(String capt, T<?> known) {
+        if(known.getTerm() != null && known.getTerm().isTypeVariable()) {
+            // put most precise
+            T<?> resolved = resolve(known.getTypeString());
+            T<?> precise = fixpoint(List.of(captures.getOrDefault(capt, known), resolved));
+
+            log.debug("{} ~> {}", capt, precise.getTypeString());
+            captures.put(capt, precise);
+            return precise;
+        } else {
+            log.debug("{} ~> {}", capt, known.getTypeString());
+            captures.put(capt, known);
+            return known;
+        }
+    }
+
+    public void ignoreField(String expected) {
+        ignore.add(expected);
+    }
+
+    public void unignoreField(String expected) {
+        ignore.remove(expected);
+    }
+
+    public void save(L<?> put, TypeEnvironment env) {
+        save.put(put, env.get(put.getLocation()));
+    }
+
+    public void restore(L<?> putBody) {
+        save.remove(putBody);
     }
 }

@@ -6,4 +6,5 @@ graphs:
       put: obj
       value:
         str: "I'm a string"
-        list: ["I'm a list"]
+        list: ["I'm a list"] # not possible without records
+

@@ -1,5 +1,5 @@
 ---
-name: full
+name: mytaskflow
 graphs:
   start:
     - type: IntRangeNode
@@ -8,14 +8,15 @@ graphs:
       collect: "False"
       streamTarget: A
 
-  A: [{type: PipeNode, pipeTargets: [B, C]}]
+  A: [{type: IntToStringNode, integer: "{i}", string: i}, {type: PipeNode, pipeTargets: [B, C]}]
   B: [{type: RetryNode, retryTarget: E1}]
-  E1: [{type: HttpRequestNode, url: "?page={i}"}]
+  E1: [{type: HttpRequestNode, url: "?page={i}", put: response}]
 
   C:
     - type: RegexNode
       content: "{response}"
       regex: "notimportant"
+      output: output
       groups:
     - type: MapNode
       list: "{output}"
@@ -63,6 +64,7 @@ graphs:
     - type: RegexNode
       content: "{response}"
       collect: true
+      output: output
       regex: "notimportant"
       groups:
 

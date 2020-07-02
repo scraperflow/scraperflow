@@ -1,10 +1,14 @@
 package scraper.api.template;
 
 import scraper.annotations.NotNull;
+import scraper.api.exceptions.TemplateException;
 
 import java.lang.reflect.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Token class which saves the type with generics at runtime.
@@ -15,12 +19,18 @@ import java.util.function.Supplier;
 public abstract class T<TYPE> implements Supplier<Type> {
 	// type with generics
 	protected final Type type;
+	private final String typeSuffix;
 
 	// parsed JSON object which is supplied at a later time
 	protected Term<TYPE> term;
 
-    public T() { this.type = resolveType(); }
-	public T(Type t) { this.type = t; }
+    public T() { this.type = resolveType(); typeSuffix = ""; }
+	public T(Type t) { this.type = t; typeSuffix = ""; }
+	public T(Type t, String typeSuffix) {
+    	this.type = t;
+    	this.typeSuffix = typeSuffix;
+    }
+
 
 	@Override @NotNull public Type get() { return type; }
 
@@ -56,6 +66,15 @@ public abstract class T<TYPE> implements Supplier<Type> {
 		return false;
 	}
 
+	public boolean equalsType(T<?> o) {
+    	try {
+			new TypeMatcher() {}.visitAndReturnCaptures(get(), o.get());
+			return true;
+		} catch (Exception e){
+    		return false;
+		}
+	}
+
 	@Override public int hashCode() { return Objects.hash(type, term); }
 
 	@Override public String toString() {
@@ -65,4 +84,18 @@ public abstract class T<TYPE> implements Supplier<Type> {
 
 	public void setTerm(Term<TYPE> term) { this.term = term; }
 	public Term<TYPE> getTerm(){ return term; }
+
+	public String getTypeString() {
+		if(!typeSuffix.isEmpty()) {
+			return get().getTypeName() +"$"+typeSuffix;
+		}
+		if(getTerm() != null) return getTerm().getTypeString();
+		return get().getTypeName();
+	}
+
+
+	public String getSuffix() {
+		return typeSuffix;
+	}
+
 }

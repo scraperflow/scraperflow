@@ -16,19 +16,43 @@ import java.util.Objects;
 import static scraper.core.converter.StringToClassConverter.convert;
 
 public class TemplateMapLookup<K> extends TemplateExpression<K> implements MapLookup<K> {
+
     @Override public <X> X accept(@NotNull TVisitor<X> visitor) { return visitor.visitMapLookup(this); }
 
     private TemplateExpression<Map<String, K>> map;
     private TemplateExpression<String> key;
+    private final boolean isTypeVar;
+    private String typevarsuffix = "";
+
+    @Override
+    public boolean isTypeVariable() {
+        return isTypeVar;
+    }
+
+    @Override
+    public Term<K> withTypeVar(String typevarsuffix) {
+        this.typevarsuffix = typevarsuffix;
+        return this;
+    }
 
     public TemplateMapLookup(
             TemplateExpression<Map<String, K>> map,
             TemplateExpression<String> key,
-            T<K> targetType) {
+            T<K> targetType,
+            boolean isTypeVariable
+            ) {
         super(targetType);
         this.map = map;
         this.key = key;
+        this.isTypeVar = isTypeVariable;
     }
+
+    @Override
+    public String getTypeString() {
+        return map.targetType.getTypeString() + (typevarsuffix.isEmpty() ? "" : "$"+this.typevarsuffix);
+    }
+
+    @Override public int getTypevarindex() { throw new IllegalStateException(); }
 
     @SuppressWarnings("unchecked") // checked with map generics subtype relation
     public K eval(@NotNull final FlowMap o) {

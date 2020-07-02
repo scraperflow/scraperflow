@@ -2,6 +2,7 @@
 
     package scraper.core.exp;
 
+import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.template.T;
 import scraper.api.template.Term;
+import scraper.api.template.TypeReplacer;
 import scraper.core.template.*;
 
 import java.lang.reflect.TypeVariable;
@@ -91,15 +93,31 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
             }
 
             if (ctx.getChild(2) instanceof TemplateParser.MaplookupContext) {
+                boolean fromTypeVar = target.get() instanceof TypeVariable;
+
                 ParseTree mapexp = ctx.getChild(1);
                 ParseTree strexp = ctx.getChild(2);
                 @SuppressWarnings("unchecked") // type parameter lost with target.get() but fully reconstructed
                 TypeToken<Map<String, Y>> mapToken = mapOf(TypeToken.of(String.class), (TypeToken<Y>) TypeToken.of(target.get()));
-                TemplateExpressionVisitor<Map<String, Y>> mapTargetVisitor = new TemplateExpressionVisitor<>(new T<>(mapToken.getType()){});
+
+                // replace Y with Y$MapOf if type variable
+                T<Map<String, Y>> token = new T<>(mapToken.getType()){};
+                if(fromTypeVar) token = new T<>(new TypeReplacer("MapOf"){}.visit(token.get())){};
+
+                TemplateExpressionVisitor<Map<String, Y>> mapTargetVisitor = new TemplateExpressionVisitor<>(token){};
                 TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(new T<>(){});
                 TemplateExpression<Map<String, Y>> templateMap = mapTargetVisitor.visit(mapexp);
                 TemplateExpression<String> templateString = stringTargetVisitor.visit(strexp);
-                return new TemplateMapLookup<>(templateMap, templateString, target);
+
+                return new TemplateMapLookup<>(
+                        // TODO why cannot this be inferred? withTypeVar just returns itself
+                        //  templateMap.withTypeVar(),
+                        (fromTypeVar ? (TemplateExpression<Map<String, Y>>) templateMap.withTypeVar("MapLookup") : templateMap),
+                        templateString,
+                        new T<>(target.get(), (fromTypeVar ? target.getSuffix() + "MapLookup" : target.getSuffix())){},
+                        fromTypeVar
+                );
+//                return new TemplateMapLookup<>(templateMap, templateString, target, target.get() instanceof TypeVariable);
             }
         }
 
@@ -115,7 +133,7 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
         TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(new T<>(){});
         TemplateExpression<String> visited = stringTargetVisitor.visit(ctx.children.get(1));
 
-        return new TemplateMapKey<>(visited, target);
+        return new TemplateMapKey<>(visited, target, "", (target.get() instanceof TypeVariable));
     }
 
     @Override

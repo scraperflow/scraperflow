@@ -12,4 +12,12 @@ public interface Term<Y> {
     @NotNull Object getRaw();
     @NotNull T<Y> getToken();
     void setToken(T<Y> t);
+    String getTypeString();
+    int getTypevarindex();
+    default boolean isTypeVariable() {
+        throw new IllegalStateException("2");
+    };
+
+    // propagates type var down this term
+    Term<Y> withTypeVar(String suffix);
 }

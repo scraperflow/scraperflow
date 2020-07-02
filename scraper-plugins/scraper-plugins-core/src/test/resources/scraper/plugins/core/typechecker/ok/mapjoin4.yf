@@ -1,0 +1,27 @@
+---
+name: mapjoin
+graphs:
+  start:
+    - type: RegexNode
+      regex: "a"
+      content: ""
+      groups: { movieTag: 1}
+      output: movieTagsMatches
+
+    - type: MapJoinNode
+      list: "{movieTagsMatches}"
+      mapTarget: extract
+      putElement: singleTagMap
+      keys: {}
+#        tagText: tagListFinal
+
+#    - type: EchoNode
+#      log: "{tagListFinal}"
+
+  extract:
+    - type: EchoNode
+      log: "Unwrapping {{singleTagMap}@movieTag}"
+      put: tagText
+      value: "{{singleTagMap}@movieTag}"
+
+

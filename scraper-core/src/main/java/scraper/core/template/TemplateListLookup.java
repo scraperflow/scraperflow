@@ -31,6 +31,8 @@ public class TemplateListLookup<K> extends TemplateExpression<K> implements List
     }
 
 
+    @Override public int getTypevarindex() { throw new IllegalStateException(); }
+
 
     @SuppressWarnings({"unchecked", "rawtypes"}) // checked with generics subtype relation
     public K eval(@NotNull final FlowMap o) {
@@ -64,6 +66,11 @@ public class TemplateListLookup<K> extends TemplateExpression<K> implements List
     @Override
     public Object getRaw() {
         return toString();
+    }
+
+    @Override
+    public String getTypeString() {
+        throw new IllegalStateException("NO");
     }
 
     @Override

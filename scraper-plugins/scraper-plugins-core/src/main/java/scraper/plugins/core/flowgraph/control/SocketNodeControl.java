@@ -2,6 +2,8 @@ package scraper.plugins.core.flowgraph.control;
 
 
 import scraper.annotations.NotNull;
+import scraper.api.flow.FlowMap;
+import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.Address;
 import scraper.api.node.NodeAddress;
 import scraper.api.node.container.NodeContainer;
@@ -24,10 +26,12 @@ import static scraper.plugins.core.flowgraph.impl.ControlFlowEdgeImpl.edge;
 
 @SuppressWarnings({"unchecked", "OptionalGetWithoutIsPresent"})
 public final class SocketNodeControl {
+
     @Version("1.0.0") @NotNull
     public static List<ControlFlowEdge> getOutput(List<ControlFlowEdge> previous, NodeContainer<? extends Node> node, ScrapeInstance spec) throws Exception {
-        Optional<Map<String, Address>> hosts = Optional.ofNullable(((T<Map<String, Address>>) FlowUtil.getField("hostMap", node.getC()).get()).getTerm().eval(new IdentityFlowMap()));
-        Optional<Map<String, Address>> args = Optional.ofNullable(((T<Map<String, Address>>) FlowUtil.getField("args", node.getC()).get()).getTerm().eval(new IdentityFlowMap()));
+        FlowMap o = new FlowMapImpl();
+        Optional<Map<String, Address>> hosts = o.evalMaybe(((T<Map<String, Address>>) FlowUtil.getField("hostMap", node.getC()).get()));
+        Optional<Map<String, Address>> args = o.evalMaybe(((T<Map<String, Address>>) FlowUtil.getField("args", node.getC()).get()));
 
         return Stream.concat(
                 previous.stream(),
