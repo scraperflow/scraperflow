@@ -1,4 +1,4 @@
-image: adoptopenjdk/openjdk12:x86_64-ubi-minimal-jdk-12.0.2_10
+image: adoptopenjdk/openjdk13:x86_64-ubi-minimal-jdk-13.0.2_8
 
 stages:
   - build
