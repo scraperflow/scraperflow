@@ -7,6 +7,7 @@ graphs:
 
     - type: RegexNode
       regex: "^.*\\/(.*?)\\/$"
+      output: output
       groups:
         output: 1
 

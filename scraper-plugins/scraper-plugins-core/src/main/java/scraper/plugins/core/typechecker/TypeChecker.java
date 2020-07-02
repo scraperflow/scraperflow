@@ -53,13 +53,13 @@ public class TypeChecker {
                 throw new IllegalStateException("Non-String initial arguments not supported");
             }
 
-            log.info("<initial> {} :: {}", stringObjectEntry.getKey(), "String");
+            log.debug("<initial> {} :: {}", stringObjectEntry.getKey(), "String");
             L<String> loc = new L<>() {};
             loc.setLocation( new TemplateConstant<>(stringObjectEntry.getKey(), new T<>(){}) );
             env.add(loc.getLocation(), new T<String>(){});
         }
 
-        log.info("========================================");
+        log.debug("========================================");
 
         Set<NodeContainer<?>> visited = new HashSet<>();
         spec.getEntry().ifPresent(n -> propagate(n, env, spec, cfg, visited));
@@ -100,7 +100,7 @@ public class TypeChecker {
                     NodeContainer<?> nextNode = spec.getNode(e.getToAddress());
                     propagate(nextNode, env, spec, cfg, visited);
                 } else {
-                    System.out.println("Not propagating: " + e.getDisplayLabel());
+                    log.debug("Not propagating: " + e.getDisplayLabel());
                 }
             }
         });
@@ -119,12 +119,12 @@ public class TypeChecker {
 
     // T-Node
     private void typeNode(TypeEnvironment env, NodeContainer<?> n) {
-//        log.info("==== Typing node {} ({})", n, n.getC().getClass().getSimpleName());
+//        log.debug("==== Typing node {} ({})", n, n.getC().getClass().getSimpleName());
 
         getDefaultDataFlowInputTemplates(n)
                 .forEach((fieldName, template) -> {
                     if(ignore.contains(fieldName)) {
-//                        log.info("Ignoring field as requested: {}", fieldName);
+//                        log.debug("Ignoring field as requested: {}", fieldName);
                         return;
                     }
 
@@ -173,20 +173,20 @@ public class TypeChecker {
     }
 
     private void addNodeInfo(TypeEnvironment env, NodeContainer<?> n, ControlFlowGraph cfg, ScrapeInstance spec, Set<NodeContainer<?>> visited) {
-        // log.info("=== Adding node info {}", n);
+        // log.debug("=== Adding node info {}", n);
 
         getDefaultDataFlowOutput(n).forEach((fieldName, output) -> {
             try {
                 Type tt = new ReplaceCapturesOrCrashVisitor(captures).visit(output.get());
                 if (!tt.equals(output.get())) {
-//                    log.info("Captured types {} ==> {}", output.getLocation(), tt);
+//                    log.debug("Captured types {} ==> {}", output.getLocation(), tt);
                     Term<String> loc = output.getLocation();
                     output = new L<>(tt){};
                     output.setLocation(loc);
                 }
 
                 {
-                    log.info("<{}> {} :: {}", n.getAddress(), output.getLocation(), output.getTarget().getTypeString());
+                    log.debug("<{}> {} :: {}", n.getAddress(), output.getLocation(), output.getTarget().getTypeString());
                     env.add(output.getLocation(), new T<>(output.get()){});
                 }
             } catch (TemplateException e){

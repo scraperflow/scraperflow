@@ -17,7 +17,7 @@ import java.util.Map;
 import static java.util.stream.Collectors.groupingBy;
 
 public class GraphVisualizer {
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(GraphVisualizer.class);
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger("GraphVisualizer");
 
     static Boolean includeInstance = true;
     static Boolean includeGraph = true;
@@ -28,7 +28,6 @@ public class GraphVisualizer {
     public static void visualize(ScrapeInstance job, String createCF, boolean realControlflow) throws FileNotFoundException {
         ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(job, realControlflow);
 
-        System.out.println(cfg);
         String graph = visualize(cfg);
 
         log.info("Output: {}", createCF);

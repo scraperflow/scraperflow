@@ -11,5 +11,6 @@ public class RegexTest extends WorkflowTest {
 
     @Workflow("simple.yf")
     public void simpleRegex() {}
+
 }
 

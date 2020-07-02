@@ -104,7 +104,7 @@ public class TypeRules extends DefaultVisitor<Object> {
                 return checker.putIfNotConflicting(capt, known);
             } else
             if(known.get() instanceof TypeVariable) {
-                log.warn("Specializing {} :: {}", known.getTypeString(), mapKey.getToken().getTypeString());
+                log.debug("Specializing {} :: {}", known.getTypeString(), mapKey.getToken().getTypeString());
                 checker.putIfNotConflicting(known.getTypeString(), mapKey.getToken());
                 env.add(keyTemplate, mapKey.getToken());
                 return mapKey.getToken();

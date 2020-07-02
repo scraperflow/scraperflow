@@ -200,4 +200,14 @@ public class TemplateTest {
         Assert.assertNotNull(simpleString.toString());
     }
 
+    @Test
+    public void regexTest() {
+        String regex = "\\{(\\w+),\\s*start_link,";
+
+        T<String> simpleString = new T<>(){};
+        simpleString.setTerm(parseTemplate(regex, simpleString));
+
+        String eval = o.eval(simpleString);
+        Assert.assertEquals(regex.substring(1), eval);
+    }
 }

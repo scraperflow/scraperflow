@@ -47,7 +47,7 @@ public class ExecutorsServiceImpl implements ExecutorsService {
             }
         });
 
-        log.info("Created executor service for group {} and capacity {}", group, count);
+        log.debug("Created executor service for group {} and capacity {}", group, count);
         executorServiceMap.put(group, executorService);
         return executorService;
     }

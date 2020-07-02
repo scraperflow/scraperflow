@@ -58,7 +58,7 @@ public final class MapJoinNodeData {
             T<String> toJoin = new T<>() {};
             toJoin.setTerm(parseTemplate(value, toJoin));
 
-            log.info("<{}> {} :: {}", node.getAddress(), toJoin.getTerm(), "java.lang.List<"+fromForkToken.get().getTypeName()+">");
+            log.debug("<{}> {} :: {}", node.getAddress(), toJoin.getTerm(), "java.lang.List<"+fromForkToken.get().getTypeName()+">");
             env.add(toJoin.getTerm(), TemplateUtil.listOf(fromForkToken.get()));
         });
     }

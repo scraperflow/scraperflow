@@ -30,7 +30,7 @@ public final class AbstractStreamNodeData {
 
         getDefaultDataFlowOutput(node).forEach((fieldName, output) ->
                 {
-                    log.info("<{}> {} :: {}", node.getAddress(), output.getLocation(), "java.lang.List<"+output.getTarget().getTypeString()+">");
+                    log.debug("<{}> {} :: {}", node.getAddress(), output.getLocation(), "java.lang.List<"+output.getTarget().getTypeString()+">");
                     checker.add(env, output.getLocation(), TemplateUtil.listOf(output.get()));
                 }
         );

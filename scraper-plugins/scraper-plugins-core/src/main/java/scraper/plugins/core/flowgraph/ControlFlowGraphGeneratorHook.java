@@ -49,7 +49,7 @@ import java.util.Map;
 )
 public class ControlFlowGraphGeneratorHook implements Hook {
 
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(ControlFlowGraphGeneratorHook.class);
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger("ControlFlowGraphGenerator");
 
     @Override
     public void execute(@NotNull DIContainer dependencies, @NotNull String[] args, @NotNull Map<ScrapeSpecification, ScrapeInstance> jobs) throws Exception {
