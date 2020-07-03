@@ -5,8 +5,6 @@ import scraper.api.exceptions.TemplateException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -17,6 +15,7 @@ import java.util.stream.Collectors;
  * Returns true, if the target type is more specialized than the known type,
  * e.g. String is more specialized than ?
  */
+@SuppressWarnings({"UnnecessaryLocalVariable", "unchecked", "TypeParameterHidesVisibleType"})
 public abstract class TypeReplacer {
 
     private final String replace;

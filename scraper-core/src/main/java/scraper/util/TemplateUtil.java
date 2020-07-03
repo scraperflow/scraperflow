@@ -110,11 +110,13 @@ public final class TemplateUtil {
         };
     }
 
+    @SuppressWarnings("unchecked") // checked
     public static <K> T<List<K>> listOf(T<K> elementType) {
         TypeToken<List<K>> list = listOf((TypeToken<K>) TypeToken.of(elementType.get()));
         return new T<>(list.getType()) {};
     }
 
+    @SuppressWarnings("unchecked") // checked
     public static <K> T<List<K>> listOfSuff(T<K> elementType) {
         TypeToken<List<K>> list = listOf((TypeToken<K>) TypeToken.of(elementType.get()));
         return new T<>(list.getType(), "ListOf") {};

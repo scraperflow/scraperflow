@@ -10,7 +10,7 @@ compileJava {
 }
 
 compileTestJava {
-    final String moduleName = project.name.toString().replace("-", ".")
+    final String moduleName = project.name.toString().replace("-link", "").replace("-", ".")
     doFirst {
         options.compilerArgs = [
                 '--module-path', classpath.asPath,
@@ -23,7 +23,7 @@ compileTestJava {
 }
 
 test {
-    final String moduleName = project.name.toString().replace("-", ".")
+    final String moduleName = project.name.toString().replace("-link","").replace("-", ".")
     doFirst {
         jvmArgs = [
                 '--module-path', classpath.asPath,

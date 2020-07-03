@@ -5,6 +5,10 @@ import scraper.plugins.core.parser.JsonParser;
 
 open module scraper.plugins.core {
 
+    exports scraper.plugins.core.flowgraph;
+    exports scraper.plugins.core.flowgraph.api;
+    exports scraper.plugins.core.typechecker;
+
     requires scraper.annotations;
     requires scraper.api;
     requires scraper.core;
