@@ -1,0 +1,9 @@
+{
+  "name"       : "job",
+  "graphs"    : {
+    "start":
+    [
+      { "type":"SimpleFunctionalNode", "goTo": "ok2" }
+    ]
+  }
+}

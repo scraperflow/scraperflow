@@ -1,0 +1,10 @@
+{
+  "name"       : "job",
+  "entry": "start",
+  "graphs"    : {
+    "start":
+    [
+      { "type":"SimpleNode", "notexist": true }
+    ]
+  }
+}

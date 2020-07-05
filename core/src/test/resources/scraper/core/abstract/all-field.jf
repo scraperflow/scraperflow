@@ -1,0 +1,16 @@
+{
+  "name"       : "job",
+  "globalNodeConfigurations": {
+    "SimpleFunctionalNode": {
+      "output": "goTo"
+    }
+  },
+  "entry": "start",
+  "graphs"    : {
+    "start":
+    [
+      { "type":"SimpleFunctionalNode" },
+      { "type":"SimpleFunctionalNode", "output":  "overwritten" }
+    ]
+  }
+}

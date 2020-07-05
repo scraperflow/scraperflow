@@ -1,6 +1,0 @@
-// this fixes the resource finding problem when running the Main classes in IDEA
-// see https://intellij-support.jetbrains.com/hc/en-us/community/posts/360000430279-Can-t-access-resource-with-Java-10
-configure( subprojects ) {
-    apply plugin: 'idea'
-    idea.module.outputDir file("out/production/classes")
-}

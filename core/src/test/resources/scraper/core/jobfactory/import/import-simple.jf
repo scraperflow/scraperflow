@@ -1,0 +1,13 @@
+{
+    "name" : "import",
+  "imports": {
+    "part.jf": {}
+  },
+    "graphs" : {
+      "start":
+      [
+        { "type": "SimpleNode" },
+        { "type": "SimpleNode"}
+      ]
+    }
+}

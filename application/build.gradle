@@ -1,0 +1,29 @@
+plugins {
+    id 'application'
+    id("de.jjohannes.extra-java-module-info") version "0.1"
+}
+
+version = '0.12.0'
+
+extraJavaModuleInfo {
+    // This does not have to be a complete description (e.g. here 'org.apache.commons.collections' does not export anything here).
+    // It only needs to be good enough to work in the context of this application we are building.
+    module("antlr4-runtime-4.8.jar", "org.antlr.antlr4.runtime", "4.8") {}
+    module("snakeyaml-1.26.jar", "org.yaml.snakeyaml", "1.26") {}
+}
+
+dependencies {
+    implementation project(':core')
+    implementation project(':core-plugins')
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+application {
+    mainModule = 'scraper.app'
+    mainClass = 'scraper.app.Scraper'
+}
+
+distributions.main.distributionBaseName = "scraper"
+

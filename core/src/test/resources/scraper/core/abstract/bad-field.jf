@@ -1,0 +1,9 @@
+{
+  "name"       : "job",
+  "graphs"    : {
+    "start":
+    [
+      { "type": "SimpleFunctionalNode", "label":  "ok", "forward": false, "unknown-field": true }
+    ]
+  }
+}

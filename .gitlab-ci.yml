@@ -35,7 +35,7 @@ coverage:
 install:
   stage: install
   script:
-    - ./gradlew bundleAll
+    - ./gradlew build
 
 run:
   stage: run

@@ -1,6 +1,0 @@
-dependencies {
-    testImplementation 'pl.pragmatists:JUnitParams:1.1.1'
-
-    testRuntime project(':scraper-plugins:scraper-plugins-core')
-}
-

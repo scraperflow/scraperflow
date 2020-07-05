@@ -1,0 +1,33 @@
+plugins {
+    id 'jacoco'
+    id 'java-library'
+}
+
+version = '0.12.0'
+
+dependencies {
+    // core api + transitive dependencies
+    api project(':api')
+    api project(':utilities')
+
+    // for parsers
+    testRuntimeOnly project(':core-parsers')
+}
+
+dependencies {
+    // template grammar parser generator
+    implementation 'org.antlr:antlr4-runtime:4.8'
+
+    // reflection framework
+    api 'io.github.classgraph:classgraph:4.8.47'
+
+    // json + yml library
+    api group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.+'
+    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.+'
+}
+
+// test dependencies
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
