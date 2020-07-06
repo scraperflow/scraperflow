@@ -33,7 +33,7 @@ public interface Node {
             for (NodeHook hook : n.hooks()) { hook.afterProcess(n, o); }
             return n.forward(fm);
         } catch (TemplateException e) {
-            n.log(NodeLogLevel.ERROR, "Template type error for {}: {}", n.getAddress(), e.getMessage());
+            n.log(NodeLogLevel.ERROR, "Template type error for {0}: {1}", n.getAddress(), e.getMessage());
             throw e;
         }
     }

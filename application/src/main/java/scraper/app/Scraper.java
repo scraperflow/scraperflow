@@ -105,7 +105,7 @@ public class Scraper {
         String exitWithException = System.getProperty("exitWithException", "false");
         if(exitWithException.equalsIgnoreCase("false")) {
             try { main.run(args); } catch (Exception e) {
-                log.log(ERROR, "Could not run scrape job: {0}", e.getMessage());
+                log.log(ERROR, "Couldo not run scrape job: {0}", e.getMessage());
                 if(StringUtil.getArgument(args, "debug-info") != null) e.printStackTrace();
             }
         } else {

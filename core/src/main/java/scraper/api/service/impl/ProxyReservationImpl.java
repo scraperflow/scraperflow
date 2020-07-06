@@ -37,7 +37,7 @@ public class ProxyReservationImpl implements ProxyReservation {
         try {
             StringUtil.readBody(new File(proxyPath), line -> proxyLineConsumer.accept(line, Collections.singleton(proxyGroup)));
         } catch (Exception e) {
-            log.log(ERROR, "Could not insert proxies for group {} at {}: {}", proxyGroup, proxyPath, e);
+            log.log(ERROR, "Could not insert proxies for group {0} at {1}: {2}", proxyGroup, proxyPath, e);
         }
     }
 

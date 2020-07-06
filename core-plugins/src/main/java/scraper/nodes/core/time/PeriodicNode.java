@@ -58,8 +58,6 @@ public final class PeriodicNode implements FunctionalNode {
                 }
             }
         };
-
-        timer = new Timer(false);
     }
 
     @Override
@@ -69,6 +67,7 @@ public final class PeriodicNode implements FunctionalNode {
         this.o = o.copy();
 
         if (!started.getAndSet(true)) {
+            timer = new Timer(false);
             timer.scheduleAtFixedRate(timerTask, 0 , period);
         }
     }

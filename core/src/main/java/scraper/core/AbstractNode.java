@@ -297,11 +297,11 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
                         log(WARN, "Fork dispatch to goTo '{0}' terminated exceptionally, executing onException '{1}'.", e.getMessage(), onForkException);
                         return eval(o, onForkException);
                     } catch (NodeException ex) {
-                        log(ERROR, "OnException fork target terminated exceptionally.", target, e);
+                        log(ERROR, "OnException fork target {0} terminated exceptionally: {1}", target, e.getMessage());
                         throw new RuntimeException(e);
                     }
                 } else {
-                    log(ERROR, "Fork dispatch to goTo '{0}' terminated exceptionally.", target, e);
+                    log(ERROR, "Fork dispatch to goTo '{0}' terminated exceptionally: {1}", target, e.getMessage());
                     throw new RuntimeException(e);
                 }
             }
@@ -319,12 +319,12 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
                     try {
                         return eval(o, onForkException);
                     } catch (NodeException ex) {
-                        log(ERROR, "OnException fork target terminated exceptionally.", target, e);
+                        log(ERROR, "OnException fork target {0} terminated exceptionally: {1}", target, e.getMessage());
                         throw new RuntimeException(e);
                     }
                 } else {
                     e.printStackTrace();
-                    log(ERROR, "Fork depend to goTo '{0}' terminated exceptionally.", target, e);
+                    log(ERROR, "Fork depend to goTo '{0}' terminated exceptionally: {1}", target, e.getMessage());
                     throw new RuntimeException(e);
                 }
             }
