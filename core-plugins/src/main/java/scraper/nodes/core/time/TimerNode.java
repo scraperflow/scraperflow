@@ -96,28 +96,28 @@ public final class TimerNode implements FunctionalNode {
                 break;
             }
             case START: {
-                n.log(DEBUG, "[{}] Starting timer action received", name);
+                n.log(DEBUG, "[{0}] Starting timer action received", name);
                 startElapsed();
                 startTimeout(o);
                 startThread(n, o, false);
                 break;
             }
             case FORCE_START: {
-                n.log(DEBUG, "[{}] Force starting timer action received", name);
+                n.log(DEBUG, "[{0}] Force starting timer action received", name);
                 startElapsed();
                 startTimeout(o);
                 startThread(n, o, true);
                 break;
             }
             case STOP: {
-                if(lastReceivedAction != Action.STOP) n.log(DEBUG, "[{}] Stop timer action received", name);
+                if(lastReceivedAction != Action.STOP) n.log(DEBUG, "[{0}] Stop timer action received", name);
                 stopElapsed();
                 stopTimeout();
                 stopThread();
                 break;
             }
             case NoOP: {
-                n.log(TRACE,"[{}] No op timer action", name);
+                n.log(TRACE,"[{0}] No op timer action", name);
             }
         }
 
@@ -157,7 +157,7 @@ public final class TimerNode implements FunctionalNode {
         Integer timeout = o.eval(this.timeout);
 
         if(timeoutThread == null) {
-            n.log(INFO,"Starting alarm, {} ms!", timeout);
+            n.log(INFO,"Starting alarm, {0} ms!", timeout);
 
             // create new timer and start it
             timeoutThread = getThread(n, o, timeout);
@@ -165,13 +165,13 @@ public final class TimerNode implements FunctionalNode {
         } else {
             if(force) {
                 // force interrupt and recreate + start timer
-                n.log(INFO,"Force starting alarm, {} ms!", timeout);
+                n.log(INFO,"Force starting alarm, {0} ms!", timeout);
                 timeoutThread.interrupt();
                 timeoutThread = getThread(n, o, timeout);
                 timeoutThread.start();
             } else {
                 // do nothing if timer already started, let it finish
-                n.log(DEBUG,"[{}] Timer already running, {} ms left", name, getTimeLeft());
+                n.log(DEBUG,"[{0}] Timer already running, {1} ms left", name, getTimeLeft());
             }
         }
     }
@@ -208,14 +208,14 @@ public final class TimerNode implements FunctionalNode {
             final FlowMap oCopy = o.copy();
 
             while(!Thread.interrupted()) {
-                n.log(INFO,"'{}' alarm in {}", name, timeout);
+                n.log(INFO,"'{0}' alarm in {1}", name, timeout);
 
                 try {
                     Thread.sleep(timeout);
-                    n.log(INFO,"Executing alarm: {}", toString());
+                    n.log(INFO,"Executing alarm: {0}", toString());
                     n.forkDispatch(oCopy, onTimeout);
                 } catch (InterruptedException e) {
-                    n.log(INFO,"'{}' stopped", name);
+                    n.log(INFO,"'{0}' stopped", name);
                 } finally {
                     Thread.currentThread().interrupt();
                     stopTimeout();

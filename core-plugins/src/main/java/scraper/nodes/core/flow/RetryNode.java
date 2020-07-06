@@ -36,7 +36,7 @@ public final class RetryNode implements Node {
             try {
                 return n.eval(localCopy, retryTarget);
             } catch (NodeException e) {
-                n.log(INFO, "Retry {}", (current+1));
+                n.log(INFO, "Retry {0}", (current+1));
                 current++;
             }
         }

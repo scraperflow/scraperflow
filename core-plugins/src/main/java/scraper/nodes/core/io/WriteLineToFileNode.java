@@ -46,7 +46,7 @@ public final class WriteLineToFileNode implements FunctionalNode {
         try (PrintWriter fos = new PrintWriter(new FileOutputStream(output, !overwrite), true, StandardCharsets.ISO_8859_1)){
             if(!content.isEmpty()) fos.println(content);
         } catch (IOException e) {
-            n.log(ERROR,"IO read error: {}", e.getMessage());
+            n.log(ERROR,"IO read error: {0}", e.getMessage());
             throw new NodeException(e, "IO read error, check system");
         }
     }

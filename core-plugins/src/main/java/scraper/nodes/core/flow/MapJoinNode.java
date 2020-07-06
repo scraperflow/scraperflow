@@ -92,7 +92,7 @@ public final class MapJoinNode <A> implements Node {
 
         keys.forEach((joinKeyForked, joinKey) -> o.remove(joinKey));
         keys.forEach((joinKeyForked, joinKey) -> {
-            n.log(NodeLogLevel.TRACE, "Joining {} -> {}", joinKeyForked, joinKey);
+            n.log(NodeLogLevel.TRACE, "Joining {0} -> {1}", joinKeyForked, joinKey);
 
             List<? super Object> joinResults = o.evalMaybe(new T<List<? super Object>>() {}).orElse(new ArrayList<>());
 

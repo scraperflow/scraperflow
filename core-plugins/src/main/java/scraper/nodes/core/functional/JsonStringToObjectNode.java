@@ -42,7 +42,7 @@ public final class JsonStringToObjectNode implements FunctionalNode {
             o.output(jsonObject, obj);
         }
         catch (IOException e) {
-            n.log(WARN,"Could not convert input to JSON object: {}", json);
+            n.log(WARN,"Could not convert input to JSON object: {0}", json);
             throw new NodeException(e, e.getMessage()+"; Failed to convert JSON object: "+ json);
         }
     }

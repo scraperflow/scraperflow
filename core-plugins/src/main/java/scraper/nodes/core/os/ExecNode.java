@@ -80,7 +80,7 @@ public final class ExecNode implements FunctionalNode {
 
     private void exec(NodeContainer<? extends Node> n, List<String> exec, FlowMap o) throws NodeException {
         try {
-            n.log(DEBUG,"Executing {}", exec);
+            n.log(DEBUG,"Executing {0}", exec);
 
             ProcessBuilder pb = new ProcessBuilder(exec);
             Process b = pb.start();
@@ -89,7 +89,7 @@ public final class ExecNode implements FunctionalNode {
             String stdErr = readStream(b.getErrorStream());
 
             b.waitFor();
-            if(b.exitValue() != 0) n.log(ERROR,"{} finished with non-zero exit code: {}", exec, b.exitValue());
+            if(b.exitValue() != 0) n.log(ERROR,"{0} finished with non-zero exit code: {1}", exec, b.exitValue());
 
             o.output(put   , stdOut);
             o.output(putErr, stdErr);
@@ -97,7 +97,7 @@ public final class ExecNode implements FunctionalNode {
             b.destroy();
             b.waitFor();
         } catch (IOException | InterruptedException e) {
-            n.log(ERROR,"'{}' could not be executed:", exec, e.getMessage());
+            n.log(ERROR,"'{0}' could not be executed:", exec, e.getMessage());
             if (failOnException) throw new NodeException(e, "Internal process execution error");
         }
     }

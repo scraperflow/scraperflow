@@ -21,8 +21,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.lang.System.Logger.Level.DEBUG;
-import static java.lang.System.Logger.Level.ERROR;
+import static java.lang.System.Logger.Level.*;
 import static scraper.plugins.core.flowgraph.FlowUtil.getReverseOrderHierarchy;
 
 public class TypeChecker {
@@ -97,11 +96,17 @@ public class TypeChecker {
                 if(
                         e.getDisplayLabel().equalsIgnoreCase("forward")
                                 || e.getDisplayLabel().equalsIgnoreCase("join")
+                                || e.getDisplayLabel().equalsIgnoreCase("join")
+                                || e.isPropagate()
                 ) {
                     NodeContainer<?> nextNode = spec.getNode(e.getToAddress());
-                    propagate(nextNode, env, spec, cfg, visited);
+                    if (e.isPropagate()) {
+                        propagate(nextNode, env.copy(), spec, cfg, visited);
+                    } else {
+                        propagate(nextNode, env, spec, cfg, visited);
+                    }
                 } else {
-                    log.log(DEBUG, "Not propagating: " + e.getDisplayLabel());
+                    log.log(INFO, "Not propagating: " + e.getDisplayLabel());
                 }
             }
         });
@@ -120,12 +125,12 @@ public class TypeChecker {
 
     // T-Node
     private void typeNode(TypeEnvironment env, NodeContainer<?> n) {
-//        log.log(DEBUG, "==== Typing node {} ({})", n, n.getC().getClass().getSimpleName());
+//        log.log(DEBUG, "==== Typing node {0} ({1})", n, n.getC().getClass().getSimpleName());
 
         getDefaultDataFlowInputTemplates(n)
                 .forEach((fieldName, template) -> {
                     if(ignore.contains(fieldName)) {
-//                        log.log(DEBUG, "Ignoring field as requested: {}", fieldName);
+//                        log.log(DEBUG, "Ignoring field as requested: {0}", fieldName);
                         return;
                     }
 

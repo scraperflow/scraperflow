@@ -11,6 +11,8 @@ extraJavaModuleInfo {
 }
 
 dependencies {
+    runtimeOnly fileTree(dir: 'rt', include: '*.jar')
+
     implementation project(':core')
     implementation project(':core-plugins')
 }

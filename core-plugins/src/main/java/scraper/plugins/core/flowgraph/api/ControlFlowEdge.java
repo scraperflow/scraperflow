@@ -24,6 +24,11 @@ public interface ControlFlowEdge {
     @NotNull
     String getDisplayLabel();
 
+    /**
+     * If propagate or not
+     */
+    default @NotNull boolean isPropagate() { return false; }
+
     /** Indicates if the edge is used multiple times from the origin node */
     boolean isMultiple();
 

@@ -21,6 +21,23 @@ public class ControlFlowEdgeImpl implements ControlFlowEdge {
 
     private final boolean multiple;
     private final boolean dispatched;
+    private final boolean propagate;
+
+    public ControlFlowEdgeImpl(
+            @NotNull final NodeAddress from,
+            @NotNull final NodeAddress to,
+            @NotNull String displayName,
+            boolean multiple,
+            boolean dispatched,
+            boolean propagate
+    ) {
+        this.fromAddress = from;
+        this.toAddress = to;
+        this.displayLabel = displayName;
+        this.multiple = multiple;
+        this.dispatched = dispatched;
+        this.propagate = propagate;
+    }
 
     public ControlFlowEdgeImpl(
             @NotNull final NodeAddress from,
@@ -28,13 +45,8 @@ public class ControlFlowEdgeImpl implements ControlFlowEdge {
             @NotNull String displayName,
             boolean multiple,
             boolean dispatched
-
     ) {
-        this.fromAddress = from;
-        this.toAddress = to;
-        this.displayLabel = displayName;
-        this.multiple = multiple;
-        this.dispatched = dispatched;
+        this(from, to, displayName, multiple, dispatched, false);
     }
 
     @NotNull
@@ -48,6 +60,10 @@ public class ControlFlowEdgeImpl implements ControlFlowEdge {
     @Override public boolean isMultiple() { return multiple; }
     @Override public boolean isDispatched() { return dispatched; }
 
+    public static ControlFlowEdge edge(@NotNull final NodeAddress from, @NotNull final NodeAddress to, @NotNull String displayLabel, boolean propagate) {
+        return new ControlFlowEdgeImpl(from, to, displayLabel, false, false, propagate);
+    }
+
     public static ControlFlowEdge edge(@NotNull final NodeAddress from, @NotNull final NodeAddress to, @NotNull String displayLabel) {
         return new ControlFlowEdgeImpl(from, to, displayLabel, false, false);
     }
@@ -59,6 +75,12 @@ public class ControlFlowEdgeImpl implements ControlFlowEdge {
     @Override
     public String toString() {
         return "<"+fromAddress +":" + displayLabel + ":" + toAddress+">";
+    }
+
+
+    @Override
+    public boolean isPropagate() {
+        return propagate;
     }
 }
 

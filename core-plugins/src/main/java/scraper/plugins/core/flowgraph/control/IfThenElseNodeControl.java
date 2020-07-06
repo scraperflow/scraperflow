@@ -32,8 +32,8 @@ public final class IfThenElseNodeControl {
         Optional<Address> falseTarget = FlowUtil.getField("falseTarget", node.getC());
 
         Stream<ControlFlowEdge> additionalOutput = Stream.concat(
-                trueTarget.stream().map(a -> edge(node.getAddress(), NodeUtil.getTarget(node.getAddress(), a, spec).getAddress(), "true")),
-                falseTarget.stream().map(a -> edge(node.getAddress(), NodeUtil.getTarget(node.getAddress(), a, spec).getAddress(), "false"))
+                trueTarget.stream().map(a -> edge(node.getAddress(), NodeUtil.getTarget(node.getAddress(), a, spec).getAddress(), "true", true)),
+                falseTarget.stream().map(a -> edge(node.getAddress(), NodeUtil.getTarget(node.getAddress(), a, spec).getAddress(), "false", true))
         );
 
         return Stream.concat(

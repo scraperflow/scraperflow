@@ -165,7 +165,7 @@ public final class HttpRequestNode implements Node {
             try {
                 n.getJobInstance().getProxyReservation().addProxies(proxyFile, proxyGroup);
             } catch (Exception e) {
-                n.log(ERROR,"IO proxy read error: {}", proxyFile);
+                n.log(ERROR,"IO proxy read error: {0}", proxyFile);
                 throw new ValidationException("Could not read file at "+proxyFile+". "+e);
             }
         }
@@ -179,13 +179,13 @@ public final class HttpRequestNode implements Node {
 
         // check if file already downloaded
         if(checkFileDownloaded(n, o)) {
-            n.log(TRACE, "File already downloaded: {}", url);
+            n.log(TRACE, "File already downloaded: {0}", url);
             return o;
         }
 
         // check if response is cached
         if(cached(n, o, url, exceptionContaining)) {
-            n.log(TRACE, "Request cached: {}", url);
+            n.log(TRACE, "Request cached: {0}", url);
             return o;
         }
 
@@ -231,25 +231,25 @@ public final class HttpRequestNode implements Node {
             if(expectedResponse.equals(ResponseType.STRING_BODY)) o.output(put, (String) body);
 
         } catch (InterruptedException e) {
-            n.log(WARN, "Interrupted while waiting for token: {}", url);
+            n.log(WARN, "Interrupted while waiting for token: {0}", url);
             throw new NodeException(e, "Interrupted while waiting for token");
         } catch (IOException e) {
             token.bad();
-            n.log(INFO, "IOException for request {}: {}", url, e.getMessage());
+            n.log(INFO, "IOException for request {0}: {1}", url, e.getMessage());
             throw new NodeException(e, "IOException");
         } catch (ExecutionException e) {
-            n.log(WARN, "Execution exception: {} | {}", e.getMessage(), url);
+            n.log(WARN, "Execution exception: {0} | {1}", e.getMessage(), url);
             token.bad();
             throw new NodeException(e, "Bad Execution");
         } catch (TimeoutException e) {
             token.bad();
-            n.log(INFO, "Token timeout bad: {} | {}", token, url);
+            n.log(INFO, "Token timeout bad: {0} | {1}", token, url);
             throw new NodeException(e, "Timeout");
         } finally {
             token.close();
         }
 
-        n.log(INFO,"[✔] {}", url);
+        n.log(INFO,"[✔] {0}", url);
 
         try {
             Thread.sleep(holdOnForward);
@@ -298,7 +298,7 @@ public final class HttpRequestNode implements Node {
                     request.PUT(HttpRequest.BodyPublishers.ofString(payload));
                     break;
                 default:
-                    n.log(ERROR, "Using legacy request type for new HTTP node: {}", requestType);
+                    n.log(ERROR, "Using legacy request type for new HTTP node: {0}", requestType);
                     throw new RuntimeException();
             }
 
@@ -316,7 +316,7 @@ public final class HttpRequestNode implements Node {
 
             return request.build();
         } catch (Exception e) {
-            n.log(ERROR, "Could not build http request, {}: {}", e, url);
+            n.log(ERROR, "Could not build http request, {0}: {1}", e, url);
             throw new NodeException(e, "Could not build http request "+url);
         }
     }
@@ -341,7 +341,7 @@ public final class HttpRequestNode implements Node {
             n.getJobInstance().getFileService().ensureFile(cache+file);
             n.getJobInstance().getFileService().replaceFile(cache+file, content);
         } catch (IOException e) {
-            n.log(ERROR,"Could not cache content: {}", e.getMessage());
+            n.log(ERROR,"Could not cache content: {0}", e.getMessage());
         }
     }
 
@@ -359,8 +359,8 @@ public final class HttpRequestNode implements Node {
             String path = o.eval(this.path);
             File f = new File(path);
             if(f.exists() && f.length() == 0) {
-                n.log(INFO,"Found empty downloaded file, deleting file '{}'", path);
-                if(!f.delete()) n.log(WARN,"Could not delete empty downloaded file: {}", f.getPath());
+                n.log(INFO,"Found empty downloaded file, deleting file '{0}'", path);
+                if(!f.delete()) n.log(WARN,"Could not delete empty downloaded file: {0}", f.getPath());
                 return false;
             }
 
@@ -375,7 +375,7 @@ public final class HttpRequestNode implements Node {
         if (cache != null) {
             String cachedContent = getCached(n, cache, url, exceptionContaining);
             if (cachedContent != null) {
-                n.log(DEBUG,"[\uD83D\uDCBE] {}", url);
+                n.log(DEBUG,"[\uD83D\uDCBE] {0}", url);
 
                 o.output(put, cachedContent);
                 return true;
@@ -399,7 +399,7 @@ public final class HttpRequestNode implements Node {
             if ((cacheMs - diff) <= 0) {
                 // TTL exceeded
                 boolean delete = f.delete();
-                if(!delete) n.log(WARN,"Could not delete cached file: {}", url);
+                if(!delete) n.log(WARN,"Could not delete cached file: {0}", url);
                 return null;
             }
         }
@@ -408,21 +408,21 @@ public final class HttpRequestNode implements Node {
         try {
             String cached = StringUtil.readBody(f);
             if(cached.isEmpty()) {
-                n.log(INFO,"Found empty cache file, deleting cache for '{}'", url);
-                if(!f.delete()) n.log(WARN,"Could not delete empty cache file: {}", f.getPath());
+                n.log(INFO,"Found empty cache file, deleting cache for '{0}'", url);
+                if(!f.delete()) n.log(WARN,"Could not delete empty cache file: {0}", f.getPath());
                 return null;
             }
 
             try {
                 validateBody(cached, exceptionContaining);
             } catch (Exception e) {
-                n.log(WARN,"Invalidating cache file with invalid content: {}", e.getMessage());
-                if(!f.delete()) n.log(WARN,"Could not delete invalid cache file: {}", f.getPath());
+                n.log(WARN,"Invalidating cache file with invalid content: {0}", e.getMessage());
+                if(!f.delete()) n.log(WARN,"Could not delete invalid cache file: {0}", f.getPath());
                 return null;
             }
             return cached;
         } catch (IOException e) {
-            n.log(WARN,"Could not read cached file content: {}", e);
+            n.log(WARN,"Could not read cached file content: {0}", e);
             return null;
         }
     }

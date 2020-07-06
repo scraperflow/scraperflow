@@ -114,7 +114,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
         this.jobPojo = job;
 
         initLogger();
-        log(TRACE,"Start init {}", this);
+        log(TRACE,"Start init {0}", this);
 
         // initialize fields with arguments
         try {
@@ -132,12 +132,12 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
                 if(ensureFile != null) ensureFileFields.put(f, ensureFile);
             });
 
-            log(TRACE,"Finished init {}", this);
+            log(TRACE,"Finished init {0}", this);
 
             // init node
             getC().init(this, job);
         } catch (Exception e) {
-            log(ERROR, "Could not initialize field: '{}'", e.getMessage());
+            log(ERROR, "Could not initialize field: '{0}'", e.getMessage());
             throw new ValidationException(e, "Could not initialize fields for " + getAddress() +": " + e.getMessage());
         }
     }
@@ -171,7 +171,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
                 if(logString != null) log(logLevel, logString.toString());
             }
         } catch (Exception e) {
-            log(ERROR, "Could not evaluate log template: {}", e.getMessage());
+            log(ERROR, "Could not evaluate log template: {0}", e.getMessage());
         }
 
 
@@ -191,7 +191,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
 
                 if (path == null) continue;
 
-                log(TRACE,"Ensure file of field {} at {}", ensureFileField.getName(), path);
+                log(TRACE,"Ensure file of field {0} at {1}", ensureFileField.getName(), path);
                 if(ensureFileFields.get(ensureFileField).ensureDir())
                     getJobPojo().getFileService().ensureDirectory(new File(path));
 
@@ -205,7 +205,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
         } catch (IllegalAccessException | ClassCastException e) {
             throw new RuntimeException("Implemented reflection badly: ", e);
         } catch (IOException e) {
-            log(ERROR,"Failed ensure file: {}", e.getMessage());
+            log(ERROR,"Failed ensure file: {0}", e.getMessage());
             throw new NodeException("Failed ensuring directory or file: " + e.getMessage());
         }
     }
@@ -237,7 +237,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
     // node shutdown
 //    @Override
 //    public void nodeShutdown() {
-//        log(NodeLogLevel.DEBUG, "{}@{} stopped gracefully", getClass().getSimpleName(), stageIndex);
+//        log(NodeLogLevel.DEBUG, "{0}@{1} stopped gracefully", getClass().getSimpleName(), stageIndex);
 //    }
 
 
@@ -294,14 +294,14 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
             } catch (Exception e) {
                 if(onForkException != null) {
                     try {
-                        log(WARN, "Fork dispatch to goTo '{}' terminated exceptionally, executing onException '{}'.", e.getMessage(), onForkException);
+                        log(WARN, "Fork dispatch to goTo '{0}' terminated exceptionally, executing onException '{1}'.", e.getMessage(), onForkException);
                         return eval(o, onForkException);
                     } catch (NodeException ex) {
                         log(ERROR, "OnException fork target terminated exceptionally.", target, e);
                         throw new RuntimeException(e);
                     }
                 } else {
-                    log(ERROR, "Fork dispatch to goTo '{}' terminated exceptionally.", target, e);
+                    log(ERROR, "Fork dispatch to goTo '{0}' terminated exceptionally.", target, e);
                     throw new RuntimeException(e);
                 }
             }
@@ -324,7 +324,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
                     }
                 } else {
                     e.printStackTrace();
-                    log(ERROR, "Fork depend to goTo '{}' terminated exceptionally.", target, e);
+                    log(ERROR, "Fork depend to goTo '{0}' terminated exceptionally.", target, e);
                     throw new RuntimeException(e);
                 }
             }

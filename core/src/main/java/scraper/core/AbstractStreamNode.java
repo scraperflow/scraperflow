@@ -72,7 +72,7 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
                 // collect to list
                 Optional<?> element = newMap.get(key);
                 if(element.isEmpty()) {
-                    log(NodeLogLevel.ERROR, "Missing expected element at key {}, fix node implementation. Skipping", key);
+                    log(NodeLogLevel.ERROR, "Missing expected element at key {0}, fix node implementation. Skipping", key);
                     throw new TemplateException("Missing expected element at key " + key);
                 } else {
                     collectorForId.get(key).add(element.get());
@@ -95,7 +95,7 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
                 // collect to list
                 Optional<?> element = newMap.get(key);
                 if(element.isEmpty()) {
-                    log(NodeLogLevel.ERROR, "Missing expected element at key {}, fix node implementation. Skipping", key);
+                    log(NodeLogLevel.ERROR, "Missing expected element at key {0}, fix node implementation. Skipping", key);
                     throw new TemplateException("Missing expected element at key " + key);
                 } else {
                     collectorForId.get(key).add(element.get());
@@ -109,7 +109,7 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
     @Override
     public FlowMap processStream(@NotNull final FlowMap o) throws NodeException {
         if(collect) {
-            log(NodeLogLevel.TRACE, "Collecting stream for map {}", o.getId());
+            log(NodeLogLevel.TRACE, "Collecting stream for map {0}", o.getId());
             openStreams.put(o.getId(), o);
             collectors.put(o.getId(), new HashMap<>());
         }
@@ -119,7 +119,7 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
         if(!collect) {
             return o;
         } else {
-            log(NodeLogLevel.TRACE, "Finish collection for map {}", o.getId());
+            log(NodeLogLevel.TRACE, "Finish collection for map {0}", o.getId());
             FlowMap copy = openStreams.get(o.getId()).copy();
             Map<String, List<Object>> toCollect = collectors.get(o.getId());
             toCollect.forEach(copy::output);

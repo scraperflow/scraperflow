@@ -52,7 +52,7 @@ public final class PeriodicNode implements FunctionalNode {
             @Override
             public void run() {
                 if(started.get() && dispatch.get()) {
-                    n.log(DEBUG,"Dispatching {}", onPeriod);
+                    n.log(DEBUG,"Dispatching {0}", onPeriod);
                     final FlowMap oCopy = o.copy();
                     n.forkDispatch(oCopy, onPeriod);
                 }

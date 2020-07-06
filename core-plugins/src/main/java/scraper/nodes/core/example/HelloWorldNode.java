@@ -69,33 +69,33 @@ public class HelloWorldNode implements Node {
         // takes the evaluated T of field 'hello' and reserves the corresponding key in the map 'o'
         // start(o); // this method is executed before the process call in the accept(FlowMap) abstract function
 
-        n.log(INFO,"Hello {}!", hello);
+        n.log(INFO,"Hello {0}!", hello);
 
         // to get the raw T, one can fetch the raw JSON definition at any time
-        n.log(INFO,"The T for field hello is: {}", n.getKeySpec("hello"));
+        n.log(INFO,"The T for field hello is: {0}", n.getKeySpec("hello"));
 
         // you can use Templates on the fly like this
         // where T is the target type token
         String myT = "{hello}";
         Term<String> replacedT = TemplateUtil.parseTemplate(myT, new T<>(){});
-        n.log(INFO, "{} => {}", myT, replacedT.eval(o));
+        n.log(INFO, "{0} => {1}", myT, replacedT.eval(o));
 
         // Ts support a powerful grammar
         myT = "a prefix-{hello}-a suffix}";
         replacedT = TemplateUtil.parseTemplate(myT, new T<>(){});
-        n.log(INFO,"{} => {}", myT, replacedT);
+        n.log(INFO,"{0} => {1}", myT, replacedT);
 
         // fields annotated with @Optional are null if not defined in the .scrape file
-        n.log(INFO,"Optional parameter: {}", (name == null ? "not provided" : name));
+        n.log(INFO,"Optional parameter: {0}", (name == null ? "not provided" : name));
 
-        n.log(INFO,"File '{}' along with its subdirectories was ensured to exist: {}",
+        n.log(INFO,"File '{0}' along with its subdirectories was ensured to exist: {1}",
                 new File(sourceFile), new File(sourceFile).exists());
 
         // execute this node and follow along with the l
         n.log(INFO,"The forward method will do the following:");
-        n.log(INFO,"Forwarding enabled: {}", n.isForward());
+        n.log(INFO,"Forwarding enabled: {0}", n.isForward());
         if (n.isForward()) {
-            n.log(INFO,"Goto: {}", (n.getGoTo().isEmpty() ? ("next node") : "node '" + n.getGoTo() + "'"));
+            n.log(INFO,"Goto: {0}", (n.getGoTo().isEmpty() ? ("next node") : "node '" + n.getGoTo() + "'"));
         }
 
         // a node can eval/fork depend/fork dispatch to create nested flows and modify control flow
