@@ -37,7 +37,7 @@ public class DependencyInjectionUtil {
         diContainer.addComponent(JobFactory.class);
 
         try (ScanResult scanResult = new ClassGraph().enableClassInfo()
-                             .whitelistPackages("scraper.plugins","scraper.addons", "scraper.hooks")
+                             .acceptPackages("scraper.plugins","scraper.addons", "scraper.hooks")
                              .scan()) {
             List.of(
                     scanResult.getClassesImplementing(Addon.class.getName()),

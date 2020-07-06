@@ -2,7 +2,7 @@ Scraper - A Composable Workflow Framework
 =========================================
 
 ![version](https://img.shields.io/badge/version-0.12.0-green.svg)
-![language](https://img.shields.io/badge/language-java12-blue.svg)
+![language](https://img.shields.io/badge/language-java9+(JPMS)-blue.svg)
 ![build](https://img.shields.io/badge/build-gradle-yellowgreen.svg)
 
 [![pipeline status](https://git.server1.link/scraper/scraper/badges/master/pipeline.svg)](https://git.server1.link/scraper/scraper/commits/master)
@@ -46,7 +46,9 @@ If custom nodes or plugins are to be supplied (like [dev-nodes](https://github.c
 place the jar(s) in the current working directory (or change '$PWD'), too.
 
 
-# Quickstart - Jars
+# Quickstart - Java
+
+Scraper is fully modularized.
 
 Get the latest [jar release bundle](https://github.com/scraperflow/scraper/releases) 
 and any [plugin](https://github.com/scraperflow/scraper-plugins) 
@@ -55,7 +57,7 @@ or [additional nodes](https://github.com/scraperflow/scraper-nodes) you like.
 Place them in the same folder. 
 To run Scraper, use
 
-         java -cp "*" scraper.app.Scraper help
+         java -p . -m scraper.app help
        
 Scraper will look for workflows relative to the working directory.
 
@@ -63,9 +65,12 @@ Scraper will look for workflows relative to the working directory.
 
 Using
 
-      gradle bundleAll
+      gradle clean test build codeCov
 
 will
 
 * compile the project 
-* package the project core and project with all found nodes and plugins as a runnable jar in the `build/libs` folder
+* test the project
+* package the project at `application/build/distributions`
+* generate code coverage report at `build/reports/jacoco/codeCoverageReport/html/index.html`
+

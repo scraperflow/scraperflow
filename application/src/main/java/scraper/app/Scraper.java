@@ -203,7 +203,7 @@ public class Scraper {
 
     private static void collectAndPrintCommandLineArguments() {
         try (ScanResult scanResult = new ClassGraph().enableAllInfo()
-                .whitelistPackages("scraper")
+                .acceptPackages("scraper")
                 .scan()) {
             for (ClassInfo routeClassInfo : scanResult.getClassesWithAnnotation(ArgsCommand.class.getName())) {
                 printArgsCommand(routeClassInfo.getAnnotationInfo(ArgsCommand.class.getName()));

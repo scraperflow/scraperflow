@@ -25,7 +25,7 @@ public class PluginBean {
         try (ScanResult scanResult =
                      new ClassGraph()
                              .enableAllInfo()
-                             .whitelistPackages(pkg)
+                             .acceptPackages(pkg)
                              .scan()) {
             for (ClassInfo routeClassInfo : scanResult.getClassesWithAnnotation(routeAnnotation)) {
                 if (routeClassInfo.isAbstract()) continue;
