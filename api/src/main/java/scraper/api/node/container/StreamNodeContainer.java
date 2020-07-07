@@ -14,14 +14,6 @@ import java.util.List;
  * The origin flow map is used to group requests for the collect case.
  */
 public interface StreamNodeContainer extends NodeContainer<StreamNode> {
-    /**
-     * The keys that are going to be collected.
-     * Has to be called exactly once before starting to process.
-     * In case no matches are streamed,
-     * this is used to ensure that the keys have at least an empty list and not a null element.
-     */
-    void collect(@NotNull FlowMap o, @NotNull List<String> toCollect);
-
     /** Streams a single element match */
     <E> void streamElement(@NotNull FlowMap origin, @NotNull L<E> location, @NotNull E result);
 

@@ -17,12 +17,16 @@ import scraper.api.template.L;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
+import static scraper.util.TemplateUtil.templateOf;
 
 
 /**
  * Provides a streaming mechanism for a node.
  * Either collects results to a list or stream each individual element to a specified target.
  */
+@SuppressWarnings({"rawtypes", "unchecked", "RedundantSuppression"}) // L raw types are checked statically
 @NodePlugin("0.1.0")
 public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implements StreamNodeContainer {
     AbstractStreamNode(@NotNull String instance, @NotNull String graph, @Nullable String node, int index) { super(instance, graph, node, index); }
@@ -43,23 +47,8 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
     }
 
     private final @NotNull Map<UUID, FlowMap> openStreams = new ConcurrentHashMap<>();
-    private final @NotNull Map<UUID, Map<String, List<Object>>> collectors = new ConcurrentHashMap<>();
-    private final @NotNull Map<UUID, List<String>> collectKeys = new ConcurrentHashMap<>();
-
-    @Override
-    public void collect(@NotNull final FlowMap o, @NotNull final List<String> toCollect) {
-        if(collect) {
-            collectKeys.put(o.getId(), toCollect);
-            // get collector list for origin ID and key to be collected
-            collectors.put(o.getId(), new HashMap<>());
-            
-            // create collector for o ID
-            openStreams.put(o.getId(), o.copy());
-
-            // create empty list as default
-            collectKeys.get(o.getId()).forEach(key -> collectors.get(o.getId()).put(key, new LinkedList<>()));
-        }
-    }
+    private final @NotNull Map<UUID, Map<L, List<Object>>> collectors = new ConcurrentHashMap<>();
+    private final @NotNull Map<UUID, List<L<?>>> collectKeys = new ConcurrentHashMap<>();
 
     @Override
     public void streamFlowMap(@NotNull final FlowMap origin, @NotNull final FlowMap newMap) {
@@ -68,9 +57,9 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
             forkDispatch(newMap, streamTarget);
         } else {
             collectKeys.get(origin.getId()).forEach(key -> {
-                Map<String, List<Object>> collectorForId = collectors.get(origin.getId());
+                Map<L, List<Object>> collectorForId = collectors.get(origin.getId());
                 // collect to list
-                Optional<?> element = newMap.get(key);
+                Optional<?> element = newMap.evalMaybe(templateOf(key));
                 if(element.isEmpty()) {
                     log(NodeLogLevel.ERROR, "Missing expected element at key {0}, fix node implementation. Skipping", key);
                     throw new TemplateException("Missing expected element at key " + key);
@@ -91,9 +80,9 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
             forkDispatch(newMap, streamTarget);
         } else {
             collectKeys.get(origin.getId()).forEach(key -> {
-                Map<String, List<Object>> collectorForId = collectors.get(origin.getId());
+                Map<L, List<Object>> collectorForId = collectors.get(origin.getId());
                 // collect to list
-                Optional<?> element = newMap.get(key);
+                Optional<?> element = newMap.evalMaybe(templateOf(key));
                 if(element.isEmpty()) {
                     log(NodeLogLevel.ERROR, "Missing expected element at key {0}, fix node implementation. Skipping", key);
                     throw new TemplateException("Missing expected element at key " + key);
@@ -110,8 +99,16 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
     public FlowMap processStream(@NotNull final FlowMap o) throws NodeException {
         if(collect) {
             log(NodeLogLevel.TRACE, "Collecting stream for map {0}", o.getId());
-            openStreams.put(o.getId(), o);
+            // open stream for ID
+            openStreams.put(o.getId(), o.copy());
+            // open collectors for ID
             collectors.put(o.getId(), new HashMap<>());
+
+            // collect these keys as default
+            List<L<?>> toCollect = collectOutput();
+            collectKeys.put(o.getId(), toCollect);
+            // create empty list as default
+            collectKeys.get(o.getId()).forEach(key -> collectors.get(o.getId()).put(key, new LinkedList<>()));
         }
 
         getC().process(this, o);
@@ -121,7 +118,7 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
         } else {
             log(NodeLogLevel.TRACE, "Finish collection for map {0}", o.getId());
             FlowMap copy = openStreams.get(o.getId()).copy();
-            Map<String, List<Object>> toCollect = collectors.get(o.getId());
+            Map<L, List<Object>> toCollect = collectors.get(o.getId());
             toCollect.forEach(copy::output);
 
             openStreams.remove(o.getId());
@@ -130,5 +127,18 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
 
             return copy;
         }
+    }
+
+    private List<L<?>> collectOutput() {
+        return Arrays.stream(getC().getClass().getDeclaredFields())
+                .filter(f -> f.getType() == L.class)
+                .map(f -> {
+                    f.setAccessible(true);
+                    try {
+                        return (L<?>) f.get(getC());
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).collect(Collectors.toList());
     }
 }

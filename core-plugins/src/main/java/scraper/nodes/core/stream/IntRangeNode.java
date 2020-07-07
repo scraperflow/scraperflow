@@ -40,8 +40,6 @@ public final class IntRangeNode implements StreamNode {
 
     @Override
     public void process(@NotNull final StreamNodeContainer n, @NotNull final FlowMap o) {
-        n.collect(o, List.of(o.evalLocation(output)));
-
         IntStream.rangeClosed(from, to).forEach(i ->{
             FlowMap copy = o.copy();
             copy.output(output, i);

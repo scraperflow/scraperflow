@@ -15,7 +15,6 @@ import scraper.api.template.L;
 import scraper.api.template.T;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -88,8 +87,6 @@ public final class RegexNode implements StreamNode {
 
     @Override
     public void process(@NotNull final StreamNodeContainer n, @NotNull final FlowMap o) {
-        n.collect(o, List.of(o.evalLocation(output)));
-
         String content = o.eval(this.content);
         Map<String, Integer> groups = o.evalIdentity(this.groups);
 

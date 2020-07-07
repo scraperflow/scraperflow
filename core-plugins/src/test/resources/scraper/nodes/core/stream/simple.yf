@@ -12,6 +12,9 @@ graphs:
         output: 1
 
     - type: EchoNode
-      log: "{{{output}}[0]@output}"
+      put: "ok"
+      value: "{{{output}}[0]@output}"
+    - type: EchoNode
+      log: "{ok}"
 
 

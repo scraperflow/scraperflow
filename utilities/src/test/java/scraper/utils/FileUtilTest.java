@@ -31,12 +31,12 @@ public class FileUtilTest {
 
         t.start();
 
-        Thread.sleep(20);
+        Thread.sleep(50);
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(tmp))) {
             pw.println("best content");
         }
 
-        Thread.sleep(20);
+        Thread.sleep(50);
         assertTrue(notified.get());
     }
 
