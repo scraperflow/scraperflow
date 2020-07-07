@@ -1,6 +1,7 @@
 package scraper.api.node.type;
 
 import scraper.annotations.NotNull;
+import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.exceptions.ValidationException;
@@ -14,6 +15,7 @@ import scraper.api.specification.ScrapeInstance;
  * Objects which implement this interface can consume and modify {@link FlowMap}s.
  */
 @FunctionalInterface
+@NodePlugin(value = "0.4.0")
 public interface Node {
     /**
      * Accept a {@link FlowMap}.

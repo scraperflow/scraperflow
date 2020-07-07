@@ -14,7 +14,7 @@ import static scraper.api.node.container.NodeLogLevel.ERROR;
 /**
  * @author Albert Schimpf
  */
-@NodePlugin(value = "0.0.1")
+@NodePlugin(value = "0.0.1", deprecated = true)
 public final class NoNode implements Node {
 
     @FlowKey(defaultValue = "false")

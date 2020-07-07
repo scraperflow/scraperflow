@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * @author Albert Schimpf
  */
-@NodePlugin(value = "0.0.1")
+@NodePlugin(value = "0.0.1", deprecated = true)
 public final class RuntimeListNode implements Node {
 
     @FlowKey(mandatory = true)

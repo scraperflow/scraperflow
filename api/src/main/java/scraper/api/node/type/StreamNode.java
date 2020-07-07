@@ -1,6 +1,7 @@
 package scraper.api.node.type;
 
 import scraper.annotations.NotNull;
+import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
@@ -10,6 +11,7 @@ import scraper.api.node.container.StreamNodeContainer;
  * Nodes which implement this interface are able to stream (collect or emit) elements.
  * Elements are grouped by the origin id of a given FlowMap.
  */
+@NodePlugin(value = "0.3.0")
 public interface StreamNode extends Node {
     /** Default accept method should only modify and forward the modified map */
     @NotNull

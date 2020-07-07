@@ -10,7 +10,7 @@ import scraper.api.node.type.FunctionalNode;
 /**
  * @author Albert Schimpf
  */
-@NodePlugin(value = "0.0.1")
+@NodePlugin(value = "0.0.1", deprecated = true)
 public final class SimpleFlowTestNode implements FunctionalNode {
 
     @Override

@@ -13,7 +13,7 @@ import scraper.api.template.T;
 /**
  * @author Albert Schimpf
  */
-@NodePlugin(value = "0.0.1")
+@NodePlugin(value = "0.0.1", deprecated = true)
 public final class IoNode implements FunctionalNode {
 
     @FlowKey
