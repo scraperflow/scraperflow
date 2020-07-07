@@ -144,7 +144,7 @@ public class Scraper {
             if(specs.size() != 1) {
                 log.log(WARNING, "Too many or no implied taskflow specifications found: {0}", specs);
             } else {
-                log.log(INFO, "Using implied taskflow specification '{0}'", specs.get(0));
+                log.log(INFO, "Using implied taskflow specification {0}", specs.get(0));
                 jobDefinitions.addAll(specs);
             }
         }
@@ -190,7 +190,7 @@ public class Scraper {
             }, executorsService.getService(definition.getName(), "main", 1));
 
             future.exceptionally(e -> {
-                log.log(ERROR, "'{0}' failed: {1}", job.getName(), e.getMessage());
+                log.log(ERROR, "{0} failed: {1}", job.getName(), e.getMessage());
                 return null;
             });
 

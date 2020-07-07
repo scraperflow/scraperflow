@@ -208,14 +208,14 @@ public final class TimerNode implements FunctionalNode {
             final FlowMap oCopy = o.copy();
 
             while(!Thread.interrupted()) {
-                n.log(INFO,"'{0}' alarm in {1}", name, timeout);
+                n.log(INFO,"{0} alarm in {1}", name, timeout);
 
                 try {
                     Thread.sleep(timeout);
                     n.log(INFO,"Executing alarm: {0}", toString());
                     n.forkDispatch(oCopy, onTimeout);
                 } catch (InterruptedException e) {
-                    n.log(INFO,"'{0}' stopped", name);
+                    n.log(INFO,"{0} stopped", name);
                 } finally {
                     Thread.currentThread().interrupt();
                     stopTimeout();

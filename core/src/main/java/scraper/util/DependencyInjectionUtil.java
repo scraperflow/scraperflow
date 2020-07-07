@@ -52,7 +52,7 @@ public class DependencyInjectionUtil {
                         try {
                             Class<?> addon = Class.forName(plugin.getName());
                             diContainer.addComponent(addon, true);
-                            log.log(DEBUG, "Found plugin '{0}'", addon.getSimpleName());
+                            log.log(DEBUG, "Found plugin {0}", addon.getSimpleName());
                         } catch (ClassNotFoundException e) {
                             log.log(ERROR,   "Scan found plugin, but class not found", e);
                         }

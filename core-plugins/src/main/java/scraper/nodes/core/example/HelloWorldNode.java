@@ -88,7 +88,7 @@ public class HelloWorldNode implements Node {
         // fields annotated with @Optional are null if not defined in the .scrape file
         n.log(INFO,"Optional parameter: {0}", (name == null ? "not provided" : name));
 
-        n.log(INFO,"File '{0}' along with its subdirectories was ensured to exist: {1}",
+        n.log(INFO,"File {0} along with its subdirectories was ensured to exist: {1}",
                 new File(sourceFile), new File(sourceFile).exists());
 
         // execute this node and follow along with the l

@@ -137,7 +137,7 @@ public class TypeChecker {
                     try {
                         typeTemplate(env, template);
                     } catch (TemplateException e) {
-                        log.log(ERROR,"{0} type error for field '{1}': {2}", n, fieldName, e.getMessage());
+                        log.log(ERROR,"{0} type error for field {1}: {2}", n, fieldName, e.getMessage());
                         throw e;
                     }
                         }
@@ -196,7 +196,7 @@ public class TypeChecker {
                     env.add(output.getLocation(), new T<>(output.get()){});
                 }
             } catch (TemplateException e){
-                log.log(ERROR,"{0} type error for field '{1}': {2}", n, fieldName, e.getMessage());
+                log.log(ERROR,"{0} type error for field {1}: {2}", n, fieldName, e.getMessage());
                 throw e;
             }
                 }

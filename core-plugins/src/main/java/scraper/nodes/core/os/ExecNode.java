@@ -97,7 +97,7 @@ public final class ExecNode implements FunctionalNode {
             b.destroy();
             b.waitFor();
         } catch (IOException | InterruptedException e) {
-            n.log(ERROR,"'{0}' could not be executed:", exec, e.getMessage());
+            n.log(ERROR,"{0} could not be executed:", exec, e.getMessage());
             if (failOnException) throw new NodeException(e, "Internal process execution error");
         }
     }

@@ -76,7 +76,7 @@ public final class TemplateUtil {
 
     public static <C> Term<C> parseTemplate(@NotNull final String term,
                                             @NotNull final T<C> targetType) {
-        log.log(TRACE,"Converting term to template expression: '{0}'", term);
+        log.log(TRACE,"Converting term to template expression: {0}", term);
 
         try {
             TemplateLexer lexer = new TemplateLexer(CharStreams.fromString(term));

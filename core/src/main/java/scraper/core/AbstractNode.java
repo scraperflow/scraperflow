@@ -137,7 +137,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
             // init node
             getC().init(this, job);
         } catch (Exception e) {
-            log(ERROR, "Could not initialize field: '{0}'", e.getMessage());
+            log(ERROR, "Could not initialize field: {0}", e.getMessage());
             throw new ValidationException(e, "Could not initialize fields for " + getAddress() +": " + e.getMessage());
         }
     }
@@ -294,14 +294,14 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
             } catch (Exception e) {
                 if(onForkException != null) {
                     try {
-                        log(WARN, "Fork dispatch to goTo '{0}' terminated exceptionally, executing onException '{1}'.", e.getMessage(), onForkException);
+                        log(WARN, "Fork dispatch to goTo {0} terminated exceptionally, executing onException {1}.", e.getMessage(), onForkException);
                         return eval(o, onForkException);
                     } catch (NodeException ex) {
                         log(ERROR, "OnException fork target {0} terminated exceptionally: {1}", target, e.getMessage());
                         throw new RuntimeException(e);
                     }
                 } else {
-                    log(ERROR, "Fork dispatch to goTo '{0}' terminated exceptionally: {1}", target, e.getMessage());
+                    log(ERROR, "Fork dispatch to goTo {0} terminated exceptionally: {1}", target, e.getMessage());
                     throw new RuntimeException(e);
                 }
             }
@@ -324,7 +324,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
                     }
                 } else {
                     e.printStackTrace();
-                    log(ERROR, "Fork depend to goTo '{0}' terminated exceptionally: {1}", target, e.getMessage());
+                    log(ERROR, "Fork depend to goTo {0} terminated exceptionally: {1}", target, e.getMessage());
                     throw new RuntimeException(e);
                 }
             }

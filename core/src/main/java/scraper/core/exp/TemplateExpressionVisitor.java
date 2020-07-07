@@ -31,7 +31,7 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
 
     @Override
     public TemplateExpression<Y> visitRoot(TemplateParser.RootContext ctx) {
-        log.log(TRACE,    "Parsing template '{0}'", ctx.getText());
+        log.log(TRACE,    "Parsing template {0}", ctx.getText());
         if(ctx.getText().isEmpty()) {
             return new TemplateConstant<>("", target);
         }
@@ -42,7 +42,7 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
 
     @Override
     public TemplateExpression<Y> visitTemplate(TemplateParser.TemplateContext ctx) {
-        log.log(TRACE,    "Visiting template '{0}'", ctx.getText());
+        log.log(TRACE,    "Visiting template {0}", ctx.getText());
 
         // string content or fmlookup
         if(ctx.children.size() == 1) {
@@ -127,7 +127,7 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
 
     @Override
     public TemplateExpression<Y> visitFmlookup(TemplateParser.FmlookupContext ctx) {
-        log.log(TRACE,    "Visiting fm lookup '{0}'", ctx.getText());
+        log.log(TRACE,    "Visiting fm lookup {0}", ctx.getText());
         if(ctx.children.size() != 3) throw new AssertionError("Bad FmlLookup");
 
         TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(new T<>(){});
@@ -156,7 +156,7 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
 
     @Override
     public TemplateExpression<Y> visitStringcontent(TemplateParser.StringcontentContext ctx) {
-        log.log(TRACE,    "String content '{0}'", ctx.getText());
+        log.log(TRACE,    "String content {0}", ctx.getText());
         String unescape = ctx.getText()
                 .replaceAll("\\\\\\{", "{")
                 .replaceAll("\\\\}", "}")

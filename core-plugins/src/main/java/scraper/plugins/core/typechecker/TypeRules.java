@@ -72,14 +72,14 @@ public class TypeRules extends DefaultVisitor<Object> {
     @Override public T<?> visitFlowKeyLookup(FlowKeyLookup<?> mapKey) {
         log.log(DEBUG, " ====== T-Key-Lookup-Template: Checking keylookup {0} with target type {1}", mapKey, mapKey.getToken().getTypeString());
         { // (1) check string type
-            log.log(DEBUG, " === T-Key-Lookup-Template (1): check inner template '{0}' is a String", mapKey.getKeyLookup());
+            log.log(DEBUG, " === T-Key-Lookup-Template (1): check inner template {0} is a String", mapKey.getKeyLookup());
             T<?> innerType = (T<?>) mapKey.getKeyLookup().accept(this);
             if(!innerType.equalsType(new T<String>(){}))
                 throw new TemplateException("Inner type of flow key lookup is not a string, instead "+innerType.getTypeString());
         }
 
         { // (2) check if inner template is in env
-            log.log(DEBUG, " === T-Key-Lookup-Template (2): check if inner template '{0}' is in environment with correct target type", mapKey.getKeyLookup());
+            log.log(DEBUG, " === T-Key-Lookup-Template (2): check if inner template {0} is in environment with correct target type", mapKey.getKeyLookup());
             Term<String> keyTemplate = mapKey.getKeyLookup();
 
             T<?> known = env.get(keyTemplate);

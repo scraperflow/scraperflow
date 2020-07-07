@@ -84,7 +84,7 @@ public final class ForkJoinNode implements Node {
         keys.forEach((forked, main) -> {
             Optional<? super Object> result = forkedResult.get(forked);
             if(result.isEmpty()) {
-                n.log(NodeLogLevel.ERROR, "Missing key '{0}' in completed flow '{1}'", forked, target);
+                n.log(NodeLogLevel.ERROR, "Missing key {0} in completed flow {1}", forked, target);
                 throw new TemplateException("Completed flow does not return expected key: "+ forked);
             }
 

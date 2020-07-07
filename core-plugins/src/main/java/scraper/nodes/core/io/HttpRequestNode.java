@@ -359,7 +359,7 @@ public final class HttpRequestNode implements Node {
             String path = o.eval(this.path);
             File f = new File(path);
             if(f.exists() && f.length() == 0) {
-                n.log(INFO,"Found empty downloaded file, deleting file '{0}'", path);
+                n.log(INFO,"Found empty downloaded file, deleting file {0}", path);
                 if(!f.delete()) n.log(WARN,"Could not delete empty downloaded file: {0}", f.getPath());
                 return false;
             }
@@ -408,7 +408,7 @@ public final class HttpRequestNode implements Node {
         try {
             String cached = StringUtil.readBody(f);
             if(cached.isEmpty()) {
-                n.log(INFO,"Found empty cache file, deleting cache for '{0}'", url);
+                n.log(INFO,"Found empty cache file, deleting cache for {0}", url);
                 if(!f.delete()) n.log(WARN,"Could not delete empty cache file: {0}", f.getPath());
                 return null;
             }

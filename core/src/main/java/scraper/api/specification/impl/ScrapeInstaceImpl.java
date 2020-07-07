@@ -59,7 +59,7 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
     }
 
     public void init() throws ValidationException {
-        log.log(DEBUG,"Initializing graphs '{0}'", getName());
+        log.log(DEBUG,"Initializing graphs {0}", getName());
         for (Map.Entry<Address, NodeContainer<? extends Node>> e : routes.entrySet()) {
             e.getValue().init(this);
         }
