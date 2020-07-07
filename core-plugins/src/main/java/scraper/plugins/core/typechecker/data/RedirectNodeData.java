@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public final class RedirectNodeData {
 
     @Version("0.0.1")
-    public static void infoAfter(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, Set<NodeContainer<?>> visited) throws Exception {
+    public static void infoAfter(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
         List<ControlFlowEdge> edges = cfg.getOutgoingEdges(node.getAddress());
 
         {

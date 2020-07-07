@@ -30,6 +30,8 @@ public class TypeChecker {
     public List<String> ignore = new ArrayList<>();
     private Map<L<?>, T<?>> save = new HashMap<>();
 
+    public static List<List<NodeContainer<?>>> paths = new LinkedList<>();
+
     public TypeChecker() {}
 
     public TypeChecker(TypeChecker t) {
@@ -61,15 +63,17 @@ public class TypeChecker {
 
         log.log(DEBUG, "========================================");
 
-        Set<NodeContainer<?>> visited = new HashSet<>();
+        List<NodeContainer<?>> visited = new LinkedList<>();
         spec.getEntry().ifPresent(n -> propagate(n, env, spec, cfg, visited));
     }
 
     // T-Flow-Propagate
-    public void propagate(NodeContainer<?> n, TypeEnvironment env, ScrapeInstance spec, ControlFlowGraph cfg, Set<NodeContainer<?>> visited) {
-        if(visited.contains(n)) return;
-        // TODO acyclic assumption
-//        visited.add(n);
+    public void propagate(NodeContainer<?> n, TypeEnvironment env, ScrapeInstance spec, ControlFlowGraph cfg, List<NodeContainer<?>> visited) {
+        if(!visited.contains(n)) visited.add(n);
+        if(paths.contains(visited)) {
+            log.log(INFO, "Visiting cycle at {0}, skip", n.getAddress());
+            return;
+        }
 
         ignore.clear();
         captures.clear();
@@ -88,10 +92,12 @@ public class TypeChecker {
         captures.clear();
         ignore.clear();
 
+        paths.add(new LinkedList<>(visited));
+
         cfg.getOutgoingEdges(n.getAddress()).forEach(e -> {
             if(e.isDispatched()) {
                 NodeContainer<?> nextNode = spec.getNode(e.getToAddress());
-                propagate(nextNode, env.copy(), spec, cfg, visited);
+                propagate(nextNode, env.copy(), spec, cfg, new LinkedList<>(visited));
             } else {
                 if(
                         e.getDisplayLabel().equalsIgnoreCase("forward")
@@ -101,9 +107,9 @@ public class TypeChecker {
                 ) {
                     NodeContainer<?> nextNode = spec.getNode(e.getToAddress());
                     if (e.isPropagate()) {
-                        propagate(nextNode, env.copy(), spec, cfg, visited);
+                        propagate(nextNode, env.copy(), spec, cfg, new LinkedList<>(visited));
                     } else {
-                        propagate(nextNode, env, spec, cfg, visited);
+                        propagate(nextNode, env, spec, cfg, new LinkedList<>(visited));
                     }
                 } else {
                     log.log(DEBUG, "Not propagating: " + e.getDisplayLabel());
@@ -150,7 +156,7 @@ public class TypeChecker {
      * =====================
      */
 
-    private void addNodeInfoBefore(TypeEnvironment env, NodeContainer<?> n, ControlFlowGraph cfg, ScrapeInstance spec, Set<NodeContainer<?>> visited) {
+    private void addNodeInfoBefore(TypeEnvironment env, NodeContainer<?> n, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) {
         List<Class<?>> classesToCheck = getReverseOrderHierarchy(n);
         Collections.reverse(classesToCheck);
 
@@ -164,7 +170,7 @@ public class TypeChecker {
                         NodeContainer.class,
                         ControlFlowGraph.class,
                         ScrapeInstance.class,
-                        Set.class);
+                        List.class);
                 method.invoke(null, this, env, n, cfg, spec, visited);
             } catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException ignored) {
 //                System.out.println("[Skip] Could not find control for " + nodeClass + ": " + controlClass);
@@ -178,7 +184,7 @@ public class TypeChecker {
         }
     }
 
-    private void addNodeInfo(TypeEnvironment env, NodeContainer<?> n, ControlFlowGraph cfg, ScrapeInstance spec, Set<NodeContainer<?>> visited) {
+    private void addNodeInfo(TypeEnvironment env, NodeContainer<?> n, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) {
         // log.log(DEBUG, "=== Adding node info {0}", n);
 
         getDefaultDataFlowOutput(n).forEach((fieldName, output) -> {
@@ -217,7 +223,7 @@ public class TypeChecker {
                         NodeContainer.class,
                         ControlFlowGraph.class,
                         ScrapeInstance.class,
-                        Set.class);
+                        List.class);
                 method.invoke(null, this, env, n, cfg, spec, visited);
             } catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException ignored) {
 //                System.out.println("[Skip] Could not find control for " + nodeClass + ": " + controlClass);

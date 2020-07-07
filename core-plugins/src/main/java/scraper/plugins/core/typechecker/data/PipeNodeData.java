@@ -21,7 +21,7 @@ import java.util.Set;
 public final class PipeNodeData {
 
     @Version("0.1.0")
-    public static void infoAfter(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, Set<NodeContainer<?>> visited) throws Exception {
+    public static void infoAfter(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
         T<List<Address>> targetsT = (T<List<Address>>) FlowUtil.getField("pipeTargets", node.getC()).get();
 
         List<Address> targets = new FlowMapImpl().eval(targetsT);

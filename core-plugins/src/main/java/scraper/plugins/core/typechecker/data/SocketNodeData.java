@@ -20,13 +20,13 @@ import java.util.stream.Collectors;
 public final class SocketNodeData {
 
     @Version("0.1.0")
-    public static void infoBefore(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, Set<NodeContainer<?>> visited) throws Exception {
+    public static void infoBefore(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
         t.ignoreField("expected");
 
     }
 
     @Version("0.1.0")
-    public static void infoAfter(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, Set<NodeContainer<?>> visited) throws Exception {
+    public static void infoAfter(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
         t.unignoreField("expected");
 
         T<String> expected = (T<String>) FlowUtil.getField("expected", node.getC()).get();

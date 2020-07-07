@@ -12,13 +12,14 @@ import scraper.plugins.core.typechecker.TypeChecker;
 import scraper.plugins.core.typechecker.TypeEnvironment;
 import scraper.util.NodeUtil;
 
+import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings({"unused", "OptionalGetWithoutIsPresent"})
 public final class RetryNodeData {
 
     @Version("0.1.0")
-    public static void infoAfter(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, Set<NodeContainer<?>> visited) throws Exception {
+    public static void infoAfter(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
         Address target = (Address) FlowUtil.getField("retryTarget", node.getC()).get();
         NodeContainer<? extends Node> nodeTarget = NodeUtil.getTarget(node.getAddress(), target, spec);
 

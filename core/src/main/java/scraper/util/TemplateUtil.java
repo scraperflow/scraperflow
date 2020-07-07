@@ -22,8 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.System.Logger.Level.TRACE;
-import static java.lang.System.Logger.Level.WARNING;
+import static java.lang.System.Logger.Level.*;
 
 
 public final class TemplateUtil {
@@ -40,7 +39,7 @@ public final class TemplateUtil {
                 List.class.isAssignableFrom(templ.getRawType()) || templ.getRawType().equals(Object.class))) {
             if ((targetType.get() instanceof TypeVariable)) {
                 Term<K> tt = (Term<K>) parseTemplateL((List) term, (T<List<?>>) targetType, true);
-                log.log(WARNING,  "Making type variable more precise: {0} => {1}", tt.getTypeString(), "List<" + ((ListTerm) tt).getElementType().getTypeString() + ">");
+                log.log(DEBUG,  "Making type variable more precise: {0} => {1}", tt.getTypeString(), "List<" + ((ListTerm) tt).getElementType().getTypeString() + ">");
                 return tt;
             } else {
                 return (Term<K>) parseTemplateL((List) term, (T<List<?>>) targetType, false);
@@ -51,7 +50,7 @@ public final class TemplateUtil {
         )) {
             if ((targetType.get() instanceof TypeVariable)) {
                 Term<K> tt = (Term<K>) parseTemplateM((Map<String, ?>) term, (T<Map<String, ?>>) targetType, true);
-                log.log(WARNING,  "Making type variable more precise: {0} => {1}", tt.getTypeString(), "Map<String, "+ ((MapTerm) tt).getElementType().getTypeString()+">");
+                log.log(DEBUG,  "Making type variable more precise: {0} => {1}", tt.getTypeString(), "Map<String, "+ ((MapTerm) tt).getElementType().getTypeString()+">");
                 return tt;
             } else {
                 return (Term<K>) parseTemplateM((Map<String, ?>) term, (T<Map<String, ?>>) targetType, false);

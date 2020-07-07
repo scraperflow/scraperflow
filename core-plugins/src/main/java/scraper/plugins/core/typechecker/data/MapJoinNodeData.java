@@ -17,6 +17,7 @@ import scraper.plugins.core.typechecker.TypeEnvironment;
 import scraper.util.NodeUtil;
 import scraper.util.TemplateUtil;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,7 +30,7 @@ public final class MapJoinNodeData {
     private static final System.Logger log = System.getLogger("TypeChecker");
 
     @Version("0.1.0")
-    public static void infoAfter(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, Set<NodeContainer<?>> visited) throws Exception {
+    public static void infoAfter(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
         T<Map<String, String>> mergeKeysT = (T<Map<String, String>>) FlowUtil.getField("keys", node.getC()).get();
         Map<String, String> targetToKeys = new FlowMapImpl().evalIdentity(mergeKeysT);
 

@@ -179,7 +179,7 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
                 node.getNodeConfiguration().forEach((k,v) ->
                         {
                             if (!expectedFields.contains(k)) {
-                                node.log(NodeLogLevel.ERROR, "Found field defined but not expected in implementation of node: {} ", k );
+                                node.log(NodeLogLevel.ERROR, "Found field defined but not expected in implementation of node: {0} ", k );
                                 throw new IllegalStateException(
                                         "Found field defined in "+node.getAddress()+", but not expected in implementation of node: "+ k
                                 );

@@ -18,7 +18,7 @@ public class FileServiceImpl implements FileService {
     public FileServiceImpl() {
 //        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 //            if(!FileSystemUtils.deleteRecursively(tempDir)) {
-//                log.log(WARNING, "Could not delete temporary directory: {}", tempDir.getPath());
+//                log.log(WARNING, "Could not delete temporary directory: {0}", tempDir.getPath());
 //            }
 //        }));
     }

@@ -334,7 +334,7 @@ public final class NodeUtil {
                 value = StringToClassConverter.convert(String.valueOf(value), fieldType);
             }
 
-//        log(TRACE,"Field '{}' initialized: {} ({})", field.getName(), field.get(this), (field.get(this) == null?"nullp":field.get(this).getClass()));
+//        log(TRACE,"Field {0} initialized: {1} ({2})", field.getName(), field.get(this), (field.get(this) == null?"nullp":field.get(this).getClass()));
 
             return value;
         } catch (Exception e) {

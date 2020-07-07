@@ -28,7 +28,7 @@ public final class ForkJoinNodeData {
 
 
     @Version("0.1.0")
-    public static void infoAfter(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, Set<NodeContainer<?>> visited) throws Exception {
+    public static void infoAfter(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
         T<Map<String, Map<String, String>>> mergeKeys = (T<Map<String, Map<String, String>>>) FlowUtil.getField("targetToKeys", node.getC()).get();
         Map<String, Map<String, String>> targetToKeys = new FlowMapImpl().evalIdentity(mergeKeys);
 
