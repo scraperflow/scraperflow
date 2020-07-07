@@ -26,6 +26,11 @@ public abstract class T<TYPE> implements Supplier<Type> {
     	this.typeSuffix = typeSuffix;
     }
 
+	public static <A> T<A> of(Term<A> term) {
+		T<A> t = new T<>(term.getToken().get()){};
+		t.setTerm(term);
+		return t;
+	}
 
     @Override @NotNull public Type get() { return type; }
 

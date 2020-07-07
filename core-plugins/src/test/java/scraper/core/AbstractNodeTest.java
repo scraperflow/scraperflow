@@ -38,11 +38,11 @@ public class AbstractNodeTest {
         NodeContainer<? extends Node> node = opt(instance);
         assertTrue(node instanceof AbstractFunctionalNode);
 
-        FlowMap o = FlowMapImpl.origin();
-        o = node.getC().accept(node, o);
+        FlowMapImpl o = (FlowMapImpl) FlowMapImpl.origin();
+        o = (FlowMapImpl) node.getC().accept(node, o);
 
-        assertTrue(o.get("simple").isPresent());
-        assertEquals(true, o.get("simple").get());
+        assertNotNull(o.getPrivateMap().get("simple"));
+        assertEquals(true, o.getPrivateMap().get("simple"));
 
         AbstractNode abstractNode = (AbstractNode) node;
         assertNotNull(abstractNode.getL());
@@ -55,15 +55,15 @@ public class AbstractNodeTest {
         ScrapeInstaceImpl instance = getInstance("abstract", "all-field.jf");
 
         NodeContainer<? extends Node> node = opt(instance);
-        FlowMap o = FlowMapImpl.origin();
-        o = node.getC().accept(node, o);
+        FlowMapImpl o = (FlowMapImpl) FlowMapImpl.origin();
+        o = (FlowMapImpl) node.getC().accept(node, o);
 
-        assertTrue(o.get("simple").isEmpty());
+        assertNull(o.getPrivateMap().get("simple"));
         // local key overwrites all key
-        assertTrue(o.get("overwritten").isPresent());
-        assertTrue(o.get("goTo").isPresent());
-        assertEquals(true, o.get("overwritten").get());
-        assertEquals(true, o.get("goTo").get());
+        assertNotNull(o.getPrivateMap().get("overwritten"));
+        assertNotNull(o.getPrivateMap().get("goTo"));
+        assertEquals(true, o.getPrivateMap().get("overwritten"));
+        assertEquals(true, o.getPrivateMap().get("goTo"));
     }
 
 
@@ -148,8 +148,8 @@ public class AbstractNodeTest {
         FlowMap o = FlowMapImpl.origin();
         FlowMap o2 = node.forward(o);
 
-        FlowMap o3 = node.eval(o2, addressOf("oor"));
-        assertNotNull(o3.get("y"));
+        FlowMapImpl o3 = (FlowMapImpl) node.eval(o2, addressOf("oor"));
+        assertNotNull(o3.getPrivateMap().get("y"));
     }
 
     @Test
@@ -158,9 +158,9 @@ public class AbstractNodeTest {
 
         NodeContainer<? extends Node> node = opt(instance);
         FlowMap o = FlowMapImpl.origin();
-        FlowMap o2 = node.forward(o);
+        FlowMapImpl o2 = (FlowMapImpl) node.forward(o);
 
-        assertEquals(1, o2.size());
+        assertEquals(1, o2.getPrivateMap().size());
     }
 
     @Test
@@ -168,11 +168,11 @@ public class AbstractNodeTest {
         ScrapeInstaceImpl instance = getInstance("abstract", "func-goto.jf");
 
         NodeContainer<? extends Node> node = opt(instance);
-        FlowMap o = FlowMapImpl.origin();
-        o = node.forward(o);
+        FlowMapImpl o = (FlowMapImpl) FlowMapImpl.origin();
+        o = (FlowMapImpl) node.forward(o);
 
-        assertTrue(o.get("simple").isPresent());
-        assertEquals(true, o.get("simple").get());
+        assertNotNull(o.getPrivateMap().get("simple"));
+        assertEquals(true, o.getPrivateMap().get("simple"));
     }
 
     // inject IllegalAccessException on reflection access to get code coverage

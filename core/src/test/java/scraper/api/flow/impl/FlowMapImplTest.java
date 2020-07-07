@@ -17,33 +17,33 @@ public class FlowMapImplTest {
     @Test
     public void mapFunctionsTest() {
         // direct instantiation
-        FlowMap o = FlowMapImpl.origin();
+        FlowMapImpl o = (FlowMapImpl) FlowMapImpl.origin();
         assertNotNull(o.toString());
 
         // put and get
         o.output("key1", 123);
-        assertTrue(o.get("key1").isPresent());
-        assertEquals(123, o.get("key1").get());
+        assertNotNull(o.getPrivateMap().get("key1"));
+        assertEquals(123, o.getPrivateMap().get("key1"));
 
         // clear
-        assertEquals(1, o.size());
+        assertEquals(1, o.getPrivateMap().size());
         o.clear();
-        assertEquals(0, o.size());
+        assertEquals(0, o.getPrivateMap().size());
 
         // putAll
         Map.of("k1", 42, "k2", "hello").forEach(o::output);
-        assertTrue(o.get("k1").isPresent());
-        assertTrue(o.get("k2").isPresent());
-        assertEquals(42, o.get("k1").get());
-        assertEquals("hello", o.get("k2").get());
-        assertEquals(2, o.size());
-        assertTrue(o.keySet().contains("k1"));
-        assertTrue(o.keySet().contains("k2"));
+        assertNotNull(o.getPrivateMap().get("k1"));
+        assertNotNull(o.getPrivateMap().get("k2"));
+        assertEquals(42, o.getPrivateMap().get("k1"));
+        assertEquals("hello", o.getPrivateMap().get("k2"));
+        assertEquals(2, o.getPrivateMap().size());
+        assertTrue(o.getPrivateMap().containsKey("k1"));
+        assertTrue(o.getPrivateMap().containsKey("k2"));
 
         // remove
         o.remove("k2");
-        assertTrue(o.get("k2").isEmpty());
-        assertEquals(1, o.size());
+        assertNull(o.getPrivateMap().get("k2"));
+        assertEquals(1, o.getPrivateMap().size());
     }
 
     @Test

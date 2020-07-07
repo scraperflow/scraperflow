@@ -3,6 +3,7 @@ package scraper.core.template;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
+import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.template.FlowKeyLookup;
 import scraper.api.template.T;
 import scraper.api.template.TVisitor;
@@ -47,11 +48,12 @@ public class TemplateMapKey<K> extends TemplateExpression<K> implements FlowKeyL
     @SuppressWarnings("unchecked") // statically checked
     public K eval(@NotNull final FlowMap o) {
         try{
+            // TODO how to get rid of the FlowMapImpl cast
             String targetKey = keyLookup.eval(o);
-            Optional<K> targetValue = (Optional<K>) o.get(targetKey);
+            Optional<K> targetValue = (Optional<K>) Optional.ofNullable(((FlowMapImpl) o).getPrivateMap().get(targetKey));
 
             if(targetValue.isEmpty())
-                throw new IllegalStateException("FlowMap has no element at key " + targetKey);
+                throw new IllegalStateException("FlowMap has no element at key " + keyLookup.eval(o));
 
             return targetValue.get();
         } catch (Exception e) {

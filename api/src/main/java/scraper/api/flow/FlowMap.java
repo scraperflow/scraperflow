@@ -23,21 +23,6 @@ import java.util.UUID;
  */
 public interface FlowMap extends IdentityTemplateEvaluator {
 
-    //===================
-    // Read
-    //===================
-
-    /** @see Map#get(Object) */
-    @NotNull
-    Optional<?> get(@NotNull String key);
-
-    /** @see Map#size() */
-    int size();
-
-    /** @see Map#keySet() */
-    @NotNull
-    Set<String> keySet();
-
     // Templates Input
 
     /** Evaluates the given template with this flowmap's content, enforces non-null return */

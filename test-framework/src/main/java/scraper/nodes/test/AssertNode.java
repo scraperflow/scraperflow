@@ -5,6 +5,7 @@ import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
+import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.template.T;
@@ -21,14 +22,10 @@ import static scraper.api.node.container.NodeLogLevel.INFO;
 @NodePlugin
 public class AssertNode implements Node {
 
-    private @FlowKey(defaultValue = "{}")
-    T<Map<String, Object>> assertMap = new T<>(){};
-    private @FlowKey(defaultValue = "{}")
-    T<Map<String, List<String>>> containsMap = new T<>(){};
-    private @FlowKey(defaultValue = "{}")
-    T<Map<String, List<String>>> containedInMap = new T<>(){};
-    private @FlowKey(defaultValue = "[]")
-    T<List<List<String>>> mathCompare = new T<>(){};
+    private @FlowKey(defaultValue = "{}") final T<Map<String, Object>> assertMap = new T<>(){};
+    private @FlowKey(defaultValue = "{}") final T<Map<String, List<String>>> containsMap = new T<>(){};
+    private @FlowKey(defaultValue = "{}") final T<Map<String, List<String>>> containedInMap = new T<>(){};
+    private @FlowKey(defaultValue = "[]") final T<List<List<String>>> mathCompare = new T<>(){};
     private @FlowKey(defaultValue = "false") Boolean negate;
     private @FlowKey(defaultValue = "false") Boolean failOnError;
 
@@ -46,49 +43,52 @@ public class AssertNode implements Node {
 
     @NotNull
     @Override
-    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
+    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o2) throws NodeException {
         if(wait != null) { try { Thread.sleep(wait); } catch (InterruptedException ignored) {} }
 
-        Map<String, Object> assertMap = o.evalIdentity(this.assertMap);
-        Map<String, List<String>> containsMap  = o.evalIdentity(this.containsMap);
-        Map<String, List<String>> containedInMap  = o.evalIdentity(this.containedInMap);
-        List<List<String>> mathCompare  = o.evalIdentity(this.mathCompare);
+        Map<String, Object> assertMap = o2.evalIdentity(this.assertMap);
+        Map<String, List<String>> containsMap  = o2.evalIdentity(this.containsMap);
+        Map<String, List<String>> containedInMap  = o2.evalIdentity(this.containedInMap);
+        List<List<String>> mathCompare  = o2.evalIdentity(this.mathCompare);
+
+        FlowMapImpl o = (FlowMapImpl) o2;
+
 
         for (String key : assertMap.keySet()) {
-            n.log(INFO,"Assert @{0}: {1}{2}{3}", key, clip(valueOf(o.get(key))), (negate?" != ":" == "), assertMap.get(key));
+            n.log(INFO,"Assert @{0}: {1}{2}{3}", key, clip(valueOf(o.getPrivateMap().get(key))), (negate?" != ":" == "), assertMap.get(key));
 
             // assert does not work for Numbers (e.g. 1 == 1L) , use BigDecimal wrapper
-            if(o.get(key).isPresent() && Number.class.isAssignableFrom(o.get(key).get().getClass())
+            if(o.getPrivateMap().get(key) != null && Number.class.isAssignableFrom(o.getPrivateMap().get(key).getClass())
                     && assertMap.get(key) != null && Number.class.isAssignableFrom(assertMap.get(key).getClass())) {
-                if(!(new BigDecimal(valueOf(assertMap.get(key))).equals(new BigDecimal(valueOf(o.get(key).get()))))) {
+                if(!(new BigDecimal(valueOf(assertMap.get(key))).equals(new BigDecimal(valueOf(o.getPrivateMap().get(key)))))) {
                     if(!negate) {
-                        n.log(ERROR, "Assertion wrong: {0} != {1}", assertMap.get(key), clip(valueOf(o.get(key).get())));
+                        n.log(ERROR, "Assertion wrong: {0} != {1}", assertMap.get(key), clip(valueOf(o.getPrivateMap().get(key))));
                         success.set(false);
                     }
                 } else {
                     if(negate) {
-                        n.log(ERROR, "Equals but not expected: {0} == {1}", assertMap.get(key), clip(valueOf(o.get(key).get())));
+                        n.log(ERROR, "Equals but not expected: {0} == {1}", assertMap.get(key), clip(valueOf(o.getPrivateMap().get(key))));
                         success.set(false);
                     }
                 }
             }
-            else if(!assertMap.get(key).equals(o.get(key).get())) {
+            else if(!assertMap.get(key).equals(o.getPrivateMap().get(key))) {
                 if(!negate) {
-                    n.log(ERROR, "Assertion wrong: {0} != {1}", assertMap.get(key), clip(valueOf(o.get(key).get())));
+                    n.log(ERROR, "Assertion wrong: {0} != {1}", assertMap.get(key), clip(valueOf(o.getPrivateMap().get(key))));
                     success.set(false);
                 }
             } else {
                 if(negate) {
-                    n.log(ERROR, "Assertion true, but not expected: {0} == {1}", assertMap.get(key), clip(valueOf(o.get(key).get())));
+                    n.log(ERROR, "Assertion true, but not expected: {0} == {1}", assertMap.get(key), clip(valueOf(o.getPrivateMap().get(key))));
                     success.set(false);
                 }
             }
         }
 
         for (String key : containsMap.keySet()) {
-            assert o.get(key).isPresent();
-            n.log(INFO,"Assert contains: @{0} contains {1}", key, clip(valueOf(o.get(key).get())));
-            String actual = valueOf(o.get(key).get());
+            assert o.getPrivateMap().get(key) != null;
+            n.log(INFO,"Assert contains: @{0} contains {1}", key, clip(valueOf(o.getPrivateMap().get(key))));
+            String actual = valueOf(o.getPrivateMap().get(key));
             List<String> expected = containsMap.get(key);
 
             for (String s : expected) {
@@ -107,7 +107,7 @@ public class AssertNode implements Node {
         }
 
         for (String key : containedInMap.keySet()) {
-            String actual = valueOf(o.get(key).get());
+            String actual = valueOf(o.getPrivateMap().get(key));
             n.log(INFO,"Assert contained in @{0}: {1}", key, actual);
             List<String> contained = containedInMap.get(key);
 
@@ -145,10 +145,11 @@ public class AssertNode implements Node {
     }
 
     private void formula(NodeContainer<?> n, List<String> eq, FlowMap o) {
+
         String left = eq.get(0);
-        if(left.startsWith("@")) left = valueOf(o.get(left.substring(1)).get());
+        if(left.startsWith("@")) left = valueOf(((FlowMapImpl) o).getPrivateMap().get(left.substring(1)));
         String right = eq.get(2);
-        if(right.startsWith("@")) right = valueOf(o.get(right.substring(1)).get());
+        if(right.startsWith("@")) right = valueOf(((FlowMapImpl) o).getPrivateMap().get(right.substring(1)));
 
         String op = eq.get(1);
 

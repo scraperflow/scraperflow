@@ -11,11 +11,9 @@ import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.Node;
 import scraper.api.template.L;
 import scraper.api.template.T;
+import scraper.util.TemplateUtil;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -33,7 +31,7 @@ import java.util.concurrent.ExecutionException;
  * ignoreMissingJoinKey: true
  * </pre>
  */
-@NodePlugin("0.12.0")
+@NodePlugin("0.13.0")
 public final class MapJoinNode <A> implements Node {
 
     /** Expected join for each key defined in this map after a forked flow terminates */
@@ -99,12 +97,13 @@ public final class MapJoinNode <A> implements Node {
             forkedProcesses.forEach(future -> {
                 try {
                     FlowMap fm = future.get();
-                    if(fm.get(joinKeyForked).isEmpty()) {
+                    Optional<?> forkedElement = fm.evalMaybe(TemplateUtil.templateOf(joinKeyForked));
+                    if(forkedElement.isEmpty()) {
                         if(!ignoreMissingJoinKey)
                             throw new IllegalStateException(n.getAddress()+ ": Missing value at join key: " + joinKeyForked);
                     } else {
-                        if (!joinResults.contains(fm.get(joinKeyForked).get()) || !distinctOutput) {
-                            joinResults.add(fm.get(joinKeyForked).get());
+                        if (!joinResults.contains(forkedElement.get()) || !distinctOutput) {
+                            joinResults.add(forkedElement.get());
                             o.output(joinKey, joinResults);
                         }
                     }
@@ -115,7 +114,8 @@ public final class MapJoinNode <A> implements Node {
             });
 
         });
-        keys.forEach((joinKeyForked, joinKey) -> { if(!o.keySet().contains(joinKey)) { o.output(joinKey, new ArrayList<>()); } });
+        // default output for empty collection
+        keys.forEach((joinKeyForked, joinKey) -> { if(o.evalMaybe(TemplateUtil.templateOf(joinKey)).isEmpty()) { o.output(joinKey, new ArrayList<>()); } });
 
         // continue
         return o;

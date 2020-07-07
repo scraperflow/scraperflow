@@ -172,6 +172,12 @@ public final class TemplateUtil {
         t.setTerm(parseTemplate("{"+location.getLocation().getRaw()+"}", new T<>(){}));
         return t;
     }
+
+    public static T<?> templateOf(String location) {
+        T<Object> t = new T<>(){};
+        t.setTerm(parseTemplate("{"+location+"}", new T<>(){}));
+        return t;
+    }
 }
 
 class ThrowingErrorListener extends BaseErrorListener {

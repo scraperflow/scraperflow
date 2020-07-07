@@ -14,19 +14,12 @@ import java.util.concurrent.ConcurrentMap;
 
 public class IdentityFlowMap implements FlowMap {
 
-    @NotNull @Override public Optional<Object> get(@NotNull String key) {
-        return Optional.empty();
-    }
-
-    @Override public int size() { throw new IllegalStateException(); }
     @Override public void clear() { throw new IllegalStateException(); }
 
     @Override
     public <A> void output(@NotNull L<A> locationAndType, @Nullable A outputObject) {
 
     }
-
-    @Override public @NotNull Set<String> keySet() { throw new IllegalStateException(); }
 
     @Override
     public void remove(@NotNull String key) {

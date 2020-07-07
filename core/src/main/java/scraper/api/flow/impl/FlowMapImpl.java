@@ -19,6 +19,10 @@ import static scraper.util.TemplateUtil.mapOf;
 
 public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
+    public ConcurrentMap<String, Object> getPrivateMap() {
+        return privateMap;
+    }
+
     private final ConcurrentMap<String, Object> privateMap;
 
     private UUID parentId;
@@ -70,26 +74,9 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
         privateMap.remove(location);
     }
 
-    @NotNull
-    @Override
-    public Optional<? super Object> get(@NotNull String expected) {
-        return Optional.ofNullable(privateMap.get(expected));
-    }
-
-
-    @Override
-    public int size() {
-        return privateMap.size();
-    }
-
     @Override
     public void clear() {
         privateMap.clear();
-    }
-
-    @Override
-    public @NotNull Set<String> keySet() {
-        return privateMap.keySet();
     }
 
     @Override
@@ -103,7 +90,7 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     }
 
     public boolean containsElements(@NotNull final FlowMap expectedOutput) {
-        for (String key : expectedOutput.keySet()) {
+        for (String key : ((FlowMapImpl) expectedOutput).privateMap.keySet()) {
             Object thisElement = privateMap.get(key);
             Object thatElement = ((FlowMapImpl) expectedOutput).privateMap.get(key);
             if(thisElement != null && thatElement != null) {
