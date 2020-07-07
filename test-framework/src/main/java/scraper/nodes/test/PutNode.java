@@ -7,14 +7,19 @@ import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
+import scraper.api.template.L;
 
 @NodePlugin(value = "1.2.3")
 public final class PutNode implements FunctionalNode {
     @FlowKey
-    private String toPut;
+    private final L<String> toPut = new L<>(){};
+
+    @FlowKey(defaultValue = "\"hello\"")
+    private final L<String> hello = new L<>(){};
 
     @Override
-    public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) throws NodeException {
-        o.output("hello", "world"); o.output(toPut, "result");
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) {
+        o.output(hello, "world");
+        o.output(toPut, "result");
     }
 }

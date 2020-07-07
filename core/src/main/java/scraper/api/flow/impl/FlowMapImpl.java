@@ -64,17 +64,16 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     }
 
     public static FlowMap origin(Map<String, Object> args) {
-        FlowMap o = new FlowMapImpl();
-        args.forEach(o::output);
+        FlowMapImpl o = new FlowMapImpl();
+        args.forEach((k,v) -> o.getPrivateMap().putAll(args));
         return o;
     }
 
-    @NotNull @Override
+    @NotNull
     public void remove(@NotNull String location) {
         privateMap.remove(location);
     }
 
-    @Override
     public void clear() {
         privateMap.clear();
     }
@@ -184,12 +183,13 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     @Override
     public <A> void output(@NotNull L<A> locationAndType, A object) {
         String location = evalLocation(locationAndType);
-        output(location, object);
-//        privateMap.put(location, object);
-//        privateTypeMap.put(location, locationAndType);
+        if(object == null) {
+            privateMap.remove(location);
+        } else {
+            output(location, object);
+        }
     }
 
-    @Override
     public void output(@NotNull String location, @NotNull Object outputObject) {
         privateMap.put(location, outputObject);
     }

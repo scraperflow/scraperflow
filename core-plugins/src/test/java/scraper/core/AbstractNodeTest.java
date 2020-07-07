@@ -10,6 +10,7 @@ import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.Node;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.impl.ScrapeInstaceImpl;
+import scraper.util.TemplateUtil;
 import scraper.utils.ClassUtil;
 
 import java.io.IOException;
@@ -115,7 +116,7 @@ public class AbstractNodeTest {
 
         NodeContainer<? extends Node> node = opt(instance);
         FlowMap o = FlowMapImpl.origin();
-        o.output("path-template", "/tmp/scraper-ok");
+        o.output(TemplateUtil.locationOf("path-template"), "/tmp/scraper-ok");
         ((AbstractNode<?>) node).start(node, o);
     }
 

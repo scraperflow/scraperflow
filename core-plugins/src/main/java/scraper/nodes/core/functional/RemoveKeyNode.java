@@ -17,7 +17,7 @@ import scraper.api.template.L;
  * remove: mykey
  * </pre>
  */
-@NodePlugin("1.0.0")
+@NodePlugin("1.0.1")
 public class RemoveKeyNode implements FunctionalNode {
 
     /** Removes a single key */
@@ -26,8 +26,7 @@ public class RemoveKeyNode implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        String remove = this.remove.getLocation().eval(o);
-        // remove key
-        o.remove(remove);
+        // 'remove' key
+        o.output(remove, null);
     }
 }

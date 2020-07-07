@@ -88,11 +88,10 @@ public final class MapJoinNode <A> implements Node {
 
         Map<String, String> keys = o.evalIdentity(this.keys);
 
-        keys.forEach((joinKeyForked, joinKey) -> o.remove(joinKey));
         keys.forEach((joinKeyForked, joinKey) -> {
             n.log(NodeLogLevel.TRACE, "Joining {0} -> {1}", joinKeyForked, joinKey);
 
-            List<? super Object> joinResults = o.evalMaybe(new T<List<? super Object>>() {}).orElse(new ArrayList<>());
+            List<Object> joinResults = o.evalMaybe(new T<List<Object>>() {}).orElse(new ArrayList<>());
 
             forkedProcesses.forEach(future -> {
                 try {
@@ -104,7 +103,7 @@ public final class MapJoinNode <A> implements Node {
                     } else {
                         if (!joinResults.contains(forkedElement.get()) || !distinctOutput) {
                             joinResults.add(forkedElement.get());
-                            o.output(joinKey, joinResults);
+                            o.output(TemplateUtil.locationOf(joinKey), joinResults);
                         }
                     }
                 } catch (InterruptedException | ExecutionException e) {
@@ -115,7 +114,9 @@ public final class MapJoinNode <A> implements Node {
 
         });
         // default output for empty collection
-        keys.forEach((joinKeyForked, joinKey) -> { if(o.evalMaybe(TemplateUtil.templateOf(joinKey)).isEmpty()) { o.output(joinKey, new ArrayList<>()); } });
+        keys.forEach((joinKeyForked, joinKey) -> { if(o.evalMaybe(TemplateUtil.templateOf(joinKey)).isEmpty()) {
+            o.output(TemplateUtil.locationOf(joinKey), new ArrayList<>());
+        } });
 
         // continue
         return o;

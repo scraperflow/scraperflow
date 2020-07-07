@@ -6,20 +6,17 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
+import scraper.api.template.L;
 
-@NodePlugin(value = "0.1.0", deprecated = true)
+@NodePlugin(value = "0.2.0", deprecated = true)
 public final class SimpleFunctionalNode implements FunctionalNode {
 
-    @FlowKey
-    private String output;
+    @FlowKey(defaultValue = "\"simple\"")
+    private final L<Boolean> output = new L<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) {
         System.out.println(output);
-        if(output != null)
-            o.output(output, true);
-        else {
-            o.output("simple", true);
-        }
+        o.output(output, true);
     }
 }

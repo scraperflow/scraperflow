@@ -19,7 +19,7 @@ import static scraper.util.TemplateUtil.parseTemplate;
 
 public class TemplateTest {
 
-    private final static FlowMap o = new FlowMapImpl();
+    private final static FlowMapImpl o = new FlowMapImpl();
     private final static ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach

@@ -14,15 +14,8 @@ import java.util.concurrent.ConcurrentMap;
 
 public class IdentityFlowMap implements FlowMap {
 
-    @Override public void clear() { throw new IllegalStateException(); }
-
     @Override
     public <A> void output(@NotNull L<A> locationAndType, @Nullable A outputObject) {
-
-    }
-
-    @Override
-    public void remove(@NotNull String key) {
 
     }
 
@@ -55,11 +48,6 @@ public class IdentityFlowMap implements FlowMap {
     @Override
     public <A> Optional<A> evalIdentityMaybe(@NotNull T<A> template) {
         throw new IllegalStateException();
-    }
-
-    @Override
-    public void output(@NotNull String location, Object outputObject) {
-
     }
 
     @NotNull

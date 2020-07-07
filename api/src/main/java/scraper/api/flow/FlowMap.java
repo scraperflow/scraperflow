@@ -7,10 +7,8 @@ import scraper.api.node.container.NodeContainer;
 import scraper.api.template.L;
 import scraper.api.template.T;
 
-import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -45,29 +43,9 @@ public interface FlowMap extends IdentityTemplateEvaluator {
     @NotNull
     <A> Optional<String> evalLocationMaybe(@NotNull L<A> template);
 
-    //===================
-    // Write
-    //===================
-
-    /** @see Map#remove(Object) */
-    void remove(@NotNull String key);
-
-    /** @see Map#clear() */
-    void clear();
-
     // Templates Output
-
     /** Uses the template's content and type to insert the outputObject into this FlowMap */
     <A> void output(@NotNull L<A> locationAndType, @Nullable A outputObject);
-    /** Uses the template's content to insert the outputObject into this FlowMap, inferring its type */
-    void output(@NotNull String location, @Nullable Object outputObject);
-
-    //===================
-    // Other
-    //===================
-
-    /** Checks if this maps contains all elements (equals method) of the other map by recursive descent */
-    boolean containsElements(@NotNull FlowMap otherMap);
 
     //===================
     // State

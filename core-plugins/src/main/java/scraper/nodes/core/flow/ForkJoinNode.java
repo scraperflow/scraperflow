@@ -10,6 +10,7 @@ import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.Node;
+import scraper.api.template.L;
 import scraper.api.template.T;
 import scraper.util.TemplateUtil;
 
@@ -83,13 +84,13 @@ public final class ForkJoinNode implements Node {
         FlowMap forkedResult = future.get();
 
         keys.forEach((forked, main) -> {
-            Optional<?> result = forkedResult.evalMaybe(TemplateUtil.templateOf(forked));
+            Optional<Object> result = forkedResult.evalMaybe(TemplateUtil.templateOf(forked));
             if(result.isEmpty()) {
                 n.log(NodeLogLevel.ERROR, "Missing key {0} in completed flow {1}", forked, target);
                 throw new TemplateException("Completed flow does not return expected key: "+ forked);
             }
 
-            o.output(main, result.get());
+            o.output(TemplateUtil.locationOf(main), result.get());
         });
     }
 }

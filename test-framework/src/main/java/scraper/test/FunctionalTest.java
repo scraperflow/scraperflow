@@ -56,7 +56,7 @@ public abstract class FunctionalTest {
             node.init(mockContainer, mockInstance);
 
             // feed input
-            FlowMap actualOutput = FlowMapImpl.origin(input);
+            FlowMapImpl actualOutput = (FlowMapImpl) FlowMapImpl.origin(input);
             node.modify(mockContainer, actualOutput);
 
             FlowMap expectedOutput = FlowMapImpl.origin(output);

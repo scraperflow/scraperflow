@@ -173,10 +173,17 @@ public final class TemplateUtil {
         return t;
     }
 
-    public static T<?> templateOf(String location) {
-        T<Object> t = new T<>(){};
+    public static <A> T<A> templateOf(String location) {
+        T<A> t = new T<>(){};
         t.setTerm(parseTemplate("{"+location+"}", new T<>(){}));
         return t;
+    }
+
+    public static <A> L<A> locationOf(String loc) {
+        L<A> t = new L<>(){};
+        t.setLocation(new TemplateConstant<>(loc, new T<>(){}));
+        return t;
+
     }
 }
 

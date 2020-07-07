@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TemplateExpTest {
 
-    private final static FlowMap o = new FlowMapImpl();
+    private final static FlowMapImpl o = new FlowMapImpl();
 
     @BeforeEach
     public void clean() { o.clear(); }
