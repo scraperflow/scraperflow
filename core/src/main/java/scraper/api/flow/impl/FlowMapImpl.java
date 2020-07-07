@@ -155,8 +155,12 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     @NotNull @Override
     public <A> Optional<A> evalMaybe(@NotNull T<A> template) {
         if(template.getTerm() == null) return Optional.empty();
-        A eval = template.getTerm().eval(this);
-        return Optional.ofNullable(eval);
+        try {
+            A eval = template.getTerm().eval(this);
+            return Optional.ofNullable(eval);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @NotNull

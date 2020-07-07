@@ -1,7 +1,10 @@
 package scraper.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
 import scraper.api.flow.impl.FlowMapImpl;
@@ -9,10 +12,12 @@ import scraper.api.node.Address;
 import scraper.api.template.T;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 
 /**
@@ -231,7 +236,7 @@ public class FieldTranslationTest {
 
     // optional null template evaluation
     @FlowKey
-    @TranslationInput
+    @TranslationInput(fail = true)
     private T<String> nullTemplate = new T<>(){};
     private String nullTemplateEval = null;
 
@@ -262,93 +267,110 @@ public class FieldTranslationTest {
 //    private T<Map<String, Integer>> badMultiTemplate = new T<>(){};
 //    private Map<String, Object> badMultiTemplateArgs = Map.of("id", "test");
 
-
-    @Test
-    public void fieldTranslationTest() throws Exception {
-        for (Field field : getClass().getDeclaredFields()) {
-            TranslationInput testInput = field.getAnnotation(TranslationInput.class);
-            FlowKey flowKey = field.getAnnotation(FlowKey.class);
-            if(testInput == null) continue;
-
-            try {
-                testField(field, flowKey, testInput);
-            } catch (Exception e) {
-                if(!testInput.fail()) throw e;
-                else continue;
-            }
-
-            if(testInput.fail()) throw new IllegalStateException("Field was expected to fail evaluation: " + field.getName());
+    static class TestInput {
+        private final Field field; private final FlowKey flowKey; private final TranslationInput input;
+        public TestInput(Field field, FlowKey flowKey, TranslationInput input) {
+            this.field = field; this.flowKey = flowKey; this.input = input;
         }
     }
 
+    public static Stream<TestInput> fieldTranslationProvider() throws Exception {
+        return Arrays.stream(FieldTranslationTest.class.getDeclaredFields())
+                .filter(f -> f.getAnnotation(TranslationInput.class) != null)
+                .map(f -> {
+                    TranslationInput testInput = f.getAnnotation(TranslationInput.class);
+                    FlowKey flowKey = f.getAnnotation(FlowKey.class);
+                    return new TestInput(f, flowKey, testInput);
+                });
+    }
+
     @SuppressWarnings("unchecked")// try to get argument map by convention, if not, use empty instead
-    private void testField(Field field, FlowKey flowKey, TranslationInput testInput) throws Exception {
-        System.out.println("Testing field '" + field.getName() + "'");
+    @ParameterizedTest
+    @MethodSource("fieldTranslationProvider")
+    public void testField(TestInput arg) throws Exception {
+        Field field = arg.field;
+        FlowKey flowKey = arg.flowKey;
+        TranslationInput testInput = arg.input;
 
-        ObjectMapper mapper = new ObjectMapper();
+        Runnable run = () -> {
+            try {
+                System.out.println("Testing field '" + field.getName() + "'");
 
-        Object jsonValue =
-                !testInput.jsonValue().equalsIgnoreCase("") ?
-                mapper.readValue(testInput.jsonValue(), Object.class) :
-                null;
+                ObjectMapper mapper = new ObjectMapper();
 
-        Object globalValue =
-                !testInput.globalValue().equalsIgnoreCase("") ?
-                        mapper.readValue(testInput.globalValue(), Object.class) :
-                        null;
+                Object jsonValue =
+                        !testInput.jsonValue().equalsIgnoreCase("") ?
+                                mapper.readValue(testInput.jsonValue(), Object.class) :
+                                null;
 
-
-        Map<String, Object> args = Map.of();
-        try { // try to get argument map by convention, if not, use empty instead
-            args = (Map<String, Object>) getClass().getDeclaredField(field.getName()+"Args").get(this);
-        } catch (Exception ignored) {}
+                Object globalValue =
+                        !testInput.globalValue().equalsIgnoreCase("") ?
+                                mapper.readValue(testInput.globalValue(), Object.class) :
+                                null;
 
 
-        Object expectedReturnValue = null;
-        try { // try to get expected return value by convention. default is null
-            expectedReturnValue = getClass().getDeclaredField(field.getName()+"Expected").get(this);
-        } catch (Exception ignored) {}
+                Map<String, Object> args = Map.of();
+                try { // try to get argument map by convention, if not, use empty instead
+                    args = (Map<String, Object>) getClass().getDeclaredField(field.getName()+"Args").get(this);
+                } catch (Exception ignored) {}
 
-        Object expectedTemplateEval = null;
-        try { // try to get expected eval value by convention. default is null
-            expectedTemplateEval = getClass().getDeclaredField(field.getName()+"Eval").get(this);
-        } catch (Exception ignored) {}
 
-        Argument ann = field.getAnnotation(Argument.class);
-        boolean isArgument = ann != null;
-        Class<?> converter = (ann != null ? ann.converter() : null);
+                Object expectedReturnValue = null;
+                try { // try to get expected return value by convention. default is null
+                    expectedReturnValue = getClass().getDeclaredField(field.getName()+"Expected").get(this);
+                } catch (Exception ignored) {}
 
-        Object translatedValue = NodeUtil.getValueForField(this, field, jsonValue, globalValue,
-                flowKey.mandatory(), flowKey.defaultValue(),
-                isArgument, converter,
-                args
-        );
+                Object expectedTemplateEval = null;
+                try { // try to get expected eval value by convention. default is null
+                    expectedTemplateEval = getClass().getDeclaredField(field.getName()+"Eval").get(this);
+                } catch (Exception ignored) {}
 
-        if((expectedReturnValue != null || translatedValue != null)) {
-            if (expectedReturnValue != null) {
-                if(!expectedReturnValue.equals(translatedValue)){
-                    throw new IllegalStateException("Failed equality check");
+                Argument ann = field.getAnnotation(Argument.class);
+                boolean isArgument = ann != null;
+                Class<?> converter = (ann != null ? ann.converter() : null);
+
+                Object translatedValue = NodeUtil.getValueForField(this, field, jsonValue, globalValue,
+                        flowKey.mandatory(), flowKey.defaultValue(),
+                        isArgument, converter,
+                        args
+                );
+
+                if((expectedReturnValue != null || translatedValue != null)) {
+                    if (expectedReturnValue != null) {
+                        if(!expectedReturnValue.equals(translatedValue)){
+                            throw new IllegalStateException("Failed equality check");
+                        }
+                    }
                 }
+
+                if(field.getType().isAssignableFrom(T.class)) {
+                    T<?> template = (T<?>) field.get(this);
+                    Object templateEvaluation = FlowMapImpl.origin(args).eval(template);
+
+                    // static convention check for simple cases
+                    if(expectedTemplateEval != null && (!expectedTemplateEval.equals(templateEvaluation))) {
+                        throw new IllegalStateException("Expected template evaluation does not match actual template evaluation");
+                    }
+
+                    // custom method check for complex cases
+                    Consumer<? super Object> checkMethod = null;
+                    try { // try to get check method by convention, if not, do not use it
+                        checkMethod = (Consumer<? super Object>) getClass().getDeclaredField(field.getName()+"Check").get(this);
+                    } catch (Exception ignored) {}
+
+                    if(checkMethod != null) //noinspection OptionalGetWithoutIsPresent check method should check for null value
+                        checkMethod.accept(templateEvaluation);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
             }
-        }
+        };
 
-        if(field.getType().isAssignableFrom(T.class)) {
-            T<?> template = (T<?>) field.get(this);
-            Optional<?> templateEvaluation = FlowMapImpl.origin(args).evalMaybe(template);
-
-            // static convention check for simple cases
-            if(expectedTemplateEval != null && (templateEvaluation.isEmpty() || !expectedTemplateEval.equals(templateEvaluation.get()))) {
-                throw new IllegalStateException("Expected template evaluation does not match actual template evaluation");
-            }
-
-            // custom method check for complex cases
-            Consumer<? super Object> checkMethod = null;
-            try { // try to get check method by convention, if not, do not use it
-                checkMethod = (Consumer<? super Object>) getClass().getDeclaredField(field.getName()+"Check").get(this);
-            } catch (Exception ignored) {}
-
-            if(checkMethod != null) //noinspection OptionalGetWithoutIsPresent check method should check for null value
-                checkMethod.accept(templateEvaluation.get());
+        if(testInput.fail()) {
+            Assertions.assertThrows(Exception.class, run::run);
+        } else {
+            run.run();
         }
     }
 }

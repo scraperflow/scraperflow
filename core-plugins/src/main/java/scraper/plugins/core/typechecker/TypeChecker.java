@@ -106,7 +106,7 @@ public class TypeChecker {
                         propagate(nextNode, env, spec, cfg, visited);
                     }
                 } else {
-                    log.log(INFO, "Not propagating: " + e.getDisplayLabel());
+                    log.log(DEBUG, "Not propagating: " + e.getDisplayLabel());
                 }
             }
         });
