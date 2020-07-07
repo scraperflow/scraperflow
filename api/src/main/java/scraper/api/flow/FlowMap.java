@@ -29,10 +29,7 @@ public interface FlowMap extends IdentityTemplateEvaluator {
 
     /** @see Map#get(Object) */
     @NotNull
-    Optional<? super Object> get(@NotNull String key);
-
-    @NotNull
-    <K> Optional<K> getWithType(@NotNull String targetKey, @NotNull Type targetType);
+    Optional<?> get(@NotNull String key);
 
     /** @see Map#size() */
     int size();

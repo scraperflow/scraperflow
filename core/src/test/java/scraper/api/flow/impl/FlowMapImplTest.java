@@ -122,12 +122,4 @@ public class FlowMapImplTest {
         assertNotEquals(o1.hashCode(), o2.hashCode());
     }
 
-    @Test
-    public <V> void getWithTypeTest() {
-        FlowMap o1 = FlowMapImpl.origin(Map.of("k1",123, "k2", List.of(Map.of("1",1), "ok", List.of("123", "123"))));
-
-        Optional<List<V>> tt = o1.getWithType("k2", new L<>(){}.get());
-        assertTrue(tt.isPresent());
-    }
-
 }

@@ -9,15 +9,11 @@ import scraper.api.template.Primitive;
 import scraper.api.template.T;
 import scraper.core.IdentityEvaluator;
 
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import static java.lang.System.Logger.Level.DEBUG;
-import static java.lang.System.Logger.Level.ERROR;
-import static scraper.api.template.T.rawType;
-import static scraper.core.converter.StringToClassConverter.convert;
 import static scraper.util.TemplateUtil.listOf;
 import static scraper.util.TemplateUtil.mapOf;
 
@@ -305,23 +301,6 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
     // ======
     // Runtime
     // ======
-
-    @SuppressWarnings("unchecked") // checked at compile time
-    @NotNull
-    @Override
-    public <K> Optional<K> getWithType(@NotNull String targetKey, @NotNull Type targetType) {
-        Object targetObject = privateMap.get(targetKey);
-        if(targetObject == null) return Optional.empty();
-
-        try {
-            K converted = (K) convert(targetObject, rawType(targetType));
-            return Optional.of((K) converted);
-        }
-        catch (Exception e){
-            log.log(ERROR,"Could not check type", e);
-            throw new TemplateException("Runtime template error");
-        }
-    }
 
     public static T<?> inferTypeToken(Object o) {
         return inferType(o);

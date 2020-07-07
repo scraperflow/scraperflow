@@ -26,24 +26,17 @@ public class TemplateMapKey<K> extends TemplateExpression<K> implements FlowKeyL
         return fromTypeVariable;
     }
 
-    private Term<String> keyLookup;
-
-    private String typeSuffix = "";
+    private final Term<String> keyLookup;
 
     @Override
     public Term<K> withTypeVar(String suffix) {
-        System.out.println("WITH VAR SUFFIX " + suffix);
-
-//        this.targetType = new T<>(targetType.){};
-
         return this;
     }
 
-    public TemplateMapKey(@NotNull final TemplateExpression<String> keyLookup, @NotNull final T<K> targetType, String suffix, boolean fromTypeVariable) {
+    public TemplateMapKey(@NotNull final TemplateExpression<String> keyLookup, @NotNull final T<K> targetType, boolean fromTypeVariable) {
         super(targetType);
         this.keyLookup = keyLookup;
         this.fromTypeVariable = fromTypeVariable;
-        this.typeSuffix = suffix;
     }
 
     @Override
@@ -51,10 +44,11 @@ public class TemplateMapKey<K> extends TemplateExpression<K> implements FlowKeyL
         return targetType.get().getTypeName();
     }
 
+    @SuppressWarnings("unchecked") // statically checked
     public K eval(@NotNull final FlowMap o) {
         try{
             String targetKey = keyLookup.eval(o);
-            Optional<K> targetValue = o.getWithType(targetKey, targetType.get());
+            Optional<K> targetValue = (Optional<K>) o.get(targetKey);
 
             if(targetValue.isEmpty())
                 throw new IllegalStateException("FlowMap has no element at key " + targetKey);

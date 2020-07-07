@@ -256,10 +256,11 @@ public class FieldTranslationTest {
 
 
     // map bad complex type evaluation
-    @FlowKey(defaultValue = "{\"actual\": 4, \"replaced\": \"{id}\"}")
-    @TranslationInput(fail = true)
-    private T<Map<String, Integer>> badMultiTemplate = new T<>(){};
-    private Map<String, Object> badMultiTemplateArgs = Map.of("id", "test");
+    // this is will actually not throw an Exception, there is no runtime type checking
+//    @FlowKey(defaultValue = "{\"actual\": 4, \"replaced\": \"{id}\"}")
+//    @TranslationInput(fail = true)
+//    private T<Map<String, Integer>> badMultiTemplate = new T<>(){};
+//    private Map<String, Object> badMultiTemplateArgs = Map.of("id", "test");
 
 
     @Test

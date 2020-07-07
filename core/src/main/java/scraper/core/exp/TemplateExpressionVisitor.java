@@ -110,14 +110,11 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
                 TemplateExpression<String> templateString = stringTargetVisitor.visit(strexp);
 
                 return new TemplateMapLookup<>(
-                        // TODO why cannot this be inferred? withTypeVar just returns itself
-                        //  templateMap.withTypeVar(),
-                        (fromTypeVar ? (TemplateExpression<Map<String, Y>>) templateMap.withTypeVar("MapLookup") : templateMap),
+                        templateMap,
                         templateString,
                         new T<>(target.get(), (fromTypeVar ? target.getSuffix() + "MapLookup" : target.getSuffix())){},
                         fromTypeVar
                 );
-//                return new TemplateMapLookup<>(templateMap, templateString, target, target.get() instanceof TypeVariable);
             }
         }
 
@@ -133,7 +130,7 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
         TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(new T<>(){});
         TemplateExpression<String> visited = stringTargetVisitor.visit(ctx.children.get(1));
 
-        return new TemplateMapKey<>(visited, target, "", (target.get() instanceof TypeVariable));
+        return new TemplateMapKey<>(visited, target, (target.get() instanceof TypeVariable));
     }
 
     @Override

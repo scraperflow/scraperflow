@@ -18,12 +18,6 @@ public class IdentityFlowMap implements FlowMap {
         return Optional.empty();
     }
 
-    @NotNull
-    @Override
-    public <K> Optional<K> getWithType(@NotNull String targetKey, @NotNull Type targetType) {
-        return Optional.empty();
-    }
-
     @Override public int size() { throw new IllegalStateException(); }
     @Override public void clear() { throw new IllegalStateException(); }
 

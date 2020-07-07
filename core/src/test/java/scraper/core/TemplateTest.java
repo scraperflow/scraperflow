@@ -128,10 +128,9 @@ public class TemplateTest {
         });
     }
 
-    @SuppressWarnings("unchecked") // object mapper
     @Test
-    public void simpleTBadKeyType() throws Exception {
-        assertThrows(TemplateException.class, () -> {
+    public void simpleTBadKeyType() {
+        assertThrows(ClassCastException.class, () -> {
             T<Map<String, Integer>> str = new T<>() {};
             str.setTerm(parseTemplate(mapper.readValue("{\"other\": \"{template-int}\"}", Map.class), str));
             o.output("template-int", "3b");
@@ -145,7 +144,7 @@ public class TemplateTest {
 //    // ===============
 
     @Test
-    public void badConversionTest() throws ValidationException {
+    public void badConversionTest() {
         assertThrows(ValidationException.class, () -> {
             class TNotImplemented implements Serializable {}
             T<String> str = new T<>(){};
@@ -154,12 +153,13 @@ public class TemplateTest {
     }
 
     @Test
-    public void nestedKeyLookupFail() throws Exception {
-        assertThrows(TemplateException.class, () -> {
+    public void nestedKeyLookupFail() {
+        assertThrows(ClassCastException.class, () -> { // not a TemplateException,
+            // only ClassCastException since TypeChecking happens at compile time
             T<String> str = new T<>(){};
             str.setTerm(parseTemplate(mapper.readValue("\"{list}\"}", String.class), str));
             o.output("list", List.of("hello"));
-            o.eval(str);
+            String eval = o.eval(str);
         });
     }
 
