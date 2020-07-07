@@ -10,6 +10,7 @@ import scraper.api.template.T;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 
 /**
  * A map-like data structure which 'flows' through nodes in the control flow order.
@@ -46,6 +47,10 @@ public interface FlowMap extends IdentityTemplateEvaluator {
     // Templates Output
     /** Uses the template's content and type to insert the outputObject into this FlowMap */
     <A> void output(@NotNull L<A> locationAndType, @Nullable A outputObject);
+
+    // Iterator
+    /** Iterate each entry */
+    void forEach(@NotNull BiConsumer<L<?>, Object> consumer);
 
     //===================
     // State

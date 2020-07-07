@@ -11,11 +11,17 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.BiConsumer;
 
 public class IdentityFlowMap implements FlowMap {
 
     @Override
     public <A> void output(@NotNull L<A> locationAndType, @Nullable A outputObject) {
+
+    }
+
+    @Override
+    public void forEach(BiConsumer<L<?>, Object> consumer) {
 
     }
 

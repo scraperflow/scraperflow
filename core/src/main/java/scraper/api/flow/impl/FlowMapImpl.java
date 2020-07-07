@@ -8,10 +8,13 @@ import scraper.api.template.L;
 import scraper.api.template.Primitive;
 import scraper.api.template.T;
 import scraper.core.IdentityEvaluator;
+import scraper.util.TemplateUtil;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import static java.lang.System.Logger.Level.DEBUG;
 import static scraper.util.TemplateUtil.listOf;
@@ -188,6 +191,16 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
         } else {
             output(location, object);
         }
+    }
+
+    @Override
+    public void forEach(BiConsumer<L<?>, Object> consumer) {
+        Map<L<?>, Object> newMap = privateMap.entrySet()
+                .stream()
+                .map(e -> Map.entry(TemplateUtil.locationOf(e.getKey()), e.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        newMap.forEach(consumer::accept);
     }
 
     public void output(@NotNull String location, @NotNull Object outputObject) {
