@@ -6,10 +6,14 @@ import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
+import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.plugin.NodeHook;
 import scraper.api.specification.ScrapeInstance;
+import scraper.api.template.L;
+
+import java.util.Map;
 
 /**
  * Objects which implement this interface can consume and modify {@link FlowMap}s.

@@ -6,6 +6,7 @@ import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
+import scraper.annotations.node.Flow;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.Node;
@@ -44,6 +45,7 @@ public final class MapJoinNode <A> implements Node {
 
     /** Label of goTo */
     @FlowKey(mandatory = true)
+    @Flow(dependent = true, crossed = true, label = "map")
     private Address mapTarget;
 
     /** At which key to put the element of the list into. */

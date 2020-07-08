@@ -1,21 +1,31 @@
 package scraper.plugins.core.flowgraph;
 
 import scraper.annotations.NotNull;
+import scraper.annotations.node.Flow;
+import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.Address;
 import scraper.api.node.NodeAddress;
 import scraper.api.node.container.NodeContainer;
+import scraper.api.node.container.StreamNodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.specification.ScrapeInstance;
+import scraper.api.template.T;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.plugins.core.flowgraph.api.ControlFlowNode;
 import scraper.plugins.core.flowgraph.impl.ControlFlowGraphImpl;
 import scraper.plugins.core.flowgraph.impl.ControlFlowNodeImpl;
+import scraper.util.NodeUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static scraper.plugins.core.flowgraph.impl.ControlFlowEdgeImpl.edge;
 
 @SuppressWarnings("unchecked") //convention
 public class FlowUtil {
@@ -85,17 +95,81 @@ public class FlowUtil {
 
         List<ControlFlowEdge> output = new LinkedList<>();
 
-        for (Class<?> nodeClass : classesToCheck) {
-            String controlClass = "scraper.plugins.core.flowgraph.control."+nodeClass.getSimpleName()+"Control";
-            try {
-                Class<?> control = Class.forName(controlClass);
-                Method method = control.getDeclaredMethod("getOutput", List.class, NodeContainer.class, ScrapeInstance.class);
-                output = (List<ControlFlowEdge>) method.invoke(null, output, node, instance);
-            } catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException ignored) {
-//                System.out.println("[Skip] Could not find control for " + nodeClass + ": " + controlClass);
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException(e);
+        // special case 1: forward contract
+        Optional<NodeContainer<? extends Node>> goTo = node.getGoTo();
+        if(goTo.isPresent() && node.isForward()) {
+            // special case 2: stream node has no forward in "collect: false" mode
+            if(node instanceof StreamNodeContainer) {
+                try {
+                    Field collect = node.getClass().getSuperclass().getDeclaredField("collect");
+                    collect.setAccessible(true);
+                    if( ((Boolean) collect.get(node)) ) {
+                        output.add(edge(node.getAddress(), goTo.get().getAddress(), "forward"));
+                    }
+                } catch (Exception e) { throw new RuntimeException(e); }
+            } else {
+                output.add(edge(node.getAddress(), goTo.get().getAddress(), "forward"));
             }
+        }
+
+        for (Class<?> nodeClass : classesToCheck) {
+
+            BiFunction<Object, Flow, List<ControlFlowEdge>> handleAddress = (obj, annot) -> {
+                if(obj instanceof T) {
+                    FlowMapImpl o = new FlowMapImpl();
+                    obj = o.evalIdentity(((T<?>) obj));
+                }
+
+                if(obj instanceof Address) {
+                    Address target = ((Address) obj);
+                    NodeContainer<? extends Node> map = NodeUtil.getTarget(node.getAddress(), target, instance);
+                    return List.of(edge(
+                            node.getAddress(), map.getAddress(), annot.label(), annot.crossed(), !annot.dependent()
+                    ));
+                } else if(obj instanceof List) {
+                    List<Address> targets = ((List<Address>) obj);
+
+                    List<ControlFlowEdge> edges = new ArrayList<>();
+                    int i = 0;
+                    for (Address target : targets) {
+                        NodeContainer<? extends Node> n = NodeUtil.getTarget(node.getAddress(), target, instance);
+                        edges.add(edge( node.getAddress(), n.getAddress(), annot.label()+(annot.enumerate()?i:""), annot.crossed(), !annot.dependent() ));
+                        i++;
+                    }
+
+                    return edges;
+                } else if(obj instanceof Map) {
+                    Map<String, Address> targets = ((Map<String, Address>) obj);
+                    return targets.entrySet().stream().map(e -> {
+                        Address t = e.getValue();
+                        NodeContainer<? extends Node> n = NodeUtil.getTarget(node.getAddress(), t, instance);
+                        return edge( node.getAddress(), n.getAddress(), e.getKey(), annot.crossed(), !annot.dependent() );
+                    }).collect(Collectors.toList());
+                } else {
+                    throw new RuntimeException("Only Address, List, or Map supported");
+                }
+            };
+
+            Stream<List<ControlFlowEdge>> stremm = Arrays.stream(nodeClass.getDeclaredFields())
+                    .filter(f -> f.isAnnotationPresent(Flow.class))
+                    .map(f -> {
+                        f.setAccessible(true);
+                        try {
+                            if (f.get(node) != null) {
+                                return handleAddress.apply(f.get(node), f.getAnnotation(Flow.class));
+                            }
+                        } catch (Exception ignored) { }
+                        try {
+                            if (f.get(node.getC()) != null) {
+                                return handleAddress.apply(f.get(node.getC()), f.getAnnotation(Flow.class));
+                            }
+                        } catch (Exception ignored) { }
+                        return List.of();
+                    });
+
+            List<ControlFlowEdge> collected = stremm.flatMap(List::stream).collect(Collectors.toList());
+
+            collected.forEach(cfg::addEdge);
         }
 
         output.forEach(cfg::addEdge);

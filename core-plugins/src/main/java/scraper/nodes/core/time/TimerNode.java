@@ -7,6 +7,7 @@ import scraper.annotations.node.NodePlugin;
 import scraper.annotations.node.Stateful;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
+import scraper.annotations.node.Flow;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
@@ -46,6 +47,7 @@ public final class TimerNode implements FunctionalNode {
 
     /** Go to node if timeout occurs */
     @FlowKey(mandatory = true)
+    @Flow(dependent = false, crossed = true, label = "timeout")
     private Address onTimeout;
 
     /** Descriptive name of this timer. Used for logging. */

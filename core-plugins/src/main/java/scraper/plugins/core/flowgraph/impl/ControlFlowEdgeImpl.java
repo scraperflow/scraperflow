@@ -21,7 +21,7 @@ public class ControlFlowEdgeImpl implements ControlFlowEdge {
 
     private final boolean multiple;
     private final boolean dispatched;
-    private final boolean propagate;
+    private boolean propagate;
 
     public ControlFlowEdgeImpl(
             @NotNull final NodeAddress from,
@@ -81,6 +81,11 @@ public class ControlFlowEdgeImpl implements ControlFlowEdge {
     @Override
     public boolean isPropagate() {
         return propagate;
+    }
+
+    @Override
+    public void setPropagate(boolean b) {
+        propagate = b;
     }
 }
 

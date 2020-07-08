@@ -6,6 +6,7 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
+import scraper.annotations.node.Flow;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 
@@ -25,6 +26,7 @@ public final class RetryNode implements Node {
 
     /** Target of the retry */
     @FlowKey(mandatory = true)
+    @Flow(dependent = true, crossed = false, label = "retry")
     private Address retryTarget;
 
     @NotNull

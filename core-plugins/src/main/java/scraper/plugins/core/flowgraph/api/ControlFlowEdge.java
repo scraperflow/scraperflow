@@ -28,6 +28,7 @@ public interface ControlFlowEdge {
      * If propagate or not
      */
     default @NotNull boolean isPropagate() { return false; }
+    void setPropagate(boolean b);
 
     /** Indicates if the edge is used multiple times from the origin node */
     boolean isMultiple();

@@ -6,6 +6,7 @@ import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
+import scraper.annotations.node.Flow;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.template.L;
@@ -28,6 +29,7 @@ public final class MapNode<K> implements Node {
 
     /** Target address to fork to */
     @FlowKey(mandatory = true)
+    @Flow(dependent = false, crossed = true, label = "map")
     private Address mapTarget;
 
     /** At which key to put the element of the list into. */

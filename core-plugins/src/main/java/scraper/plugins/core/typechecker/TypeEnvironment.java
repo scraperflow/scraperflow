@@ -1,6 +1,7 @@
 package scraper.plugins.core.typechecker;
 
 import scraper.annotations.NotNull;
+import scraper.api.exceptions.TemplateException;
 import scraper.api.template.T;
 import scraper.api.template.Term;
 
@@ -34,5 +35,10 @@ public class TypeEnvironment {
     public void merge(TypeEnvironment newEnvironment) {
         this.env.putAll(newEnvironment.env);
         this.templateToKnownTargets.putAll(newEnvironment.templateToKnownTargets);
+    }
+
+    public void remove(Term<?> location) {
+        T<?> removed = templateToKnownTargets.remove(location);
+        if(removed == null) throw new TemplateException("Nothing removed!");
     }
 }

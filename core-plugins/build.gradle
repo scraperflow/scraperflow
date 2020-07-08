@@ -2,7 +2,7 @@ plugins {
     id 'java-library'
 }
 
-version = '0.13.2'
+version = '0.13.3'
 
 dependencies {
     api project(':core')

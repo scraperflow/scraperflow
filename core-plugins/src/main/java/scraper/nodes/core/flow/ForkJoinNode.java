@@ -7,10 +7,10 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
+import scraper.annotations.node.Flow;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.Node;
-import scraper.api.template.L;
 import scraper.api.template.T;
 import scraper.util.TemplateUtil;
 
@@ -45,6 +45,7 @@ public final class ForkJoinNode implements Node {
 
     /** All processes to fork the current flow map to */
     @FlowKey(mandatory = true)
+    @Flow(dependent = true, crossed = false, label = "fork")
     private final T<List<Address>> forkTargets = new T<>(){};
 
     @NotNull

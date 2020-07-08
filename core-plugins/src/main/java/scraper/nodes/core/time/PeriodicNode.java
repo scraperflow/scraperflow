@@ -6,6 +6,7 @@ import scraper.annotations.node.NodePlugin;
 import scraper.annotations.node.Stateful;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
+import scraper.annotations.node.Flow;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.FunctionalNode;
@@ -34,6 +35,7 @@ public final class PeriodicNode implements FunctionalNode {
 
     /** Target node label which is called on period */
     @FlowKey(mandatory = true)
+    @Flow(dependent = false, crossed = true, label = "periodic")
     private Address onPeriod;
 
     /** If true, enables dispatch of the periodic task. If false, stops dispatch of the periodic task */

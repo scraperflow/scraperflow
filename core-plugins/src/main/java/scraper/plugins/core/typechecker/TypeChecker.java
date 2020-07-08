@@ -100,10 +100,7 @@ public class TypeChecker {
                 propagate(nextNode, env.copy(), spec, cfg, new LinkedList<>(visited));
             } else {
                 if(
-                        e.getDisplayLabel().equalsIgnoreCase("forward")
-                                || e.getDisplayLabel().equalsIgnoreCase("join")
-                                || e.getDisplayLabel().equalsIgnoreCase("join")
-                                || e.isPropagate()
+                        e.getDisplayLabel().equalsIgnoreCase("forward") || e.isPropagate()
                 ) {
                     NodeContainer<?> nextNode = spec.getNode(e.getToAddress());
                     if (e.isPropagate()) {

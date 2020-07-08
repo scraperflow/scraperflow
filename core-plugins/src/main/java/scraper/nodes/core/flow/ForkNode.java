@@ -6,6 +6,7 @@ import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
+import scraper.annotations.node.Flow;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.template.T;
@@ -20,6 +21,7 @@ public final class ForkNode implements Node {
 
     /** All nodes to fork the current flow map to */
     @FlowKey(mandatory = true)
+    @Flow(dependent = false, crossed = false, label = "fork")
     private final T<List<Address>> forkTargets = new T<>(){};
 
     @NotNull

@@ -10,6 +10,7 @@ import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
+import scraper.annotations.node.Flow;
 import scraper.api.node.GraphAddress;
 import scraper.api.node.NodeAddress;
 import scraper.api.node.container.NodeContainer;
@@ -65,6 +66,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
 
     /** Target label */
     @FlowKey
+//    @Flow(dependent = true, crossed = false) special case 1: forward contract
     protected Address goTo;
 
     /** If set and a node creates flows, the node uses a thread pool denoted by this name and <var>threads</var> */
@@ -82,6 +84,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
 
     /** Target if a fork (dispatch or depend) flow exception occurs */
     @FlowKey
+    @Flow(dependent = true, crossed = false, label = "onException")
     protected Address onForkException;
 
     /** Reference to its parent job */

@@ -9,6 +9,7 @@ import scraper.api.exceptions.TemplateException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
+import scraper.annotations.node.Flow;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.container.StreamNodeContainer;
 import scraper.api.node.type.StreamNode;
@@ -37,6 +38,7 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
 
     /** If collect is disabled, this is the target a single stream element is streamed to */
     @FlowKey
+    @Flow(dependent = false, crossed = true, label = "stream")
     private Address streamTarget;
 
     @Override

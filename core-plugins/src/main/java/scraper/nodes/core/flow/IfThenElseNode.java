@@ -6,6 +6,7 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
+import scraper.annotations.node.Flow;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.template.T;
@@ -22,10 +23,12 @@ public final class IfThenElseNode implements Node {
 
     /** True target address */
     @FlowKey
+    @Flow(dependent = true, crossed = false, label = "true")
     private Address trueTarget;
 
     /** False target address */
     @FlowKey
+    @Flow(dependent = true, crossed = false, label = "false")
     private Address falseTarget;
 
     @NotNull

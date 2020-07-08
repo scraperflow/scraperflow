@@ -7,6 +7,7 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
+import scraper.annotations.node.Flow;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.template.T;
@@ -21,6 +22,7 @@ public final class PipeNode implements Node {
 
     /** List of addresses */
     @FlowKey(mandatory = true)
+    @Flow(dependent = true, crossed = false, label = "pipe", enumerate = true)
     private final T<List<Address>> pipeTargets = new T<>(){};
 
     @NotNull

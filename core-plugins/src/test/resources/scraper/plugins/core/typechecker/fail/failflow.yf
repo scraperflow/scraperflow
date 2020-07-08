@@ -1,0 +1,18 @@
+---
+name: fefe
+graphs:
+
+  start:
+    - type: IfThenElseNode
+      condition: true
+      trueTarget: duplicate-post
+      falseTarget: not-duplicate-post
+
+  duplicate-post:
+    - type: EchoNode
+
+  not-duplicate-post:
+    - type: EchoNode
+      log:
+        message: "{output}"
+        recipients: "{recipient}"
