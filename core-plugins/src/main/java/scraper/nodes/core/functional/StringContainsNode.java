@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  *
  * Returns true or false depending on the regex matching the input or not.
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class StringContainsNode implements FunctionalNode {
 
     /** Regex as a (properly escaped JSON) Java String */
@@ -45,6 +45,6 @@ public final class StringContainsNode implements FunctionalNode {
 
         Matcher m = p.matcher(content);
 
-        o.output(output, m.results().findAny().isEmpty());
+        o.output(output, m.results().findAny().isPresent());
     }
 }

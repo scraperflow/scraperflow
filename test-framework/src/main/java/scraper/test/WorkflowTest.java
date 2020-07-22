@@ -49,11 +49,9 @@ public abstract class WorkflowTest {
         spec.getGlobalNodeConfigurations().put("/.*Node/", Map.of("onForkException", "fail"));
         injectExceptionNode(spec);
 
-        // reset property before test
-        System.setProperty("workflow.fail", "no");
-
         try {
             ScrapeInstaceImpl convJob = deps.get(JobFactory.class).convertScrapeJob(spec);
+            convJob.validate();
 
             // build initial input map
             FlowMap initialFlow = FlowMapImpl.origin();
@@ -67,18 +65,7 @@ public abstract class WorkflowTest {
 
             TestUtil.assertSuccess(convJob.getAllNodes());
         } catch (Exception e) {
-            if(expectException.equals(e.getClass())) {
-                System.out.println("Excepted exception");
-            } else throw new RuntimeException(e);
-        }
-
-        // System fail
-        if(System.getProperty("workflow.fail","no").equalsIgnoreCase("fail")) {
-            if(expectException.equals(IllegalStateException.class)) {
-                System.out.println("Excepted exception");
-            } else {
-                throw new IllegalStateException("Failed workflow by system property");
-            }
+            if (!expectException.equals(e.getClass())) throw new RuntimeException(e);
         }
     }
 

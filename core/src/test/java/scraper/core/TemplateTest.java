@@ -223,4 +223,15 @@ public class TemplateTest {
         String eval = o.eval(simpleString);
         assertEquals(regex.substring(1), eval);
     }
+
+    @Test
+    public void escapeChars() {
+        String template = "\\^\\{\\}\\@\\[\\]";
+
+        T<String> s = new T<>(){};
+        s.setTerm(parseTemplate(template, s));
+
+        String eval = o.eval(s);
+        assertEquals("^{}@[]", eval);
+    }
 }

@@ -7,6 +7,7 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
+import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.Node;
 
 @NodePlugin(deprecated = true)
@@ -19,14 +20,11 @@ public class ExceptionNode implements Node {
     public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
         switch (exception) {
             case "NODE": {
-                throw new NodeException("Dummy Exception");
-            }
-            case "FAIL": {
-                System.setProperty("workflow.fail", "fail");
-//                Assert.fail("Failed test.");
+                throw new NodeException("Dummy Exception at " + n.getAddress());
             }
             default:
-                throw new RuntimeException("default runtime exception");
+                n.log(NodeLogLevel.ERROR, "Failing test of " + n.getJobInstance().getName());
+                throw new AssertionError("Failed test: " + exception);
         }
     }
 }

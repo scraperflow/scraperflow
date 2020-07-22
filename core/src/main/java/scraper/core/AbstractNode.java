@@ -297,7 +297,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
             } catch (Exception e) {
                 if(onForkException != null) {
                     try {
-                        log(WARN, "Fork dispatch to goTo {0} terminated exceptionally, executing onException {1}.", e.getMessage(), onForkException);
+                        log(WARN, "Fork dispatch to goTo {0} terminated exceptionally, executing onException {1}: {2}.", target, onForkException, e.getMessage());
                         return eval(o, onForkException);
                     } catch (NodeException ex) {
                         log(ERROR, "OnException fork target {0} terminated exceptionally: {1}", target, e.getMessage());

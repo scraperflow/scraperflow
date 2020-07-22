@@ -157,10 +157,11 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
         String unescape = ctx.getText()
                 .replaceAll("\\\\\\{", "{")
                 .replaceAll("\\\\}", "}")
+                .replaceAll("\\\\\\^", "^")
+                .replaceAll("\\\\@", "@")
                 .replaceAll("\\\\\\[", "[")
                 .replaceAll("\\\\]", "]")
                 ;
-        // TODO check if Y is String else error
         return new TemplateConstant<>(unescape, target);
     }
 
