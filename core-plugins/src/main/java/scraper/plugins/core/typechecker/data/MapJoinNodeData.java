@@ -42,8 +42,7 @@ public final class MapJoinNodeData {
         TypeChecker newChecker = new TypeChecker(t);
         TypeEnvironment newEnvironment = env.copy();
 
-        // add putElement into new environment and propagate
-        newChecker.add(newEnvironment, put.getLocation(), put.getTarget());
+        // propagate
         newChecker.propagate(nodeTarget, newEnvironment, spec, cfg, visited);
 
         // add merged location infos
@@ -61,6 +60,9 @@ public final class MapJoinNodeData {
             log.log(DEBUG, "<{0}> {1} :: {2}", node.getAddress(), toJoin.getTerm(), "java.lang.List<"+fromForkToken.get().getTypeName()+">");
             env.add(toJoin.getTerm(), TemplateUtil.listOf(fromForkToken));
         });
+
+        // remove put element
+        env.remove(put.getLocation());
     }
 
 }

@@ -9,7 +9,8 @@ graphs:
       put: "list"
 
     - type: AggregateListNode
-      aggregate: "{{list}}[0]"
+      aggregate: {hello: world}
       aggregateList: "{list}"
       put: "list2"
+
 

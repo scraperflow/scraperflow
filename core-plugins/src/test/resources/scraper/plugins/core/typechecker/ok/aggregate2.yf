@@ -2,16 +2,16 @@
 name: aggregate-self
 graphs:
   start:
-    - {type: EchoNode, put: list, value: []}
+    - {type: EchoNode, put: listi, value: []}
     - type: AggregateListNode
-      aggregate: "firstelement"
-      aggregateList: "{list}"
+      aggregate: {ok: world}
+
+      aggregateList: "{listi}"
       put: "list"
 
-    - {type: EchoNode, put: list, value: []}
     - type: AggregateListNode
       aggregate: {hello: world}
       aggregateList: "{list}"
-      put: "list"
+      put: "list2"
 
 

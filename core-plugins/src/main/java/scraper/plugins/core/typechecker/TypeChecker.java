@@ -28,15 +28,15 @@ public class TypeChecker {
     private static final System.Logger log = System.getLogger("TypeChecker");
     public Map<String, T<?>> captures = new HashMap<>();
     public List<String> ignore = new ArrayList<>();
-    private Map<L<?>, T<?>> save = new HashMap<>();
 
-    public static List<List<NodeContainer<?>>> paths = new LinkedList<>();
+    public List<List<NodeContainer<?>>> paths = new LinkedList<>();
 
     public TypeChecker() {}
 
     public TypeChecker(TypeChecker t) {
         this.captures = new HashMap<>(t.captures);
         this.ignore = new ArrayList<>(t.ignore);
+        this.paths = new LinkedList<>(t.paths);
     }
 
     /*
@@ -375,11 +375,4 @@ public class TypeChecker {
         ignore.remove(expected);
     }
 
-    public void save(L<?> put, TypeEnvironment env) {
-        save.put(put, env.get(put.getLocation()));
-    }
-
-    public void restore(L<?> putBody) {
-        save.remove(putBody);
-    }
 }

@@ -20,3 +20,4 @@ graphs:
     - type: StringContainsNode
       regex: "notimportant"
       content: "{gid}" # content :: String
+      output: result

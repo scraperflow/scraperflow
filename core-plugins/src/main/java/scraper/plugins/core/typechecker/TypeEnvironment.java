@@ -11,7 +11,6 @@ import java.util.Map;
 public class TypeEnvironment {
 
     Map<String, T<?>> env = new HashMap<>();
-
     Map<Term<?>, T<?>> templateToKnownTargets = new HashMap<>();
 
     public TypeEnvironment() {}
@@ -29,6 +28,14 @@ public class TypeEnvironment {
     }
 
     public void add(@NotNull Term<?> term, @NotNull T<?> token) {
+        if(term.getRaw().equals("_")) return; // special _ void case
+        if(templateToKnownTargets.containsKey(term))
+            throw new TemplateException("Immutability violated: " + term + " already set");
+        templateToKnownTargets.put(term, token);
+    }
+
+    public void addSpecialize(@NotNull Term<?> term, @NotNull T<?> token) {
+        if(templateToKnownTargets.get(term) == null) throw new TemplateException("Cannot add non existing term " + term);
         templateToKnownTargets.put(term, token);
     }
 
@@ -38,7 +45,9 @@ public class TypeEnvironment {
     }
 
     public void remove(Term<?> location) {
+        if(location.getRaw().equals("_")) return; // special _ void case
         T<?> removed = templateToKnownTargets.remove(location);
-        if(removed == null) throw new TemplateException("Nothing removed!");
+        if(removed == null)
+            throw new TemplateException("Nothing removed!");
     }
 }

@@ -5,10 +5,11 @@ graphs:
     - type: IntRangeNode
       from: 1
       to: 1
+      output: int
       collect: "False"
       streamTarget: A
 
-  A: [{type: IntToStringNode, integer: "{i}", string: i}, {type: PipeNode, pipeTargets: [B, C]}]
+  A: [{type: IntToStringNode, integer: "{int}", string: i}, {type: PipeNode, pipeTargets: [B, C]}]
   B: [{type: RetryNode, retryTarget: E1}]
   E1: [{type: HttpRequestNode, url: "?page={i}", put: response}]
 
@@ -19,6 +20,7 @@ graphs:
       output: output
       groups:
     - type: MapNode
+      putElement: e
       list: "{output}"
       mapTarget: D
 
@@ -26,12 +28,12 @@ graphs:
   D:
     - type: EchoNode
       put: "gid"
-      value: "{{element}@gid}"
+      value: "{{e}@gid}"
     - {type: ForkNode, forkTargets: [E, F]}
 
   E:
     - type: FileExistsNode
-      path: "path/{{element}@gid}.{{element}@format}"
+      path: "path/{{e}@gid}.{{e}@format}"
     - type: IfThenElseNode
       condition: "{exists}"
       falseTarget: G
@@ -42,15 +44,15 @@ graphs:
 
   H:
     - type: HttpRequestNode
-      url: "{{element}@tUrl}"
+      url: "{{e}@tUrl}"
       put: thumbContent
       expectedResponse: FILE
-      path: "path/{{element}@gid}.{{element}@format}"
+      path: "path/{{e}@gid}.{{e}@format}"
 
 
   F:
     - type: FileExistsNode
-      path: "path/{{element}@gid}.json"
+      path: "path/{{e}@gid}.json"
     - type: IfThenElseNode
       condition: "{exists}"
       falseTarget: I
@@ -59,17 +61,17 @@ graphs:
 
   J:
     - type: HttpRequestNode
-      url: "?{{element}@gid}/"
+      url: "?{{e}@gid}/"
 
     - type: RegexNode
       content: "{response}"
       collect: true
-      output: output
+      output: output2
       regex: "notimportant"
       groups:
 
     - type: MapNode
-      list: "{output}"
+      list: "{output2}"
       mapTarget: K
 
   K:
@@ -79,14 +81,14 @@ graphs:
 
     - type: CleanJsonObjectNode
       jsonObject: "{json}"
-      cleanedObject: "json"
+      cleanedObject: "jsonclean"
       clean: [] # not important
 
     - type: ObjectToJsonStringNode
-      object: "{json}"
-      result: "json"
+      object: "{jsonclean}"
+      result: "jsonstr"
 
     - type: WriteLineToFileNode
       output: "path/{gid}.json"
-      line: "{json}"
+      line: "{jsonstr}"
       overwrite: true

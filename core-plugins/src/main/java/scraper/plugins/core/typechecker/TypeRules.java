@@ -103,7 +103,7 @@ public class TypeRules extends DefaultVisitor<Object> {
             if(known.get() instanceof TypeVariable) {
                 log.log(DEBUG, "Specializing {0} :: {1}", known.getTypeString(), mapKey.getToken().getTypeString());
                 checker.putIfNotConflicting(known.getTypeString(), mapKey.getToken());
-                env.add(keyTemplate, mapKey.getToken());
+                env.addSpecialize(keyTemplate, mapKey.getToken());
                 return mapKey.getToken();
             } else {
 
@@ -116,7 +116,7 @@ public class TypeRules extends DefaultVisitor<Object> {
                     throw new TemplateException("Template term for key lookup bad type: " + known.getTypeString() + " != " + mapKey.getToken().getTypeString());
                 } else {
                     checker.captures.putAll(lizer.newCaptures);
-                    env.add(mapKey.getKeyLookup(), new T<>(newType){});
+                    env.addSpecialize(mapKey.getKeyLookup(), new T<>(newType){});
                     return new T<>(newType){};
                 }
             }

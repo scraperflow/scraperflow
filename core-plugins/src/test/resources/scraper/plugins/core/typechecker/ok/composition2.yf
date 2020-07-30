@@ -8,11 +8,11 @@ graphs:
 
     - type: IntToStringNode
       integer: "{A}"
-      string: A
+      string: A-str
 
     - type: EchoNode
       put: B
-      value: ["{A}"]
+      value: ["{A-str}"]
 
     - type: StringContainsNode
       regex: "notimportant"

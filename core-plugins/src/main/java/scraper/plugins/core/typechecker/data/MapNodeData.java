@@ -28,8 +28,7 @@ public final class MapNodeData {
         TypeChecker newChecker = new TypeChecker(t);
         TypeEnvironment newEnvironment = env.copy();
 
-        // add putElement into new environment and propagate
-        newChecker.add(newEnvironment, putElement.getLocation(), putElement.getTarget());
+        // propagate
         newChecker.propagate(nodeTarget, newEnvironment, spec, cfg, visited);
 
         // remove from current env
