@@ -35,6 +35,7 @@ public class TypeEnvironment {
     }
 
     public void addSpecialize(@NotNull Term<?> term, @NotNull T<?> token) {
+        if(term.getRaw().equals("_")) return; // special _ void case
         if(templateToKnownTargets.get(term) == null) throw new TemplateException("Cannot add non existing term " + term);
         templateToKnownTargets.put(term, token);
     }
