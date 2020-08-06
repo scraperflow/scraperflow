@@ -9,6 +9,7 @@ import scraper.plugins.core.flowgraph.api.Version;
 import scraper.plugins.core.typechecker.TypeChecker;
 import scraper.plugins.core.typechecker.TypeEnvironment;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,6 +26,8 @@ public final class RedirectNodeData {
                     .filter(e -> !e.getDisplayLabel().equalsIgnoreCase("forward"))
                     .collect(Collectors.toList());
 
+            List<TypeEnvironment> envs = new LinkedList<>();
+
             st.forEach(socketEdge -> {
                 TypeChecker newChecker = new TypeChecker(t);
                 TypeEnvironment newEnvironment = env.copy();
@@ -32,8 +35,10 @@ public final class RedirectNodeData {
                 var next = spec.getNode(socketEdge.getToAddress());
                 newChecker.propagate(next, newEnvironment, spec, cfg, visited);
 
-                env.merge(newEnvironment);
+                envs.add(newEnvironment);
             });
+
+            envs.forEach(env::merge);
         }
     }
 
