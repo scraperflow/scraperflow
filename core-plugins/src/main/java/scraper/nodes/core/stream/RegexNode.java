@@ -4,6 +4,7 @@ import scraper.annotations.NotNull;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
+import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
@@ -41,7 +42,7 @@ import java.util.regex.Pattern;
  * output: fileinfo
  * </pre>
  */
-@NodePlugin("0.14.0")
+@NodePlugin("0.15.0")
 public final class RegexNode implements StreamNode {
 
     /** Regex as a (properly escaped JSON) Java String */
@@ -63,6 +64,10 @@ public final class RegexNode implements StreamNode {
     /** Where the output list will be put. If there's already a list at that key, it will be replaced. */
     @FlowKey(defaultValue = "\"_\"")
     private final L<Map<String, String>> output = new L<>(){};
+
+    /** Non-empty match expected */
+    @FlowKey(defaultValue = "false")
+    private Boolean nonempty;
 
     /**
      * Pattern dotall option.
@@ -86,14 +91,17 @@ public final class RegexNode implements StreamNode {
     }
 
     @Override
-    public void process(@NotNull final StreamNodeContainer n, @NotNull final FlowMap o) {
+    public void process(@NotNull final StreamNodeContainer n, @NotNull final FlowMap o) throws NodeException {
         String content = o.eval(this.content);
         Map<String, Integer> groups = o.evalIdentity(this.groups);
 
         Matcher m = p.matcher(content);
 
+        boolean atLeastOne = false;
+
         // match regex until no matches found
         while (m.find()) {
+            atLeastOne = true;
             Map<String, String> singleCapture = new HashMap<>(groups.keySet().size());
             for (String name : groups.keySet()) {
                 Integer group = groups.get(name);
@@ -105,7 +113,13 @@ public final class RegexNode implements StreamNode {
             n.streamFlowMap(o, copy);
         }
 
+
         Optional<Map<String, String>> evalDefault = o.evalMaybe(noMatchDefaultOutput);
+
+        if(nonempty && !atLeastOne && evalDefault.isEmpty()) {
+            throw new NodeException("No match for this regex");
+        }
+
         if(evalDefault.isPresent() && m.reset().results().findAny().isEmpty()) {
             FlowMap copy = o.copy();
             copy.output(output, evalDefault.get());
