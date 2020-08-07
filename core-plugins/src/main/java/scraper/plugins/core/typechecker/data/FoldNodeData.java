@@ -10,6 +10,7 @@ import scraper.api.specification.ScrapeInstance;
 import scraper.api.template.L;
 import scraper.api.template.T;
 import scraper.plugins.core.flowgraph.FlowUtil;
+import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.plugins.core.flowgraph.api.Version;
 import scraper.plugins.core.typechecker.TypeChecker;
@@ -17,8 +18,10 @@ import scraper.plugins.core.typechecker.TypeEnvironment;
 import scraper.util.NodeUtil;
 import scraper.util.TemplateUtil;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.System.Logger.Level.*;
 import static scraper.util.TemplateUtil.parseTemplate;
@@ -29,7 +32,7 @@ public final class FoldNodeData {
     private static final System.Logger log = System.getLogger("TypeChecker");
 
     @Version("0.1.0")
-    public static void infoAfter(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
+    public static void infoAfter(TypeChecker t, TypeEnvironment env, ControlFlowEdge incoming, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
 //        T<Map<String, String>> mergeKeysT = (T<Map<String, String>>) FlowUtil.getField("keys", node.getC()).get();
 //        Map<String, String> targetToKeys = new FlowMapImpl().evalIdentity(mergeKeysT);
 
@@ -41,9 +44,12 @@ public final class FoldNodeData {
 
 
         NodeContainer<? extends Node> nodeTarget = NodeUtil.getTarget(node.getAddress(), target, spec);
+        List<ControlFlowEdge> out = cfg.getOutgoingEdges(node.getAddress());
+        ControlFlowEdge outEdge = out.stream()
+                .filter(edge -> edge.getToAddress().equals(nodeTarget.getAddress()))
+                .findFirst().get();
 
         {
-            TypeChecker newChecker = new TypeChecker(t);
             TypeEnvironment newEnvironment = env.copy();
 
             // remove result location and retrieve location
@@ -51,7 +57,7 @@ public final class FoldNodeData {
             newEnvironment.remove(retrieveAcc.getLocation());
 
             // propagate and type check
-            newChecker.propagate(nodeTarget, newEnvironment, spec, cfg, visited);
+            t.propagate(outEdge, nodeTarget, newEnvironment, spec, cfg, new LinkedList<>(visited));
 
             // check if retrieve is set
             if (newEnvironment.get(retrieveAcc.getLocation()) == null)

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public final class RedirectNodeData {
 
     @Version("0.0.1")
-    public static void infoAfter(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
+    public static void infoAfter(TypeChecker t, TypeEnvironment env, ControlFlowEdge inc, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
         List<ControlFlowEdge> edges = cfg.getOutgoingEdges(node.getAddress());
 
         {
@@ -29,11 +29,10 @@ public final class RedirectNodeData {
             List<TypeEnvironment> envs = new LinkedList<>();
 
             st.forEach(socketEdge -> {
-                TypeChecker newChecker = new TypeChecker(t);
                 TypeEnvironment newEnvironment = env.copy();
 
                 var next = spec.getNode(socketEdge.getToAddress());
-                newChecker.propagate(next, newEnvironment, spec, cfg, visited);
+                t.propagate(socketEdge, next, newEnvironment, spec, cfg, new LinkedList<>(visited));
 
                 envs.add(newEnvironment);
             });

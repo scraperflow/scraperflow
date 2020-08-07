@@ -19,7 +19,7 @@ import java.util.List;
 public final class IfThenElseNodeData {
 
     @Version("0.1.0")
-    public static void infoAfter(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
+    public static void infoAfter(TypeChecker t, TypeEnvironment env, ControlFlowEdge incoming, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
         List<ControlFlowEdge> edges = cfg.getOutgoingEdges(node.getAddress());
         for (ControlFlowEdge edge : edges) {
             if ((edge.getDisplayLabel().contains("true")) || edge.getDisplayLabel().contains("false")) {

@@ -62,7 +62,7 @@ public class TypeRules extends DefaultVisitor<Object> {
         T<?> inferredToken = FlowMapImpl.inferTypeToken(evalObj);
 
         if(primitive.isTypeVariable()) {
-            checker.putIfNotConflicting(capt, inferredToken);
+            env.putIfNotConflicting(capt, inferredToken);
         }
 
         return inferredToken;
@@ -91,31 +91,31 @@ public class TypeRules extends DefaultVisitor<Object> {
                 String capt = mapKey.getToken().getTypeString();
 
                 // check if capture matches
-                if(checker.resolve(capt) != null) {
-                    if(!checker.resolve(capt).equalsType(known)) {
+                if(env.resolve(capt) != null) {
+                    if(!env.resolve(capt).equalsType(known)) {
                         throw new TemplateException("Captured " + capt + " with different type already: "
-                                + checker.resolve(capt) + " != " + known.getTypeString());
+                                + env.resolve(capt) + " != " + known.getTypeString());
                     }
                 }
 
-                return checker.putIfNotConflicting(capt, known);
+                return env.putIfNotConflicting(capt, known);
             } else
             if(known.get() instanceof TypeVariable) {
                 log.log(DEBUG, "Specializing {0} :: {1}", known.getTypeString(), mapKey.getToken().getTypeString());
-                checker.putIfNotConflicting(known.getTypeString(), mapKey.getToken());
+                env.putIfNotConflicting(known.getTypeString(), mapKey.getToken());
                 env.addSpecialize(keyTemplate, mapKey.getToken());
                 return mapKey.getToken();
             } else {
 
                 Type target = mapKey.getToken().get();
 
-                TypeGeneralizer lizer = new TypeGeneralizer(checker.captures){};
+                TypeGeneralizer lizer = new TypeGeneralizer(env.captures){};
 
                 Type newType = lizer.visit(known.get(), target);
                 if (newType == null) {
                     throw new TemplateException("Template term for key lookup bad type: " + known.getTypeString() + " != " + mapKey.getToken().getTypeString());
                 } else {
-                    checker.captures.putAll(lizer.newCaptures);
+                    env.captures.putAll(lizer.newCaptures);
                     env.addSpecialize(mapKey.getKeyLookup(), new T<>(newType){});
                     return new T<>(newType){};
                 }
@@ -130,8 +130,8 @@ public class TypeRules extends DefaultVisitor<Object> {
         // EMTPY LIST
         if(list.getTerms().isEmpty()) {
             T<List<Object>> newToken = TemplateUtil.listOf(new T<>(){});
-            checker.putIfNotConflicting(list.getToken().getTypeString(), newToken);
-            checker.putIfNotConflicting(list.getElementType().getTypeString(), new T<>(){});
+            env.putIfNotConflicting(list.getToken().getTypeString(), newToken);
+            env.putIfNotConflicting(list.getElementType().getTypeString(), new T<>(){});
             return newToken;
         }
 
@@ -144,13 +144,13 @@ public class TypeRules extends DefaultVisitor<Object> {
         if(list.getElementType().get() == Object.class) return list.getToken();
 
         // get fixpoint of all tokens
-        T<?> mostPreciseInnerType = checker.fixpoint(allTokens);
+        T<?> mostPreciseInnerType = env.fixpoint(allTokens);
 
         // if list term is type variable
         // then capture A' => List<A>
         if(list.isTypeVariable()) {
-            checker.putIfNotConflicting(list.getToken().getTypeString(), TemplateUtil.listOf(mostPreciseInnerType));
-            checker.putIfNotConflicting(list.getElementType().getTypeString(), mostPreciseInnerType);
+            env.putIfNotConflicting(list.getToken().getTypeString(), TemplateUtil.listOf(mostPreciseInnerType));
+            env.putIfNotConflicting(list.getElementType().getTypeString(), mostPreciseInnerType);
             return TemplateUtil.listOf(mostPreciseInnerType);
         }
 
@@ -178,8 +178,8 @@ public class TypeRules extends DefaultVisitor<Object> {
         // EMPTY MAP
         if(mapTerm.getTerms().isEmpty()) {
             T<Map<String, Object>> newToken = TemplateUtil.mapOf(new T<>(){}, new T<>(){});
-            checker.putIfNotConflicting(mapTerm.getToken().getTypeString(), newToken);
-            checker.putIfNotConflicting(mapTerm.getElementType().getTypeString(), new T<>(){});
+            env.putIfNotConflicting(mapTerm.getToken().getTypeString(), newToken);
+            env.putIfNotConflicting(mapTerm.getElementType().getTypeString(), new T<>(){});
             return newToken;
         }
 
@@ -192,12 +192,12 @@ public class TypeRules extends DefaultVisitor<Object> {
         if(mapTerm.getElementType().get() == Object.class) return mapTerm.getToken();
 
         // get fixpoint of all tokens
-        T<?> mostPreciseInnerType = checker.fixpoint(allTokens);
+        T<?> mostPreciseInnerType = env.fixpoint(allTokens);
 
         // if map term is type variable
         // then capture A => Map<String, A$MapOf>
         if(mapTerm.isTypeVariable()) {
-            checker.putIfNotConflicting(mapTerm.getToken().getTypeString(), TemplateUtil.mapOf(new T<String>(){}, mostPreciseInnerType));
+            env.putIfNotConflicting(mapTerm.getToken().getTypeString(), TemplateUtil.mapOf(new T<String>(){}, mostPreciseInnerType));
             // TODO why is this not necessary again ?
 //            checker.putIfNotConflicting(mapTerm.getElementType().getTypeString(), mostPreciseInnerType);
             return TemplateUtil.mapOf(new T<String>(){}, mostPreciseInnerType);

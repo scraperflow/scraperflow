@@ -16,6 +16,7 @@ import scraper.plugins.core.typechecker.TypeChecker;
 import scraper.plugins.core.typechecker.TypeEnvironment;
 import scraper.util.NodeUtil;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +29,7 @@ public final class ForkJoinNodeData {
 
 
     @Version("0.1.0")
-    public static void infoAfter(TypeChecker t, TypeEnvironment env, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
+    public static void infoAfter(TypeChecker t, TypeEnvironment env, ControlFlowEdge incoming, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
         T<Map<String, Map<String, String>>> mergeKeys = (T<Map<String, Map<String, String>>>) FlowUtil.getField("targetToKeys", node.getC()).get();
         Map<String, Map<String, String>> targetToKeys = new FlowMapImpl().evalIdentity(mergeKeys);
 
@@ -38,14 +39,13 @@ public final class ForkJoinNodeData {
                 .filter(e -> e.getDisplayLabel().contains("fork"))
                 .collect(Collectors.toList())
                 .forEach(forkEdge -> {
-                    TypeChecker newChecker = new TypeChecker(t);
                     TypeEnvironment newEnvironment = env.copy();
 
                     var forkTarget = spec.getNode(forkEdge.getToAddress());
 
-                    newChecker.propagate(forkTarget, newEnvironment, spec, cfg, visited);
+                    t.propagate(forkEdge, forkTarget, newEnvironment, spec, cfg, new LinkedList<>(visited));
 
-                    Map<String, String> keyMergeSet = null;
+                    Map<String, String> keyMergeSet = Map.of();
                     for (String s : targetToKeys.keySet()) {
                         Address address = NodeUtil.addressOf(s);
                         NodeContainer<? extends Node> test = NodeUtil.getTarget(node.getAddress(), address, spec);
@@ -55,16 +55,18 @@ public final class ForkJoinNodeData {
                     }
 
                     // add merged location infos
-                    keyMergeSet.entrySet().forEach(e -> {
-                        T<String> fromFork = new T<>() { };
-                        fromFork.setTerm(parseTemplate(e.getKey(), fromFork));
+                    keyMergeSet.forEach((key, value) -> {
+                        T<String> fromFork = new T<>() {
+                        };
+                        fromFork.setTerm(parseTemplate(key, fromFork));
 
                         T<?> fromForkToken = newEnvironment.get(fromFork.getTerm());
                         if (fromForkToken == null)
-                            throw new TemplateException("Fork join target does not produce key at " + e.getKey());
+                            throw new TemplateException("Fork join target does not produce key at " + key);
 
-                        T<String> toJoin = new T<>() {};
-                        toJoin.setTerm(parseTemplate(e.getValue(), toJoin));
+                        T<String> toJoin = new T<>() {
+                        };
+                        toJoin.setTerm(parseTemplate(value, toJoin));
                         if (env.get(toJoin.getTerm()) != null)
                             throw new TemplateException("Fork joining the key '" + toJoin.getTerm()
                                     + "' with another type. " +

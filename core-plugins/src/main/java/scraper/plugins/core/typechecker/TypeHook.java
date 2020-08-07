@@ -11,6 +11,7 @@ import scraper.plugins.core.flowgraph.FlowUtil;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.utils.StringUtil;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @ArgsCommand(
@@ -38,7 +39,12 @@ public class TypeHook implements Hook {
 
 
                 TypeChecker t = new TypeChecker();
+                t.typeTaskflow(job, cfg);
 
+                // first typing without cycle information
+                t.typeTaskflow(job, cfg);
+
+                // second typing with cycle information
                 t.typeTaskflow(job, cfg);
             }
         }

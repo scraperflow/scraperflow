@@ -9,6 +9,7 @@ import scraper.api.template.T;
 import scraper.api.template.Term;
 import scraper.api.template.TypeGeneralizer;
 import scraper.core.template.TemplateConstant;
+import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.plugins.core.typechecker.visitors.ReplaceCapturesOrCrashVisitor;
 import scraper.util.NodeUtil;
@@ -22,21 +23,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.System.Logger.Level.*;
+import static scraper.plugins.core.flowgraph.FlowUtil.generateControlFlowGraph;
 import static scraper.plugins.core.flowgraph.FlowUtil.getReverseOrderHierarchy;
 
 public class TypeChecker {
     private static final System.Logger log = System.getLogger("TypeChecker");
-    public Map<String, T<?>> captures = new HashMap<>();
-    public List<String> ignore = new ArrayList<>();
 
+    public Map<ControlFlowEdge, TypeEnvironment> edgeInfo = new HashMap<>();
     public List<List<NodeContainer<?>>> paths = new LinkedList<>();
 
     public TypeChecker() {}
 
     public TypeChecker(TypeChecker t) {
-        this.captures = new HashMap<>(t.captures);
-        this.ignore = new ArrayList<>(t.ignore);
-        this.paths = new LinkedList<>(t.paths);
+        this.edgeInfo = new HashMap<>(t.edgeInfo);
     }
 
     /*
@@ -64,49 +63,72 @@ public class TypeChecker {
         log.log(DEBUG, "========================================");
 
         List<NodeContainer<?>> visited = new LinkedList<>();
-        spec.getEntry().ifPresent(n -> propagate(n, env, spec, cfg, visited));
+        spec.getEntry().ifPresent(n -> propagate(null, n, env, spec, cfg, visited));
     }
 
     // T-Flow-Propagate
-    public void propagate(NodeContainer<?> n, TypeEnvironment env, ScrapeInstance spec, ControlFlowGraph cfg, List<NodeContainer<?>> visited) {
-        if(!visited.contains(n)) visited.add(n);
-        if(paths.contains(visited)) {
-            log.log(INFO, "Visiting cycle at {0}, skip", n.getAddress());
+    public void propagate(ControlFlowEdge incomingEdge, NodeContainer<?> n, TypeEnvironment env, ScrapeInstance spec, ControlFlowGraph cfg, List<NodeContainer<?>> visited) {
+        log.log(TRACE, "=================== {0}", incomingEdge);
+        if(incomingEdge != null) {
+            TypeEnvironment knownTypeEnv = edgeInfo.getOrDefault(incomingEdge, new TypeEnvironment());
+            if(env.greaterThan(knownTypeEnv)) {
+                log.log(DEBUG, "Adding information to edge {0}", incomingEdge);
+                knownTypeEnv.merge(env);
+                edgeInfo.put(incomingEdge, knownTypeEnv);
+            }
+        }
+
+        if(visited.contains(n)) {
+            log.log(DEBUG, "Skip cycle at {0}, add info to edge", n.getAddress());
             return;
         }
 
-        ignore.clear();
-        captures.clear();
+        visited.add(n);
+
+        if(paths.contains(visited)) return;
+        paths.add(new LinkedList<>(visited));
+
+        // merge all incoming type information in, cycles
+        cfg.getIncomingEdges(n.getAddress()).forEach(otherIncomingEdge -> {
+            if(incomingEdge == otherIncomingEdge) {
+                return;
+            }
+            if(edgeInfo.containsKey(otherIncomingEdge)) {
+                log.log(DEBUG, "previous type information added of {0}", otherIncomingEdge);
+                env.merge(edgeInfo.get(otherIncomingEdge));
+            }
+        });
+
+        env.ignore.clear();
+        env.captures.clear();
 
         // for special nodes that do very special things
         // e.g. SocketNode evaluates its template after forkDepend returns
-        addNodeInfoBefore(env, n, cfg, spec, visited);
+        addNodeInfoBefore(env, n, incomingEdge, cfg, spec, visited);
 
         typeNode(env, n);
 
         // can create sub-type checkers
         // e.g. fork join, map join
-        addNodeInfo(env, n, cfg, spec, visited);
+        addNodeInfo(env, n, incomingEdge, cfg, spec, visited);
 
         // clear capture only after finish
-        captures.clear();
-        ignore.clear();
-
-        paths.add(new LinkedList<>(visited));
+        env.captures.clear();
+        env.ignore.clear();
 
         cfg.getOutgoingEdges(n.getAddress()).forEach(e -> {
             if(e.isDispatched()) {
                 NodeContainer<?> nextNode = spec.getNode(e.getToAddress());
-                propagate(nextNode, env.copy(), spec, cfg, new LinkedList<>(visited));
+                propagate(e, nextNode, env.copy(), spec, cfg, new LinkedList<>(visited));
             } else {
                 if(
                         e.getDisplayLabel().equalsIgnoreCase("forward") || e.isPropagate()
                 ) {
                     NodeContainer<?> nextNode = spec.getNode(e.getToAddress());
                     if (e.isPropagate()) {
-                        propagate(nextNode, env.copy(), spec, cfg, new LinkedList<>(visited));
+                        propagate(e, nextNode, env.copy(), spec, cfg, new LinkedList<>(visited));
                     } else {
-                        propagate(nextNode, env, spec, cfg, new LinkedList<>(visited));
+                        propagate(e, nextNode, env, spec, cfg, new LinkedList<>(visited));
                     }
                 } else {
                     log.log(DEBUG, "Not propagating: " + e.getDisplayLabel());
@@ -132,7 +154,7 @@ public class TypeChecker {
 
         getDefaultDataFlowInputTemplates(n)
                 .forEach((fieldName, template) -> {
-                    if(ignore.contains(fieldName)) {
+                    if(env.ignore.contains(fieldName)) {
 //                        log.log(DEBUG, "Ignoring field as requested: {0}", fieldName);
                         return;
                     }
@@ -153,7 +175,7 @@ public class TypeChecker {
      * =====================
      */
 
-    private void addNodeInfoBefore(TypeEnvironment env, NodeContainer<?> n, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) {
+    private void addNodeInfoBefore(TypeEnvironment env, NodeContainer<?> n, ControlFlowEdge inc, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) {
         List<Class<?>> classesToCheck = getReverseOrderHierarchy(n);
         Collections.reverse(classesToCheck);
 
@@ -164,11 +186,12 @@ public class TypeChecker {
                 Method method = control.getDeclaredMethod("infoBefore",
                         TypeChecker.class,
                         TypeEnvironment.class,
+                        ControlFlowEdge.class,
                         NodeContainer.class,
                         ControlFlowGraph.class,
                         ScrapeInstance.class,
                         List.class);
-                method.invoke(null, this, env, n, cfg, spec, visited);
+                method.invoke(null, this, env, inc, n, cfg, spec, visited);
             } catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException ignored) {
 //                System.out.println("[Skip] Could not find control for " + nodeClass + ": " + controlClass);
             } catch (InvocationTargetException e) {
@@ -181,12 +204,12 @@ public class TypeChecker {
         }
     }
 
-    private void addNodeInfo(TypeEnvironment env, NodeContainer<?> n, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) {
+    private void addNodeInfo(TypeEnvironment env, NodeContainer<?> n, ControlFlowEdge inc, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) {
         // log.log(DEBUG, "=== Adding node info {0}", n);
 
         getDefaultDataFlowOutput(n).forEach((fieldName, output) -> {
             try {
-                Type tt = new ReplaceCapturesOrCrashVisitor(captures).visit(output.get());
+                Type tt = new ReplaceCapturesOrCrashVisitor(env.captures).visit(output.get());
                 if (!tt.equals(output.get())) {
 //                    log.log(DEBUG, "Captured types {0} ==> {1}", output.getLocation(), tt);
                     Term<String> loc = output.getLocation();
@@ -217,11 +240,12 @@ public class TypeChecker {
                 Method method = control.getDeclaredMethod("infoAfter",
                         TypeChecker.class,
                         TypeEnvironment.class,
+                        ControlFlowEdge.class,
                         NodeContainer.class,
                         ControlFlowGraph.class,
                         ScrapeInstance.class,
                         List.class);
-                method.invoke(null, this, env, n, cfg, spec, visited);
+                method.invoke(null, this, env, inc, n, cfg, spec, visited);
             } catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException ignored) {
 //                System.out.println("[Skip] Could not find control for " + nodeClass + ": " + controlClass);
             } catch (InvocationTargetException e) {
@@ -278,101 +302,24 @@ public class TypeChecker {
     }
 
     public void add(TypeEnvironment env, Term<?> term, T<?> token) {
-        T<?> newToken = fixpoint(List.of(token));
+        T<?> newToken = env.fixpoint(List.of(token));
         env.add(term, newToken);
     }
 
-    public T<?> fixpoint(List<T<?>> fixpoint) {
-        // make mutable
-        fixpoint = new ArrayList<>(fixpoint);
 
-        boolean changed = true;
-        while(changed) {
-            changed = false;
-            for (int i = 0; i < fixpoint.size(); i++) {
-                T<?> t = fixpoint.get(i);
+    static class P<X,Y> {
+        X fst; Y snd;
+        P(X fst, Y snd){this.fst = fst; this.snd = snd;}
+        static <X,Y> P<X,Y> p(X fst, Y snd) { return new P<>(fst, snd); }
 
-                Type tt = new ReplaceCapturesOrCrashVisitor(captures).visit(t.get());
-
-                if(!t.equalsType(new T<>(tt){})){
-                    changed = true;
-                    fixpoint.set(i, new T<>(tt){});
-                }
-
-                if(t.equalsType(new T<>(tt){}) && !tt.getTypeName().equalsIgnoreCase(t.getTypeString())){
-                    changed = true;
-                    fixpoint.set(i, new T<>(tt){});
-                }
-            }
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            P<?, ?> p = (P<?, ?>) o;
+            return fst.equals(p.fst) && snd.equals(p.snd);
         }
 
-        // every term has to evaluate to the same Type T
-        T<?> last = null;
-        for (T<?> t : fixpoint) {
-            if(last == null) { last = t; continue; }
-
-            Type newToken = new TypeGeneralizer( captures ){}.visit(last.get(), t.get());
-            if(newToken == null) {
-                throw new TemplateException("Terms type variable resolves to different types: " + fixpoint);
-            } else {
-                last = new T<>(newToken){};
-            }
-        }
-
-        return last;
+        @Override public int hashCode() { return Objects.hash(fst, snd); }
     }
-
-    public T<?> resolve(String var) {
-        T<?> current = captures.get(var);
-        T<?> last = captures.get(var);
-        while(last != null) {
-            current = last;
-            last = captures.get(current.getTypeString());
-            if(current == last) break;
-        }
-
-        return current;
-    }
-
-    public T<?> putIfNotConflicting(String typeString, T<?> token) {
-        T<?> knownToken = resolve(typeString);
-        if(knownToken == null) {
-            log.log(DEBUG, "{0} ~> {1}", typeString, token);
-            return putAndResolve(typeString, token);
-        }
-
-        Type newToken = new TypeGeneralizer( captures ){}.visit(knownToken.get(), token.get());
-
-        if(newToken != null) {
-            log.log(DEBUG, "{0} ~> {1}", typeString, newToken);
-            return putAndResolve(typeString, new T<>(newToken){});
-        }
-
-        throw new TemplateException("Capture at " + typeString + " :: "+ knownToken.getTypeString() + " does not match the to-put capture " + token.getTypeString());
-    }
-
-    private T<?> putAndResolve(String capt, T<?> known) {
-        if(known.getTerm() != null && known.getTerm().isTypeVariable()) {
-            // put most precise
-            T<?> resolved = resolve(known.getTypeString());
-            T<?> precise = fixpoint(List.of(captures.getOrDefault(capt, known), resolved));
-
-            log.log(DEBUG, "{0} ~> {1}", capt, precise.getTypeString());
-            captures.put(capt, precise);
-            return precise;
-        } else {
-            log.log(DEBUG, "{0} ~> {1}", capt, known.getTypeString());
-            captures.put(capt, known);
-            return known;
-        }
-    }
-
-    public void ignoreField(String expected) {
-        ignore.add(expected);
-    }
-
-    public void unignoreField(String expected) {
-        ignore.remove(expected);
-    }
-
 }

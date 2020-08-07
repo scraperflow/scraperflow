@@ -7,6 +7,7 @@ import scraper.api.node.type.Node;
 import scraper.api.specification.ScrapeInstance;
 import scraper.core.AbstractStreamNode;
 import scraper.plugins.core.flowgraph.FlowUtil;
+import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.plugins.core.flowgraph.api.Version;
 import scraper.plugins.core.typechecker.TypeChecker;
@@ -24,7 +25,7 @@ public final class AbstractStreamNodeData {
     private static final System.Logger log = System.getLogger("TypeChecker");
 
     @Version("0.1.0") @NotNull
-    public static void infoAfter(TypeChecker checker, TypeEnvironment env, NodeContainer<? extends Node> node, ControlFlowGraph cfg,
+    public static void infoAfter(TypeChecker checker, TypeEnvironment env, ControlFlowEdge incoming, NodeContainer<? extends Node> node, ControlFlowGraph cfg,
                                  ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
         Boolean collect = (Boolean) FlowUtil.getFieldForClass("collect", node, AbstractStreamNode.class).get();
         if(!collect) return; // types do not change

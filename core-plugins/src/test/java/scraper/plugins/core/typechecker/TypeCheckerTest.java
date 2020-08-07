@@ -36,7 +36,7 @@ public class TypeCheckerTest {
 
         assertEquals(
                 "java.lang.String",
-                check.resolve("A").getTypeString()
+                env.resolve("A").getTypeString()
         );
     }
 
@@ -372,7 +372,7 @@ public class TypeCheckerTest {
         T<X> t = new T<>(){};
         t.setTerm(parseTemplate("{A}", t));
         check.typeTemplate(env, t);
-        assertNotNull( check.captures.get("X") );
+        assertNotNull( env.captures.get("X") );
     }
 
     @Test
@@ -620,7 +620,7 @@ public class TypeCheckerTest {
         check.typeTemplate(env, t);
         assertEquals(
                 "java.util.List<java.lang.String>",
-                check.captures.get("X").get().getTypeName()
+                env.captures.get("X").get().getTypeName()
         );
     }
 
@@ -632,7 +632,7 @@ public class TypeCheckerTest {
         check.typeTemplate(env, t);
         assertEquals(
                 "java.lang.String",
-                check.captures.get("X").getTypeString()
+                env.captures.get("X").getTypeString()
         );
     }
 
@@ -644,7 +644,7 @@ public class TypeCheckerTest {
         check.typeTemplate(env, t);
         assertEquals(
                 "java.util.List<java.lang.Object>",
-                check.captures.get("X").get().getTypeName()
+                env.captures.get("X").get().getTypeName()
         );
     }
 
@@ -662,7 +662,7 @@ public class TypeCheckerTest {
 
         assertEquals(
                 "java.util.List<java.lang.String>",
-                check.resolve("X").getTypeString()
+                env.resolve("X").getTypeString()
         );
     }
 
@@ -680,7 +680,7 @@ public class TypeCheckerTest {
         check.typeTemplate(env, t2);
         assertEquals(
                 "java.util.List<java.util.List<java.lang.String>>",
-                check.resolve("Y").getTypeString()
+                env.resolve("Y").getTypeString()
         );
     }
 
@@ -698,7 +698,7 @@ public class TypeCheckerTest {
         check.typeTemplate(env, t2);
         assertEquals(
                 "java.util.List<java.util.List<java.lang.String>>",
-                check.resolve("Y").get().getTypeName()
+                env.resolve("Y").get().getTypeName()
         );
     }
 
@@ -716,7 +716,7 @@ public class TypeCheckerTest {
 
             assertEquals(
                     "java.util.List<java.util.List<java.util.List<java.lang.String>>>",
-                    check.captures.get("X").get().getTypeName()
+                    env.captures.get("X").get().getTypeName()
             );
         });
     }
@@ -761,7 +761,7 @@ public class TypeCheckerTest {
         check.typeTemplate(env, t);
         assertEquals(
                 "java.util.Map<java.lang.String, java.util.Map<java.lang.String, java.util.Map<class java.lang.String, class java.lang.Object>>>",
-                check.captures.get("X").get().getTypeName()
+                env.captures.get("X").get().getTypeName()
         );
     }
 
@@ -773,7 +773,7 @@ public class TypeCheckerTest {
         check.typeTemplate(env, t);
         assertEquals(
                 "java.util.Map<java.lang.String, java.lang.Object>",
-                check.captures.get("X").get().getTypeName()
+                env.captures.get("X").get().getTypeName()
         );
     }
 
@@ -790,7 +790,7 @@ public class TypeCheckerTest {
         check.typeTemplate(env, t2);
         assertEquals(
                 "java.util.Map<java.lang.String, java.lang.String>",
-                check.captures.get("X").get().getTypeName()
+                env.captures.get("X").get().getTypeName()
         );
     }
 
@@ -802,7 +802,7 @@ public class TypeCheckerTest {
         check.typeTemplate(env, t);
         assertEquals(
                 "java.util.Map<java.lang.String, java.lang.Object>",
-                check.resolve("X").get().getTypeName()
+                env.resolve("X").get().getTypeName()
         );
 
         add(new L<X>(){}, "A");
@@ -816,7 +816,7 @@ public class TypeCheckerTest {
         check.typeTemplate(env, t2);
         assertEquals(
                 "java.util.Map<java.lang.String, java.util.Map<class java.lang.String, class java.lang.String>>",
-                check.resolve("Y").getTypeString()
+                env.resolve("Y").getTypeString()
         );
     }
 
@@ -827,11 +827,11 @@ public class TypeCheckerTest {
         t.setTerm(parseTemplate(List.of(), t));
         check.typeTemplate(env, t);
 
-        assertTrue(check.captures.containsKey("X"));
-        assertTrue(check.captures.containsKey("X$ListOf"));
+        assertTrue(env.captures.containsKey("X"));
+        assertTrue(env.captures.containsKey("X$ListOf"));
 
-        assertEquals( "java.util.List<java.lang.Object>", check.captures.get("X").getTypeString() );
-        assertEquals( "java.lang.Object", check.captures.get("X$ListOf").getTypeString() );
+        assertEquals( "java.util.List<java.lang.Object>", env.captures.get("X").getTypeString() );
+        assertEquals( "java.lang.Object", env.captures.get("X$ListOf").getTypeString() );
     }
 
     @Test
@@ -840,13 +840,13 @@ public class TypeCheckerTest {
         t.setTerm(parseTemplate(List.of(List.of()), t));
         check.typeTemplate(env, t);
 
-        assertTrue(check.captures.containsKey("X"));
-        assertTrue(check.captures.containsKey("X$ListOf"));
-        assertTrue(check.captures.containsKey("X$ListOfListOf"));
+        assertTrue(env.captures.containsKey("X"));
+        assertTrue(env.captures.containsKey("X$ListOf"));
+        assertTrue(env.captures.containsKey("X$ListOfListOf"));
 
-        assertEquals( "java.util.List<java.util.List<class java.lang.Object>>", check.captures.get("X").getTypeString() );
-        assertEquals( "java.util.List<java.lang.Object>", check.captures.get("X$ListOf").getTypeString() );
-        assertEquals( "java.lang.Object", check.captures.get("X$ListOfListOf").getTypeString() );
+        assertEquals( "java.util.List<java.util.List<class java.lang.Object>>", env.captures.get("X").getTypeString() );
+        assertEquals( "java.util.List<java.lang.Object>", env.captures.get("X$ListOf").getTypeString() );
+        assertEquals( "java.lang.Object", env.captures.get("X$ListOfListOf").getTypeString() );
     }
 
     @Test
@@ -855,13 +855,13 @@ public class TypeCheckerTest {
         t.setTerm(parseTemplate(List.of(List.of("String"), List.of()), t));
         check.typeTemplate(env, t);
 
-        assertTrue(check.captures.containsKey("X"));
-        assertTrue(check.captures.containsKey("X$ListOf"));
-        assertTrue(check.captures.containsKey("X$ListOfListOf"));
+        assertTrue(env.captures.containsKey("X"));
+        assertTrue(env.captures.containsKey("X$ListOf"));
+        assertTrue(env.captures.containsKey("X$ListOfListOf"));
 
-        assertEquals( "java.util.List<java.util.List<java.lang.String>>", check.resolve("X").getTypeString() );
-        assertEquals( "java.util.List<java.lang.String>", check.captures.get("X$ListOf").getTypeString() );
-        assertEquals( "java.lang.String", check.captures.get("X$ListOfListOf").getTypeString() );
+        assertEquals( "java.util.List<java.util.List<java.lang.String>>", env.resolve("X").getTypeString() );
+        assertEquals( "java.util.List<java.lang.String>", env.captures.get("X$ListOf").getTypeString() );
+        assertEquals( "java.lang.String", env.captures.get("X$ListOfListOf").getTypeString() );
     }
 
 
