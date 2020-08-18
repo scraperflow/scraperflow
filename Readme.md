@@ -50,14 +50,12 @@ place the jar(s) in the current working directory (or change '$PWD'), too.
 
 Scraper is fully modularized.
 
-Get the latest [jar release bundle](https://github.com/scraperflow/scraper/releases) 
+Get the latest [modular jar bundle](https://github.com/scraperflow/scraper/releases) 
 and any [plugin](https://github.com/scraperflow/scraper-plugins) 
 or [additional nodes](https://github.com/scraperflow/scraper-nodes) you like.
 
-Place them in the same folder. 
-To run Scraper, use
-
-         java -p . -m scraper.app help
+Place the additional plugins and nodes in the `var` folder.
+Use the provided run script to run Scraper
        
 Scraper will look for workflows relative to the working directory.
 
@@ -65,7 +63,7 @@ Scraper will look for workflows relative to the working directory.
 
 Using
 
-      gradle clean test build codeCov
+      gradle clean build codeCov
 
 will
 
