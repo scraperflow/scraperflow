@@ -12,7 +12,7 @@ import scraper.api.template.T;
 /**
  * Replaces occurrences in a string
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class StringReplaceNode implements FunctionalNode {
 
     /** All occurrences of this regex will be replaced */
@@ -21,7 +21,7 @@ public final class StringReplaceNode implements FunctionalNode {
 
     /** This is the replacement for each occurrence */
     @FlowKey(mandatory = true)
-    private String with;
+    private final T<String> with = new T<>(){};
 
     /** The content to apply the regex on */
     @FlowKey(defaultValue = "\"{content}\"")
@@ -34,6 +34,7 @@ public final class StringReplaceNode implements FunctionalNode {
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         String content = o.eval(this.content);
+        String with = o.eval(this.with);
 
         String newContent = content.replaceAll(replace, with);
 
