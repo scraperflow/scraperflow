@@ -29,11 +29,67 @@ public final class TemplateUtil {
 
     private static final System.Logger log = System.getLogger("TemplateUtil");
 
+    // used to infer the type of complex args JSON expressions
+    public static Term<?> inferTemplate(@NotNull final Object term) throws ValidationException {
+        if (List.class.isAssignableFrom(term.getClass())) {
+            return inferTemplateL((List<?>) term);
+        } // JSON map
+        else if (Map.class.isAssignableFrom(term.getClass())) {
+            return inferTemplateM((Map<?, ?>) term);
+        }
+        // primitives
+        else {
+            if (Double.class.isAssignableFrom(term.getClass())) {
+                return new TemplateConstant<>(term, new T<Double>(){});
+            } else
+            if (Long.class.isAssignableFrom(term.getClass())) {
+                return new TemplateConstant<>(term, new T<Long>(){});
+            } else
+            if (Integer.class.isAssignableFrom(term.getClass())) {
+                return new TemplateConstant<>(term, new T<Integer>(){});
+            } else
+            if (Boolean.class.isAssignableFrom(term.getClass())) {
+                return new TemplateConstant<>(term, new T<Boolean>(){});
+            } else
+            if (String.class.isAssignableFrom(term.getClass())) {
+                return new TemplateConstant<>(term, new T<String>(){});
+            } else {
+                return new TemplateConstant<>(term, new T<>(){});
+            }
+        }
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static Term<?> inferTemplateM(Map<?,?> term) throws ValidationException {
+        Map<Object, Term<?>> resultMap = new HashMap<>();
+
+        for (Object k : term.keySet()) resultMap.put(k, inferTemplate(term.get(k)));
+
+        return new TemplateMap(resultMap,
+                new T<>(){},
+                new T<>(){},
+                false);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static Term<?> inferTemplateL(List<?> term) throws ValidationException {
+        List<Term<?>> resultList = new ArrayList<>();
+
+        for (Object o : term) {
+            resultList.add(inferTemplate(o));
+        }
+
+        if(resultList.isEmpty()) {
+            return new TemplateList(resultList, listOf(new T<>(){}), new T<>(){}, false);
+        } else {
+            T<?> elementType = resultList.get(0).getToken();
+            return new TemplateList(resultList, listOf(elementType), elementType, false);
+        }
+    }
 
     @SuppressWarnings({"unchecked", "rawtypes"}) // checked with types
     public static <K> Term<K> parseTemplate(@NotNull final Object term, @NotNull final T<K> targetType) throws ValidationException {
         T<K> templ = targetType;
-
 
         if (List.class.isAssignableFrom(term.getClass()) && (
                 List.class.isAssignableFrom(templ.getRawType()) || templ.getRawType().equals(Object.class))) {

@@ -8,12 +8,27 @@ import scraper.util.NodeUtil;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JobFactoryTest {
+
+    @Test
+    public void argsAsObjectTest() throws Exception {
+        URL base = getClass().getResource("jobfactory/complexargs");
+
+        ScrapeInstaceImpl instance = InstanceHelper.getInstance(base, "job1.jf", "job1.args");
+
+        assertEquals(5, instance.getEntryArguments().size());
+        assertEquals("ok", instance.getEntryArguments().get("arg1"));
+        assertEquals(42, instance.getEntryArguments().get("arg2"));
+        assertEquals(List.of(42,48), instance.getEntryArguments().get("arg3"));
+        assertEquals(List.of("a", "b"), instance.getEntryArguments().get("arg4"));
+        assertEquals(Map.of("a", "hello", "b", "world"), instance.getEntryArguments().get("arg6"));
+    }
 
     @Test
     public void convertScrapeJobTest() throws Exception {

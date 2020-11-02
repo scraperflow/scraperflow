@@ -2,17 +2,18 @@ package scraper.plugins.core.typechecker;
 
 import scraper.annotations.node.FlowKey;
 import scraper.api.exceptions.TemplateException;
+import scraper.api.exceptions.ValidationException;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.template.L;
 import scraper.api.template.T;
 import scraper.api.template.Term;
-import scraper.api.template.TypeGeneralizer;
 import scraper.core.template.TemplateConstant;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.plugins.core.typechecker.visitors.ReplaceCapturesOrCrashVisitor;
 import scraper.util.NodeUtil;
+import scraper.util.TemplateUtil;
 import scraper.utils.ClassUtil;
 
 import java.lang.reflect.Field;
@@ -23,7 +24,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.System.Logger.Level.*;
-import static scraper.plugins.core.flowgraph.FlowUtil.generateControlFlowGraph;
 import static scraper.plugins.core.flowgraph.FlowUtil.getReverseOrderHierarchy;
 
 public class TypeChecker {
@@ -50,14 +50,19 @@ public class TypeChecker {
         TypeEnvironment env = new TypeEnvironment();
         // args add initial arguments
         for (Map.Entry<String, Object> stringObjectEntry : spec.getEntryArguments().entrySet()) {
-            if(!(stringObjectEntry.getValue() instanceof String)) {
-                throw new IllegalStateException("Non-String initial arguments not supported");
-            }
-
-            log.log(DEBUG, "<initial> {0} :: {1}", stringObjectEntry.getKey(), "String");
-            L<String> loc = new L<>() {};
+            L<?> loc = new L<>() {};
             loc.setLocation( new TemplateConstant<>(stringObjectEntry.getKey(), new T<>(){}) );
-            env.add(loc.getLocation(), new T<String>(){});
+            if(!(stringObjectEntry.getValue() instanceof String)) {
+                try {
+                    Term<?> argsType = TemplateUtil.inferTemplate(stringObjectEntry.getValue());
+                    env.add(loc.getLocation(), argsType.getToken());
+                } catch (ValidationException e) {
+                    throw new TemplateException(e, "Could not infer args type");
+                }
+            } else {
+                log.log(DEBUG, "<initial> {0} :: {1}", stringObjectEntry.getKey(), "String");
+                env.add(loc.getLocation(), new T<String>(){});
+            }
         }
 
         log.log(DEBUG, "========================================");

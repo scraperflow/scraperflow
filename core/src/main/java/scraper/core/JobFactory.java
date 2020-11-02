@@ -1,5 +1,6 @@
 package scraper.core;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
@@ -73,14 +74,20 @@ public class JobFactory {
     }
 
 
-    private @NotNull Map<String,String> parseInputArguments(@NotNull final File args) throws IOException {
-        final Map<String, String> inputMap =  new HashMap<>();
+    private @NotNull Map<String, Object> parseInputArguments(@NotNull final File args) throws IOException {
+        final Map<String, Object> inputMap =  new HashMap<>();
 
         StringUtil.readBody(args, line -> {
             if(!line.startsWith("#") && !line.isEmpty()) {
                 String key = line.substring(0, line.indexOf("="));
                 String value = line.substring(line.indexOf("=")+1);
-                inputMap.put(key,value);
+                Object valueObject;
+                try {
+                    valueObject = objectMapper.readValue(value, Object.class);
+                } catch (JsonProcessingException e) {
+                    throw new IllegalStateException("Could not parse argument for key "+ key+": "+e.getMessage());
+                }
+                inputMap.put(key, valueObject);
             }
         });
 
@@ -147,7 +154,7 @@ public class JobFactory {
         try {
             String impliedArgs = Paths.get(FileUtil.replaceFileExtension(jobDefinition.getScrapeFile(), "args")).toString();
             File impliedArgsFile = new File(impliedArgs);
-            Map<String, String> init = parseInputArguments(impliedArgsFile);
+            Map<String, Object> init = parseInputArguments(impliedArgsFile);
             combinedArgs.putAll(init);
             log.log(INFO, "Parsed implied args file: {0}", impliedArgs);
         } catch (Exception ignored) {}
@@ -155,7 +162,7 @@ public class JobFactory {
         // later args files overwrite earlier ones
         for (String arg : jobDefinition.getArguments()) {
             File argsFile = getFirstExistingPaths(arg, jobDefinition.getPaths());
-            Map<String, String> init = parseInputArguments(argsFile);
+            Map<String, Object> init = parseInputArguments(argsFile);
             combinedArgs.putAll(init);
             log.log(INFO, "Parsed args file: {0}", arg);
         }

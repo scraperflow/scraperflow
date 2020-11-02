@@ -1,2 +1,2 @@
 # single args
-arg1=ok
+arg1="ok"
