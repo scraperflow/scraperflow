@@ -7,6 +7,7 @@ import scraper.api.exceptions.ValidationException;
 import scraper.api.specification.ScrapeSpecification;
 import scraper.api.specification.impl.ScrapeSpecificationImpl;
 import scraper.plugins.core.parser.YamlParser;
+import scraper.utils.StringUtil;
 
 import java.io.File;
 import java.util.List;
@@ -45,7 +46,7 @@ public class SimpleScrapeSpecificationImpl {
 
             ScrapeSpecificationImpl validSpec = new ScrapeSpecificationImpl();
             validSpec.setGraphs(transformedNodes);
-            validSpec.setName("flow");
+            validSpec.setName(StringUtil.removeExtension(spec.getName()));
             validSpec.setScrapeFile(spec.toPath());
             validSpec.setEntry("start");
 
