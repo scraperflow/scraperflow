@@ -234,4 +234,15 @@ public class TemplateTest {
         String eval = o.eval(s);
         assertEquals("^{}@[]", eval);
     }
+
+    @Test
+    public void linebreak() {
+        String template = "\n";
+
+        T<String> s = new T<>(){};
+        s.setTerm(parseTemplate(template, s));
+
+        String eval = o.eval(s);
+        assertEquals("\n", eval);
+    }
 }
