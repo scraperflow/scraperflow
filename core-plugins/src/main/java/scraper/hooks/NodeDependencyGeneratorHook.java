@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static java.lang.System.Logger.Level.DEBUG;
 import static java.lang.System.Logger.Level.INFO;
 
 /**
@@ -40,7 +41,7 @@ public class NodeDependencyGeneratorHook implements Hook {
         // ==
         String createNodeDependencies = StringUtil.getArgument(args, "ndep");
         if(createNodeDependencies != null) {
-            log.log(INFO, "Generating node dependencies");
+            log.log(DEBUG, "Generating node dependencies");
 
             for (ScrapeSpecification job : jobs.keySet()) {
                 Path path;
@@ -49,7 +50,7 @@ public class NodeDependencyGeneratorHook implements Hook {
                 else
                     path = Path.of(createNodeDependencies, job.getName()+".ndep");
 
-                log.log(INFO, "Creating node dependencies file at {0}", path.toString());
+                log.log(DEBUG, "Creating node dependencies file at {0}", path.toString());
                 generateNodeDependencies(jobs.get(job), path.toString());
             }
         }

@@ -13,6 +13,7 @@ import scraper.utils.ClassUtil;
 import java.util.LinkedList;
 import java.util.List;
 
+import static java.lang.System.Logger.Level.DEBUG;
 import static java.lang.System.Logger.Level.INFO;
 
 public class PluginBean {
@@ -64,7 +65,7 @@ public class PluginBean {
             if(sb.length() != 1) sb.append(", ");
             sb.append(metadata.getName()).append(" [").append(metadata.getVersion()).append("]");
         }
-        log.log(INFO, "Discovered {0} nodes, {1}", plugins.size(), sb.append("]").toString());
+        log.log(DEBUG, "Discovered {0} nodes, {1}", plugins.size(), sb.append("]").toString());
     }
 
     public @NotNull List<AbstractMetadata> getPlugins() {

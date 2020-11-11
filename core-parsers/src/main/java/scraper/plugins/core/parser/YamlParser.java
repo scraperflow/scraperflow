@@ -71,7 +71,7 @@ public final class YamlParser implements ScrapeSpecificationParser {
         try {
             return of(parseFile(file));
         } catch (IOException | ValidationException e) {
-            log.log(System.Logger.Level.ERROR,"Could not parse {0}: {1}", file, e.getMessage());
+            log.log(System.Logger.Level.DEBUG,"Could not parse {0}: {1}", file, e.getMessage());
         }
 
         return empty();

@@ -112,7 +112,7 @@ public class JobFactory {
         // ===
         Map<InstanceAddress, ScrapeInstance> parsedImports = new HashMap<>();
         for (String job : jobDefinition.getImports().keySet()) {
-            log.log(INFO, "Importing {0} into {1}", job, jobDefinition.getName());
+            log.log(DEBUG, "Importing {0} into {1}", job, jobDefinition.getName());
             ScrapeSpecification newJob = jobDefinition.getImports().get(job).getSpec();
 
             // overwrite global configuration of imported job
@@ -128,11 +128,11 @@ public class JobFactory {
         if (jobDefinition.getDependencies().isPresent()) {
             try {
                 parseNodeDependencies(jobDefinition);
-                log.log(INFO, "Using node dependency file for job {0}: {1}",
+                log.log(DEBUG, "Using node dependency file for job {0}: {1}",
                         jobDefinition.getScrapeFile(),
                         jobDefinition.getDependencies());
             } catch (FileNotFoundException e) {
-                log.log(WARNING,  "Missing node dependency file: {0}. Continuing without node versioning.",
+                log.log(DEBUG,  "Missing node dependency file: {0}. Continuing without node versioning.",
                         jobDefinition.getDependencies());
             }
         }
@@ -140,7 +140,7 @@ public class JobFactory {
         // ===
         // Job Pojo
         // ===
-        log.log(INFO, "Parsing {0}",jobDefinition.getScrapeFile());
+        log.log(DEBUG, "Parsing {0}",jobDefinition.getScrapeFile());
         ScrapeInstaceImpl job = parseJob(jobDefinition, nodeHooks);
 
         // ===
@@ -156,7 +156,7 @@ public class JobFactory {
             File impliedArgsFile = new File(impliedArgs);
             Map<String, Object> init = parseInputArguments(impliedArgsFile);
             combinedArgs.putAll(init);
-            log.log(INFO, "Parsed implied args file: {0}", impliedArgs);
+            log.log(DEBUG, "Parsed implied args file: {0}", impliedArgs);
         } catch (Exception ignored) {}
 
         // later args files overwrite earlier ones
@@ -164,7 +164,7 @@ public class JobFactory {
             File argsFile = getFirstExistingPaths(arg, jobDefinition.getPaths());
             Map<String, Object> init = parseInputArguments(argsFile);
             combinedArgs.putAll(init);
-            log.log(INFO, "Parsed args file: {0}", arg);
+            log.log(DEBUG, "Parsed args file: {0}", arg);
         }
 
         job.getEntryArguments().putAll(combinedArgs);
@@ -295,7 +295,7 @@ public class JobFactory {
                     // find fragment file
                     String location = (String) nodeConfig.get("required");
                     File fragment = getFirstExistingPaths(location, jobDefinition.getPaths());
-                    log.log(INFO, "Pre-processing fragment {0}", location);
+                    log.log(DEBUG, "Pre-processing fragment {0}", location);
 
                     List<Map<String, Object>> replaced = generateFragmentRecursive(fragment, jobDefinition, location);
 
@@ -331,7 +331,7 @@ public class JobFactory {
                 String location = (String) node.get("required");
                 // fragment inside fragment found, get path
                 File fragment = getFirstExistingPaths(location, jobDefinition.getPaths());
-                log.log(INFO, "Pre-processing fragment {0}", location);
+                log.log(DEBUG, "Pre-processing fragment {0}", location);
 
                 // generate fragments
                 List<Map<String, Object>> generated = generateFragmentRecursive(fragment, jobDefinition, location);

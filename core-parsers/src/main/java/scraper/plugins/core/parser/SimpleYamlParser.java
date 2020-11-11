@@ -54,7 +54,7 @@ public final class SimpleYamlParser implements ScrapeSpecificationParser {
             ScrapeSpecification validSpec = SimpleScrapeSpecificationImpl.parse(file);
             return of(validSpec);
         } catch (Exception e) {
-            log.log(System.Logger.Level.ERROR,"Could not parse {0}: {1}", file, e.getMessage());
+            log.log(System.Logger.Level.DEBUG,"Could not parse {0}: {1}", file, e.getMessage());
         }
 
         return empty();

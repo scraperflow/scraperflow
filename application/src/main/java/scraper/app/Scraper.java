@@ -89,7 +89,7 @@ public class Scraper {
 
         String helpArgs = StringUtil.getArgument(args, "help");
         if(helpArgs == null) {
-            log.log(INFO, "To see available command-line arguments, provide the 'help' argument when starting Scraper");
+            log.log(DEBUG, "To see available command-line arguments, provide the 'help' argument when starting Scraper");
         } else {
             collectAndPrintCommandLineArguments();
             return;
@@ -115,12 +115,12 @@ public class Scraper {
 
 
     private void run(@NotNull final String... args) throws Exception {
-        log.log(INFO, "Loading {0} addons: {1}", addons.size(), addons);
+        log.log(DEBUG, "Loading {0} addons: {1}", addons.size(), addons);
         for (Addon addon : addons) addon.load(pico, args);
 
         String userDir = System.getProperty("user.dir");
-        log.log(INFO, "Loading {0} parsers: {1}", parsers.size(), parsers);
-        log.log(INFO, "Parsing scrape jobs in {0}", userDir);
+        log.log(DEBUG, "Loading {0} parsers: {1}", parsers.size(), parsers);
+        log.log(DEBUG, "Parsing scrape jobs in {0}", userDir);
         List<ScrapeSpecification> jobDefinitions =
                 parsers.stream().map((scrapeSpecificationParser -> scrapeSpecificationParser.parse(pico, args)))
                 .flatMap(List::stream)
@@ -142,34 +142,34 @@ public class Scraper {
                     .collect(Collectors.toList());
 
             if(specs.size() != 1) {
-                log.log(WARNING, "Too many or no implied taskflow specifications found: {0}", specs);
+                log.log(WARNING, "Too many or no valid implied taskflow specifications found: {0}", specs);
             } else {
-                log.log(INFO, "Using implied taskflow specification {0}", specs.get(0));
+                log.log(DEBUG, "Using implied taskflow specification {0}", specs.get(0));
                 jobDefinitions.addAll(specs);
             }
         }
-        log.log(INFO, "Parsed {0} specifications", jobDefinitions.size());
+        log.log(DEBUG, "Parsed {0} specifications", jobDefinitions.size());
 
         log.log(DEBUG, "Converting scrape jobs");
         for (ScrapeSpecification jobDefinition : jobDefinitions)
             jobs.put(jobDefinition, jobFactory.convertScrapeJob(jobDefinition, nodeHooks));
 
-        log.log(INFO, "Executing {0} hooks: {1}", hooks.size(), hooks);
+        log.log(DEBUG, "Executing {0} hooks: {1}", hooks.size(), hooks);
         for (Hook hook : hooks) hook.execute(pico, args, jobs);
 
         if(System.getProperty("scraper.exit", "false").equalsIgnoreCase("true")) {
-            log.log(INFO, "Exiting Scraper because system property 'scraper.exit' is true");
+            log.log(DEBUG, "Exiting Scraper because system property 'scraper.exit' is true");
             System.exit(0);
         }
 
-        log.log(INFO, "Found {0} node hooks: {1}", nodeHooks.size(), nodeHooks);
+        log.log(DEBUG, "Found {0} node hooks: {1}", nodeHooks.size(), nodeHooks);
         startScrapeJobs();
     }
 
     private void startScrapeJobs() {
-        log.log(INFO, "--------------------------------------------------------");
-        log.log(INFO, "--- Starting Main Threads");
-        log.log(INFO, "--------------------------------------------------------");
+        log.log(TRACE, "--------------------------------------------------------");
+        log.log(TRACE, "--- Starting Main Threads");
+        log.log(TRACE, "--------------------------------------------------------");
         List<CompletableFuture<FlowMap>>  futures = new ArrayList<>();
         jobs.forEach((definition, job) -> {
             CompletableFuture<FlowMap> future = CompletableFuture.supplyAsync(() -> {

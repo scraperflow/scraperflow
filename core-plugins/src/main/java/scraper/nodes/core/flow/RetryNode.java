@@ -10,8 +10,7 @@ import scraper.annotations.node.Flow;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 
-import static scraper.api.node.container.NodeLogLevel.ERROR;
-import static scraper.api.node.container.NodeLogLevel.INFO;
+import static scraper.api.node.container.NodeLogLevel.*;
 
 
 /**
@@ -38,7 +37,7 @@ public final class RetryNode implements Node {
             try {
                 return n.eval(localCopy, retryTarget);
             } catch (NodeException e) {
-                n.log(INFO, "Retry {0}", (current+1));
+                n.log(DEBUG, "Retry {0}", (current+1));
                 current++;
             }
         }

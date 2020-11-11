@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.lang.System.Logger.Level.DEBUG;
 import static java.lang.System.Logger.Level.ERROR;
 
 
@@ -65,7 +66,7 @@ public final class JsonParser implements ScrapeSpecificationParser {
 
             return Optional.of(spec);
         } catch (IOException | ValidationException e) {
-            log.log(ERROR,"Could not parse {0}: {1}", file, e.getMessage());
+            log.log(DEBUG,"Could not parse {0}: {1}", file, e.getMessage());
         }
 
         return Optional.empty();

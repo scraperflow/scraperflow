@@ -34,7 +34,7 @@ public class TypeHook implements Hook {
             for (ScrapeSpecification def : jobs.keySet()) {
                 ScrapeInstance job = jobs.get(def);
 
-                log.log(System.Logger.Level.INFO,"Static type check for {0}", def.getScrapeFile());
+                log.log(System.Logger.Level.DEBUG,"Static type check for {0}", def.getScrapeFile());
                 ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(job, false);
 
 
