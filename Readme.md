@@ -1,7 +1,7 @@
 Scraper - A Composable Workflow Framework
 =========================================
 
-![version](https://img.shields.io/badge/version-0.16.1-green.svg)
+![version](https://img.shields.io/badge/version-0.16.2-green.svg)
 ![language](https://img.shields.io/badge/language-java9+(JPMS)-blue.svg)
 ![build](https://img.shields.io/badge/build-gradle-yellowgreen.svg)
 
@@ -32,6 +32,15 @@ against the composition of nodes.
 
 The documentation can be found at the [Scraper Wiki](https://wiki.scraper.server1.link).
 
+# Quickstart - Specification
+
+A minimal specification that can be used for any of the quickstart sections:
+
+```yml
+start:
+ - {f: echo, log: hello world}
+```
+
 # Quickstart - Docker
 
 Scraper is deployed to [Dockerhub](https://hub.docker.com/repository/docker/albsch/scraper).
@@ -51,13 +60,23 @@ place the jar(s) in the current working directory (or change '$PWD'), too.
 Scraper is fully modularized.
 
 Get the latest [modular jar bundle](https://github.com/scraperflow/scraper/releases) 
-and any [plugin](https://github.com/scraperflow/scraper-plugins) 
-or [additional nodes](https://github.com/scraperflow/scraper-nodes) you like.
+and any [plugin jar](https://github.com/scraperflow/scraper-plugins) 
+or [additional node jars](https://github.com/scraperflow/scraper-nodes) you like.
 
-Place the additional plugins and nodes in the `var` folder.
-Use the provided run script to run Scraper
+Place the additional plugins and nodes in a `var` folder where the run script
+resides.
+Use the provided run script to run Scraper.
        
 Scraper will look for workflows relative to the working directory.
+
+
+# Quickstart - Java Native
+
+Execute `./gradlew installDist`. This will install scraper in your home
+directory at `~/opt/scraper`. 
+A scraper start script can then be executed via `~/opt/scraper/scraper`.
+Additional plugin jars can be put into `~/opt/scraper/var`.
+
 
 # Quickstart - Development
 
