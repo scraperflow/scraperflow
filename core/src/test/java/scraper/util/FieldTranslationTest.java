@@ -101,6 +101,12 @@ public class FieldTranslationTest {
     private Integer argIntegerOverflow;
     private Map<String, Object> argIntegerOverflowArgs = Map.of("intArg", (long) Integer.MAX_VALUE +1L);
 
+    // optional argument
+    @FlowKey(defaultValue = "\"\\\\R\"") @Argument
+    @TranslationInput
+    private String optionalStringArgs;
+    private String optionalStringArgsExpected = "\\R";
+
 
     // optional enum
     @FlowKey(defaultValue = "\"VALUE_A\"")
@@ -338,7 +344,7 @@ public class FieldTranslationTest {
                 if((expectedReturnValue != null || translatedValue != null)) {
                     if (expectedReturnValue != null) {
                         if(!expectedReturnValue.equals(translatedValue)){
-                            throw new IllegalStateException("Failed equality check");
+                            throw new IllegalStateException("Failed equality check: " +expectedReturnValue + "  !=  " +translatedValue);
                         }
                     }
                 }

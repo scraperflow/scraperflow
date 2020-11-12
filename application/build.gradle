@@ -3,7 +3,7 @@ plugins {
     id("de.jjohannes.extra-java-module-info") version "0.1"
 }
 
-version = '0.12.0'
+version = '0.16.2'
 
 extraJavaModuleInfo {
     module("antlr4-runtime-4.8.jar", "org.antlr.antlr4.runtime", "4.8") {}
@@ -23,3 +23,16 @@ application {
 }
 
 distributions.main.distributionBaseName = "scraper"
+
+startScripts.onlyIf {false}
+distributions.main {
+    contents {
+        from 'dist'
+        exclude 'bin'
+    }
+}
+
+distZip.destinationDirectory = project.file('../build')
+
+def homePath = System.properties['user.home']
+installDist.destinationDir = new File(homePath, "opt/scraper")

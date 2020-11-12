@@ -60,7 +60,7 @@ public final class FoldNodeData {
             t.propagate(outEdge, nodeTarget, newEnvironment, spec, cfg, new LinkedList<>(visited));
 
             // check if retrieve is set
-            if (newEnvironment.get(retrieveAcc.getLocation()) == null)
+            if (!retrieveAcc.getLocation().getRaw().toString().equals("_") && newEnvironment.get(retrieveAcc.getLocation()) == null)
                 throw new TemplateException("Accumulator cannot be retrieved, not set " + retrieveAcc);
 
         }

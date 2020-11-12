@@ -33,7 +33,7 @@ public class ExecutorsServiceImpl implements ExecutorsService {
     private synchronized @NotNull ExecutorService createExecutorService(int count, @NotNull final String group) {
         BlockingQueue<Runnable> arrayBlockingQueue = new ArrayBlockingQueue<>(count);
         ThreadPoolExecutor executorService =
-                new ThreadPoolExecutor(count, count, 1, TimeUnit.SECONDS, arrayBlockingQueue, new DefaultThreadFactory(group, true, count));
+                new ThreadPoolExecutor(count, count, 100, TimeUnit.MILLISECONDS, arrayBlockingQueue, new DefaultThreadFactory(group, true, count));
         executorService.allowCoreThreadTimeOut(true);
 
         // when the blocking queue is full, this tries to put into the queue which blocks

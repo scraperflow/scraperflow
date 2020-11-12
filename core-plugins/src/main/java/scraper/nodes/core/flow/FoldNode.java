@@ -32,13 +32,17 @@ import java.util.List;
  * result: acc
  * </pre>
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class FoldNode<A,B> implements Node {
 
     /** Label of fold target */
     @FlowKey(mandatory = true)
     @Flow(dependent = true, crossed = true, label = "fold")
     private Address foldTarget;
+
+    /** List to apply fold */
+    @FlowKey(mandatory = true)
+    private final T<List<A>> list = new T<>(){};
 
     /** At which key to put the element of the accumulator into. */
     @FlowKey(defaultValue = "\"_\"")
@@ -57,12 +61,8 @@ public final class FoldNode<A,B> implements Node {
     private final L<B> result = new L<>(){};
 
     /** Default accumulator value */
-    @FlowKey(mandatory = true)
+    @FlowKey(defaultValue = "\"none\"")
     private final T<B> accumulatorValue = new T<>(){};
-
-    /** List to apply fold */
-    @FlowKey(mandatory = true)
-    private final T<List<A>> list = new T<>(){};
 
 
     @NotNull
