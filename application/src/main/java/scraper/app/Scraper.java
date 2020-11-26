@@ -105,8 +105,9 @@ public class Scraper {
         String exitWithException = System.getProperty("exitWithException", "false");
         if(exitWithException.equalsIgnoreCase("false")) {
             try { main.run(args); } catch (Exception e) {
-                log.log(ERROR, "Couldo not run scrape job: {0}", e.getMessage());
+                log.log(ERROR, "Could not run scrape job: {0}", e.getMessage());
                 if(StringUtil.getArgument(args, "debug-info") != null) e.printStackTrace();
+                System.exit(1);
             }
         } else {
             main.run(args);
@@ -142,7 +143,8 @@ public class Scraper {
                     .collect(Collectors.toList());
 
             if(specs.size() != 1) {
-                log.log(WARNING, "Too many or no valid implied taskflow specifications found: {0}", specs);
+                log.log(ERROR, "Too many or no valid implied taskflow specifications found: {0}", specs);
+                System.exit(1);
             } else {
                 log.log(DEBUG, "Using implied taskflow specification {0}", specs.get(0));
                 jobDefinitions.addAll(specs);
