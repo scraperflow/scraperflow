@@ -2,7 +2,7 @@ Scraper - A Composable Workflow Framework
 =========================================
 
 ![version](https://img.shields.io/badge/version-0.16.2-green.svg)
-![language](https://img.shields.io/badge/language-java9+(JPMS)-blue.svg)
+![language](https://img.shields.io/badge/language-java11+(JPMS)-blue.svg)
 ![build](https://img.shields.io/badge/build-gradle-yellowgreen.svg)
 
 [![coverage report](https://git.server1.link/scraper/scraper/badges/master/coverage.svg)](https://git.server1.link/scraper/scraper/commits/master)

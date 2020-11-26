@@ -86,17 +86,17 @@ public class TypeCheckerTest {
 
     @Test
     public <A> void simpleConstantListWithCaptureTwiceStringToIntFail() throws ValidationException {
+        T<A> t = new T<>(){};
+        T<A> t2 = new T<>(){};
         assertThrows(TemplateException.class,() -> {
             {
-                T<A> t = new T<>(){};
                 t.setTerm(parseTemplate(List.of(42, 21), t));
                 check.typeTemplate(env, t);
             }
 
             {
-                T<A> t = new T<>(){};
-                t.setTerm(parseTemplate(List.of("Should fail"), t));
-                check.typeTemplate(env, t);
+                t2.setTerm(parseTemplate(List.of("Should fail"), t2));
+                check.typeTemplate(env, t2);
             }
         });
     }
@@ -118,25 +118,27 @@ public class TypeCheckerTest {
 
     @Test
     public <A> void simpleConstantListWithCaptureFail2() throws ValidationException {
+        T<A> t = new T<>(){};
+        T<List<A>> t2 = new T<>(){};
         assertThrows(TemplateException.class,() -> {
             {
-                T<A> t = new T<>(){};
                 t.setTerm(parseTemplate(List.of("hello", "test"), t));
                 check.typeTemplate(env, t);
             }
 
             {
-                T<List<A>> t = new T<>(){};
-                t.setTerm(parseTemplate(List.of("hello", "diff"), t));
-                check.typeTemplate(env, t);
+
+                t2.setTerm(parseTemplate(List.of("hello", "diff"), t2));
+                check.typeTemplate(env, t2);
             }
         });
     }
 
     @Test
     public <A> void simpleConstantListFail2() throws ValidationException {
+        T<A> t = new T<>(){};
+
         assertThrows(TemplateException.class,() -> {
-            T<A> t = new T<>(){};
             t.setTerm(parseTemplate(List.of("hello", "test", List.of()), t));
             check.typeTemplate(env, t);
         });
@@ -227,17 +229,17 @@ public class TypeCheckerTest {
 
     @Test
     public <A> void simpleConstantMapWithCaptureTwiceFail() throws ValidationException {
+        T<A> t = new T<>(){};
+        T<A> t2 = new T<>(){};
         assertThrows(TemplateException.class,() -> {
             {
-                T<A> t = new T<>(){};
                 t.setTerm(parseTemplate(Map.of("hello", "test"), t));
                 check.typeTemplate(env, t);
             }
 
             {
-                T<A> t = new T<>(){};
-                t.setTerm(parseTemplate(Map.of("hoo", 42), t));
-                check.typeTemplate(env, t);
+                t2.setTerm(parseTemplate(Map.of("hoo", 42), t2));
+                check.typeTemplate(env, t2);
             }
         });
     }
@@ -259,17 +261,17 @@ public class TypeCheckerTest {
 
     @Test
     public <A> void simpleConstantMapWithCaptureFail2() throws ValidationException {
+        T<A> t = new T<>(){};
+        T<Map<String, A>> t2 = new T<>(){};
         assertThrows(TemplateException.class,() -> {
             {
-                T<A> t = new T<>(){};
                 t.setTerm(parseTemplate(Map.of("hello", "test"), t));
                 check.typeTemplate(env, t);
             }
 
             {
-                T<Map<String, A>> t = new T<>(){};
-                t.setTerm(parseTemplate(Map.of("hello", "diff"), t));
-                check.typeTemplate(env, t);
+                t2.setTerm(parseTemplate(Map.of("hello", "diff"), t2));
+                check.typeTemplate(env, t2);
             }
         });
     }
@@ -391,19 +393,20 @@ public class TypeCheckerTest {
 
     @Test
     public <X> void keyLookupTypeVarFail() throws ValidationException {
+        T<X> t = new T<>(){}; // bind X to List<String>
+        T<X> t2 = new T<>(){}; // but X evaluates to String
+
         assertThrows(TemplateException.class,() -> {
             add(new L<String>(){}, "A");
 
             {
-                T<X> t = new T<>(){}; // bind X to List<String>
                 t.setTerm(parseTemplate(List.of("hello", "test"), t));
                 check.typeTemplate(env, t);
             }
 
             {
-                T<X> t = new T<>(){}; // but X evaluates to String
-                t.setTerm(parseTemplate("{A}", t));
-                check.typeTemplate(env, t);
+                t2.setTerm(parseTemplate("{A}", t2));
+                check.typeTemplate(env, t2);
             }
         });
     }
@@ -704,8 +707,8 @@ public class TypeCheckerTest {
 
     @Test
     public <X> void listEmptyCaptureCompositionFail() throws ValidationException {
+        T<X> t = new T<>(){};
         assertThrows(TemplateException.class,() -> {
-            T<X> t = new T<>(){};
             t.setTerm(parseTemplate(List.of(
                     List.of(List.of("ok"), List.of("tes")),
                     List.of(List.of("String"), List.of()),
@@ -724,8 +727,8 @@ public class TypeCheckerTest {
 
     @Test
     public <X> void listEmptyCaptureCompositionFail2() throws ValidationException {
+        T<X> t = new T<>(){};
         assertThrows(TemplateException.class,() -> {
-            T<X> t = new T<>(){};
             t.setTerm(parseTemplate(List.of(
                     List.of(List.of()),  // X$ListOf :: List<List<Object>>
                     List.of(), // X$ListOf :: List<Object>
@@ -738,8 +741,8 @@ public class TypeCheckerTest {
 
     @Test
     public <X> void mapEmptyCaptureCompositionFail2() throws ValidationException {
+        T<X> t = new T<>(){};
         assertThrows(TemplateException.class,() -> {
-            T<X> t = new T<>(){};
             t.setTerm(parseTemplate(Map.of(
                     "1", Map.of("1", Map.of()),  // X$MapOf :: Map<Map<Object>>
                     "2", Map.of(), // X$MapOf :: Map<Object>
@@ -1039,20 +1042,20 @@ public class TypeCheckerTest {
     }
 
     @Test
-    public <A,B> void specializeTypeFail() throws ValidationException {
+    public <A> void specializeTypeFail() throws ValidationException {
+        T<A> t = new T<>(){};
+        T<String> t2 = new T<>(){};
         assertThrows(TemplateException.class,() -> {
             add(new L<Object>(){}, "obj");
 
             { // obj :: Object ~> List<A>
-                T<A> t = new T<>(){};
                 t.setTerm(parseTemplate("{{obj}}[0]", t));
                 check.typeTemplate(env, t);
             }
 
             { // obj :: String !
-                T<String> t = new T<>(){};
-                t.setTerm(parseTemplate("{obj}", t));
-                check.typeTemplate(env, t);
+                t2.setTerm(parseTemplate("{obj}", t2));
+                check.typeTemplate(env, t2);
             }
         });
     }

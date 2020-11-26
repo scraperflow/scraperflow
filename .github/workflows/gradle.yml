@@ -14,7 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ 13,14 ]
+        java: [ 11,12,13,14 ]
+
     name: Java ${{ matrix.java }} compile
     steps:
     - uses: actions/checkout@v2
