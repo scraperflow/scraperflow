@@ -26,4 +26,4 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build codeCov
     - name: Run once
-      run: ./gradlew run
+      run: ./gradlew run --args="help"
