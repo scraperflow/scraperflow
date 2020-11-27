@@ -106,11 +106,16 @@ public class Scraper {
             main.run(args);
         }
         catch (ExitException ignored) {}
-        catch (Exception e) {
+        catch (Throwable e) {
             log.log(ERROR, "Could not run scrape job: {0}", e.getMessage());
-            if(StringUtil.getArgument(args, "debug-info") != null) e.printStackTrace();
+            if(StringUtil.getArgument(args, "debug-info") == null) surpress(e);
             throw e;
         }
+    }
+
+    private static void surpress(Throwable e) {
+        e.setStackTrace(new StackTraceElement[0]);
+        if(e.getCause() != null) surpress(e.getCause());
     }
 
 
@@ -142,7 +147,7 @@ public class Scraper {
                     .collect(Collectors.toList());
 
             if(specs.size() != 1) {
-                log.log(ERROR, "Too many or no valid implied taskflow specifications found: {0}", specs);
+                log.log(DEBUG, "Too many or no valid implied taskflow specifications found: {0}", specs);
             } else {
                 log.log(DEBUG, "Using implied taskflow specification {0}", specs.get(0));
                 jobDefinitions.addAll(specs);
