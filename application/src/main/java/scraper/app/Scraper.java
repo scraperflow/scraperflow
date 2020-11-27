@@ -102,20 +102,19 @@ public class Scraper {
         Scraper main = pico.get(Scraper.class);
         requireNonNull(main).pico = pico;
 
-        String exitWithException = System.getProperty("exitWithException", "false");
-        if(exitWithException.equalsIgnoreCase("false")) {
-            try { main.run(args); } catch (Exception e) {
-                log.log(ERROR, "Could not run scrape job: {0}", e.getMessage());
-                if(StringUtil.getArgument(args, "debug-info") != null) e.printStackTrace();
-                System.exit(1);
-            }
-        } else {
+        try {
             main.run(args);
+        }
+        catch (ExitException ignored) {}
+        catch (Exception e) {
+            log.log(ERROR, "Could not run scrape job: {0}", e.getMessage());
+            if(StringUtil.getArgument(args, "debug-info") != null) e.printStackTrace();
+            throw e;
         }
     }
 
 
-    private void run(@NotNull final String... args) throws Exception {
+    private void run(@NotNull final String... args) throws Exception, ExitException {
         log.log(DEBUG, "Loading {0} addons: {1}", addons.size(), addons);
         for (Addon addon : addons) addon.load(pico, args);
 
@@ -144,7 +143,6 @@ public class Scraper {
 
             if(specs.size() != 1) {
                 log.log(ERROR, "Too many or no valid implied taskflow specifications found: {0}", specs);
-                System.exit(1);
             } else {
                 log.log(DEBUG, "Using implied taskflow specification {0}", specs.get(0));
                 jobDefinitions.addAll(specs);
@@ -161,8 +159,11 @@ public class Scraper {
 
         if(System.getProperty("scraper.exit", "false").equalsIgnoreCase("true")) {
             log.log(DEBUG, "Exiting Scraper because system property 'scraper.exit' is true");
-            System.exit(0);
+            throw new ExitException();
         }
+
+        if(jobDefinitions.isEmpty())
+            throw new IllegalArgumentException("Too many or no valid taskflow specifications");
 
         log.log(DEBUG, "Found {0} node hooks: {1}", nodeHooks.size(), nodeHooks);
         startScrapeJobs();
