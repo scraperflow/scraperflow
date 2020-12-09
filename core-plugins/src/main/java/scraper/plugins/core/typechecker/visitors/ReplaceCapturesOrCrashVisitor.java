@@ -12,13 +12,24 @@ import java.util.*;
 public class ReplaceCapturesOrCrashVisitor {
     private final Set<Type> visited = new HashSet<>();
     private final Map<String, T<?>> captures;
+    private String typeString;
+
 
     public ReplaceCapturesOrCrashVisitor(Map<String, T<?>> captures) {
         this.captures = captures;
+        typeString = null;
     }
 
     public final Type visit(Type knownType) {
         return visit(new Type[]{knownType})[0];
+    }
+
+    public Type visit(T<?> t) {
+        // FIXME better way
+        if(t.getTypeString().contains("$")) {
+            typeString = t.getTypeString();
+        }
+        return visit(t.get());
     }
 
     private Type[] visit(Type[] knownTypes) {
@@ -94,9 +105,13 @@ public class ReplaceCapturesOrCrashVisitor {
     }
 
     private Type visitTypeVariable(@SuppressWarnings("unused") TypeVariable<?> t) {
-        T<?> captured = captures.get(t.getName());
+        T<?> captured;
+        if(typeString == null) {
+            captured = captures.get(t.getName());
+        } else {
+            captured = captures.get(typeString);
+        }
         if(captured == null)  return t;
-//            throw new TemplateException("Type variable not captured and missing for input! " + t);
         return captured.get();
     }
 

@@ -30,6 +30,8 @@ public class TypeCheckerOkTest {
     @ParameterizedTest
     @MethodSource("pathProvider")
     public void testOkCheck(File path) {
+        System.setProperty("java.util.logging.SimpleFormatter.format", "%3$s | %5$s %n");
+
         TypeChecker t = new TypeChecker();
         ScrapeInstance spec = read(path);
         ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(spec, true);

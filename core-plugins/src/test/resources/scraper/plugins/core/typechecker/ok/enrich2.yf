@@ -1,0 +1,14 @@
+---
+name: echo
+graphs:
+  start:
+    - type: EchoNode
+      put: actdetail
+      value: ["hello"]
+
+    - type: EchoNode
+      put: enriched
+      value:
+        id: "{{actdetail}}[0]"
+
+

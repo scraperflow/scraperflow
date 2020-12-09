@@ -18,6 +18,7 @@ import scraper.api.specification.impl.ScraperImportSpecificationImpl;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -72,6 +73,8 @@ public final class YamlParser implements ScrapeSpecificationParser {
             return of(parseFile(file));
         } catch (IOException | ValidationException e) {
             log.log(System.Logger.Level.DEBUG,"Could not parse {0}: {1}", file, e.getMessage());
+        } catch (NoSuchElementException e) {
+            throw new IllegalArgumentException( "Could not find import specification", e);
         }
 
         return empty();

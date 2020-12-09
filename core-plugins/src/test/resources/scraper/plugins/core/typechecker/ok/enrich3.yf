@@ -1,0 +1,17 @@
+---
+name: echo
+graphs:
+  start:
+    - type: EchoNode
+      put: actdetail
+      value: [3]
+
+    - type: EchoNode
+      put: enriched
+      value:
+        id: "{{actdetail}}[0]"
+
+    - type: IntConsumerNode
+      input: "{{enriched}@id}"
+
+

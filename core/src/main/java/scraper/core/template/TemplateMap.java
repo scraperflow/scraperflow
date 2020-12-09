@@ -15,9 +15,6 @@ import java.util.stream.Collectors;
 
 public class TemplateMap<K> implements MapTerm<K> {
 
-
-    @Override public int getTypevarindex() { throw new IllegalStateException(); }
-
     @Override public <X> X accept(@NotNull TVisitor<X> visitor) { return visitor.visitMapTerm(this); }
 
     private final Map<String, Term<K>> termMap;

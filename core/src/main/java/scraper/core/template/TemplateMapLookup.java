@@ -51,8 +51,6 @@ public class TemplateMapLookup<K> extends TemplateExpression<K> implements MapLo
         return map.targetType.getTypeString() + (typevarsuffix.isEmpty() ? "" : "$"+this.typevarsuffix);
     }
 
-    @Override public int getTypevarindex() { throw new IllegalStateException(); }
-
     @SuppressWarnings("unchecked") // checked with map generics subtype relation
     public K eval(@NotNull final FlowMap o) {
         try {

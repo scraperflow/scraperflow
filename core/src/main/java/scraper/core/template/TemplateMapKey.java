@@ -14,8 +14,6 @@ import java.util.*;
 public class TemplateMapKey<K> extends TemplateExpression<K> implements FlowKeyLookup<K> {
     @Override public <X> X accept(@NotNull TVisitor<X> visitor) { return visitor.visitFlowKeyLookup(this); }
 
-
-    @Override public int getTypevarindex() { throw new IllegalStateException(); }
     @NotNull
     @Override
     public Term<String> getKeyLookup() { return keyLookup; }

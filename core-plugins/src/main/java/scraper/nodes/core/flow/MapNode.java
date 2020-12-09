@@ -13,6 +13,8 @@ import scraper.api.template.L;
 import scraper.api.template.T;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 
 /**
@@ -20,12 +22,16 @@ import java.util.List;
  * Does not wait or join the forked flows.
  * The element is saved to <var>putElement</var>
  */
-@NodePlugin("0.4.0")
+@NodePlugin("0.5.0")
 public final class MapNode<K> implements Node {
 
     /** The expected list is located to fork on */
-    @FlowKey(mandatory = true)
+    @FlowKey
     private final T<List<K>> list = new T<>(){};
+
+    /** The expected map is located to fork on */
+    @FlowKey
+    private final T<Map<String, K>> map = new T<>(){};
 
     /** Target address to fork to */
     @FlowKey(mandatory = true)
@@ -36,16 +42,27 @@ public final class MapNode<K> implements Node {
     @FlowKey(defaultValue = "\"element\"")
     private final L<K> putElement = new L<>(){};
 
+    /** At which key to put the element of the map key if any into. */
+    @FlowKey(defaultValue = "\"_\"")
+    private final L<String> putElementKey = new L<>(){};
+
     @NotNull
     @Override
     public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
-        List<K> targetList = o.eval(list);
-
-        targetList.forEach(t -> {
+        Optional<List<K>> targetList = o.evalMaybe(list);
+        targetList.ifPresent(ks -> ks.forEach(t -> {
             FlowMap finalCopy = o.copy();
             finalCopy.output(putElement, t);
             n.forkDispatch(finalCopy, mapTarget);
-        });
+        }));
+
+        Optional<Map<String, K>> targetMap = o.evalMaybe(map);
+        targetMap.ifPresent(stringKMap -> stringKMap.forEach((k, v) -> {
+            FlowMap finalCopy = o.copy();
+            finalCopy.output(putElement, v);
+            finalCopy.output(putElementKey, k);
+            n.forkDispatch(finalCopy, mapTarget);
+        }));
 
         return o;
     }

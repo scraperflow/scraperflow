@@ -30,8 +30,10 @@ public class TypeCheckerBadTest {
     }
 
     @ParameterizedTest
-    @MethodSource("pathProvider")
-    public void testOkCheck(File path) {
+    @MethodSource({"pathProvider"})
+    public void testFailCheck(File path) {
+        System.setProperty("java.util.logging.SimpleFormatter.format", "%3$s | %5$s %n");
+
         Assertions.assertThrows(TemplateException.class, () -> {
             TypeChecker t = new TypeChecker();
             ScrapeInstance spec = read(path);

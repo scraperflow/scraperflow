@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.lang.System.Logger.Level.DEBUG;
+import static java.lang.System.Logger.Level.DEBUG;
 
 public class TypeRules extends DefaultVisitor<Object> {
 
@@ -72,7 +73,7 @@ public class TypeRules extends DefaultVisitor<Object> {
     @Override public T<?> visitFlowKeyLookup(FlowKeyLookup<?> mapKey) {
         log.log(DEBUG, " ====== T-Key-Lookup-Template: Checking keylookup {0} with target type {1}", mapKey, mapKey.getToken().getTypeString());
         { // (1) check string type
-            log.log(DEBUG, " === T-Key-Lookup-Template (1): check inner template {0} is a String", mapKey.getKeyLookup());
+//            log.log(DEBUG, " === T-Key-Lookup-Template (1): check inner template {0} is a String", mapKey.getKeyLookup());
             T<?> innerType = (T<?>) mapKey.getKeyLookup().accept(this);
             if(!innerType.equalsType(new T<String>(){}))
                 throw new TemplateException("Inner type of flow key lookup is not a string, instead "+innerType.getTypeString());
@@ -108,12 +109,11 @@ public class TypeRules extends DefaultVisitor<Object> {
             } else {
 
                 Type target = mapKey.getToken().get();
-
                 TypeGeneralizer lizer = new TypeGeneralizer(env.captures){};
-
                 Type newType = lizer.visit(known.get(), target);
                 if (newType == null) {
-                    throw new TemplateException("Template term for key lookup bad type: " + known.getTypeString() + " != " + mapKey.getToken().getTypeString());
+                    if(lizer.error != null) throw new TemplateException(lizer.error, "Template term for key lookup bad type: " + known.getTypeString() + " != " + mapKey.getToken().getTypeString());
+                    else throw new TemplateException("Template term for key lookup bad type: " + known.getTypeString() + " != " + mapKey.getToken().getTypeString());
                 } else {
                     env.captures.putAll(lizer.newCaptures);
                     env.addSpecialize(mapKey.getKeyLookup(), new T<>(newType){});
@@ -174,7 +174,7 @@ public class TypeRules extends DefaultVisitor<Object> {
     // T-Map-Template {k1 => t1:T, ... , kn => tn:T} :: Map<String, T>
     @Override public T<?> visitMapTerm(MapTerm<?> mapTerm) {
         log.log(DEBUG, " ====== T-Map-Template: Checking map {0} with target type {1}", mapTerm.getTerms().keySet(), mapTerm.getToken().getTypeString());
-
+        log.log(DEBUG, " ====== element type {0}", mapTerm.getElementType().getTypeString());
         // EMPTY MAP
         if(mapTerm.getTerms().isEmpty()) {
             T<Map<String, Object>> newToken = TemplateUtil.mapOf(new T<>(){}, new T<>(){});

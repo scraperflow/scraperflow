@@ -83,7 +83,7 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
                 T<List<Y>> listToken = listOf(target);
 
                 // replace Y with Y$MapOf if type variable
-                if(fromTypeVar) listToken = new T<>(new TypeReplacer("ListOf"){}.visit(listToken.get())){};
+                if(fromTypeVar) listToken = new T<>(new TypeReplacer(target.getTypeString()){}.visit(listToken.get())){};
 
                 TemplateExpressionVisitor<List<Y>> listTargetVisitor = new TemplateExpressionVisitor<>(listToken);
                 TemplateExpressionVisitor<Integer> intTargetVisitor = new TemplateExpressionVisitor<>(new T<>(){});
@@ -102,7 +102,7 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
                 T<Map<String, Y>> token = mapOf(new T<>(){}, target);
 
                 // replace Y with Y$MapOf if type variable
-                if(fromTypeVar) token = new T<>(new TypeReplacer("MapOf"){}.visit(token.get())){};
+                if(fromTypeVar) token = new T<>(new TypeReplacer(target.getTypeString()){}.visit(token.get())){};
 
                 TemplateExpressionVisitor<Map<String, Y>> mapTargetVisitor = new TemplateExpressionVisitor<>(token){};
                 TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(new T<>(){});

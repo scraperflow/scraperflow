@@ -70,7 +70,7 @@ public abstract class TypeReplacer {
 
             @Override
             public String getName() {
-                return knownType.getTypeName() + "$" +replace;
+                return replace;
             }
 
             @Override
@@ -80,12 +80,12 @@ public abstract class TypeReplacer {
 
             @Override
             public String getTypeName() {
-                return knownType.getTypeName() + "$" +replace;
+                return replace;
             }
 
             @Override
             public String toString() {
-                return knownType.getTypeName() + "$" +replace;
+                return replace;
             }
         };
 

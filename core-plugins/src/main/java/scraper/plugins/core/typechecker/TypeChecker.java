@@ -155,7 +155,7 @@ public class TypeChecker {
 
     // T-Node
     private void typeNode(TypeEnvironment env, NodeContainer<?> n) {
-//        log.log(DEBUG, "==== Typing node {0} ({1})", n, n.getC().getClass().getSimpleName());
+        log.log(DEBUG, "==== Typing node {0} ({1})", n, n.getC().getClass().getSimpleName());
 
         getDefaultDataFlowInputTemplates(n)
                 .forEach((fieldName, template) -> {
@@ -216,7 +216,7 @@ public class TypeChecker {
             try {
                 Type tt = new ReplaceCapturesOrCrashVisitor(env.captures).visit(output.get());
                 if (!tt.equals(output.get())) {
-//                    log.log(DEBUG, "Captured types {0} ==> {1}", output.getLocation(), tt);
+                    log.log(DEBUG, "Captured types {0} ==> {1}", output.getLocation(), tt);
                     Term<String> loc = output.getLocation();
                     output = new L<>(tt){};
                     output.setLocation(loc);

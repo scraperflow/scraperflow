@@ -130,6 +130,7 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
 
     @NotNull @Override
     public <A> A eval(@NotNull T<A> template) {
+
         if(template.getTerm() == null)
             throw new TemplateException("Template was not set but not expected, " +
                     "wrong node implementation");

@@ -20,12 +20,6 @@ public class TemplateList<K> implements ListTerm<K> {
     private T<List<K>> listType;
     private final boolean fromTypeVariable;
     private final T<K> elementType;
-    private final int typevarindex;
-
-    @Override
-    public int getTypevarindex() {
-        return typevarindex;
-    }
 
     @Override
     public T<K> getElementType() {
@@ -50,7 +44,6 @@ public class TemplateList<K> implements ListTerm<K> {
         this.listType = listType;
         this.elementType = elementType;
         this.fromTypeVariable = fromTypeVariable;
-        this.typevarindex = -1;
     }
 
     public @NotNull List<K> eval(@NotNull final FlowMap o) {

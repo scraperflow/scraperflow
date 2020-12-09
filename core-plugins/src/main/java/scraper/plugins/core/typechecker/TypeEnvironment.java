@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.System.Logger.Level.DEBUG;
+import static java.lang.System.Logger.Level.DEBUG;
 
 public class TypeEnvironment {
 
@@ -97,7 +98,7 @@ public class TypeEnvironment {
             for (int i = 0; i < fixpoint.size(); i++) {
                 T<?> t = fixpoint.get(i);
 
-                Type tt = new ReplaceCapturesOrCrashVisitor(captures).visit(t.get());
+                Type tt = new ReplaceCapturesOrCrashVisitor(captures).visit(t);
 
                 if(!t.equalsType(new T<>(tt){})){
                     changed = true;

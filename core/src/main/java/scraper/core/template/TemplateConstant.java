@@ -32,8 +32,6 @@ public class TemplateConstant<K> extends TemplateExpression<K> implements Primit
         return toString();
     }
 
-    @Override public int getTypevarindex() { throw new IllegalStateException(); }
-
     @Override
     public String getTypeString() {
         return targetType.get().getTypeName();

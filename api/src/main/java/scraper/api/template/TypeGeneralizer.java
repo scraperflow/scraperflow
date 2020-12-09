@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public abstract class TypeGeneralizer {
     private final Map<String, Type> capturedTypes;
     public Map<String, T<?>> newCaptures = new HashMap<>();
+    public Exception error;
 
 
     public TypeGeneralizer(Map<String, T<?>> capturedTypes) {
@@ -66,8 +67,14 @@ public abstract class TypeGeneralizer {
     private Type handleClass(Class<?> knownType, Type targetType) {
         if(targetType == Object.class) return knownType;
 
+
         if(targetType instanceof TypeVariable) {
-            Type maybeCaptured = capturedTypes.get(targetType.getTypeName());
+            String unboxedTypeName = (targetType.getTypeName().contains("$")
+                    ? targetType.getTypeName().substring(0, targetType.getTypeName().indexOf("$"))
+                    : targetType.getTypeName()
+            );
+//            Type maybeCaptured = capturedTypes.get(targetType.getTypeName());
+            Type maybeCaptured = capturedTypes.get(unboxedTypeName);
             if(maybeCaptured == null) {
                 newCaptures.put(targetType.getTypeName(), new T<>(knownType){});
                 return knownType;
@@ -79,6 +86,8 @@ public abstract class TypeGeneralizer {
         if(knownType == Object.class) return targetType;
         if(knownType == targetType) return knownType;
 
+
+        error = new TemplateException("Could not match known type " + knownType.getSimpleName() + " with " + targetType.getTypeName());
         return null;
     }
 

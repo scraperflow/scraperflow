@@ -290,6 +290,7 @@ public class JobFactory {
                 Map<String, Object> nodeConfig = iter.next();
 
                 // check if node is a fragment
+                if(nodeConfig.get("type") == null) throw new IOException("Node has no field type");
                 if(((String) nodeConfig.get("type")).equalsIgnoreCase("fragment")) {
 
                     // find fragment file

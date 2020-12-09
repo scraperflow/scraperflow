@@ -89,10 +89,14 @@ public final class TemplateUtil {
 
     @SuppressWarnings({"unchecked", "rawtypes"}) // checked with types
     public static <K> Term<K> parseTemplate(@NotNull final Object term, @NotNull final T<K> targetType) throws ValidationException {
-        T<K> templ = targetType;
-
+        // List type variable
+        //         target:         A
+        //         actual:    List<?>
+        // create token with
+        //                    A        = List<A$ListOf>
+        //                    A$ListOf = ?
         if (List.class.isAssignableFrom(term.getClass()) && (
-                List.class.isAssignableFrom(templ.getRawType()) || templ.getRawType().equals(Object.class))) {
+                List.class.isAssignableFrom(targetType.getRawType()) || targetType.getRawType().equals(Object.class))) {
             if ((targetType.get() instanceof TypeVariable)) {
                 Term<K> tt = (Term<K>) parseTemplateL((List) term, (T<List<?>>) targetType, true);
                 log.log(DEBUG,  "Making type variable more precise: {0} => {1}", tt.getTypeString(), "List<" + ((ListTerm) tt).getElementType().getTypeString() + ">");
@@ -101,8 +105,14 @@ public final class TemplateUtil {
                 return (Term<K>) parseTemplateL((List) term, (T<List<?>>) targetType, false);
             }
         } // JSON map
+        // Map type variable
+        //         target:         A
+        //         actual:    Map<String, ?>
+        // create token with
+        //                    A        = Map<String, A$MapOf>
+        //                    A$MapOf = ?
         else if (Map.class.isAssignableFrom(term.getClass()) && (
-                Map.class.isAssignableFrom(templ.getRawType()) || templ.getRawType().equals(Object.class) // descend into object
+                Map.class.isAssignableFrom(targetType.getRawType()) || targetType.getRawType().equals(Object.class)
         )) {
             if ((targetType.get() instanceof TypeVariable)) {
                 Term<K> tt = (Term<K>) parseTemplateM((Map<String, ?>) term, (T<Map<String, ?>>) targetType, true);
@@ -115,7 +125,7 @@ public final class TemplateUtil {
         // primitives
         else {
             // raw type
-            if (templ.getRawType().isAssignableFrom(term.getClass()) && !String.class.isAssignableFrom(term.getClass())) {
+            if (targetType.getRawType().isAssignableFrom(term.getClass()) && !String.class.isAssignableFrom(term.getClass())) {
                 // same types, return actual object
                 TemplateConstant<K> constant = new TemplateConstant<>((K) term, targetType);
 //                constant.eval();
@@ -124,7 +134,7 @@ public final class TemplateUtil {
                 // string template found
                 return parseTemplate(((String) term), targetType);
             } else {
-                throw new ValidationException("Argument type mismatch! Expected String or " + templ + ", but found " + term.getClass());
+                throw new ValidationException("Argument type mismatch! Expected String or " + targetType + ", but found " + term.getClass());
             }
         }
     }
@@ -188,11 +198,9 @@ public final class TemplateUtil {
         Map<String, Term<?>> resultMap = new HashMap<>();
 
         for (String k : term.keySet()) {
-            if(fromTypeVariable) {
-                resultMap.put(k, parseTemplate(term.get(k), new T<>(elementType.get(), targetType.getSuffix()+"MapOf") {}));
-            } else {
-                resultMap.put(k, parseTemplate(term.get(k), new T<>(elementType.get()) {}));
-            }
+            resultMap.put(k, parseTemplate(term.get(k), new T<>(elementType.get(),
+                    targetType.getSuffix()+(fromTypeVariable ? "MapOf" : "")
+            ) {} ));
         }
 
         return new TemplateMap(resultMap,

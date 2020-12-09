@@ -8,6 +8,7 @@ import scraper.api.template.T;
 import scraper.api.template.TVisitor;
 import scraper.api.template.Term;
 
+import java.lang.reflect.TypeVariable;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,9 +29,10 @@ public class TemplateListLookup<K> extends TemplateExpression<K> implements List
         this.index = index;
     }
 
-
-    @Override public int getTypevarindex() { throw new IllegalStateException(); }
-
+    @Override
+    public boolean isTypeVariable() {
+        return getToken().get() instanceof TypeVariable;
+    }
 
     @SuppressWarnings({"unchecked", "rawtypes"}) // checked with generics subtype relation
     public K eval(@NotNull final FlowMap o) {
@@ -63,7 +65,13 @@ public class TemplateListLookup<K> extends TemplateExpression<K> implements List
 
     @Override
     public String getTypeString() {
-        throw new IllegalStateException("NO");
+        return getListObjectTerm().getTypeString();
+    }
+
+
+    @Override
+    public String getTypeStringElement() {
+        return getTypeString().substring(15, getTypeString().length()-1);
     }
 
     @Override
