@@ -14,6 +14,7 @@ import scraper.api.template.L;
 import scraper.api.template.T;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -39,7 +40,7 @@ import static scraper.api.node.container.NodeLogLevel.ERROR;
  *   exec: ["ls", "-la", "{path}"]
  * </pre>
  */
-@NodePlugin("0.4.0")
+@NodePlugin("0.5.0")
 @Io
 public final class ExecNode implements FunctionalNode {
 
@@ -50,6 +51,10 @@ public final class ExecNode implements FunctionalNode {
     /** Single String alternative to <var>exec</var>, will get executed if <var>exec</var> is not specified */
     @FlowKey
     private final T<String> execStr = new T<>(){};
+
+    /** Working directory. Defaults to the JVM working directory. */
+    @FlowKey
+    private final T<String> workingDirectory = new T<>(){};
 
     /** If the process fails, this node can throw an exception if this field is specified. */
     @FlowKey(defaultValue = "false")
@@ -62,7 +67,6 @@ public final class ExecNode implements FunctionalNode {
     /** Redirects process error output to this string */
     @FlowKey(defaultValue = "\"_\"")
     private final L<String> putErr = new L<>(){};
-
 
     /** Byte buffer size */
     @FlowKey(defaultValue = "1000")
@@ -83,6 +87,7 @@ public final class ExecNode implements FunctionalNode {
             n.log(DEBUG,"Executing {0}", exec);
 
             ProcessBuilder pb = new ProcessBuilder(exec);
+            o.evalMaybe(workingDirectory).ifPresent(dir -> pb.directory(new File(dir)));
             Process b = pb.start();
 
             String stdOut = readStream(b.getInputStream());

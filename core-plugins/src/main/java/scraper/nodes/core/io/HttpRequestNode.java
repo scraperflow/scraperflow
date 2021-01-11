@@ -28,6 +28,7 @@ import java.time.Duration;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -62,7 +63,7 @@ import static scraper.api.node.container.NodeLogLevel.*;
  *
  * If multiple HttpRequestNodes are used with a similar configuration, globalNodeConfigurations can be used.
  */
-@NodePlugin("2.0.1")
+@NodePlugin("2.0.2")
 @Io
 public final class HttpRequestNode implements Node {
 
@@ -287,8 +288,11 @@ public final class HttpRequestNode implements Node {
                     request.GET();
                     break;
                 case POST:
-                    payload = mapper.writeValueAsString(o.eval(this.payload));
-                    request.POST(HttpRequest.BodyPublishers.ofString(payload));
+                    Optional<Object> maybe = o.evalMaybe(this.payload);
+                    if(maybe.isPresent()) {
+                        payload = mapper.writeValueAsString(o.eval(this.payload));
+                        request.POST(HttpRequest.BodyPublishers.ofString(payload));
+                    }
                     break;
                 case DELETE:
                     request.DELETE();
