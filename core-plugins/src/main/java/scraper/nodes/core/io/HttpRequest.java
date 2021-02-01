@@ -44,7 +44,7 @@ import static scraper.api.node.container.NodeLogLevel.*;
  * </ul>
  * Example:
  * <pre>
- * type: HttpRequestNode
+ * type: HttpRequest
  * proxyFile: "/tmp/proxies.csv"
  * proxyGroup: g1
  * proxyMode: PROXY

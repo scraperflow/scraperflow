@@ -13,7 +13,7 @@ import scraper.api.template.T;
 import java.util.List;
 
 /**
- * Sets a flag depending if the object is contained in the collection
+ * Sets a flag depending if the object is contained in the list
  */
 @NodePlugin("0.3.1")
 public final class ContainedInCollection <A> implements FunctionalNode {
@@ -36,7 +36,7 @@ public final class ContainedInCollection <A> implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        A             object     = o.eval(this.object);
+        A       object     = o.eval(this.object);
         List<A> collection = o.eval(this.collection);
 
         // cont negate output

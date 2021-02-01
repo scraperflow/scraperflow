@@ -12,7 +12,7 @@ import scraper.api.template.T;
 import java.util.List;
 
 /**
- * Takes a list and check if it is empty
+ * Checks if a list is empty.
  */
 @NodePlugin("0.1.0")
 public final class ListEmpty <K> implements FunctionalNode {

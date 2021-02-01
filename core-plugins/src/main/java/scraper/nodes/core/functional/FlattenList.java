@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
  * <p>
  * Can be used to merge lists by using templates:
  * <pre>
- *   type: FlattenListNode
- *   flatten: ["{list1}", "{list2}"]
+ *type: FlattenListNode
+ *flatten: ["{list1}", "{list2}"]
  * </pre>
  */
 @NodePlugin("0.4.1")

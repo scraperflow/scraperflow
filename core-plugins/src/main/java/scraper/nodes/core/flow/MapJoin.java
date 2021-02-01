@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutionException;
  * Example:
  * <pre>
  *
- * type: MapJoinNode
+ * type: MapJoin
  * keys:
  *   package: package
  * list: "{output}"

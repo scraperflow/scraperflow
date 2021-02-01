@@ -24,17 +24,17 @@ import static scraper.api.node.container.NodeLogLevel.*;
  * Execute a node after a timeout.
  * TimerNode is initially dormant and has to be started with a start Action.
  * Timer can be stopped and status can be queried with other Actions (e.g. with prior
- * EchoNode invocations).
+ * Echo invocations).
  *
  * <p>Example:
  *
  * <pre>
- *  type     : TimerNode
- *  name     : error timer
- *  timeout  : {error-timeout}
- *  put      : result
- *  onTimeout: fridgeOn
- *  action   : {error-action}
+ *type     : Timer
+ *name     : error timer
+ *timeout  : "{error-timeout}"
+ *put      : result
+ *onTimeout: fridgeOn
+ *action   : "{error-action}"
  * </pre>
  */
 @NodePlugin(value = "0.2.0")

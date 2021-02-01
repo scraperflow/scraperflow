@@ -18,6 +18,7 @@ import static scraper.api.node.container.NodeLogLevel.ERROR;
 
 /**
  * Executes a command defined in the workflow in the current system environment.
+ * In contrast to 'Exec', the output of the command is treated as a stream (per line).
  */
 @NodePlugin("0.0.1")
 @Io

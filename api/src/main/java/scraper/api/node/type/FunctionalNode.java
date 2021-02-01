@@ -10,7 +10,6 @@ import scraper.api.node.container.NodeContainer;
 /**
  * Nodes which implement this interface only modify the FlowMap and can be tested functionally.
  */
-@NodePlugin(value = "0.1.0")
 public interface FunctionalNode extends Node {
 
     /** Functional node container cast and usage of process for functional nodes */

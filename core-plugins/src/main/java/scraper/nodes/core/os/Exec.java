@@ -28,7 +28,7 @@ import static scraper.api.node.container.NodeLogLevel.ERROR;
  * Executes a command defined in the workflow in the current system environment.
  *
  * <ol>
- *     <li>Executes the command <tt>exec</tt></li>
+ *     <li>Executes the command <var>exec</var> (or as a simple string: <var>execStr</var>)</li>
  *     <li>Waits for completion</li>
  *     <li>Logs if an error occurs. If failOnException is enabled, throws a NodeException</li>
  * </ol>

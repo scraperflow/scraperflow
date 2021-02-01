@@ -16,12 +16,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Can scope the flow map
+ * Can scope the flow map.
+ * Only keys that are defined in <var>keys</var> are kept, others are deleted.
  */
 @NodePlugin("0.0.1")
 public class LetIn implements FunctionalNode {
 
-    /** Keys to include in scope */
+    /** Keys to include in following scope */
     @FlowKey
     private final T<List<String>> keys = new T<>(){};
 

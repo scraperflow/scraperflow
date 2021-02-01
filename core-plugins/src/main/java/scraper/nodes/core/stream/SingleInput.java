@@ -19,7 +19,6 @@ public final class SingleInput implements FunctionalNode {
     @FlowKey(defaultValue = "\"_\"")
     private final L<String> put = new L<>(){};
 
-
     @Override
     public void modify(FunctionalNodeContainer n, FlowMap o) {
         Scanner s = new Scanner(System.in);

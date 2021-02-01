@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * Showcase of all possible annotation combinations on configuration fields
  */
-@NodePlugin(deprecated = true, value = "0.11.0") // only used for tests and showcasing
+@NodePlugin(value = "0.17.0") // only used for tests and showcasing
 public class AnnotationsExample implements Node {
 
     /**
@@ -44,7 +44,7 @@ public class AnnotationsExample implements Node {
 
     /**
      * Templates are runtime constructs.
-     * As of 0.11.0, the following template grammar is supported:
+     * As of 0.17.0, the following template grammar is supported:
      * <ul>
      *     <li><code>{T}</code>: Flow Map Key lookup</li>
      *     <li><code>{M@T}</code>: Map lookup, where <code>M</code> evaluates to a Map and <code>T</code> to a String</li>
@@ -54,11 +54,14 @@ public class AnnotationsExample implements Node {
      * </ul>
      * The result of the evaluation needs to conform to the type given by <code>T&lt;&gt;</code>.
      * <p>
-     * Valid definitions for this key, where the current flow map contents are
+     * If the current flow map contents are
      * <pre>
+     *   {
      *     my-string: "string"
      *     my-map: {"key": "anotherstring"}
+     *   }
      * </pre>
+     * then valid definitions for this key are
      * <pre>
      *  simpleTemplate: "justastring"
      *  simpleTemplate: "{my-string}"

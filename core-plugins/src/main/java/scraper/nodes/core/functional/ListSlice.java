@@ -15,25 +15,28 @@ import static java.lang.Math.abs;
 import static java.lang.Math.min;
 
 /**
- * Takes a universe and removes all elements in a given list from it.
+ * Slices a list from a given range to a given range.
+ * Returns at most an empty list.
+ * Negative wrap around is allowed, stops at zero.
+ * If <var>to</var> is smaller than <var>from</var>, the original list is returned.
  */
-@NodePlugin("0.2.0")
+@NodePlugin("0.3.0")
 public final class ListSlice <K> implements FunctionalNode {
 
     /** List to slice */
     @FlowKey(defaultValue = "[]")
     private final T<List<K>> list = new T<>(){};
 
-    /** */
+    /** Starting index */
     @FlowKey(defaultValue = "0")
     private Integer from;
 
-    /** */
+    /** End index */
     @FlowKey(defaultValue = "0")
     private Integer to;
 
     /** Sliced list */
-    @FlowKey(defaultValue = "\"_\"")
+    @FlowKey(mandatory = true)
     private final L<List<K>> output = new L<>(){};
 
     @Override

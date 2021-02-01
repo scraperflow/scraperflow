@@ -10,7 +10,7 @@ import scraper.api.template.L;
 import scraper.api.template.T;
 
 /**
- * Adds possibility to create a big complex object with not allowed type,
+ * Adds possibility to create a big complex object with a not allowed type,
  * can be used to construct JSON objects as output if you don't refer to it as input later.
  * Be careful.
  */

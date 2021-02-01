@@ -10,12 +10,6 @@ import scraper.api.template.L;
 
 /**
  * Can remove a key of the current flow map.
- * <p>
- * Example
- * <pre>
- * type: RemoveKeyNode
- * remove: mykey
- * </pre>
  */
 @NodePlugin("1.0.1")
 public class RemoveKey implements FunctionalNode {

@@ -13,13 +13,16 @@ import java.util.Optional;
 
 /**
  * Can modify the current flow map.
- * Can be used to construct user defined JSON objects.
+ * Can be used to construct a subset of user defined JSON objects.
  * <p>
  * Example
  * <pre>
- * type: EchoNode
- * put: id
- * value: "{id}"
+ *type: Echo
+ *put: user
+ *value:
+ *  name: "{username}"
+ *  age: "{userage}"
+ *  attributes: ["user", "{customattribute}"]
  * </pre>
  */
 @NodePlugin("2.0.1")
@@ -36,7 +39,6 @@ public class Echo <A> implements FunctionalNode {
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         Optional<A> value = o.evalMaybe(this.value);
-        // put object
         value.ifPresent(v -> o.output(put, v));
     }
 }

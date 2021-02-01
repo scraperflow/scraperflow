@@ -14,14 +14,14 @@ import scraper.api.template.T;
 import java.io.IOException;
 
 /**
- * Converts a Json object (map) to a String representation
+ * Converts a Json object to a String representation
  */
-@NodePlugin("0.2.0")
-public final class ObjectToJsonString <A> implements FunctionalNode {
+@NodePlugin("0.3.0")
+public final class ObjectToJsonString implements FunctionalNode {
 
     /** Json object */
     @FlowKey(defaultValue = "\"object\"")
-    private final T<A> object = new T<>(){};
+    private final T<Object> object = new T<>(){};
 
     /** Resulting string location */
     @FlowKey(defaultValue = "\"result\"")
@@ -32,7 +32,7 @@ public final class ObjectToJsonString <A> implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) throws NodeException {
-        A object = o.eval(this.object);
+        Object object = o.eval(this.object);
 
         try {
             // read object at argument location

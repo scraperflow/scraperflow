@@ -12,15 +12,15 @@ import scraper.api.template.T;
 /**
  * Hashes a value of any content
  */
-@NodePlugin("0.3.0")
+@NodePlugin("0.4.0")
 public final class Hash <A> implements FunctionalNode {
 
     /** The content to apply the hash on */
-    @FlowKey(defaultValue = "\"{input}\"")
+    @FlowKey(mandatory = true)
     private final T<A> content = new T<>(){};
 
     /** Where the output hash is stored */
-    @FlowKey(defaultValue = "\"output\"")
+    @FlowKey(defaultValue = "\"hash\"")
     private final L<String> output = new L<>(){};
 
     @Override

@@ -21,7 +21,7 @@ import java.util.List;
  * Example:
  * <pre>
  *
- * type: FoldNode
+ * type: Fold
  * foldTarget: fold-list
  *
  * putAccumulate: acc

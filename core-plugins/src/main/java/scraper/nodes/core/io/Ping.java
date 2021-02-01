@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Pings a given hostname on the given port.
+ * Pings a given hostname on the given port by trying to open a socket connection.
  */
 @NodePlugin("0.2.0")
 @Io

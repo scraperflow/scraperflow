@@ -15,22 +15,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Reads a JSON string, converts it to a JSON object. Cleans the object and returns a cleaned JSON string.
+ * Reads a JSON map object and cleans the object and returns a cleaned JSON map.
  *
  * <p>Example  definition:
  *
  * <pre>
- * type: CleanJsonNode
- * content: "{body}"
- * clean:
- *   - "num_favorites"
- *   - "images"
- *   - "[]tags|url"
- *   - "[]tags|count"
- *   - "[]tags|id"
- * put: body
+ *type: CleanJson
+ *jsonObject: "{body}"
+ *clean: # remove fields 'num_favorites', 'images', and in the 'tags' array the fields 'url', 'count', and 'id'
+ *  - "num_favorites"
+ *  - "images"
+ *  - "[]tags|url"
+ *  - "[]tags|count"
+ *  - "[]tags|id"
+ *cleanedObject: cleanBody
  * </pre>
- * </p>
  */
 @NodePlugin("0.2.0")
 public final class CleanJsonObject <A> implements FunctionalNode {

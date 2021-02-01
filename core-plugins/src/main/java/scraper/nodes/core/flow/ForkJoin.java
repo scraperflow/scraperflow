@@ -27,7 +27,7 @@ import java.util.concurrent.ExecutionException;
  * <pre>
  * # retrieves the key fileinfo from the 'get-java-classes' target
  * # retrieves the key package from the 'get-source-info' target
- * type: ForkJoinNode
+ * type: ForkJoin
  * forkTargets: [get-java-classes, get-source-info]
  * targetToKeys:
  *   get-java-classes:

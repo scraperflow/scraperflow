@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
  * Int range generator
  * Example:
  * <pre>
- * type: IntRangeNode
+ * type: IntRange
  * from: 1
  * to: 2
  * output: page

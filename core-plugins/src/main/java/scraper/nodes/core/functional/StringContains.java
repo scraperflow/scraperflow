@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 @NodePlugin("0.2.0")
 public final class StringContains implements FunctionalNode {
 
-    /** Regex as a (properly escaped JSON) Java String */
+    /** Regex as a (properly escaped) Java String */
     @FlowKey(mandatory = true)
     private final T<String> regex = new T<>(){};
 

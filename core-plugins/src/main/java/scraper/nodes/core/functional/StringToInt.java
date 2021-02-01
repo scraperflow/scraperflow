@@ -10,18 +10,17 @@ import scraper.api.template.L;
 import scraper.api.template.T;
 
 /**
- * String To Int
- * </pre>
+ * String to Integer conversion.
+ * Throws an exception on invalid Integers.
  */
 @NodePlugin("0.0.1")
 public class StringToInt implements FunctionalNode {
 
-
-    /** Integer Output */
+    /** String input */
     @FlowKey(mandatory = true)
     private final T<String> string = new T<>(){};
 
-    /** Element String */
+    /** Integer output */
     @FlowKey(mandatory = true)
     private final L<Integer> integer = new L<>(){};
 

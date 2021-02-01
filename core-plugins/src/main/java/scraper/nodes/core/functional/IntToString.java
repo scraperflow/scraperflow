@@ -10,14 +10,7 @@ import scraper.api.template.L;
 import scraper.api.template.T;
 
 /**
- * Can modify the current flow map.
- * <p>
- * Example
- * <pre>
- * type: EchoNode
- * put: id
- * value: "{id}"
- * </pre>
+ * Convert an Integer to a String.
  */
 @NodePlugin("0.0.1")
 public class IntToString implements FunctionalNode {
@@ -33,7 +26,6 @@ public class IntToString implements FunctionalNode {
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         Integer value = o.eval(this.integer);
-        // put object
         o.output(string, String.valueOf(value));
     }
 }

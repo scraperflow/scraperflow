@@ -15,11 +15,11 @@ import scraper.api.template.T;
 @NodePlugin("0.0.1")
 public class Sum implements FunctionalNode {
 
-    /** Element String */
+    /** Operand 1 */
     @FlowKey(mandatory = true)
     private final T<Integer> integer = new T<>(){};
 
-    /** Element String */
+    /** Operand 2 */
     @FlowKey(mandatory = true)
     private final T<Integer> integer2 = new T<>(){};
 
