@@ -14,7 +14,7 @@ public class HashNodeTest {
         int hash = "hello".hashCode();
 
         runWith(Hash .class, List.of(
-                Map.of("content", "hello"),
+                Map.of("content", "hello", "output", "output"),
                 Map.of("output", "notahash"),
                 Map.of("output", String.valueOf(hash))
         ));
