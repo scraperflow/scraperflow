@@ -3,10 +3,10 @@ name: listWithStrings
 
 graphs:
   start:
-    - type: EchoNode
-      puts:
-        listOf: ["1", 23]
+    - type: Echo
+      put: listOf
+      value: ["1", 23]
 
-    - type: RuntimeListNode
+    - type: RuntimeList
       onlyStringsAllowed: "{listOf}"
 

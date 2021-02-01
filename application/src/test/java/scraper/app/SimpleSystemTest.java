@@ -84,7 +84,7 @@ public class SimpleSystemTest {
         URL f = Scraper.class.getResource("complex.yf");
         File ff = new File(f.toURI());
         assertTrue(ff.exists());
-        Scraper.main(new String[]{ff.getAbsolutePath()});
+        Scraper.main(new String[]{ff.getAbsolutePath(), "debug-info"});
     }
 
     // do not allow access of nested instances
@@ -125,6 +125,14 @@ public class SimpleSystemTest {
     @Test
     public void addrTest() throws Exception {
         URL f = Scraper.class.getResource("addr.yf");
+        File ff = new File(f.toURI());
+        assertTrue(ff.exists());
+        Scraper.main(new String[]{ff.getAbsolutePath()});
+    }
+
+    @Test
+    public void noNodeTest() throws Exception {
+        URL f = Scraper.class.getResource("nonode.yf");
         File ff = new File(f.toURI());
         assertTrue(ff.exists());
         Scraper.main(new String[]{ff.getAbsolutePath()});

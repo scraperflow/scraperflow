@@ -23,4 +23,14 @@ public @interface NodePlugin {
      * and are likely to be upgraded to a next major version or deleted completely.
      */
     boolean deprecated() default false;
+
+    /**
+     * If a custom type pre-hook has to be implemented
+     */
+    boolean customFlowBefore() default false;
+
+    /**
+     * If a custom type post-hook has to be implemented
+     */
+    boolean customFlowAfter() default false;
 }

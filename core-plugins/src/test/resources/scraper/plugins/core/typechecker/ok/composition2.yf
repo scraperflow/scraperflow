@@ -2,19 +2,19 @@
 name: echo-composition
 graphs:
   start:
-    - type: EchoNode
+    - type: Echo
       put: A
       value: 1
 
-    - type: IntToStringNode
+    - type: IntToString
       integer: "{A}"
       string: A-str
 
-    - type: EchoNode
+    - type: Echo
       put: B
       value: ["{A-str}"]
 
-    - type: StringContainsNode
+    - type: StringContains
       regex: "notimportant"
       content: "{{B}}[0]" # content :: String
 

@@ -7,11 +7,11 @@ imports:
   complex-import-2.yf:
 
 globalNodeConfigurations:
-  NoNode:
+  No:
     fail: true
 
 graphs:
   test:
-    - type: NoNode
+    - type: "No"
       log: "hello"
       goTo: top.test2

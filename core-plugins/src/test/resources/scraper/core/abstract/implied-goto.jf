@@ -3,8 +3,8 @@
   "graphs"    : {
     "start":
     [
-      { "type":"GotoNode" },
-      { "type":"SimpleFunctionalNode" }
+      { "type":"Goto" },
+      { "type":"SimpleFunctional" }
     ]
   }
 }

@@ -5,9 +5,9 @@
   {
     "start":
     [
-      { "type":"SimpleNode"},
-      { "type":"ComplexFlowNode", "goTo": "target" },
-      { "type":"SimpleNode", "label": "target", "log":"Finished!" }
+      { "type":"Simple"},
+      { "type":"ComplexFlow", "goTo": "target" },
+      { "type":"Simple", "label": "target", "log":"Finished!" }
     ]
   }
 }

@@ -2,23 +2,23 @@
 name: forkjoin
 graphs:
   start:
-    - type: ForkJoinNode
+    - type: ForkJoin
       forkTargets: [A,B]
       targetToKeys:
         A: { keyfroma: key }
         B: { keyfromb: keyfromb }
 
-    - type: StringContainsNode
+    - type: StringContains
       regex: ""
       content: "{keyfroma}" # content :: String
 
   A:
-    - type: EchoNode
+    - type: Echo
       put: keyfroma
       value: "1"
 
   B:
-    - type: EchoNode
+    - type: Echo
       put: keyfromb
       value: "1"
 

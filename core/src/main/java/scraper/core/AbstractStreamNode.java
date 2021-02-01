@@ -28,7 +28,7 @@ import static scraper.util.TemplateUtil.templateOf;
  * Either collects results to a list or stream each individual element to a specified target.
  */
 @SuppressWarnings({"rawtypes", "unchecked", "RedundantSuppression"}) // L raw types are checked statically
-@NodePlugin("0.1.0")
+@NodePlugin(value = "0.1.0", customFlowAfter = true)
 public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implements StreamNodeContainer {
     AbstractStreamNode(@NotNull String instance, @NotNull String graph, @Nullable String node, int index) { super(instance, graph, node, index); }
 

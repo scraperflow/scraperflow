@@ -6,8 +6,8 @@
     "graphs" : {
       "start":
       [
-        { "type": "SimplestNode", "goTo": "part", "log": "goto part" },
-        { "type": "ExceptionNode", "exception": "NODE" }
+        { "type": "Simplest", "goTo": "part", "log": "goto part" },
+        { "type": "Exception", "exception": "NODE" }
       ]
     }
 }

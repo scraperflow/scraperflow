@@ -38,6 +38,11 @@ import static scraper.util.DependencyInjectionUtil.getDIContainer;
         doc = "Returns more information about unexpected errors",
         example = "scraper debug-info app.yf"
 )
+@ArgsCommand(
+        value = "version",
+        doc = "Prints the current application version",
+        example = "scraper version exit"
+)
 public class Scraper {
 
     private @NotNull
@@ -94,6 +99,9 @@ public class Scraper {
             collectAndPrintCommandLineArguments();
             return;
         }
+
+        String versionArgs = StringUtil.getArgument(args, "version");
+        if(versionArgs != null) System.out.println("Scraper version 0.17.0");
 
         // inject dependencies
         DIContainer pico = getDIContainer();

@@ -4,7 +4,7 @@
   "graphs"    :
   {"start":
   [
-    { "type":"SimpleIONode", "input": "what", "output": "output-key" }
+    { "type":"SimpleIO", "input": "what", "output": "output-key" }
   ]
   }
 }

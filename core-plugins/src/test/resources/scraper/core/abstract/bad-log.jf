@@ -3,7 +3,7 @@
   "graphs"    : {
     "start":
     [
-      { "type":"SimpleNode", "log": "{missing-template}" }
+      { "type":"Simple", "log": "{missing-template}" }
     ]
   }
 }

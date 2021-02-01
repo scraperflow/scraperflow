@@ -2,11 +2,11 @@
 name: echo
 graphs:
   start:
-    - type: EchoNode
+    - type: Echo
       put: "map"
       value: {"a": "b"}
 
-    - type: EchoNode
+    - type: Echo
       put: enriched
       value:
         url: "mypage.com{{map}@url}"

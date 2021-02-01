@@ -2,10 +2,10 @@ name: import
 entry: start
 graphs:
   start:
-    - type: SimpleFunctionalNode
+    - type: SimpleFunctional
       label: first
       goTo: import
 
   import:
-    - type: SimpleFunctionalNode
+    - type: SimpleFunctional
       label: import

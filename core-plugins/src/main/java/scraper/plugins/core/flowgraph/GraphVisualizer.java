@@ -93,7 +93,7 @@ public class GraphVisualizer {
             return
                     (includeInstance ? adr.getInstance()+"\\n" : "") +
                             (includeGraph ? adr.getGraph()+"\\n" : "") +
-                            (includeNodeType ? simpleName+"\\n<" : "") +
+                            (includeNodeType ? simpleName+"\\n" : "") +
                             (includeNodeAddress ? "<"+ adr.getNode() +">": "")
                     +""
                     ;

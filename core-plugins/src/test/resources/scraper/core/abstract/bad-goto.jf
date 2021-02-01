@@ -3,8 +3,8 @@
   "graphs"    : {
     "start":
     [
-      { "type":"SimpleFunctionalNode", "goTo": "ok" },
-      { "type":"SimpleFunctionalNode", "label": "ok", "goTo": "no" }
+      { "type":"SimpleFunctional", "goTo": "ok" },
+      { "type":"SimpleFunctional", "label": "ok", "goTo": "no" }
     ]
   }
 }

@@ -3,16 +3,16 @@ name: fefe
 graphs:
 
   start:
-    - type: IfThenElseNode
+    - type: IfThenElse
       condition: true
       trueTarget: duplicate-post
       falseTarget: not-duplicate-post
 
   duplicate-post:
-    - type: EchoNode
+    - type: Echo
 
   not-duplicate-post:
-    - type: EchoNode
+    - type: Echo
       log:
         message: "{output}"
         recipients: "{recipient}"

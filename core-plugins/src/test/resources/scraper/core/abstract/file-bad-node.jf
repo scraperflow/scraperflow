@@ -3,8 +3,8 @@
   "graphs"    : {
     "start":
     [
-      { "type":"FileNode", "file": "/tmp/test-scraper/first" },
-      { "type":"FileNode", "file": "/tmp/test-scraper" }
+      { "type":"File", "file": "/tmp/test-scraper/first" },
+      { "type":"File", "file": "/tmp/test-scraper" }
     ]
   }
 }

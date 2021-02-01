@@ -1,4 +1,4 @@
 [
-  { "type":"SimpleNode", "log":"Fragment job is running!" },
+  { "type":"Simple", "log":"Fragment job is running!" },
   { "type":"Fragment", "required":"empty.fragment" }
 ]

@@ -3,12 +3,12 @@
     "graphs" : {
         "start":
         [
-          { "type": "EchoNode", "put": "fork", "value":  ["a","b"] },
-          { "type" : "MapNode", "list": "{fork}", "mapTarget": "target", "forward": false },
+          { "type": "Echo", "put": "fork", "value":  ["a","b"] },
+          { "type" : "Map", "list": "{fork}", "mapTarget": "target", "forward": false },
           {
-            "type": "ExceptionNode",
+            "type": "Exception",
             "label": "target",
-            "exception": "NODE"
+            "exception": ""
           }
         ]
     }

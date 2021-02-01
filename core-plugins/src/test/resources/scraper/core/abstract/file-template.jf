@@ -3,7 +3,7 @@
   "graphs"    : {
     "start":
     [
-      { "type":"FileNode", "filet":  "{path-template}" }
+      { "type":"File", "filet":  "{path-template}" }
     ]
   }
 }

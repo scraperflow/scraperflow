@@ -2,5 +2,5 @@
 name: complex
 graphs:
   start:
-    - type: EchoNode
+    - type: Echo
       log: "no op"

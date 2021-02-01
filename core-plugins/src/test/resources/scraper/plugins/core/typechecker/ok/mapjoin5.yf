@@ -2,13 +2,13 @@
 name: mapjoin
 graphs:
   start:
-    - type: RegexNode
+    - type: Regex
       regex: "a"
       content: "content"
       groups: {}
       output: details
 
-    - type: MapJoinNode
+    - type: MapJoin
       list: "{details}"
       mapTarget: X
       putElement: actdetail
@@ -16,7 +16,7 @@ graphs:
         enriched: final
 
   X:
-    - type: EchoNode
+    - type: Echo
       put: enriched
       value:
         url: "mypage.com{{actdetail}@url}"

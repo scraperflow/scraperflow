@@ -2,10 +2,10 @@ name: debug # <debug>
 entry: start
 graphs:
   start: # <debug.start>
-    - type: SimpleFunctionalNode # <debug.start.startingnode:0> =(rt)= <debug.start> =(rt)= <debug>
+    - type: SimpleFunctional # <debug.start.startingnode:0> =(rt)= <debug.start> =(rt)= <debug>
       label: startingnode
 
-    - type: SimpleFunctionalNode # <debug.start.1>
+    - type: SimpleFunctional # <debug.start.1>
       label: null
       goTo: debug.testing.0
           # testing.0
@@ -13,13 +13,13 @@ graphs:
 
 
   testing: # <debug.testing>
-    - type: SimpleFunctionalNode # <debug.testing.0> == <debug.testing>
+    - type: SimpleFunctional # <debug.testing.0> == <debug.testing>
       label: null
 
-    - type: SimpleFunctionalNode # <debug.testing.hellonode:1>
+    - type: SimpleFunctional # <debug.testing.hellonode:1>
       label: hellonode
 
-    - type: SimpleFunctionalNode # <debug.testing.2>
+    - type: SimpleFunctional # <debug.testing.2>
       label: null
 
 

@@ -3,12 +3,12 @@ name: complex
 graphs:
   start:
     # jsonobj :: Object
-    - type: JsonStringToObjectNode
+    - type: JsonStringToObject
       jsonString: "someobjectstring"
       jsonObject: "jsonobj"
 
     # specialize Object -> List<Object>
-    - type: EchoNode
+    - type: Echo
       put: item
       value: "{{jsonobj}}[0]"
 

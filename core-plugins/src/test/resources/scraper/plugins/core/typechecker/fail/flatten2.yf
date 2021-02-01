@@ -2,9 +2,9 @@
 name: contains
 graphs:
   start:
-    - {type: EchoNode, put: list, value: []}
-    - {type: EchoNode, put: list2, value: ["no"]}
-    - type: FlattenListNode
+    - {type: Echo, put: list, value: []}
+    - {type: Echo, put: list2, value: ["no"]}
+    - type: FlattenList
       flatten: ["{list}", "{list2}", "{list2}", [1,2]]
       output: "mergedlists"
 

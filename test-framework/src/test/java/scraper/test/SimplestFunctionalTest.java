@@ -1,8 +1,8 @@
 package scraper.test;
 
 import org.junit.jupiter.api.Test;
-import scraper.nodes.test.PutNode;
-import scraper.nodes.test.SimplestNode;
+import scraper.nodes.test.Put;
+import scraper.nodes.test.Simplest;
 
 import java.util.List;
 import java.util.Map;
@@ -13,7 +13,7 @@ public class SimplestFunctionalTest {
 
     @Test
     public void dummyTest() throws Exception {
-        runWith(SimplestNode.class, List.of(
+        runWith(Simplest.class, List.of(
                 // node configuration
                 Map.of(),
                 // input
@@ -25,7 +25,7 @@ public class SimplestFunctionalTest {
 
     @Test
     public void putTest() throws Exception {
-        runWith(PutNode.class, List.of(
+        runWith(Put.class, List.of(
                 // node configuration
                 Map.of("toPut", "here"),
                 // input

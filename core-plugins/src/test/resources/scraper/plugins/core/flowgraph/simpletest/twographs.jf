@@ -3,11 +3,11 @@
   "entry": "start",
   "graphs": {
     "start": [
-      { "type":"SimpleFlowTestNode" },
-      { "type":"SimpleFlowTestNode" }
+      { "type":"SimpleFlowTest" },
+      { "type":"SimpleFlowTest" }
     ],
     "other": [
-      { "type":"SimpleFlowTestNode", "goTo": "start" }
+      { "type":"SimpleFlowTest", "goTo": "start" }
     ]
   }
 }

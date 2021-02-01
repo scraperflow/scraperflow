@@ -2,24 +2,24 @@
 name: mapjoin
 graphs:
   start:
-    - type: RegexNode
+    - type: Regex
       regex: "a"
       content: ""
       groups: { movieTag: 1}
       output: movieTagsMatches
 
-    - type: MapJoinNode
+    - type: MapJoin
       list: "{movieTagsMatches}"
       mapTarget: extract
       putElement: singleTagMap
       keys: {}
 #        tagText: tagListFinal
 
-#    - type: EchoNode
+#    - type: Echo
 #      log: "{tagListFinal}"
 
   extract:
-    - type: EchoNode
+    - type: Echo
       log: "Unwrapping {{singleTagMap}@movieTag}"
       put: tagText
       value: "{{singleTagMap}@movieTag}"

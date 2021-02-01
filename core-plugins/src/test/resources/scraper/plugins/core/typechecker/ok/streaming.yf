@@ -2,22 +2,22 @@
 name: streaming
 graphs:
   start:
-    - type: RegexNode
+    - type: Regex
       content: "x"
       regex: "x"
       output: output
       groups:
 
-    - type: MapNode
+    - type: Map
       list: "{output}"
       mapTarget: D
 
   D:
-    - type: EchoNode
+    - type: Echo
       put: "gid"
       value: "{{element}@gid}"
 
-    - type: StringContainsNode
+    - type: StringContains
       regex: "notimportant"
       content: "{gid}" # content :: String
       output: result

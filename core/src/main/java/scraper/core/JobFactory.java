@@ -198,6 +198,7 @@ public class JobFactory {
                         .stream()
                         .filter(p -> p.supports(nodeType, vers))
                         .collect(Collectors.toList());
+
                 Node n = getHighestMatchingPlugin(processPlugins, nodeType, vers);
 
                 NodeContainer<? extends Node> nn = getMatchingNodeContainer(

@@ -12,7 +12,7 @@ public class FlattenListNodeTest {
 
     @Test
     public void emptyLists() {
-        runWith(FlattenListNode.class, List.of(
+        runWith(FlattenList .class, List.of(
                 Map.of("output", "output","flatten", List.of(List.of(), List.of())),
                 Map.of(),
                 Map.of("output",List.of())
@@ -21,7 +21,7 @@ public class FlattenListNodeTest {
 
     @Test
     public void singletonList() {
-        runWith(FlattenListNode.class, List.of(
+        runWith(FlattenList .class, List.of(
                 Map.of("output", "output","flatten", List.of(List.of(), List.of(50))),
                 Map.of(),
                 Map.of("output",List.of(50))
@@ -30,7 +30,7 @@ public class FlattenListNodeTest {
 
     @Test
     public void simpleLists() {
-        runWith(FlattenListNode.class, List.of(
+        runWith(FlattenList .class, List.of(
                 Map.of("output", "output", "flatten", List.of(List.of("123120"), List.of("qweq"))),
                 Map.of(),
                 Map.of("output",List.of("123120","qweq"))
@@ -39,7 +39,7 @@ public class FlattenListNodeTest {
 
     @Test
     public void badTypes() {
-        runWith(FlattenListNode.class, List.of(
+        runWith(FlattenList .class, List.of(
                 Map.of("output", "output","flatten", List.of(List.of("wontwork"), List.of(50))),
                 Map.of(),
                 Map.of()

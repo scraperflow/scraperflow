@@ -2,7 +2,7 @@ import scraper.api.node.type.Node;
 import scraper.api.plugin.Hook;
 import scraper.hooks.ExitHook;
 import scraper.hooks.NodeDependencyGeneratorHook;
-import scraper.nodes.core.functional.EchoNode;
+import scraper.nodes.core.functional.Echo;
 
 open module scraper.core.plugins {
     exports scraper.hooks;
@@ -18,5 +18,5 @@ open module scraper.core.plugins {
     requires transitive scraper.core;
 
     provides Hook with ExitHook, NodeDependencyGeneratorHook;
-    provides Node with EchoNode;
+    provides Node with Echo;
 }

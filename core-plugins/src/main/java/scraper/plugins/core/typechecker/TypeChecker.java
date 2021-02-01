@@ -1,6 +1,7 @@
 package scraper.plugins.core.typechecker;
 
 import scraper.annotations.node.FlowKey;
+import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.container.NodeContainer;
@@ -185,6 +186,8 @@ public class TypeChecker {
         Collections.reverse(classesToCheck);
 
         for (Class<?> nodeClass : classesToCheck) {
+            NodePlugin nodePlugin = nodeClass.getAnnotation(NodePlugin.class);
+
             String controlClass = "scraper.plugins.core.typechecker.data."+nodeClass.getSimpleName()+"Data";
             try {
                 Class<?> control = Class.forName(controlClass);
@@ -197,8 +200,10 @@ public class TypeChecker {
                         ScrapeInstance.class,
                         List.class);
                 method.invoke(null, this, env, inc, n, cfg, spec, visited);
-            } catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException ignored) {
-//                System.out.println("[Skip] Could not find control for " + nodeClass + ": " + controlClass);
+            } catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException ex) {
+                if(nodePlugin.customFlowBefore())
+                    throw new IllegalArgumentException("Expected custom type rule as NodeData class, " +
+                            "but could not find any: " + controlClass, ex);
             } catch (InvocationTargetException e) {
                 if(e.getCause() instanceof TemplateException) {
                     log.log(ERROR,"{0} type error for field: {1}", n, e.getCause().getMessage());
@@ -239,7 +244,9 @@ public class TypeChecker {
         Collections.reverse(classesToCheck);
 
         for (Class<?> nodeClass : classesToCheck) {
+            NodePlugin nodePlugin = nodeClass.getAnnotation(NodePlugin.class);
             String controlClass = "scraper.plugins.core.typechecker.data."+nodeClass.getSimpleName()+"Data";
+
             try {
                 Class<?> control = Class.forName(controlClass);
                 Method method = control.getDeclaredMethod("infoAfter",
@@ -251,8 +258,10 @@ public class TypeChecker {
                         ScrapeInstance.class,
                         List.class);
                 method.invoke(null, this, env, inc, n, cfg, spec, visited);
-            } catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException ignored) {
-//                System.out.println("[Skip] Could not find control for " + nodeClass + ": " + controlClass);
+            } catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException ex) {
+                if(nodePlugin.customFlowAfter())
+                    throw new IllegalArgumentException("Expected custom type rule as NodeData class, " +
+                            "but could not find any: " + controlClass, ex);
             } catch (InvocationTargetException e) {
                 if(e.getCause() instanceof TemplateException) {
                     log.log(ERROR,"{0} type error for field: {1}", n, e.getCause().getMessage());

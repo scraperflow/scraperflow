@@ -39,7 +39,7 @@ public class TypeCheckerBadTest {
             ScrapeInstance spec = read(path);
             ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(spec, true);
             t.typeTaskflow(spec, cfg);
-        });
+        }, "Failed: " + path);
     }
 
     private static ScrapeInstance read(File f) {

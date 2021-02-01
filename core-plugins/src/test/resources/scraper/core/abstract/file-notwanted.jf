@@ -3,7 +3,7 @@
   "graphs"    : {
     "start":
     [
-      { "type":"FileNode", "file": null }
+      { "type":"File", "file": null }
     ]
   }
 }

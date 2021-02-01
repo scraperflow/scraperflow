@@ -3,7 +3,7 @@
   "entry": "other",
     "graphs" : {
       "other": [
-        { "type": "SimplestNode", "log": "went to other"}
+        { "type": "Simplest", "log": "went to other"}
       ]
     }
 }

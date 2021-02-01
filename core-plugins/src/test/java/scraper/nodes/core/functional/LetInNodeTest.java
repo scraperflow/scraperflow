@@ -11,7 +11,7 @@ public class LetInNodeTest {
 
     @Test
     public void noop() {
-        runWith(LetInNode.class, List.of(
+        runWith(LetIn .class, List.of(
                 Map.of("keys", List.of()),
                 Map.of(),
                 Map.of()
@@ -20,7 +20,7 @@ public class LetInNodeTest {
 
     @Test
     public void keep() {
-        runWith(LetInNode.class, List.of(
+        runWith(LetIn .class, List.of(
                 Map.of("keys", List.of("e")),
                 Map.of("e", "ok"),
                 Map.of("e", "ok")
@@ -29,7 +29,7 @@ public class LetInNodeTest {
 
     @Test
     public void filter() {
-        runWith(LetInNode.class, List.of(
+        runWith(LetIn .class, List.of(
                 Map.of("keys", List.of("e")),
                 Map.of("e", "ok", "e2", "no"),
                 Map.of("e", "ok")
@@ -38,7 +38,7 @@ public class LetInNodeTest {
 
     @Test
     public void remove() {
-        runWith(LetInNode.class, List.of(
+        runWith(LetIn .class, List.of(
                 Map.of("keys", List.of()),
                 Map.of("e", "ok", "e2", "no"),
                 Map.of()

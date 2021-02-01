@@ -70,7 +70,7 @@ public abstract class WorkflowTest {
     }
 
     private static void injectExceptionNode(ScrapeSpecification spec) {
-        spec.getGraphs().put("fail", List.of(Map.of("type", "ExceptionNode", "exception", "FAIL")));
+        spec.getGraphs().put("fail", List.of(Map.of("type", "Exception", "exception", "FAIL")));
         spec.getImports().forEach((key, imp) -> injectExceptionNode(imp.getSpec()));
     }
 

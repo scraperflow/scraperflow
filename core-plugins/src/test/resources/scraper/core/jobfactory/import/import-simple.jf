@@ -6,8 +6,8 @@
     "graphs" : {
       "start":
       [
-        { "type": "SimpleNode" },
-        { "type": "SimpleNode"}
+        { "type": "Simple" },
+        { "type": "Simple"}
       ]
     }
 }

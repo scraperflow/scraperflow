@@ -1,20 +1,20 @@
 name: "regex"
 graphs:
   start:
-    - type: EchoNode
+    - type: Echo
       put: content
       value: "https://www.domain.org/ok-2/"
 
-    - type: RegexNode
+    - type: Regex
       regex: "^.*\\/(.*?)\\/$"
       output: output
       groups:
         output: 1
 
-    - type: EchoNode
+    - type: Echo
       put: "ok"
       value: "{{{output}}[0]@output}"
-    - type: EchoNode
+    - type: Echo
       log: "{ok}"
 
 

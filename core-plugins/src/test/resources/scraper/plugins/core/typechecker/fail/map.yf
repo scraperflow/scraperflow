@@ -2,20 +2,20 @@
 name: map
 graphs:
   start:
-    - type: EchoNode
+    - type: Echo
       put: key
       value: "1"
 
-    - type: MapNode
+    - type: Map
       mapTarget: X
       list: [A,B]
       putElement: element
 
-    - type: EchoNode
+    - type: Echo
       log: "{element}" # not ok!
 
   X:
-    - type: EchoNode
+    - type: Echo
       put: key
       value: "{element}" # ok!
 

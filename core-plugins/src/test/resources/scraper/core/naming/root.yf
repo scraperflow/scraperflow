@@ -4,15 +4,15 @@ imports:
   import.yf:
 graphs:
   start:
-    - type: SimpleFunctionalNode
+    - type: SimpleFunctional
       label: first
       goTo: start
 
-    - type: SimpleFunctionalNode
+    - type: SimpleFunctional
       label: start
       goTo: end
 
 
   end:
-    - type: SimpleFunctionalNode
+    - type: SimpleFunctional
       goTo: import

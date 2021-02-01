@@ -3,14 +3,14 @@
   "entry": "start",
   "graphs": {
     "start": [
-      { "type":"IfThenElseNode", "condition": true, "trueTarget": "condition1", "falseTarget": "condition2" },
-      { "type":"SimpleFlowTestNode" }
+      { "type":"IfThenElse", "condition": true, "trueTarget": "condition1", "falseTarget": "condition2" },
+      { "type":"SimpleFlowTest" }
     ],
     "condition1": [
-      { "type":"SimpleFlowTestNode" }
+      { "type":"SimpleFlowTest" }
     ],
     "condition2": [
-      { "type":"SimpleFlowTestNode" }
+      { "type":"SimpleFlowTest" }
     ]
   }
 }

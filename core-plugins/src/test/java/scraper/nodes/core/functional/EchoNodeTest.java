@@ -11,7 +11,7 @@ public class EchoNodeTest {
 
     @Test
     public void putTest() {
-        runWith(EchoNode.class, List.of(
+        runWith(Echo .class, List.of(
                 Map.of("put", "ok", "value", "hello"),
                 Map.of(),
                 Map.of("ok","hello")

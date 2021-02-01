@@ -2,7 +2,7 @@
 name: streaming
 graphs:
   start:
-    - type: RegexNode
+    - type: Regex
       collect: false
       streamTarget: A
       content: "x"
@@ -10,15 +10,15 @@ graphs:
       groups:
 
   A:
-    - type: MapNode
+    - type: Map
       list: "{output}"  # fails here
       mapTarget: D
 
   D:
-    - type: EchoNode
+    - type: Echo
       put: "gid"
       value: "{{element}@gid}"
 
-    - type: StringContainsNode
+    - type: StringContains
       regex: "notimportant"
       content: "{gid}"

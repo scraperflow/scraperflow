@@ -2,14 +2,14 @@
 name: mapjoin
 graphs:
   start:
-    - type: MapJoinNode
+    - type: MapJoin
       list: ["A", "B"]
       mapTarget: X
       putElement: "element"
       keys: {}
 
   X:
-    - type: StringContainsNode
+    - type: StringContains
       regex: ""
       content: "{element}"
 

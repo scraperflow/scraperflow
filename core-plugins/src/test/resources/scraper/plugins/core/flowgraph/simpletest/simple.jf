@@ -3,7 +3,7 @@
   "entry": "start",
   "graphs": {
     "start": [
-      { "type":"SimpleFlowTestNode" }
+      { "type":"SimpleFlowTest" }
     ]
   }
 }

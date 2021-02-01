@@ -2,9 +2,9 @@
 name: full
 graphs:
   start:
-     - type: EchoNode
+     - type: Echo
        put: i
        value: 10
 
-     - type: IntConsumerNode
+     - type: IntConsumer
        input: "{i}"

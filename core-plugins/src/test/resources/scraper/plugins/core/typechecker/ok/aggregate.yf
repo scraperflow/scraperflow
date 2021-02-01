@@ -2,13 +2,13 @@
 name: aggregate-self
 graphs:
   start:
-    - {type: EchoNode, put: listi, value: []}
-    - type: AggregateListNode
+    - {type: Echo, put: listi, value: []}
+    - type: AggregateList
       aggregate: "firstelement"
       aggregateList: "{listi}"
       put: "list"
 
-    - type: AggregateListNode
+    - type: AggregateList
       aggregate: "{{list}}[0]"
       aggregateList: "{list}"
       put: "list2"

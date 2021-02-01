@@ -4,7 +4,7 @@
   "graphs"    : {
     "start":
     [
-      { "type":"SimpleNode", "notexist": true }
+      { "type":"Simple", "notexist": true }
     ]
   }
 }

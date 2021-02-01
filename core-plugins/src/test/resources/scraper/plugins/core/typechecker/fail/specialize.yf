@@ -3,17 +3,17 @@ name: complex
 graphs:
   start:
     # jsonobj :: Object
-    - type: JsonStringToObjectNode
+    - type: JsonStringToObject
       jsonString: "someobjectstring"
       jsonObject: "jsonobj"
 
     # specialize Object -> List<Object>
-    - type: EchoNode
+    - type: Echo
       put: item
       value: "{{jsonobj}}[0]"
 
     # jsonobj cant be Map after being specialized to List
-    - type: EchoNode
+    - type: Echo
       put: item
       value: "{{jsonobj}@key}"
 

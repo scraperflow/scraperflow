@@ -2,18 +2,18 @@
 name: mapjoin
 graphs:
   start:
-    - type: MapJoinNode
+    - type: MapJoin
       list: [A,B]
       mapTarget: X
       keys:
         key: keyfromx
 
-    - type: StringContainsNode
+    - type: StringContains
       regex: ""
       content: "{keyfromx}" # content :: String
 
   X:
-    - type: EchoNode
+    - type: Echo
       put: key
       value: "1"
 

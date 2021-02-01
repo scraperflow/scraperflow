@@ -3,13 +3,13 @@
     "graphs" : {
         "start":
         [
-          { "type": "EchoNode", "put": "before", "value": "OK"  },
-          { "type" : "MapJoinNode", "mapTarget": "line1", "keys": {}, "list": [] },
-          { "type": "EchoNode", "put": "before", "value": "OK"  }
+          { "type": "Echo", "put": "before", "value": "OK"  },
+          { "type" : "MapJoin", "mapTarget": "line1", "keys": {}, "list": [] },
+          { "type": "Echo", "put": "before", "value": "OK"  }
         ],
 
       "line1": [
-          { "type": "EchoNode", "put": "line1", "value": "OK"  }
+          { "type": "Echo", "put": "line1", "value": "OK"  }
       ]
     }
 }

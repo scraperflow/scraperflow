@@ -2,7 +2,7 @@ package scraper.test;
 
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
-import scraper.nodes.test.AssertNode;
+import scraper.nodes.test.Assert;
 
 import java.util.List;
 
@@ -11,8 +11,8 @@ public class TestUtil {
         for (NodeContainer<? extends Node> process : jobProcess) {
             Node container = process.getC();
 
-            if(AssertNode.class.isAssignableFrom(container.getClass())) {
-                AssertNode assertNode = (AssertNode) container;
+            if(Assert.class.isAssignableFrom(container.getClass())) {
+                Assert assertNode = (Assert) container;
 
                 if(assertNode.isFinished()) {
                     if(!assertNode.getSuccess().get())

@@ -3,11 +3,11 @@
     "graphs" : {
       "start":
       [
-        { "type": "SimplestNode", "goTo": "other", "log": "goto other" },
-        { "type": "ExceptionNode", "exception": "NODE" }
+        { "type": "Simplest", "goTo": "other", "log": "goto other" },
+        { "type": "Exception", "exception": "NODE" }
       ],
       "other": [
-        { "type": "SimplestNode", "log": "went to other"}
+        { "type": "Simplest", "log": "went to other"}
       ]
     }
 }

@@ -3,9 +3,9 @@
   "graphs"    : {
     "start":
     [
-      { "type":"SimpleListGotoNode", "goToList": ["ok", "ok2"] }
+      { "type":"SimpleListGoto", "goToList": ["ok", "ok2"] }
     ],
-    "ok": [ { "type":"SimpleFunctionalNode" } ],
-    "ok2": [ { "type":"SimpleFunctionalNode" } ]
+    "ok": [ { "type":"SimpleFunctional" } ],
+    "ok2": [ { "type":"SimpleFunctional" } ]
   }
 }

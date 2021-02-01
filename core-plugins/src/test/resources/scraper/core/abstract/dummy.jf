@@ -4,8 +4,8 @@
     "start"
             :
     [
-      { "type":"SimpleNode" },
-      { "type":"SimpleFunctionalNode" }
+      { "type":"Simple" },
+      { "type":"SimpleFunctional" }
     ]
   }
 }

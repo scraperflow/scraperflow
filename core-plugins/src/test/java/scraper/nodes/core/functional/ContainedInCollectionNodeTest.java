@@ -17,7 +17,7 @@ public class ContainedInCollectionNodeTest {
         Map<?,?> fIn = Map.of("object", "important");
         Map<?,?> fOut = Map.of("flag", false);
 
-        runWith(ContainedInCollectionNode.class, List.of(nIn, fIn, fOut), TemplateException.class);
+        runWith(ContainedInCollection .class, List.of(nIn, fIn, fOut), TemplateException.class);
     }
 
     @Test
@@ -29,7 +29,7 @@ public class ContainedInCollectionNodeTest {
         );
         Map<?,?> fOut = Map.of("flag", true);
 
-        runWith(ContainedInCollectionNode.class, List.of(nIn, fIn, fOut));
+        runWith(ContainedInCollection .class, List.of(nIn, fIn, fOut));
     }
 
     @Test
@@ -41,7 +41,7 @@ public class ContainedInCollectionNodeTest {
         );
         Map<?,?> fOut = Map.of("flag", true);
 
-        runWith(ContainedInCollectionNode.class, List.of(nIn, fIn, fOut));
+        runWith(ContainedInCollection .class, List.of(nIn, fIn, fOut));
     }
 
     @Test
@@ -53,6 +53,6 @@ public class ContainedInCollectionNodeTest {
         );
         Map<?,?> fOut = Map.of("flag", false);
 
-        runWith(ContainedInCollectionNode.class, List.of(nIn, fIn, fOut));
+        runWith(ContainedInCollection .class, List.of(nIn, fIn, fOut));
     }
 }

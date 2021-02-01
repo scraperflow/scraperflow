@@ -3,7 +3,6 @@ package scraper.nodes.core.functional;
 import org.junit.jupiter.api.Test;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -17,11 +16,11 @@ public class DateNodeTest {
         String min = "yyyy-MM-dd'T'HH:mm";
         SimpleDateFormat parsed = new SimpleDateFormat(min);
 
-        String date = parsed.format(new Date());
+        String date = parsed.format(new java.util.Date());
 
         Map<?,?> nodeInput = Map.of("dateFormat", min);
         Map<?,?> flowInput = Map.of();
         Map<?,?> flowOutput = Map.of("date", date);
-        runWith(DateNode.class, List.of(nodeInput, flowInput, flowOutput));
+        runWith(Date.class, List.of(nodeInput, flowInput, flowOutput));
     }
 }

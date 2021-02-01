@@ -2,10 +2,10 @@
 name: assumeuserknowswhathesdoing
 graphs:
   start:
-    - {type: EchoNode, put: movie, value: {"my": "map"}}
-    - {type: EchoNode, put: details, value: "justastring" }
-    - {type: EchoNode, put: matches, value: [{"one": "str"}, {"second": "match"}] }
-    - type: JsonObjectNode
+    - {type: Echo, put: movie, value: {"my": "map"}}
+    - {type: Echo, put: details, value: "justastring" }
+    - {type: Echo, put: matches, value: [{"one": "str"}, {"second": "match"}] }
+    - type: JsonObject
       value:
         img: "{{movie}@img}"
         url: "www.url.com?movie={{movie}@url}"

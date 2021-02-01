@@ -48,7 +48,7 @@ public class AbstractNodeTest {
         AbstractNode abstractNode = (AbstractNode) node;
         assertNotNull(abstractNode.getL());
         assertEquals(NodeLogLevel.INFO, abstractNode.getLogLevel());
-        assertEquals("SimpleFunctionalNode", abstractNode.getType());
+        assertEquals("SimpleFunctional", abstractNode.getType());
     }
 
     @Test

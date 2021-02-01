@@ -1,18 +1,18 @@
 name: mapJoin
 graphs:
   start:
-    - type: EchoNode
+    - type: Echo
       put: fork
       value: ["a","b"]
 
-    - type: MapJoinNode
+    - type: MapJoin
       list: "{fork}"
       mapTarget: target
       keys:
         e: e
 
   target:
-    - type: EchoNode
+    - type: Echo
       log: "Doing my part: {element}"
       put: e
       value: "OK"

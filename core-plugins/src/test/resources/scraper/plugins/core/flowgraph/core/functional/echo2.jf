@@ -3,10 +3,10 @@
   "entry": "start",
   "graphs": {
     "start": [
-      { "type":"EchoNode", "put": "hello", "value": "world" },
-      { "type":"EchoNode", "put": "42", "value": 42}
-      { "type":"EchoNode", "put": "43", "value": "43"}
-      { "type":"SimpleFlowTestNode" }
+      { "type":"Echo", "put": "hello", "value": "world" },
+      { "type":"Echo", "put": "42", "value": 42}
+      { "type":"Echo", "put": "43", "value": "43"}
+      { "type":"SimpleFlowTest" }
     ]
   }
 }

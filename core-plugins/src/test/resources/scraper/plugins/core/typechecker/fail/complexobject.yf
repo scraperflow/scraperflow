@@ -2,7 +2,7 @@
 name: complex
 graphs:
   start:
-    - type: EchoNode
+    - type: Echo
       put: obj
       value:
         str: "I'm a string"

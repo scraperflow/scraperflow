@@ -63,13 +63,6 @@ public class SimpleScrapeSpecificationImpl {
             block.put("type", type);
         }
 
-        // name -> nameNode transform
-        block.compute("type", (s, o) -> {
-            String type = ((String) o);
-            assert type != null;
-            return type.endsWith("Node") ? type : type + "Node";
-        });
-
         return block;
     }
 }

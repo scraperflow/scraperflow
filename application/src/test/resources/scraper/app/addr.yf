@@ -3,9 +3,9 @@ name: addr
 
 graphs:
   start:
-    - type: EchoNode
+    - type: Echo
       goTo: "next-node"
 
-    - type: EchoNode
+    - type: Echo
       label: "next-node"
 

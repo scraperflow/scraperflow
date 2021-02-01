@@ -2,20 +2,20 @@
 name: complex
 graphs:
   start:
-    - type: ReadFileDummyNode
+    - type: ReadFileDummy
       inputFile: "../all.json"
       output: jsonstr
       charset: 'utf-8'
 
-    - type: JsonStringToObjectNode
+    - type: JsonStringToObject
       jsonString: "{jsonstr}"
       jsonObject: "jsonobj"
 
-    - type: EchoNode
+    - type: Echo
       put: item
       value: "{{jsonobj}}[0]"
 
-    - type: HttpRequestNode
+    - type: HttpRequest
       holdOnForward: 2000
       url: "{{item}@img}"
       expectedResponse: "FILE"

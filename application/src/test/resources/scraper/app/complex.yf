@@ -5,12 +5,12 @@ imports:
   complex-import.yf:
 
 globalNodeConfigurations:
-  NoNode:
+  No:
     fail: false
 
 graphs:
   start:
-    - type: NoNode
+    - type: "No"
       log: "what"
       goTo: imp.test
 

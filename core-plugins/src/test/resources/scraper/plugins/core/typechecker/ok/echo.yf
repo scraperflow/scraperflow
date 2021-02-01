@@ -2,4 +2,4 @@
 name: contains
 graphs:
   start:
-    - {type: EchoNode, put: list, value: ["1","2"]}
+    - {type: Echo, put: list, value: ["1","2"]}

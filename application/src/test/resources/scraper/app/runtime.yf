@@ -3,6 +3,6 @@ name: listWithStrings
 
 graphs:
   start:
-    - type: RuntimeListNode
+    - type: RuntimeList
       onlyStringsAllowed: ["1","123"]
 

@@ -3,18 +3,18 @@ name: complex
 graphs:
   start:
     # jsonobj :: Object
-    - type: JsonStringToObjectNode
+    - type: JsonStringToObject
       jsonString: "somejsonstringobject"
       jsonObject: "jsonobj"
 
     # jsonobj :: List<A>
     # item :: A
-    - type: EchoNode
+    - type: Echo
       put: item
       value: "{{jsonobj}}[0]"
 
     # item :: Map<String, A>
-    - type: TwoInputsNode
+    - type: TwoInputs
       input1: "{{item}@ok}"
       input2: "{{item}@id}.png"
 

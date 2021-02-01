@@ -2,16 +2,16 @@
 name: echo
 graphs:
   start:
-    - type: EchoNode
+    - type: Echo
       put: actdetail
       value: [3]
 
-    - type: EchoNode
+    - type: Echo
       put: enriched
       value:
         id: "{{actdetail}}[0]"
 
-    - type: IntConsumerNode
+    - type: IntConsumer
       input: "{{enriched}@id}"
 
 

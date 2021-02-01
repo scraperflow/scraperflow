@@ -2,6 +2,6 @@
 name: cycle
 graphs:
   start:
-    - {type: EchoNode, put: list, value: ["1","2"], goTo: cycle}
+    - {type: Echo, put: list, value: ["1","2"], goTo: cycle}
   cycle:
-    - {type: EchoNode, put: olist, value: "{lit}", goTo: cycle}
+    - {type: Echo, put: olist, value: "{lit}", goTo: cycle}

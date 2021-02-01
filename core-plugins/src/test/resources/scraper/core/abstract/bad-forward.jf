@@ -3,7 +3,7 @@
   "graphs"    : {
     "start":
     [
-      { "type":"SimpleFunctionalNode", "goTo": "ok2" }
+      { "type":"SimpleFunctional", "goTo": "ok2" }
     ]
   }
 }

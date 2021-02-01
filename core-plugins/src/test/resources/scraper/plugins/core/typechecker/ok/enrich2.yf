@@ -2,11 +2,11 @@
 name: echo
 graphs:
   start:
-    - type: EchoNode
+    - type: Echo
       put: actdetail
       value: ["hello"]
 
-    - type: EchoNode
+    - type: Echo
       put: enriched
       value:
         id: "{{actdetail}}[0]"

@@ -2,5 +2,5 @@
 name: log
 graphs:
   start:
-    - type: EchoNode
+    - type: Echo
       log: "Just a log message"

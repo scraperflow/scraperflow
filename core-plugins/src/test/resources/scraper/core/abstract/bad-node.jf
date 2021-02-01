@@ -2,7 +2,7 @@
   "name"       : "job",
   "graphs"    : {
     "start": [
-      { "type":"BadJsonDefaultsNode" }
+      { "type":"BadJsonDefaults" }
     ]
   }
 }

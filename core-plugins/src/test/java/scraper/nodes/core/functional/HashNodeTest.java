@@ -13,7 +13,7 @@ public class HashNodeTest {
     public void defaultOutputTest() {
         int hash = "hello".hashCode();
 
-        runWith(HashNode.class, List.of(
+        runWith(Hash .class, List.of(
                 Map.of("content", "hello"),
                 Map.of("output", "notahash"),
                 Map.of("output", String.valueOf(hash))

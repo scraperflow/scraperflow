@@ -2,48 +2,48 @@
 name: mytaskflow
 graphs:
   start:
-    - type: IntRangeNode
+    - type: IntRange
       from: 1
       to: 1
       output: int
       collect: "False"
       streamTarget: A
 
-  A: [{type: IntToStringNode, integer: "{int}", string: i}, {type: PipeNode, pipeTargets: [B, C]}]
-  B: [{type: RetryNode, retryTarget: E1}]
-  E1: [{type: HttpRequestNode, url: "?page={i}", put: response}]
+  A: [{type: IntToString, integer: "{int}", string: i}, {type: Pipe, pipeTargets: [B, C]}]
+  B: [{type: Retry, retryTarget: E1}]
+  E1: [{type: HttpRequest, url: "?page={i}", put: response}]
 
   C:
-    - type: RegexNode
+    - type: Regex
       content: "{response}"
       regex: "notimportant"
       output: output
       groups:
-    - type: MapNode
+    - type: Map
       putElement: e
       list: "{output}"
       mapTarget: D
 
 
   D:
-    - type: EchoNode
+    - type: Echo
       put: "gid"
       value: "{{e}@gid}"
-    - {type: ForkNode, forkTargets: [E, F]}
+    - {type: Fork, forkTargets: [E, F]}
 
   E:
-    - type: FileExistsNode
+    - type: FileExists
       path: "path/{{e}@gid}.{{e}@format}"
-    - type: IfThenElseNode
+    - type: IfThenElse
       condition: "{exists}"
       falseTarget: G
 
   G:
-    - type: RetryNode
+    - type: Retry
       retryTarget: H
 
   H:
-    - type: HttpRequestNode
+    - type: HttpRequest
       url: "{{e}@tUrl}"
       put: thumbContent
       expectedResponse: FILE
@@ -51,44 +51,44 @@ graphs:
 
 
   F:
-    - type: FileExistsNode
+    - type: FileExists
       path: "path/{{e}@gid}.json"
-    - type: IfThenElseNode
+    - type: IfThenElse
       condition: "{exists}"
       falseTarget: I
 
-  I: [{type: RetryNode, retryTarget: J}]
+  I: [{type: Retry, retryTarget: J}]
 
   J:
-    - type: HttpRequestNode
+    - type: HttpRequest
       url: "?{{e}@gid}/"
 
-    - type: RegexNode
+    - type: Regex
       content: "{response}"
       collect: true
       output: output2
       regex: "notimportant"
       groups:
 
-    - type: MapNode
+    - type: Map
       list: "{output2}"
       mapTarget: K
 
   K:
-    - type: JsonStringToObjectNode
+    - type: JsonStringToObject
       jsonString: "{{element}@json}"
       jsonObject: "json"
 
-    - type: CleanJsonObjectNode
+    - type: CleanJsonObject
       jsonObject: "{json}"
       cleanedObject: "jsonclean"
       clean: [] # not important
 
-    - type: ObjectToJsonStringNode
+    - type: ObjectToJsonString
       object: "{jsonclean}"
       result: "jsonstr"
 
-    - type: WriteLineToFileNode
+    - type: WriteLineToFile
       output: "path/{gid}.json"
       line: "{jsonstr}"
       overwrite: true

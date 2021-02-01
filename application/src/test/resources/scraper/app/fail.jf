@@ -2,6 +2,6 @@
   "name"       : "Name",
   "entry"       : "start",
   "graphs"    : {
-    "start": [ { "type":"NoNode", "fail": true } ]
+    "start": [ { "type":"No", "fail": true } ]
   }
 }

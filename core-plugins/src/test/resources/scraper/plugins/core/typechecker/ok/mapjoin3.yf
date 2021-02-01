@@ -2,18 +2,18 @@
 name: mapjoin
 graphs:
   start:
-    - type: MapJoinNode
+    - type: MapJoin
       list: [{"key": "movie"}, {"key": "movie2"}]
       mapTarget: X
       putElement: movie
       keys:
         movieWithLargeImg: moviesListLargeImg
 
-    - type: EchoNode
+    - type: Echo
       log: "{moviesListLargeImg}"
 
   X:
-    - type: JsonObjectNode
+    - type: JsonObject
       put: movieWithLargeImg
       value:
         complex: "mysimplestring"

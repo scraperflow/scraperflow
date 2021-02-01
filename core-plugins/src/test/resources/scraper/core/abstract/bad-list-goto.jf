@@ -3,7 +3,7 @@
   "graphs"    : {
     "start":
     [
-      { "type":"SimpleListGotoNode", "goToList": ["ok"] }
+      { "type":"SimpleListGoto", "goToList": ["ok"] }
     ]
   }
 }
