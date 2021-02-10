@@ -245,4 +245,15 @@ public class TemplateTest {
         String eval = o.eval(s);
         assertEquals("\n", eval);
     }
+
+    @Test
+    public void nullstring() {
+        String template = "\0";
+
+        T<String> s = new T<>(){};
+        s.setTerm(parseTemplate(template, s));
+
+        String eval = o.eval(s);
+        assertEquals("\0", eval);
+    }
 }

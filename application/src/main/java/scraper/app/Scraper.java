@@ -43,6 +43,11 @@ import static scraper.util.DependencyInjectionUtil.getDIContainer;
         doc = "Prints the current application version",
         example = "scraper version exit"
 )
+@ArgsCommand(
+        value = "nodes",
+        doc = "Prints the current available nodes",
+        example = "scraper nodes exit"
+)
 public class Scraper {
 
     private @NotNull
@@ -101,7 +106,7 @@ public class Scraper {
         }
 
         String versionArgs = StringUtil.getArgument(args, "version");
-        if(versionArgs != null) System.out.println("Scraper version 0.17.0");
+        if(versionArgs != null) System.out.println("Scraper version 0.17.1");
 
         // inject dependencies
         DIContainer pico = getDIContainer();
@@ -109,6 +114,9 @@ public class Scraper {
 
         Scraper main = pico.get(Scraper.class);
         requireNonNull(main).pico = pico;
+
+        String nodesArgs = StringUtil.getArgument(args, "nodes");
+        if(nodesArgs != null) System.out.println("Nodes: " + main.jobFactory.getNodes());
 
         try {
             main.run(args);

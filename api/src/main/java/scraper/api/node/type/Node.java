@@ -2,6 +2,7 @@ package scraper.api.node.type;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.node.NodePlugin;
+import scraper.api.exceptions.BreakException;
 import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.exceptions.ValidationException;
@@ -38,7 +39,12 @@ public interface Node {
             FlowMap fm = process(n, o);
             for (NodeHook hook : n.hooks()) { hook.afterProcess(n, o); }
             return n.forward(fm);
-        } catch (TemplateException e) {
+        }
+        catch (BreakException e) {
+            n.log(NodeLogLevel.TRACE, "Escape node accept phase for {0}: {1}", n.getAddress(), e.getMessage());
+            return o;
+        }
+        catch (TemplateException e) {
             n.log(NodeLogLevel.ERROR, "Template type error for {0}: {1}", n.getAddress(), e.getMessage());
             throw e;
         }

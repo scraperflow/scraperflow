@@ -63,7 +63,10 @@ public final class TemplateUtil {
     private static Term<?> inferTemplateM(Map<?,?> term) throws ValidationException {
         Map<Object, Term<?>> resultMap = new HashMap<>();
 
-        for (Object k : term.keySet()) resultMap.put(k, inferTemplate(term.get(k)));
+        for (Object k : term.keySet()) {
+            if(term.get(k) == null) { resultMap.put(k, new TemplateConstant<>(null, new T<>(){})); }
+            else { resultMap.put(k, inferTemplate(term.get(k))); }
+        }
 
         return new TemplateMap(resultMap,
                 new T<>(){},
@@ -198,9 +201,14 @@ public final class TemplateUtil {
         Map<String, Term<?>> resultMap = new HashMap<>();
 
         for (String k : term.keySet()) {
-            resultMap.put(k, parseTemplate(term.get(k), new T<>(elementType.get(),
-                    targetType.getSuffix()+(fromTypeVariable ? "MapOf" : "")
-            ) {} ));
+            if(term.get(k) == null) {
+                resultMap.put(k, new TemplateConstant<>(null, new T<>(){}));
+            }
+            else {
+                resultMap.put(k, parseTemplate(term.get(k), new T<>(elementType.get(),
+                        targetType.getSuffix()+(fromTypeVariable ? "MapOf" : "")
+                ) {} ));
+            }
         }
 
         return new TemplateMap(resultMap,

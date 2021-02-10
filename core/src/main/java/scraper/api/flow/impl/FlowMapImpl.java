@@ -352,8 +352,12 @@ public class FlowMapImpl extends IdentityEvaluator implements FlowMap {
             return mapOf(new T<String>(){}, commonType);
 
         } else {
-            // raw type
-            return new T<>(o.getClass()){};
+            if(o == null) {
+                return new T<>(){};
+            } else {
+                // raw type
+                return new T<>(o.getClass()){};
+            }
         }
     }
 

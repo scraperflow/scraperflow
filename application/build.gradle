@@ -3,7 +3,7 @@ plugins {
     id("de.jjohannes.extra-java-module-info") version "0.1"
 }
 
-version = '0.17.0'
+version = '0.17.1'
 
 extraJavaModuleInfo {
     module("antlr4-runtime-4.8.jar", "org.antlr.antlr4.runtime", "4.8") {}

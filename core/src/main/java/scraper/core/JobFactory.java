@@ -355,6 +355,11 @@ public class JobFactory {
         return plugins.getPlugins();
     }
 
+    @NotNull
+    public String getNodes() {
+        return plugins.nodeDiscovery();
+    }
+
     // export currently not used
 //    public void writePojo(String path, ScrapeInstance job) throws IOException {
 //        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);

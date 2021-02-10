@@ -1,6 +1,7 @@
 package scraper.nodes.core.io;
 
 import scraper.annotations.node.FlowKey;
+import scraper.annotations.node.Io;
 import scraper.annotations.node.NodePlugin;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
@@ -11,6 +12,7 @@ import scraper.api.template.T;
  * Outputs a string line to the environment
  */
 @NodePlugin("0.2.0")
+@Io
 public final class Output implements FunctionalNode {
 
     /** String output line */

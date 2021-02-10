@@ -2,6 +2,7 @@ package scraper.plugins.core.typechecker.data;
 
 
 import scraper.annotations.NotNull;
+import scraper.api.node.Address;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.specification.ScrapeInstance;
@@ -15,6 +16,7 @@ import scraper.plugins.core.typechecker.TypeEnvironment;
 import scraper.util.TemplateUtil;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.lang.System.Logger.Level.DEBUG;
@@ -27,8 +29,8 @@ public final class AbstractStreamNodeData {
     @Version("0.1.0") @NotNull
     public static void infoAfter(TypeChecker checker, TypeEnvironment env, ControlFlowEdge incoming, NodeContainer<? extends Node> node, ControlFlowGraph cfg,
                                  ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
-        Boolean collect = (Boolean) FlowUtil.getFieldForClass("collect", node, AbstractStreamNode.class).get();
-        if(!collect) return; // types do not change
+        Optional<Address> collect = FlowUtil.getFieldForClass("streamTarget", node, AbstractStreamNode.class);
+        if(collect.isPresent()) return; // types do not change
 
         getDefaultDataFlowOutput(node).forEach((fieldName, output) ->
                 {

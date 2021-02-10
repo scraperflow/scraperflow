@@ -32,6 +32,12 @@ public class FieldTranslationTest {
     private String mandatoryString;
     private String mandatoryStringExpected = "mandatory!";
 
+    // newline expected
+    @FlowKey(mandatory = true)
+    @TranslationInput( jsonValue = "\"\\n\"" )
+    private String newlineString;
+    private String newlineStringExpected = "\n";
+
 
     // mandatory json missing
     @FlowKey(mandatory = true)

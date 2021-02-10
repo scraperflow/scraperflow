@@ -54,10 +54,11 @@ public class PluginBean {
             }
         }
 
-        printDiscovery();
+        String nodes = nodeDiscovery();
+        log.log(DEBUG, "Discovered {0} nodes, {1}", plugins.size(), nodes);
     }
 
-    private void printDiscovery() {
+    public String nodeDiscovery() {
         // construct human readable plugins string
         StringBuilder sb = new StringBuilder("[");
         for (AbstractMetadata metadata : getPlugins()) {
@@ -65,7 +66,7 @@ public class PluginBean {
             if(sb.length() != 1) sb.append(", ");
             sb.append(metadata.getName()).append(" [").append(metadata.getVersion()).append("]");
         }
-        log.log(DEBUG, "Discovered {0} nodes, {1}", plugins.size(), sb.append("]").toString());
+        return sb.append("]").toString();
     }
 
     public @NotNull List<AbstractMetadata> getPlugins() {

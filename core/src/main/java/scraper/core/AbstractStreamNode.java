@@ -28,24 +28,22 @@ import static scraper.util.TemplateUtil.templateOf;
  * Either collects results to a list or stream each individual element to a specified target.
  */
 @SuppressWarnings({"rawtypes", "unchecked", "RedundantSuppression"}) // L raw types are checked statically
-@NodePlugin(value = "0.1.0", customFlowAfter = true)
+@NodePlugin(value = "0.2.0", customFlowAfter = true)
 public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implements StreamNodeContainer {
     AbstractStreamNode(@NotNull String instance, @NotNull String graph, @Nullable String node, int index) { super(instance, graph, node, index); }
-
-    /** If enabled, collects elements as a list without streaming */
-    @FlowKey(defaultValue = "\"true\"")
-    private Boolean collect;
 
     /** If collect is disabled, this is the target a single stream element is streamed to */
     @FlowKey
     @Flow(dependent = false, crossed = true, label = "stream")
     private Address streamTarget;
 
+    @Deprecated
+    @FlowKey(defaultValue = "\"true\"")
+    private Boolean collect;
+
     @Override
     public void init(@NotNull ScrapeInstance job) throws ValidationException {
         super.init(job);
-        if(!collect)
-            if(streamTarget == null) throw new ValidationException("Stream target has to be set for streaming mode");
     }
 
     private final @NotNull Map<UUID, FlowMap> openStreams = new ConcurrentHashMap<>();
@@ -54,22 +52,7 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
 
     @Override
     public void streamFlowMap(@NotNull final FlowMap origin, @NotNull final FlowMap newMap) {
-        if(!collect) {
-            // dispatch directly to stream target without collecting
-            forkDispatch(newMap, streamTarget);
-        } else {
-            collectKeys.get(origin.getId()).forEach(key -> {
-                Map<L, List<Object>> collectorForId = collectors.get(origin.getId());
-                // collect to list
-                Optional<?> element = newMap.evalMaybe(templateOf(key));
-                if(element.isEmpty()) {
-                    log(NodeLogLevel.ERROR, "Missing expected element at key {0}, fix node implementation. Skipping", key);
-                    throw new TemplateException("Missing expected element at key " + key);
-                } else {
-                    collectorForId.get(key).add(element.get());
-                }
-            });
-        }
+        stream(origin, newMap);
     }
 
     @Override
@@ -77,7 +60,11 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
         FlowMap newMap = origin.copy();
         newMap.output(location, result);
 
-        if(!collect) {
+        stream(origin, newMap);
+    }
+
+    private void stream(@NotNull FlowMap origin, @NotNull FlowMap newMap) {
+        if(streamTarget != null) {
             // dispatch directly to stream target without collecting
             forkDispatch(newMap, streamTarget);
         } else {
@@ -93,13 +80,12 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
                 }
             });
         }
-
     }
 
     @NotNull
     @Override
     public FlowMap processStream(@NotNull final FlowMap o) throws NodeException {
-        if(collect) {
+        if(streamTarget == null) {
             log(NodeLogLevel.TRACE, "Collecting stream for map {0}", o.getId());
             // open stream for ID
             openStreams.put(o.getId(), o.copy());
@@ -115,7 +101,7 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
 
         getC().process(this, o);
 
-        if(!collect) {
+        if(streamTarget != null) {
             return o;
         } else {
             log(NodeLogLevel.TRACE, "Finish collection for map {0}", o.getId());

@@ -30,12 +30,8 @@ import static scraper.plugins.core.flowgraph.impl.ControlFlowEdgeImpl.edge;
 @SuppressWarnings("unchecked") //convention
 public class FlowUtil {
 
-    public static ControlFlowGraph generateControlFlowGraph(ScrapeInstance instance) {
-        return generateControlFlowGraph(instance, false);
-    }
-
     @NotNull
-    public static ControlFlowGraph generateControlFlowGraph(ScrapeInstance instance, boolean realControlFlow) {
+    public static ControlFlowGraph generateControlFlowGraph(ScrapeInstance instance) {
         visited.clear();
 
         ControlFlowGraphImpl cfg = new ControlFlowGraphImpl();
@@ -52,12 +48,6 @@ public class FlowUtil {
         }));
         nodes.forEach((adr, node) -> handleNode(cfg, instance, node));
 
-
-//
-//        if (realControlFlow && instance.getEntry().isPresent()) {
-//            Address addr = instance.getEntry().get().getAddress();
-//            propagateRealControlFlow(cfg, addr, instance);
-//        }
 
         return cfg;
     }

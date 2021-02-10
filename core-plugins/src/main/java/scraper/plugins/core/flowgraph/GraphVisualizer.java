@@ -24,13 +24,13 @@ public class GraphVisualizer {
     static Boolean includeNodeAddress = true;
     static Boolean absolute = false;
 
-    public static void visualize(ScrapeInstance job, String createCF, boolean realControlflow) throws FileNotFoundException {
-        ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(job, realControlflow);
+    public static void visualize(ScrapeInstance job, String createCF) throws FileNotFoundException {
+        ControlFlowGraph cfg = FlowUtil.generateControlFlowGraph(job);
 
         String graph = visualize(cfg);
 
         log.log(System.Logger.Level.DEBUG, "Output: {0}", createCF);
-        try (PrintWriter writer = new PrintWriter(new FileOutputStream(new File(createCF), false))) {
+        try (PrintWriter writer = new PrintWriter(new FileOutputStream(createCF, false))) {
             writer.write(graph);
         }
     }
@@ -98,12 +98,13 @@ public class GraphVisualizer {
                     +""
                     ;
         } else {
-            return simpleName+"\\n<"+ adr.getNode()+">";
+            return simpleName + (includeNodeAddress ? "\\n<"+ adr.getNode() +">": "") ;
         }
     }
 
     private static String getStyle(ControlFlowEdge controlFlowEdge) {
-        String style = "[ xlabel=\"" + controlFlowEdge.getDisplayLabel() + "\",";
+        String label = controlFlowEdge.getDisplayLabel().equals("forward") ? "" : controlFlowEdge.getDisplayLabel();
+        String style = "[ xlabel=\""+ label +"\",";
         if(controlFlowEdge.isDispatched()) {
             style += "style=dashed,";
         }
