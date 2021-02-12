@@ -29,7 +29,7 @@ public final class FlattenList <A> implements FunctionalNode {
     private final T<List<List<A>>> flatten = new T<>(){};
 
     /** Where the flattened list is stored */
-    @FlowKey(defaultValue = "\"_\"")
+    @FlowKey(mandatory = true)
     private final L<List<A>> output = new L<>(){};
 
     @Override
