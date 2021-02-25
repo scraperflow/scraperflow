@@ -62,7 +62,7 @@ import static scraper.api.node.container.NodeLogLevel.*;
  *
  * If multiple HttpRequestNodes are used with a similar configuration, globalNodeConfigurations can be used.
  */
-@NodePlugin("2.0.2")
+@NodePlugin("2.0.3")
 @Io
 public final class HttpRequest implements Node {
 
@@ -193,6 +193,7 @@ public final class HttpRequest implements Node {
         try {
             token = n.getJobInstance().getProxyReservation().reserveToken(proxyGroup, proxyMode,0, holdOnReservation);
         } catch (InterruptedException | TimeoutException e) {
+            e.printStackTrace();
             n.log(ERROR, "Interrupted while waiting for proxy");
             throw new NodeException(e, "Interrupted while waiting for proxy");
         }
@@ -291,14 +292,21 @@ public final class HttpRequest implements Node {
                     if(maybe.isPresent()) {
                         payload = mapper.writeValueAsString(o.eval(this.payload));
                         request.POST(java.net.http.HttpRequest.BodyPublishers.ofString(payload));
+                    } else {
+                        request.POST(java.net.http.HttpRequest.BodyPublishers.noBody());
                     }
                     break;
                 case DELETE:
                     request.DELETE();
                     break;
                 case PUT:
-                    payload = mapper.writeValueAsString(o.eval(this.payload));
-                    request.PUT(java.net.http.HttpRequest.BodyPublishers.ofString(payload));
+                    Optional<Object> maybe2 = o.evalMaybe(this.payload);
+                    if(maybe2.isPresent()) {
+                        payload = mapper.writeValueAsString(o.eval(this.payload));
+                        request.PUT(java.net.http.HttpRequest.BodyPublishers.ofString(payload));
+                    } else {
+                        request.PUT(java.net.http.HttpRequest.BodyPublishers.noBody());
+                    }
                     break;
                 default:
                     n.log(ERROR, "Using legacy request type for new HTTP node: {0}", requestType);

@@ -106,7 +106,7 @@ public class Scraper {
         }
 
         String versionArgs = StringUtil.getArgument(args, "version");
-        if(versionArgs != null) System.out.println("Scraper version 0.17.2");
+        if(versionArgs != null) System.out.println("Scraper version 0.17.3");
 
         // inject dependencies
         DIContainer pico = getDIContainer();

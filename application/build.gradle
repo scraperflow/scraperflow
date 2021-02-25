@@ -3,7 +3,7 @@ plugins {
     id("de.jjohannes.extra-java-module-info") version "0.1"
 }
 
-version = '0.17.2'
+version = '0.17.3'
 
 // ===============
 // Uncomment and add runtime dependencies + extra module java info for your custom node modules
