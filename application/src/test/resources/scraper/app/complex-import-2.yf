@@ -1,7 +1,0 @@
----
-name: top
-entry: test2
-graphs:
-  test2:
-    - type: "No"
-      log: "hello"

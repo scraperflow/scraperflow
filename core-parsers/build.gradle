@@ -1,14 +1,9 @@
-plugins {
-    id 'java-library'
-}
+apply plugin: 'java-library'
 
-version = '0.14.0'
 
 dependencies {
     api project(':core')
 
-    // json + yml library
-    api group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.+'
-    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.+'
+    // yml library
     api group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.10.+'
 }

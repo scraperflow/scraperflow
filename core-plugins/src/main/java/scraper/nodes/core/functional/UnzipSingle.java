@@ -10,29 +10,28 @@ import scraper.api.template.L;
 import scraper.api.template.T;
 
 /**
- * Unzips
+ * Unzips a pair
  */
 @NodePlugin("0.0.1")
 public class UnzipSingle<A,B> implements FunctionalNode {
 
-    /** zipped list */
+    /** zipped element */
     @FlowKey(mandatory = true)
-    private final T<ZipList<A,B>.Pair> pair = new T<>(){};
+    private final T<Zip<A,B>.Pair> pair = new T<>(){};
 
-    /** unzip list 1 */
+    /** unzip 1 */
     @FlowKey(mandatory = true)
     private final L<A> l1 = new L<>(){};
 
-    /** unzip list 2 */
+    /** unzip 2 */
     @FlowKey(mandatory = true)
     private final L<B> l2 = new L<>(){};
 
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        ZipList<A,B>.Pair zipped = o.eval(this.pair);
-
-        o.output(this.l1, zipped.fst);
-        o.output(this.l2, zipped.snd);
+        Zip<A,B>.Pair unzipped = o.eval(this.pair);
+        o.output(this.l1, unzipped.fst);
+        o.output(this.l2, unzipped.snd);
     }
 }

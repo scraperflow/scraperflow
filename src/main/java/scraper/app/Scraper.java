@@ -1,11 +1,9 @@
 package scraper.app;
 
-import io.github.classgraph.*;
-import scraper.annotations.ArgsCommand;
-import scraper.annotations.ArgsCommands;
 import scraper.annotations.NotNull;
 import scraper.annotations.di.DITarget;
 import scraper.api.di.DIContainer;
+import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.container.NodeContainer;
@@ -28,26 +26,9 @@ import java.util.stream.Collectors;
 import static java.lang.System.Logger.Level.*;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
+import static scraper.app.CommandPrinter.collectAndPrintCommandLineArguments;
 import static scraper.util.DependencyInjectionUtil.getDIContainer;
 
-/**
- * Entry application for the Scraper workflow runtime.
- */
-@ArgsCommand(
-        value = "debug-info",
-        doc = "Returns more information about unexpected errors",
-        example = "scraper debug-info app.yf"
-)
-@ArgsCommand(
-        value = "version",
-        doc = "Prints the current application version",
-        example = "scraper version exit"
-)
-@ArgsCommand(
-        value = "nodes",
-        doc = "Prints the current available nodes",
-        example = "scraper nodes exit"
-)
 public class Scraper {
 
     private @NotNull
@@ -84,7 +65,7 @@ public class Scraper {
                    @NotNull @DITarget(Addon.class) Collection<Addon> addons,
                    @NotNull @DITarget(NodeHook.class) Collection<NodeHook> nodeHooks,
                    @NotNull @DITarget(ScrapeSpecificationParser.class) Collection<ScrapeSpecificationParser> parsers
-                   ) {
+    ) {
         this.jobFactory = jobFactory;
         this.executorsService = executorsService;
         this.hooks = hooks;
@@ -93,8 +74,7 @@ public class Scraper {
         this.parsers = parsers;
     }
 
-
-    public static void main(@NotNull final String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         System.setProperty("java.util.logging.SimpleFormatter.format", "%4$-1.1s %1$tF %1$tT | %3$s | %5$s %n");
 
         String helpArgs = StringUtil.getArgument(args, "help");
@@ -106,7 +86,7 @@ public class Scraper {
         }
 
         String versionArgs = StringUtil.getArgument(args, "version");
-        if(versionArgs != null) System.out.println("Scraper version 0.17.3");
+        if(versionArgs != null) System.out.println("Scraper version 0.18-SNAPSHOT");
 
         // inject dependencies
         DIContainer pico = getDIContainer();
@@ -134,7 +114,6 @@ public class Scraper {
         if(e.getCause() != null) surpress(e.getCause());
     }
 
-
     private void run(@NotNull final String... args) throws Exception, ExitException {
         log.log(DEBUG, "Loading {0} addons: {1}", addons.size(), addons);
         for (Addon addon : addons) addon.load(pico, args);
@@ -142,10 +121,14 @@ public class Scraper {
         String userDir = System.getProperty("user.dir");
         log.log(DEBUG, "Loading {0} parsers: {1}", parsers.size(), parsers);
         log.log(DEBUG, "Parsing scrape jobs in {0}", userDir);
+
+        if(parsers.isEmpty()) throw new ValidationException("No Scraper parsers loaded");
+
         List<ScrapeSpecification> jobDefinitions =
                 parsers.stream().map((scrapeSpecificationParser -> scrapeSpecificationParser.parse(pico, args)))
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
+                        .flatMap(List::stream)
+                        .peek(spec -> { for (String arg : args) { spec.with(arg); } })
+                        .collect(Collectors.toList());
 
         if(jobDefinitions.isEmpty()) {
             // check for implicit location
@@ -155,9 +138,10 @@ public class Scraper {
                             ofNullable(new File(userDir).list())
                                     .orElse(new String[0])
                             ).stream()
-                            .map(parser::parseSingle)
-                            .flatMap(Optional::stream)
-                            .collect(Collectors.toList())
+                                    .map(parser::parseSingle)
+                                    .flatMap(Optional::stream)
+                                    .peek(spec -> { for (String arg : args) { spec.with(arg); } })
+                                    .collect(Collectors.toList())
                     )
                     .flatMap(List::stream)
                     .collect(Collectors.toList());
@@ -224,39 +208,4 @@ public class Scraper {
         futures.forEach(CompletableFuture::join);
     }
 
-
-    private static void collectAndPrintCommandLineArguments() {
-        try (ScanResult scanResult = new ClassGraph().enableAllInfo()
-                .acceptPackages("scraper")
-                .scan()) {
-            for (ClassInfo routeClassInfo : scanResult.getClassesWithAnnotation(ArgsCommand.class.getName())) {
-                printArgsCommand(routeClassInfo.getAnnotationInfo(ArgsCommand.class.getName()));
-            }
-
-            for (ClassInfo routeClassInfo : scanResult.getClassesWithAnnotation(ArgsCommands.class.getName())) {
-                AnnotationInfoList argsCommands = (routeClassInfo.getAnnotationInfoRepeatable(ArgsCommand.class.getName()));
-                for (AnnotationInfo argsCommand : argsCommands) {
-                    printArgsCommand(argsCommand);
-                }
-            }
-        }
-    }
-
-    private static void printArgsCommand(@NotNull final AnnotationInfo argsCommand) {
-        String val = (String) argsCommand.getParameterValues().getValue("value");
-        String doc = (String) argsCommand.getParameterValues().getValue("doc");
-        String example = (String) argsCommand.getParameterValues().getValue("example");
-
-
-        System.out.println("-------------------");
-        System.out.println(val);
-        System.out.println();
-        System.out.println("  "+ doc);
-        System.out.println();
-        System.out.println(" example usage");
-        System.out.println();
-        System.out.println("  "+ example);
-        System.out.println();
-        System.out.println();
-    }
 }

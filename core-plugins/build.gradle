@@ -1,14 +1,6 @@
-plugins {
-    id 'java-library'
-}
-
-version = '0.17.1'
+apply plugin: 'java-library'
 
 dependencies {
     api project(':core')
     api project(':test-framework')
-}
-
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.6.1'
 }

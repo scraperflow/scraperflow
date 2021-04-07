@@ -1,5 +1,5 @@
 module scraper.utils {
-    requires transitive scraper.api;
+    requires scraper.api;
 
     exports scraper.utils;
 }

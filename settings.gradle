@@ -1,3 +1,8 @@
-rootProject.name = 'scraper'
+rootProject.name = 'Scraper'
 
-include 'api', 'utilities', 'core', 'application', 'core-plugins', 'core-parsers', 'test-framework'
+include 'api'
+include 'utilities'
+include 'core'
+include 'core-parsers'
+include 'core-plugins'
+include 'test-framework'

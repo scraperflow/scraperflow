@@ -60,7 +60,7 @@ public class ScrapeSpecificationImpl implements ScrapeSpecification {
 
     @Override
     public ScrapeSpecification with(String arg) {
-        arguments.add(arg);
+        if(arg.endsWith(".args")) arguments.add(arg);
         return this;
     }
 

@@ -11,6 +11,7 @@ import scraper.api.node.type.FunctionalNode;
 import scraper.api.node.type.Node;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.template.L;
+import scraper.api.template.T;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -19,7 +20,7 @@ import java.text.SimpleDateFormat;
 /**
  * Echoes date in given format.
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class Date implements FunctionalNode {
 
     /** Format of the date */
@@ -30,6 +31,10 @@ public final class Date implements FunctionalNode {
     @FlowKey(defaultValue = "\"date\"") @NotNull
     private final L<String> put = new L<>(){};
 
+    /** Which timestamp for parse in ms if needed */
+    @FlowKey
+    private final T<Integer> use = new T<>(){};
+
     private DateFormat parsedDateFormat;
 
     @Override
@@ -39,8 +44,12 @@ public final class Date implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        String date = parsedDateFormat.format(new java.util.Date());
-
-        o.output(put, date);
+        o.evalMaybe(use).ifPresentOrElse(u -> {
+                    String date = parsedDateFormat.format(new java.util.Date((long)u *1000));
+                    o.output(put, date);
+                }, () -> {
+                    String date = parsedDateFormat.format(new java.util.Date());
+                    o.output(put, date);
+                });
     }
 }
