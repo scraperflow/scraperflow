@@ -1,0 +1,8 @@
+---
+name: addr
+
+graphs:
+  start:
+    - type: Echo
+      log: "Hello {w}"
+

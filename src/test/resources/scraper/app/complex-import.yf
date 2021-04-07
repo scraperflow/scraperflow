@@ -1,0 +1,17 @@
+---
+name: imp
+
+entry: test
+
+imports:
+  complex-import-2.yf:
+
+globalNodeConfigurations:
+  No:
+    fail: true
+
+graphs:
+  test:
+    - type: "No"
+      log: "hello"
+      goTo: top.test2

@@ -130,6 +130,7 @@ public class Scraper {
                         .peek(spec -> { for (String arg : args) { spec.with(arg); } })
                         .collect(Collectors.toList());
 
+
         if(jobDefinitions.isEmpty()) {
             // check for implicit location
             // merge all accepted file endings
@@ -158,6 +159,14 @@ public class Scraper {
         log.log(DEBUG, "Converting scrape jobs");
         for (ScrapeSpecification jobDefinition : jobDefinitions)
             jobs.put(jobDefinition, jobFactory.convertScrapeJob(jobDefinition, nodeHooks));
+
+        StringUtil.getAllArguments(args, "arg")
+                .stream()
+                .map(JobFactory::parseSingleArgument)
+                .forEach(entry
+                        -> jobs.forEach((spec, job)
+                        -> job.getEntryArguments().put(entry.getKey(), entry.getValue())));
+
 
         log.log(DEBUG, "Executing {0} hooks: {1}", hooks.size(), hooks);
         for (Hook hook : hooks) hook.execute(pico, args, jobs);

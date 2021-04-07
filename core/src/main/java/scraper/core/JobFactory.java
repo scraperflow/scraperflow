@@ -56,7 +56,7 @@ public class JobFactory {
     private final Map<ScrapeSpecification, Map<String, String>> jobNodeDependencies = new HashMap<>();
 
     /** Json parser for .scrape files */
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
 
     private ScrapeInstaceImpl parseJob(ScrapeSpecification def, Collection<NodeHook> hooks) {
@@ -73,21 +73,25 @@ public class JobFactory {
         return job;
     }
 
+    public static Map.Entry<String, Object> parseSingleArgument (String line) {
+        String key = line.substring(0, line.indexOf("="));
+        String value = line.substring(line.indexOf("=")+1);
+        Object valueObject;
+        try {
+            valueObject = objectMapper.readValue(value, Object.class);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Could not parse argument for key "+ key+": "+e.getMessage());
+        }
+        return new AbstractMap.SimpleEntry<>(key, valueObject);
+    }
 
     private @NotNull Map<String, Object> parseInputArguments(@NotNull final File args) throws IOException {
         final Map<String, Object> inputMap =  new HashMap<>();
 
         StringUtil.readBody(args, line -> {
             if(!line.startsWith("#") && !line.isEmpty()) {
-                String key = line.substring(0, line.indexOf("="));
-                String value = line.substring(line.indexOf("=")+1);
-                Object valueObject;
-                try {
-                    valueObject = objectMapper.readValue(value, Object.class);
-                } catch (JsonProcessingException e) {
-                    throw new IllegalStateException("Could not parse argument for key "+ key+": "+e.getMessage());
-                }
-                inputMap.put(key, valueObject);
+                Map.Entry<String, Object> arg = parseSingleArgument(line);
+                inputMap.put(arg.getKey(), arg.getValue());
             }
         });
 

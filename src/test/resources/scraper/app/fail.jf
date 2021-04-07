@@ -1,0 +1,7 @@
+{
+  "name"       : "Name",
+  "entry"       : "start",
+  "graphs"    : {
+    "start": [ { "type":"No", "fail": true } ]
+  }
+}

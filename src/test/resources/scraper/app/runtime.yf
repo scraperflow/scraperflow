@@ -1,0 +1,8 @@
+---
+name: listWithStrings
+
+graphs:
+  start:
+    - type: RuntimeList
+      onlyStringsAllowed: ["1","123"]
+
