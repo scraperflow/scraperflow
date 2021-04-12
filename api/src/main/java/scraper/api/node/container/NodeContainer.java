@@ -1,7 +1,6 @@
 package scraper.api.node.container;
 
 import scraper.annotations.NotNull;
-import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.flow.IdentityTemplateEvaluator;
 import scraper.api.node.Address;
@@ -15,7 +14,6 @@ import scraper.api.specification.ScrapeInstance;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -83,7 +81,7 @@ public interface NodeContainer<NODE> extends NodeInitializable, IdentityTemplate
     boolean isForward();
 
     //-----------
-    // Sequential
+    // Forward
     //-----------
 
     /**
@@ -91,35 +89,14 @@ public interface NodeContainer<NODE> extends NodeInitializable, IdentityTemplate
      * Either next node, or the node specified by a target address given
      * Can be controlled with the forward flag
      */
-    @NotNull
-    FlowMap forward(@NotNull FlowMap o) throws NodeException;
+    void forward(@NotNull FlowMap o);
 
     /**
-     * Forwards the flow map to another node.
+     * Forwards the flow map to another node with specified target address.
      * Either next node, or the node specified by a target address given
      * Is not controlled by the forward flag
      */
-    @NotNull
-    FlowMap eval(@NotNull FlowMap o, @NotNull Address target) throws NodeException;
-
-    //-----------
-    // Concurrent
-    //-----------
-
-    /**
-     * Copies and dispatches a flow to another target address.
-     * Returns a future which can be used to get the output flow of the dispatched flow.
-     * This call only returns if the service pool has available space for another flow.
-     */
-    @NotNull
-    CompletableFuture<FlowMap> forkDepend(@NotNull FlowMap o, @NotNull Address target);
-
-    /**
-     * Copies and dispatches a flow to another target address.
-     * Does not wait for the other flow to finish.
-     * This call only returns if the service pool has available space for another flow.
-     */
-    void forkDispatch(@NotNull FlowMap o, @NotNull Address target);
+    void forward(@NotNull FlowMap o, @NotNull Address target);
 
     //-----------
     // Implementation Container
