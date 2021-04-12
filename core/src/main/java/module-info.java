@@ -17,11 +17,11 @@ open module scraper.core {
     requires transitive io.github.classgraph;
     requires java.net.http;
 
+    requires org.antlr.antlr4.runtime;
+
     requires transitive com.fasterxml.jackson.databind;
 
     requires transitive scraper.api;
     requires transitive scraper.utils;
 
-    // TODO
-    requires org.antlr.antlr4.runtime;
 }

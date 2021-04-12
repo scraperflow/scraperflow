@@ -24,6 +24,7 @@ against the composition of nodes.
 # Links
 
 * [Scraper Node Documentation](https://docs.scraper.server1.link)
+  * The documentation contains **all** nodes, including [extra nodes](https://github.com/scraperflow/scraper-nodes), not only the nodes in the core framework
 * [Scraper Wiki](https://wiki.scraper.server1.link)
 * [Scraper Binaries](https://binaries.scraper.server1.link)
 * [Scraper Editor (prototype, deprecated)](https://editor.scraper.server1.link)

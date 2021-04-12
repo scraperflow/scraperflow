@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# stackoverflow/questions/59895
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+SDIR=$( dirname $(realpath "$0") )
+java --add-modules ALL-MODULE-PATH -p ext:lib:var:${DIR}/ext:${DIR}/lib:${DIR}/var:${SDIR}/ext:${SDIR}/lib:${SDIR}/var -m scraper.app/scraper.app.Scraper "$@"

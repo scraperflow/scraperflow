@@ -1,31 +1,60 @@
-plugins {
-    id 'jacoco'
-}
+apply plugin: 'application'
+
+group 'org.scraper'
+
+version '0.18-SNAPSHOT'
+project('api').version = '0.13.4'
+project('utilities').version = '0.13.0'
+project('core').version = '0.16.1'
+project('core-parsers').version = '0.14.0'
+project('core-plugins').version = '0.17.1'
+project('test-framework').version = '0.14.0'
 
 allprojects {
+    apply plugin: 'jacoco'
+    apply plugin: 'java'
+
     repositories {
-        jcenter()
         maven { url 'https://jitpack.io' }
+        mavenCentral()
+    }
+
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+        testImplementation 'org.junit.jupiter:junit-jupiter-params:5.7.0'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }
 
-subprojects {
-    group = 'org.scraper'
+dependencies {
+    implementation project(':core')
+}
 
-    plugins.withType(JavaPlugin).configureEach {
-        java {
-            modularity.inferModulePath = true
-        }
-    }
-    
-    tasks.withType(Test).configureEach {
-        useJUnitPlatform()
-    }
+dependencies{
+    runtimeOnly project(':core-parsers')
+    runtimeOnly project(':core-plugins')
+}
 
-    afterEvaluate { dependencies {
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-    } }
+distributions.main.distributionBaseName = "scraper"
+
+startScripts.onlyIf {false}
+distributions.main {
+    contents {
+        from 'dist'
+        exclude 'bin'
+    }
+}
+
+def homePath = System.properties['user.home']
+installDist.destinationDir = new File(homePath, "opt/lib/scraper")
+
+
+application {
+    mainClass = 'scraper.app.Scraper'
 }
 
 // merge coverage

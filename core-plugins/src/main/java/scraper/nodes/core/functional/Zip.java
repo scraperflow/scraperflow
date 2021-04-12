@@ -13,10 +13,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Zips two lists, shortest length
+ * Zips two lists, shortest length wins
  */
 @NodePlugin("0.0.1")
-public class ZipList<A,B> implements FunctionalNode {
+public class Zip<A,B> implements FunctionalNode {
 
     /** list 1 */
     @FlowKey(mandatory = true)

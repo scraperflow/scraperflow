@@ -137,4 +137,12 @@ public class SimpleSystemTest {
         assertTrue(ff.exists());
         Scraper.main(new String[]{ff.getAbsolutePath()});
     }
+
+    @Test
+    public void argsAsArgsTest() throws Exception {
+        URL f = Scraper.class.getResource("ArgsAsInput.yf");
+        File ff = new File(f.toURI());
+        assertTrue(ff.exists());
+        Scraper.main(new String[]{ff.getAbsolutePath(), "arg:w=\"world\""});
+    }
 }
