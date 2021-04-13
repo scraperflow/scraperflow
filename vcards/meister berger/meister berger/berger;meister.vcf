@@ -1,0 +1,30 @@
+begin:vcard
+source:ldap://cn=meister%20berger,o=universitaet%20goerlitz,c=de
+name:meister berger
+fn:meister berger
+n:berger;meister
+bday;value=date:1963-09-21
+o:universit=e6t g=f6rlitz
+title:mayor
+title;language=de;value=text:burgermeister
+note:the mayor of the great city of
+  goerlitz in the great country of germany.
+email;internet:mb@goerlitz.de
+home.tel;type=fax,voice,msg:+49 3581 123456
+home.label:hufenshlagel 1234\n
+ 02828 goerlitz\n
+ deutschland
+key;type=x509;encoding=b:miicajccadogawibagicbeuwdqyjkozihvcnaqeebq
+ awdzelmakga1uebhmcvvmxldaqbgnvbaoti05ldhnjyxblienvbw11bmljyxrpb25zi
+ envcnbvcmf0aw9umrwwggydvqqlexnjbmzvcm1hdglvbibtexn0zw1zmrwwggydvqqd
+ exnyb290y2eubmv0c2nhcguuy29tmb4xdtk3mdywnje5ndc1ovoxdtk3mtiwmze5ndc
+ 1ovowgykxczajbgnvbaytalvtmsywjaydvqqkex1ozxrzy2fwzsbdb21tdw5py2f0aw
+ 9ucybdb3jwljeymbyga1ueaxmpvgltb3roesbbiehvd2vzmsewhwyjkozihvcnaqkbf
+ hjob3dlc0buzxrzy2fwzs5jb20xftatbgojkiajk/iszaebewvob3dlczbcma0gcsqg
+ sib3dqebaquaa0samegcqqc0jzf6wkg8plmxhhcuvmfl5h6zjsk4vttxzpyyrdn2dxc
+ ox49lkiomgejszoifkhtloiboyludf90cgqcxtwknagmbaagjnja0mbegcwcgsagg+e
+ ibaqqeawiaodafbgnvhsmegdawgbt84ftob/gv3jr3mcau+humbsqukjanbgkqhkig9
+ w0baqqfaaobgqbexv7o7mi3plxadkmnp9lcipmx93hgp0kgyx1jivmyngsemeawbm+m
+ slhmfcpbtronwnjzyw8vjdsoi//yrzlvt9bjbs7mnyzvsyf1unsqaln4/vy6uawfg8v
+ umk1u7jt8lypo4yulu7uzhpyvuasgvttimohziki4hlpxbohcuq==
+end:vcard

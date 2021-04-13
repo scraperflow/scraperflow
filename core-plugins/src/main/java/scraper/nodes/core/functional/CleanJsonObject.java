@@ -3,7 +3,7 @@ package scraper.nodes.core.functional;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
+import scraper.api.exceptions.NodeIOException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
@@ -47,7 +47,7 @@ public final class CleanJsonObject <A> implements FunctionalNode {
     private final L<Map<String, A>> cleanedObject = new L<>(){};
 
     @Override
-    public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) throws NodeException {
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         Map<String, A> json = o.eval(jsonObject);
         List<String> clean = o.evalIdentity(this.clean);
 
@@ -55,7 +55,7 @@ public final class CleanJsonObject <A> implements FunctionalNode {
             try {
                 cleanObject(json, parts.split("\\|"));
             } catch (Exception e) {
-                throw new NodeException(e, "Could not execute clean operation: " + e.getLocalizedMessage());
+                throw new NodeIOException(e, "Could not execute clean operation: " + e.getLocalizedMessage());
             }
         }
 

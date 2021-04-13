@@ -4,12 +4,12 @@ import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.TemplateException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
 import scraper.annotations.node.Flow;
+import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.container.StreamNodeContainer;
 import scraper.api.node.type.StreamNode;
@@ -28,13 +28,16 @@ import static scraper.util.TemplateUtil.templateOf;
  * Either collects results to a list or stream each individual element to a specified target.
  */
 @SuppressWarnings({"rawtypes", "unchecked", "RedundantSuppression"}) // L raw types are checked statically
-@NodePlugin(value = "0.2.0", customFlowAfter = true)
+@NodePlugin(
+        value = "0.2.0",
+        customFlowAfter = true // convert output to list<X> instead of X if needed
+)
 public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implements StreamNodeContainer {
     AbstractStreamNode(@NotNull String instance, @NotNull String graph, @Nullable String node, int index) { super(instance, graph, node, index); }
 
     /** If collect is disabled, this is the target a single stream element is streamed to */
     @FlowKey
-    @Flow(dependent = false, crossed = true, label = "stream")
+    @Flow(label = "stream")
     private Address streamTarget;
 
     @Deprecated
@@ -84,7 +87,7 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
 
     @NotNull
     @Override
-    public FlowMap processStream(@NotNull final FlowMap o) throws NodeException {
+    public void processStream(NodeContainer n, @NotNull final FlowMap o) {
         if(streamTarget == null) {
             log(NodeLogLevel.TRACE, "Collecting stream for map {0}", o.getId());
             // open stream for ID
@@ -101,9 +104,7 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
 
         getC().process(this, o);
 
-        if(streamTarget != null) {
-            return o;
-        } else {
+        if (streamTarget == null) {
             log(NodeLogLevel.TRACE, "Finish collection for map {0}", o.getId());
             FlowMap copy = openStreams.get(o.getId()).copy();
             Map<L, List<Object>> toCollect = collectors.get(o.getId());
@@ -113,7 +114,7 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
             collectors.remove(o.getId());
             collectKeys.remove(o.getId());
 
-            return copy;
+            n.forward(copy);
         }
     }
 

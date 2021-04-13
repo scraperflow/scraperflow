@@ -21,7 +21,7 @@ import java.util.Optional;
  * Does not wait or join the forked flows.
  * The element is saved to <var>putElement</var>
  */
-@NodePlugin(value = "0.5.0", customFlowAfter = true)
+@NodePlugin(value = "0.5.0")
 public final class Map <K> implements Node {
 
     /** The expected list is located to fork on */
@@ -34,7 +34,7 @@ public final class Map <K> implements Node {
 
     /** Target address to fork to */
     @FlowKey(mandatory = true)
-    @Flow(dependent = false, crossed = true, label = "map")
+    @Flow(label = "map")
     private Address mapTarget;
 
     /** At which key to put the element of the list into. */
@@ -47,12 +47,12 @@ public final class Map <K> implements Node {
 
     @NotNull
     @Override
-    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
+    public void process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
         Optional<List<K>> targetList = o.evalMaybe(list);
         targetList.ifPresent(ks -> ks.forEach(t -> {
             FlowMap finalCopy = o.copy();
             finalCopy.output(putElement, t);
-            n.forkDispatch(finalCopy, mapTarget);
+            n.forward(finalCopy, mapTarget);
         }));
 
         Optional<java.util.Map<String, K>> targetMap = o.evalMaybe(map);
@@ -60,9 +60,7 @@ public final class Map <K> implements Node {
             FlowMap finalCopy = o.copy();
             finalCopy.output(putElement, v);
             finalCopy.output(putElementKey, k);
-            n.forkDispatch(finalCopy, mapTarget);
+            n.forward(finalCopy, mapTarget);
         }));
-
-        return o;
     }
 }

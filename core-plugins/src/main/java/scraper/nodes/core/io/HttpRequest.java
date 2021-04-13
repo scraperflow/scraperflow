@@ -3,7 +3,7 @@ package scraper.nodes.core.io;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.*;
-import scraper.api.exceptions.NodeException;
+import scraper.api.exceptions.NodeIOException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
@@ -172,7 +172,7 @@ public final class HttpRequest implements Node {
     }
 
     @Override @NotNull
-    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException {
+    public void process(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap o) {
         // evaluate Ts
         String url = o.eval(this.url);
         List<String> exceptionContaining = o.evalIdentity(this.exceptionContaining);
@@ -180,13 +180,14 @@ public final class HttpRequest implements Node {
         // check if file already downloaded
         if(checkFileDownloaded(n, o)) {
             n.log(TRACE, "File already downloaded: {0}", url);
-            return o;
+            return;
         }
 
         // check if response is cached
         if(cached(n, o, url, exceptionContaining)) {
             n.log(TRACE, "Request cached: {0}", url);
-            return o;
+            n.forward(o);
+            return;
         }
 
         ReservationToken token;
@@ -195,7 +196,7 @@ public final class HttpRequest implements Node {
         } catch (InterruptedException | TimeoutException e) {
             e.printStackTrace();
             n.log(ERROR, "Interrupted while waiting for proxy");
-            throw new NodeException(e, "Interrupted while waiting for proxy");
+            throw new NodeIOException(e, "Interrupted while waiting for proxy");
         }
 
         try {
@@ -233,19 +234,19 @@ public final class HttpRequest implements Node {
 
         } catch (InterruptedException e) {
             n.log(WARN, "Interrupted while waiting for token: {0}", url);
-            throw new NodeException(e, "Interrupted while waiting for token");
+            throw new NodeIOException(e, "Interrupted while waiting for token");
         } catch (IOException e) {
             token.bad();
             n.log(INFO, "IOException for request {0}: {1}", url, e.getMessage());
-            throw new NodeException(e, "IOException");
+            throw new NodeIOException(e, "IOException");
         } catch (ExecutionException e) {
             n.log(WARN, "Execution exception: {0} | {1}", e.getMessage(), url);
             token.bad();
-            throw new NodeException(e, "Bad Execution");
+            throw new NodeIOException(e, "Bad Execution");
         } catch (TimeoutException e) {
             token.bad();
             n.log(INFO, "Token timeout bad: {0} | {1}", token, url);
-            throw new NodeException(e, "Timeout");
+            throw new NodeIOException(e, "Timeout");
         } finally {
             token.close();
         }
@@ -256,10 +257,10 @@ public final class HttpRequest implements Node {
             Thread.sleep(holdOnForward);
         } catch (InterruptedException e) {
             n.log(ERROR, "Hold on forward interrupted");
-            throw new NodeException(e, "Hold on forward interrupted");
+            throw new NodeIOException(e, "Hold on forward interrupted");
         }
 
-        return o;
+        n.forward(o);
     }
 
     private void validateBody(Object body, List<String> exceptionContaining) throws IOException {
@@ -274,7 +275,7 @@ public final class HttpRequest implements Node {
         }
     }
 
-    private java.net.http.HttpRequest buildRequest(NodeContainer<? extends Node> n, FlowMap o, String url) throws NodeException {
+    private java.net.http.HttpRequest buildRequest(NodeContainer<? extends Node> n, FlowMap o, String url) {
         try {
             // set url
             if(url.startsWith("//")) url = defaultSchema+url;
@@ -328,7 +329,7 @@ public final class HttpRequest implements Node {
             return request.build();
         } catch (Exception e) {
             n.log(ERROR, "Could not build http request, {0}: {1}", e, url);
-            throw new NodeException(e, "Could not build http request "+url);
+            throw new NodeIOException(e, "Could not build http request "+url);
         }
     }
 

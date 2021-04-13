@@ -42,6 +42,7 @@ public final class IntRange implements StreamNode {
         IntStream.rangeClosed(from, to).forEach(i ->{
             FlowMap copy = o.copy();
             copy.output(output, i);
+            System.out.println("Streaming...");
             n.streamFlowMap(o, copy);
         });
     }

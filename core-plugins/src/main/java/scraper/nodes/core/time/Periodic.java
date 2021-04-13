@@ -35,7 +35,7 @@ public final class Periodic implements FunctionalNode {
 
     /** Target node label which is called on period */
     @FlowKey(mandatory = true)
-    @Flow(dependent = false, crossed = true, label = "periodic")
+    @Flow(label = "periodic")
     private Address onPeriod;
 
     /** If true, enables dispatch of the periodic task. If false, stops dispatch of the periodic task */
@@ -56,7 +56,7 @@ public final class Periodic implements FunctionalNode {
                 if(started.get() && dispatch.get()) {
                     n.log(DEBUG,"Dispatching {0}", onPeriod);
                     final FlowMap oCopy = o.copy();
-                    n.forkDispatch(oCopy, onPeriod);
+                    n.forward(oCopy, onPeriod);
                 }
             }
         };

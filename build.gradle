@@ -2,9 +2,9 @@ apply plugin: 'application'
 
 group 'org.scraper'
 
-version '0.18-SNAPSHOT'
-project('api').version = '0.13.4'
-project('utilities').version = '0.13.0'
+version '1.0.0-SNAPSHOT'
+project('api').version = '1.0.0'
+project('utilities').version = '1.0.0'
 project('core').version = '0.16.1'
 project('core-parsers').version = '0.14.0'
 project('core-plugins').version = '0.17.1'

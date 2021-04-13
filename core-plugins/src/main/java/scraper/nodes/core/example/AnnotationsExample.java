@@ -4,7 +4,6 @@ import scraper.annotations.NotNull;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
@@ -123,9 +122,9 @@ public class AnnotationsExample implements Node {
     private T<Map<String, Integer>> multiTemplate = new T<>(){};
 
     @Override @NotNull
-    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap o) throws NodeException {
-        return n.forward(o);
+    public void process(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap o) {
     }
+
 
     @SuppressWarnings("unused") // used for enum parsing
     enum SomeEnum {

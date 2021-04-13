@@ -4,7 +4,7 @@ import scraper.annotations.NotNull;
 import scraper.annotations.node.Argument;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
+import scraper.api.exceptions.NodeIOException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.NodeContainer;
@@ -91,7 +91,7 @@ public final class Regex implements StreamNode {
     }
 
     @Override
-    public void process(@NotNull final StreamNodeContainer n, @NotNull final FlowMap o) throws NodeException {
+    public void process(@NotNull final StreamNodeContainer n, @NotNull final FlowMap o) {
         String content = o.eval(this.content);
         Map<String, Integer> groups = o.evalIdentity(this.groups);
 
@@ -117,7 +117,7 @@ public final class Regex implements StreamNode {
         Optional<Map<String, String>> evalDefault = o.evalMaybe(noMatchDefaultOutput);
 
         if(nonempty && !atLeastOne && evalDefault.isEmpty()) {
-            throw new NodeException("No match for this regex");
+            throw new NodeIOException("No match for this regex");
         }
 
         if(evalDefault.isPresent() && m.reset().results().findAny().isEmpty()) {

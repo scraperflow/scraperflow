@@ -28,9 +28,8 @@ public interface Node {
     default void accept(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) {
         try {
             for (NodeHook hook : n.hooks()) { hook.beforeProcess(n, o); }
-            FlowMap map = process(n, o);
+            process(n, o);
             for (NodeHook hook : n.hooks()) { hook.afterProcess(n, o); }
-            n.forward(map);
         }
         catch (TemplateException e) {
             n.log(NodeLogLevel.ERROR, "Template type error for {0}: {1}", n.getAddress(), e.getMessage());
@@ -40,7 +39,7 @@ public interface Node {
 
 
     /** The process function which encapsulates the business logic of a node */
-    @NotNull FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o);
+    void process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o);
 
     /** Initialization of a node, by default no-op */
     default void init(@NotNull NodeContainer<? extends Node> n, @NotNull ScrapeInstance instance) throws ValidationException {}

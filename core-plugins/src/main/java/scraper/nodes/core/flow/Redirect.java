@@ -4,7 +4,7 @@ package scraper.nodes.core.flow;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
+import scraper.api.exceptions.NodeIOException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
 import scraper.annotations.node.Flow;
@@ -22,7 +22,7 @@ public final class Redirect implements Node {
 
     /** Hostname to target label mapping, if any */
     @FlowKey(mandatory = true)
-    @Flow(dependent = true, crossed = false, label = "")
+    @Flow(label = "")
     private final T<Map<String, Address>> redirectMap = new T<>(){};
 
     /** Redirect map */
@@ -31,12 +31,12 @@ public final class Redirect implements Node {
 
     @NotNull
     @Override
-    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
+    public void process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
         Map<String, Address> redirect = o.evalIdentity(redirectMap);
         String toRedirect = o.eval(this.toRedirect);
 
-        if(!redirect.containsKey(toRedirect)) throw new NodeException("Redirect target not in map: " + toRedirect);
+        if(!redirect.containsKey(toRedirect)) throw new NodeIOException("Redirect target not in map: " + toRedirect);
 
-        return n.eval(o, redirect.get(toRedirect));
+        n.forward(o, redirect.get(toRedirect));
     }
 }

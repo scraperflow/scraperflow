@@ -1,5 +1,0 @@
----
-name: contains
-graphs:
-  start:
-    - {type: Echo, put: list, value: ["1","2"]}

@@ -26,7 +26,7 @@ public final class Fork implements Node {
 
     /** All nodes to fork the current flow map to */
     @FlowKey(mandatory = true)
-    @Flow(dependent = false, crossed = false, label = "fork")
+    @Flow(label = "fork")
     private final T<List<Address>> forkTargets = new T<>(){};
 
     /** Key which can be used to join flows */
@@ -35,7 +35,7 @@ public final class Fork implements Node {
 
     @NotNull
     @Override
-    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
+    public void process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
         List<Address> targets = o.evalIdentity(forkTargets);
         int uid = new Random().nextInt();
         AtomicInteger current = new AtomicInteger();
@@ -45,10 +45,8 @@ public final class Fork implements Node {
             copy.output(joinKey, key);
 
             // dispatch new flow for every goTo
-            n.forkDispatch(copy, target);
+            n.forward(copy, target);
         });
-
-        return o;
     }
 
     static class JoinKey {

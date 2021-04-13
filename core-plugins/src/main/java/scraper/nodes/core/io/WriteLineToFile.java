@@ -5,7 +5,7 @@ import scraper.annotations.node.EnsureFile;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.Io;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
+import scraper.api.exceptions.NodeIOException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
@@ -50,7 +50,7 @@ public final class WriteLineToFile implements FunctionalNode {
     public void init(NodeContainer<? extends Node> n, ScrapeInstance instance) { Charset.forName(charset); }
 
     @Override
-    public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) throws NodeException {
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) {
         String content = o.eval(line);
         String output = o.eval(this.output);
 
@@ -59,7 +59,7 @@ public final class WriteLineToFile implements FunctionalNode {
             if(!content.isEmpty()) fos.println(content);
         } catch (IOException e) {
             n.log(ERROR,"IO read error: {0}", e.getMessage());
-            throw new NodeException(e, "IO read error, check system");
+            throw new NodeIOException(e, "IO read error, check system");
         }
     }
 }

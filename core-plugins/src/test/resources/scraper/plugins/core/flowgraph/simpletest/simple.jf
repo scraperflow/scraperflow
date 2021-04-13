@@ -1,9 +1,0 @@
-{
-  "name": "test",
-  "entry": "start",
-  "graphs": {
-    "start": [
-      { "type":"SimpleFlowTest" }
-    ]
-  }
-}

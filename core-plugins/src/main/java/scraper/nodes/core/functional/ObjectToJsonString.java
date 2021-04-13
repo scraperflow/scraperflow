@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
+import scraper.api.exceptions.NodeIOException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
@@ -31,7 +31,7 @@ public final class ObjectToJsonString implements FunctionalNode {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) throws NodeException {
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         Object object = o.eval(this.object);
 
         try {
@@ -40,7 +40,7 @@ public final class ObjectToJsonString implements FunctionalNode {
             o.output(result, obj);
         }
         catch (IOException e) {
-            throw new NodeException(e, e.getMessage()+"; Failed to convert JSON object");
+            throw new NodeIOException(e, e.getMessage()+"; Failed to convert JSON object");
         }
     }
 }

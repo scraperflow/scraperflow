@@ -12,16 +12,16 @@ public interface FunctionalNode extends Node {
 
     /** Functional node container cast and usage of process for functional nodes */
     @Override @NotNull
-    default FlowMap process(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) {
+    default void process(@NotNull final NodeContainer<? extends Node> n, @NotNull final FlowMap o) {
         assert n instanceof FunctionalNodeContainer;
         FunctionalNodeContainer sn = ((FunctionalNodeContainer) n);
-        return process(sn, o);
+        process(sn, o);
     }
 
     /** Default process method should only modify and forward the modified map */
-    default FlowMap process(@NotNull final FunctionalNodeContainer n, @NotNull final FlowMap o) {
+    default void process(@NotNull final FunctionalNodeContainer n, @NotNull final FlowMap o) {
         modify(n,o);
-        return o;
+        n.forward(o);
     }
 
     /** Modify the given flowMap */

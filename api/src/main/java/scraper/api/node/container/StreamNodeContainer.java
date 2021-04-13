@@ -22,5 +22,5 @@ public interface StreamNodeContainer extends NodeContainer<StreamNode> {
      * Process a stream which is used by the StreamNode to accept a FlowMap.
      * Wraps around the process accept method to ensure collecting matches or streaming them.
      */
-    @NotNull FlowMap processStream(@NotNull FlowMap o);
+    @NotNull void processStream(NodeContainer n, @NotNull FlowMap o);
 }

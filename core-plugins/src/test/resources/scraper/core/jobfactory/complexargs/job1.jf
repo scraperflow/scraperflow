@@ -1,1 +1,0 @@
-{ "name"       : "job1", "entry": "start", "graphs"    : {"start": [ { "type":"Simple", "log":"Scrape job is running!" } ] } }

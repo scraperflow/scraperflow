@@ -3,7 +3,6 @@ package scraper.nodes.core.flow;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
 import scraper.annotations.node.Flow;
@@ -14,7 +13,7 @@ import scraper.api.template.T;
 /**
  * Provides if-then-else routing
  */
-@NodePlugin(value = "0.1.0", customFlowAfter = true)
+@NodePlugin(value = "0.1.0")
 public final class IfThenElse implements Node {
 
     /** Boolean condition*/
@@ -23,27 +22,25 @@ public final class IfThenElse implements Node {
 
     /** True target address */
     @FlowKey
-    @Flow(dependent = true, crossed = false, label = "true")
+    @Flow(label = "true")
     private Address trueTarget;
 
     /** False target address */
     @FlowKey
-    @Flow(dependent = true, crossed = false, label = "false")
+    @Flow(label = "false")
     private Address falseTarget;
 
     @NotNull
     @Override
-    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
+    public void process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
         Boolean condition = o.eval(this.condition);
 
         if(condition) {
             if(trueTarget != null)
-                return n.eval(o, trueTarget);
+                n.forward(o, trueTarget);
         } else {
             if(falseTarget != null)
-                return n.eval(o, falseTarget);
+                n.forward(o, falseTarget);
         }
-
-        return o;
     }
 }

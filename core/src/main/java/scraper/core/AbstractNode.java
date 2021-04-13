@@ -6,7 +6,7 @@ import scraper.annotations.node.Argument;
 import scraper.annotations.node.EnsureFile;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
+import scraper.api.exceptions.NodeIOException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
@@ -81,11 +81,6 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
     @FlowKey
     private String label;
     private NodeAddress absoluteAddress;
-
-    /** Target if a fork (dispatch or depend) flow exception occurs */
-    @FlowKey
-    @Flow(dependent = true, crossed = false, label = "onException")
-    protected Address onForkException;
 
     /** Reference to its parent job */
     protected ScrapeInstance jobPojo;
@@ -166,7 +161,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
      * @param map The current forwarded map
      */
     @SuppressWarnings("unused")
-    protected void start(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap map) throws NodeException {
+    protected void start(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap map) {
         // evaluate and write log message if any
         try {
             if(log.getTerm() != null) {
@@ -209,7 +204,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
             throw new RuntimeException("Implemented reflection badly: ", e);
         } catch (IOException e) {
             log(ERROR,"Failed ensure file: {0}", e.getMessage());
-            throw new NodeException("Failed ensuring directory or file: " + e.getMessage());
+            throw new NodeIOException("Failed ensuring directory or file: " + e.getMessage());
         }
     }
 
@@ -223,8 +218,8 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
 
     /** Dispatches an action in an own thread, ignoring the result and possible exceptions. */
     @NotNull
-    protected CompletableFuture<FlowMap> dispatch(@NotNull Supplier<FlowMap> o) {
-        return CompletableFuture.supplyAsync(o, getService());
+    protected void dispatch(@NotNull Supplier<Void> o) {
+         CompletableFuture.supplyAsync(o, getService());
     }
 
 
@@ -271,66 +266,28 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
 
 
     @NotNull @Override
-    public FlowMap forward(@NotNull final FlowMap o) throws NodeException {
+    public void forward(@NotNull final FlowMap o) {
         if (getGoTo().isPresent()) {
             NodeContainer<? extends Node> targetNode = getGoTo().get();
             o.nextSequence();
-            return targetNode.getC().accept(targetNode, o);
-        } else {
-            return o;
+//            targetNode.getC().accept(targetNode, o);
+            forkDispatch(o, targetNode.getAddress());
         }
     }
 
     @NotNull @Override
-    public FlowMap eval(@NotNull final FlowMap o, @NotNull final Address target) throws NodeException {
+    public void forward(@NotNull final FlowMap o, @NotNull final Address target) {
         NodeContainer<? extends Node> opt = NodeUtil.getTarget(getAddress(), target, getJobInstance());
         o.nextSequence();
-        return opt.getC().accept(opt, o);
+        forkDispatch(o, opt.getAddress());
+//        opt.getC().accept(opt, o);
     }
 
-    @Override
     public void forkDispatch(@NotNull final FlowMap o, @NotNull final Address target) {
         dispatch(() -> {
-            try {
-                NodeContainer<? extends Node> opt = NodeUtil.getTarget(getAddress(), target, getJobInstance());
-                return opt.getC().accept(opt, o.newFlow());
-            } catch (Exception e) {
-                if(onForkException != null) {
-                    try {
-                        log(WARN, "Fork dispatch to goTo {0} terminated exceptionally, executing onException {1}: {2}.", target, onForkException, e.getMessage());
-                        return eval(o, onForkException);
-                    } catch (NodeException ex) {
-                        log(ERROR, "OnException fork target {0} terminated exceptionally: {1}", target, e.getMessage());
-                        throw new RuntimeException(e);
-                    }
-                } else {
-                    log(ERROR, "Fork dispatch to goTo {0} terminated exceptionally: {1}", target, e.getMessage());
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-    }
-
-    @NotNull @Override
-    public CompletableFuture<FlowMap> forkDepend(@NotNull final FlowMap o, @NotNull final Address target) {
-        return dispatch(() -> {
-            try {
-                NodeContainer<? extends Node> opt = NodeUtil.getTarget(getAddress(), target, getJobInstance());
-                return opt.getC().accept(opt, o.newFlow());
-            } catch (Exception e) {
-                if(onForkException != null) {
-                    try {
-                        return eval(o, onForkException);
-                    } catch (NodeException ex) {
-                        log(ERROR, "OnException fork target {0} terminated exceptionally: {1}", target, e.getMessage());
-                        throw new RuntimeException(e);
-                    }
-                } else {
-                    e.printStackTrace();
-                    log(ERROR, "Fork depend to goTo {0} terminated exceptionally: {1}", target, e.getMessage());
-                    throw new RuntimeException(e);
-                }
-            }
+            NodeContainer<? extends Node> opt = NodeUtil.getTarget(getAddress(), target, getJobInstance());
+            opt.getC().accept(opt, o.newFlow());
+            return null;
         });
     }
 
@@ -419,7 +376,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
     }
 
     private final NodeHook basicHook = new NodeHook() {
-        @Override public void beforeProcess(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException { start(n,o); }
+        @Override public void beforeProcess(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) { start(n,o); }
         @Override public void afterProcess(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) { finish(n,o); }
     };
 }

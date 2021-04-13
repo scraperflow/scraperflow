@@ -1,9 +1,0 @@
-{
-    "name" : "part",
-  "entry": "other",
-    "graphs" : {
-      "other": [
-        { "type": "Simplest", "log": "went to other"}
-      ]
-    }
-}

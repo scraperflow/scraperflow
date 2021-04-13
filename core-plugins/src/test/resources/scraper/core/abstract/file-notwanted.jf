@@ -1,9 +1,0 @@
-{
-  "name"       : "job",
-  "graphs"    : {
-    "start":
-    [
-      { "type":"File", "file": null }
-    ]
-  }
-}

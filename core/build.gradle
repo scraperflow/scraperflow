@@ -11,9 +11,9 @@ dependencies {
     implementation 'org.antlr:antlr4-runtime:4.8'
 
     // reflection framework
-    api 'io.github.classgraph:classgraph:4.8.87'
+    api 'io.github.classgraph:classgraph:4.8.104'
 
     // json library
-    api group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.+'
-    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.+'
+    api group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.12.+'
+    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.+'
 }

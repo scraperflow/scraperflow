@@ -9,7 +9,6 @@ import scraper.api.node.type.FunctionalNode;
 import scraper.api.template.L;
 import scraper.api.template.T;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**

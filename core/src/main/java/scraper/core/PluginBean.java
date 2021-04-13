@@ -14,7 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static java.lang.System.Logger.Level.DEBUG;
-import static java.lang.System.Logger.Level.INFO;
 
 public class PluginBean {
     private @NotNull static final System.Logger log = System.getLogger("NodeDiscovery");

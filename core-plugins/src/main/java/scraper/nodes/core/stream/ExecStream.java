@@ -3,7 +3,7 @@ package scraper.nodes.core.stream;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.Io;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
+import scraper.api.exceptions.NodeIOException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.StreamNodeContainer;
 import scraper.api.node.type.StreamNode;
@@ -41,7 +41,7 @@ public final class ExecStream implements StreamNode {
     private final L<String> put = new L<>(){};
 
     @Override
-    public void process(StreamNodeContainer n, FlowMap o) throws NodeException {
+    public void process(StreamNodeContainer n, FlowMap o) {
         List<String> exec = o.eval(this.exec);
 
         try {
@@ -68,7 +68,7 @@ public final class ExecStream implements StreamNode {
             b.waitFor();
         } catch (IOException | InterruptedException e) {
             n.log(ERROR,"{0} could not be executed:", exec, e.getMessage());
-            if (failOnException) throw new NodeException(e, "Internal process execution error");
+            if (failOnException) throw new NodeIOException(e, "Internal process execution error");
         }
     }
 

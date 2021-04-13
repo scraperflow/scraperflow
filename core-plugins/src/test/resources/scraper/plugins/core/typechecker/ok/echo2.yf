@@ -1,6 +1,0 @@
----
-name: complex
-graphs:
-  start:
-    - type: Echo
-      log: "no op"

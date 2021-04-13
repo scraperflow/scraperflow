@@ -4,7 +4,7 @@ import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.Io;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
+import scraper.api.exceptions.NodeIOException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
@@ -74,15 +74,15 @@ public final class Exec implements FunctionalNode {
 
 
     @Override
-    public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) throws NodeException {
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         Optional<List<String>> exec = o.evalMaybe(this.exec);
         Optional<String> execStr = o.evalMaybe(this.execStr);
 
         if(exec.isPresent()) exec(n, exec.get(), o);
-        else if(execStr.isPresent()) exec(n, Arrays.asList(execStr.get().split("\\s")), o);
+        else execStr.ifPresent(s -> exec(n, Arrays.asList(s.split("\\s")), o));
     }
 
-    private void exec(NodeContainer<? extends Node> n, List<String> exec, FlowMap o) throws NodeException {
+    private void exec(NodeContainer<? extends Node> n, List<String> exec, FlowMap o) {
         try {
             n.log(DEBUG,"Executing {0}", exec);
 
@@ -103,7 +103,7 @@ public final class Exec implements FunctionalNode {
             b.waitFor();
         } catch (IOException | InterruptedException e) {
             n.log(ERROR,"{0} could not be executed:", exec, e.getMessage());
-            if (failOnException) throw new NodeException(e, "Internal process execution error");
+            if (failOnException) throw new NodeIOException(e, "Internal process execution error");
         }
     }
 

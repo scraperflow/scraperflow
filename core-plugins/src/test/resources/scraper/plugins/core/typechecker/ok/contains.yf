@@ -1,9 +1,0 @@
----
-name: contains
-graphs:
-  start:
-    - {type: Echo, put: list, value: []}
-    - type: ContainedInCollection
-      collection: "{list}"
-      object: "hello"
-

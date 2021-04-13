@@ -3,7 +3,7 @@ package scraper.nodes.core.functional;
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
+import scraper.api.exceptions.NodeIOException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
@@ -34,12 +34,12 @@ public final class StringContains implements FunctionalNode {
     private final L<Boolean> output = new L<>(){};
 
     @Override
-    public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) throws NodeException {
+    public void modify(@NotNull FunctionalNodeContainer n, @NotNull FlowMap o) {
         Pattern p;
         try {
             String regex = o.eval(this.regex);
             p = Pattern.compile(regex);
-        } catch (Exception e) { throw new NodeException(e, "Failed to compile pattern."); }
+        } catch (Exception e) { throw new NodeIOException(e, "Failed to compile pattern."); }
 
         String content = o.eval(this.content);
 

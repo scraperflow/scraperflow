@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * Joins on a join key.
  */
-@NodePlugin(value = "0.0.1", deprecated = true, customFlowAfter = true)
+@NodePlugin(value = "0.0.1", customFlowAfter = true)
 @Stateful
 public final class Join implements Node {
 
@@ -35,7 +35,7 @@ public final class Join implements Node {
 
     /** Target address to fork to */
     @FlowKey(mandatory = true)
-    @Flow(dependent = false, crossed = false, label = "join")
+    @Flow(label = "join")
     private Address joinTarget;
 
     // STATE
@@ -43,7 +43,7 @@ public final class Join implements Node {
 
     @NotNull
     @Override
-    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
+    public void process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
         Fork.JoinKey joinKey = o.eval(this.joinKey);
 
         Collection<AbstractMap.SimpleEntry<Fork.JoinKey, FlowMap>> flows;
@@ -62,8 +62,6 @@ public final class Join implements Node {
                 emit(flows, o, n, o.evalIdentity(keys));
             }
         }
-
-        return o;
     }
 
     private void emit(Collection<AbstractMap.SimpleEntry<Fork.JoinKey, FlowMap>> flows, FlowMap evaluator, NodeContainer<? extends Node> n, Map<String, String> keys) {
@@ -85,6 +83,6 @@ public final class Join implements Node {
             toEmit.output(TemplateUtil.locationOf(joinKey), joinResults);
         });
 
-        n.forkDispatch(toEmit, joinTarget);
+        n.forward(toEmit, joinTarget);
     }
 }

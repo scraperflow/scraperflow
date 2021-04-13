@@ -1,6 +1,0 @@
----
-name: log
-graphs:
-  start:
-    - type: Echo
-      log: "Just a log message"

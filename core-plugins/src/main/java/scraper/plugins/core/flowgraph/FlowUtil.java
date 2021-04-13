@@ -114,7 +114,7 @@ public class FlowUtil {
                     Address target = ((Address) obj);
                     NodeContainer<? extends Node> map = NodeUtil.getTarget(node.getAddress(), target, instance);
                     return List.of(edge(
-                            node.getAddress(), map.getAddress(), annot.label(), annot.crossed(), !annot.dependent()
+                            node.getAddress(), map.getAddress(), annot.label(), true
                     ));
                 } else if(obj instanceof List) {
                     List<Address> targets = ((List<Address>) obj);
@@ -123,7 +123,7 @@ public class FlowUtil {
                     int i = 0;
                     for (Address target : targets) {
                         NodeContainer<? extends Node> n = NodeUtil.getTarget(node.getAddress(), target, instance);
-                        edges.add(edge( node.getAddress(), n.getAddress(), annot.label()+(annot.enumerate()?i:""), annot.crossed(), !annot.dependent() ));
+                        edges.add(edge( node.getAddress(), n.getAddress(), annot.label()+(annot.enumerate()?i:""), false, false ));
                         i++;
                     }
 
@@ -133,7 +133,7 @@ public class FlowUtil {
                     return targets.entrySet().stream().map(e -> {
                         Address t = e.getValue();
                         NodeContainer<? extends Node> n = NodeUtil.getTarget(node.getAddress(), t, instance);
-                        return edge( node.getAddress(), n.getAddress(), e.getKey(), annot.crossed(), !annot.dependent() );
+                        return edge( node.getAddress(), n.getAddress(), e.getKey(), false, false );
                     }).collect(Collectors.toList());
                 } else {
                     throw new RuntimeException("Only Address, List, or Map supported");

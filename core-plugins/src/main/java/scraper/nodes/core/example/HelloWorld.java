@@ -5,7 +5,6 @@ import scraper.annotations.node.Argument;
 import scraper.annotations.node.EnsureFile;
 import scraper.annotations.node.FlowKey;
 import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.Address;
@@ -63,7 +62,7 @@ public class HelloWorld implements Node {
 
     @NotNull
     @Override
-    public FlowMap process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) throws NodeException {
+    public void process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
         // processes Templates and reserves keys in the map
         // ensures that the file and directory structure denoted by 'sourceFile' exists
         // takes the evaluated T of field 'hello' and reserves the corresponding key in the map 'o'
@@ -98,18 +97,7 @@ public class HelloWorld implements Node {
             n.log(INFO,"Goto: {0}", (n.getGoTo().isEmpty() ? ("next node") : "node '" + n.getGoTo() + "'"));
         }
 
-        // a node can eval/fork depend/fork dispatch to create nested flows and modify control flow
-        FlowMap newMap = n.eval(o, target);
-//        n.forkDispatch(o, NodeUtil.addressOf("this-label-has-to-exist"));
-//        CompletableFuture<FlowMap> future = n.forkDepend(o, NodeUtil.addressOf("this-label-has-to-exist"));
-
-        // do something with the returned map
-        System.out.println(newMap);
-
-        // after returning this map
-        // the framework forwards to another node depending on the keys 'goTo', 'forward' of the process node
-        // definition in the process definition
-        // the afterFinish hooks are executed with this map
-        return newMap;
+        // a node can forward to create flows and modify control flow
+        n.forward(o, target);
     }
 }

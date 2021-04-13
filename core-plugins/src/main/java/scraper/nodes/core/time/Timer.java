@@ -47,7 +47,7 @@ public final class Timer implements FunctionalNode {
 
     /** Go to node if timeout occurs */
     @FlowKey(mandatory = true)
-    @Flow(dependent = false, crossed = true, label = "timeout")
+    @Flow(label = "timeout")
     private Address onTimeout;
 
     /** Descriptive name of this timer. Used for logging. */
@@ -215,7 +215,7 @@ public final class Timer implements FunctionalNode {
                 try {
                     Thread.sleep(timeout);
                     n.log(INFO,"Executing alarm: {0}", toString());
-                    n.forkDispatch(oCopy, onTimeout);
+                    n.forward(oCopy, onTimeout);
                 } catch (InterruptedException e) {
                     n.log(INFO,"{0} stopped", name);
                 } finally {
