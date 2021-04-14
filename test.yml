@@ -1,50 +1,34 @@
 name: vcards
 graphs:
   start:
-    - type: ReadChunkFile
-      inputFile: "/home/schimpf/droplet/extract-vcards/bench/text.txt"
-      output: "output-chunk"
-      streamTarget: process-chunk
+    - type: IntRange
+      from: 1
+      to: 1000
+      output: e
+      joinKey: joinkey1
+      streamTarget: read
 
-  process-chunk:
-    - type: ToLowerCase
-      string: "{output-chunk}"
-      output: output-lower
+  read:
+    - type: ReadFile
+      inputFile: "bible.txt"
+      output: line
 
-    - type: Regex
-      regex: "(begin:vcard.*?end:vcard)"
-      content: "{output-lower}"
-      output: output
-      groups: { content: 1 }
-      streamTarget: vcard-match
+    - type: wordcount
+      line: "{line}"
+      put: wordcount
 
-  vcard-match:
-    - type: Echo
-      log: Found potential vcard
-      put: vcard
-      value: "{{output}@content}"
-    #    useful for debugging purposes
-#
-#    - type: WriteLineToFile
-#      output: "last.match"
-#      overwrite: true
-#      line: "{vcard}"
+    - type: joinsingle
+      joinKey: "{joinkey1}"
+      key: "{wordcount}"
+      output: wordcounts
+      joinTarget: finished
 
-    - type: Regex
-      regex: "name:(.*?)\nfn:(.*?)\nn:(.*?)\n"
-      content: "{vcard}"
-      streamTarget: vcard-extract
-      output: "v"
-      groups:
-        uid: 1
-        fn: 2
-        rev: 3
 
-  vcard-extract:
-    - type: WriteLineToFile
-      log: "Found vcard"
-      output: "vcards/{{v}@uid}/{{v}@fn}/{{v}@rev}.vcf"
-      overwrite: true
-      line: "{vcard}"
+  finished:
+    - type: mergecounts
+      maps: "{wordcounts}"
+      output: all
 
+    - type: echo
+      log: "{{all}@god}"
 
