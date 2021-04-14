@@ -3,32 +3,38 @@ graphs:
   start:
     - type: IntRange
       from: 1
-      to: 100
+      to: 1000
       output: e
-      joinKey: joinkey1
+      joinKey: joinkey
       streamTarget: read
+      threads: 8
 
   read:
     - type: ReadFile
       inputFile: "bible.txt"
       output: line
+      threads: 8
 
     - type: wordcount
       line: "{line}"
       put: wordcount
+      threads: 8
 
     - type: joinsingle
-      joinKey: "{joinkey1}"
+      joinKey: "{joinkey}"
       key: "{wordcount}"
       output: wordcounts
       joinTarget: finished
+      threads: 8
 
 
   finished:
     - type: mergecounts
       maps: "{wordcounts}"
       output: all
+      threads: 8
 
     - type: echo
       log: "{{all}@god}"
+      threads: 8
 
