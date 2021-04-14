@@ -44,16 +44,16 @@ public final class JoinSingle<X> implements Node {
     private Address joinTarget;
 
     // STATE
-    final Map<Fork.JoinKey, Collection<AbstractMap.SimpleEntry<Fork.JoinKey, X>>> waiting = new ConcurrentHashMap<>();
+    final Map<Fork.JoinKey, List<AbstractMap.SimpleEntry<Fork.JoinKey, X>>> waiting = new ConcurrentHashMap<>();
 
     @NotNull
     @Override
     public void process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
         Fork.JoinKey joinKey = o.eval(this.joinKey);
 
-        Collection<AbstractMap.SimpleEntry<Fork.JoinKey, X>> flows;
+        List<AbstractMap.SimpleEntry<Fork.JoinKey, X>> flows;
         synchronized (waiting) {
-            waiting.computeIfAbsent(joinKey, k -> new HashSet<>());
+            waiting.computeIfAbsent(joinKey, k -> new LinkedList<>());
             flows = waiting.get(joinKey);
         }
 

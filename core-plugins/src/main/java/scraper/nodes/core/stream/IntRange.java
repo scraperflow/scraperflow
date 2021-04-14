@@ -8,7 +8,10 @@ import scraper.api.flow.FlowMap;
 import scraper.api.node.container.StreamNodeContainer;
 import scraper.api.node.type.StreamNode;
 import scraper.api.template.L;
+import scraper.nodes.core.flow.Fork;
 
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 /**
@@ -36,13 +39,20 @@ public final class IntRange implements StreamNode {
     @FlowKey(defaultValue = "\"i\"")
     private final L<Integer> output = new L<>(){};
 
+    /** Key which can be used to join flows */
+    @FlowKey(defaultValue = "\"_\"")
+    private final L<Fork.JoinKey> joinKey = new L<>(){};
+
 
     @Override
     public void process(@NotNull final StreamNodeContainer n, @NotNull final FlowMap o) {
+        AtomicInteger current = new AtomicInteger();
+        int uid = new Random().nextInt();
         IntStream.rangeClosed(from, to).forEach(i ->{
             FlowMap copy = o.copy();
             copy.output(output, i);
-            System.out.println("Streaming...");
+            Fork.JoinKey key = new Fork.JoinKey(to, uid, current.getAndIncrement());
+            copy.output(joinKey, key);
             n.streamFlowMap(o, copy);
         });
     }

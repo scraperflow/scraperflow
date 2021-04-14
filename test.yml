@@ -3,7 +3,7 @@ graphs:
   start:
     - type: IntRange
       from: 1
-      to: 1000
+      to: 100
       output: e
       joinKey: joinkey1
       streamTarget: read

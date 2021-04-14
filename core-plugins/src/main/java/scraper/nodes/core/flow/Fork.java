@@ -49,7 +49,7 @@ public final class Fork implements Node {
         });
     }
 
-    static class JoinKey {
+    public static class JoinKey {
         final int size;
         final int num;
         final int uid;
