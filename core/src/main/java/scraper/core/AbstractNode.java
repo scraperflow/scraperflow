@@ -219,7 +219,12 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
     /** Dispatches an action in an own thread, ignoring the result and possible exceptions. */
     @NotNull
     protected void dispatch(@NotNull Supplier<Void> o) {
-         CompletableFuture.supplyAsync(o, getService());
+        // supply in scheduler thread group
+        CompletableFuture
+                .supplyAsync(() -> {
+                    CompletableFuture.supplyAsync(o, getService());
+                    return null;
+                }, getJobPojo().getExecutors().getService("disp", "scheduler", 5));
     }
 
 
