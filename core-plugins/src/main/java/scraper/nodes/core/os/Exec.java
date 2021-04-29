@@ -21,8 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static scraper.api.node.container.NodeLogLevel.DEBUG;
-import static scraper.api.node.container.NodeLogLevel.ERROR;
+import static scraper.api.node.container.NodeLogLevel.*;
 
 /**
  * Executes a command defined in the workflow in the current system environment.
@@ -84,7 +83,6 @@ public final class Exec implements FunctionalNode {
 
     private void exec(NodeContainer<? extends Node> n, List<String> exec, FlowMap o) {
         try {
-            n.log(DEBUG,"Executing {0}", exec);
 
             ProcessBuilder pb = new ProcessBuilder(exec);
             o.evalMaybe(workingDirectory).ifPresent(dir -> pb.directory(new File(dir)));

@@ -32,7 +32,6 @@ public class TypeHook implements Hook {
 
         if(disable == null) {
             for (ScrapeSpecification def : jobs.keySet()) {
-                long startTime = System.currentTimeMillis();
                 ScrapeInstance job = jobs.get(def);
 
                 log.log(System.Logger.Level.DEBUG,"Static type check for {0}", def.getScrapeFile());
@@ -47,9 +46,6 @@ public class TypeHook implements Hook {
 
                 // second typing with cycle information
                 t.typeTaskflow(job, cfg);
-
-                long endTime = System.currentTimeMillis();
-                System.out.println("Total execution time: " + (endTime-startTime) + "ms");
             }
         }
     }

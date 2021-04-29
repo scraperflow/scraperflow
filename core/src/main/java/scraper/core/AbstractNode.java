@@ -223,8 +223,8 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
         CompletableFuture
                 .supplyAsync(() -> {
                     CompletableFuture.supplyAsync(o, getService());
-                    return null;
-                }, getJobPojo().getExecutors().getService("disp", "scheduler", 5));
+                    return null; // TODO how to solve this waiting problem
+                }, getJobPojo().getExecutors().getService("disp", "scheduler", 9999));
     }
 
 
