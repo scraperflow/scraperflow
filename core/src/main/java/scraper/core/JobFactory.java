@@ -2,6 +2,7 @@ package scraper.core;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import scraper.annotations.ArgsCommand;
 import scraper.annotations.NotNull;
 import scraper.api.exceptions.ValidationException;
 import scraper.api.node.InstanceAddress;
@@ -33,6 +34,11 @@ import java.util.stream.Collectors;
 import static java.lang.System.Logger.Level.*;
 import static scraper.utils.FileUtil.getFirstExistingPaths;
 
+@ArgsCommand(
+        value = "arg:key=value",
+        doc = "Key value mapping by command-line argument",
+        example = "scraper arg:mykey=\"mystring\""
+)
 public class JobFactory {
     private static final System.Logger log = System.getLogger("JobFactory");
 
@@ -99,15 +105,15 @@ public class JobFactory {
     }
 
     public @NotNull ScrapeInstaceImpl convertScrapeJob(@NotNull final ScrapeSpecification jobDefinition) throws IOException, ValidationException {
-        return convertJob(jobDefinition, null, Set.of());
+        return convertJob(new String[]{}, jobDefinition, null, Set.of());
     }
 
-    public @NotNull ScrapeInstaceImpl convertScrapeJob(@NotNull final ScrapeSpecification jobDefinition, Collection<NodeHook> nodeHooks) throws IOException, ValidationException {
-        return convertJob(jobDefinition, null, nodeHooks);
+    public @NotNull ScrapeInstaceImpl convertScrapeJob(String[] args, @NotNull final ScrapeSpecification jobDefinition, Collection<NodeHook> nodeHooks) throws IOException, ValidationException {
+        return convertJob(args, jobDefinition, null, nodeHooks);
     }
 
-    private @NotNull ScrapeInstaceImpl convertJob(@NotNull final ScrapeSpecification jobDefinition,
-                                         Function<String, Map<String, Object>> nodeSupplier,
+    private @NotNull ScrapeInstaceImpl convertJob(String[] args, @NotNull final ScrapeSpecification jobDefinition,
+                                                  Function<String, Map<String, Object>> nodeSupplier,
                                                   Collection<NodeHook> nodeHooks)
             throws IOException, ValidationException {
 
@@ -122,7 +128,7 @@ public class JobFactory {
             // overwrite global configuration of imported job
             newJob.getGlobalNodeConfigurations().putAll(jobDefinition.getGlobalNodeConfigurations());
 
-            ScrapeInstaceImpl parsedJob = convertScrapeJob(newJob, nodeHooks);
+            ScrapeInstaceImpl parsedJob = convertScrapeJob(args, newJob, nodeHooks);
             parsedImports.put(new InstanceAddressImpl(newJob.getName()), parsedJob);
         }
 
@@ -172,6 +178,12 @@ public class JobFactory {
         }
 
         job.getEntryArguments().putAll(combinedArgs);
+
+        // command-line args
+        StringUtil.getAllArguments(args, "arg").forEach(arg -> {
+            Map.Entry<String, Object> e = parseSingleArgument(arg);
+            job.getEntryArguments().put(e.getKey(), e.getValue());
+        });
 
         // ===
         // Pre-process fragments

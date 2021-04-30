@@ -158,7 +158,7 @@ public class Scraper {
 
         log.log(DEBUG, "Converting scrape jobs");
         for (ScrapeSpecification jobDefinition : jobDefinitions)
-            jobs.put(jobDefinition, jobFactory.convertScrapeJob(jobDefinition, nodeHooks));
+            jobs.put(jobDefinition, jobFactory.convertScrapeJob(args, jobDefinition, nodeHooks));
 
         StringUtil.getAllArguments(args, "arg")
                 .stream()

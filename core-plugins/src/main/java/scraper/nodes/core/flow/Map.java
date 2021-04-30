@@ -14,6 +14,8 @@ import scraper.api.template.T;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -45,22 +47,42 @@ public final class Map <K> implements Node {
     @FlowKey(defaultValue = "\"_\"")
     private final L<String> putElementKey = new L<>(){};
 
+    /** Key which can be used to join flows */
+    @FlowKey(defaultValue = "\"_\"")
+    private final L<Fork.JoinKey> joinKey = new L<>(){};
+
     @NotNull
     @Override
     public void process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
-        Optional<List<K>> targetList = o.evalMaybe(list);
-        targetList.ifPresent(ks -> ks.forEach(t -> {
-            FlowMap finalCopy = o.copy();
-            finalCopy.output(putElement, t);
-            n.forward(finalCopy, mapTarget);
-        }));
+        {
+            Optional<List<K>> targetList = o.evalMaybe(list);
+            int uid = new Random().nextInt();
+            AtomicInteger current = new AtomicInteger();
+            targetList.ifPresent(ks -> ks.forEach(t -> {
+                FlowMap finalCopy = o.copy();
+                finalCopy.output(putElement, t);
 
-        Optional<java.util.Map<String, K>> targetMap = o.evalMaybe(map);
-        targetMap.ifPresent(stringKMap -> stringKMap.forEach((k, v) -> {
-            FlowMap finalCopy = o.copy();
-            finalCopy.output(putElement, v);
-            finalCopy.output(putElementKey, k);
-            n.forward(finalCopy, mapTarget);
-        }));
+                Fork.JoinKey key = new Fork.JoinKey(ks.size(), uid, current.getAndIncrement());
+                finalCopy.output(joinKey, key);
+                n.forward(finalCopy, mapTarget);
+            }));
+
+        }
+
+        {
+            int uid = new Random().nextInt();
+            AtomicInteger current = new AtomicInteger();
+            Optional<java.util.Map<String, K>> targetMap = o.evalMaybe(map);
+            targetMap.ifPresent(stringKMap -> stringKMap.forEach((k, v) -> {
+                FlowMap finalCopy = o.copy();
+                finalCopy.output(putElement, v);
+                finalCopy.output(putElementKey, k);
+
+                Fork.JoinKey key = new Fork.JoinKey(stringKMap.size(), uid, current.getAndIncrement());
+                finalCopy.output(joinKey, key);
+                n.forward(finalCopy, mapTarget);
+            }));
+
+        }
     }
 }
