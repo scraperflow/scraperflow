@@ -61,8 +61,8 @@ public class TypeEnvironment {
     public void remove(Term<?> location) {
         if(location.getRaw().equals("_")) return; // special _ void case
         T<?> removed = templateToKnownTargets.remove(location);
-        if(removed == null)
-            throw new TemplateException("Nothing removed!");
+//        if(removed == null)
+//            throw new TemplateException("Nothing removed!");
     }
 
     public boolean greaterThan(@NotNull TypeEnvironment other) {

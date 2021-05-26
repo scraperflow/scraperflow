@@ -26,6 +26,9 @@ import scraper.utils.StringUtil;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
@@ -33,6 +36,8 @@ import java.util.stream.Collectors;
 
 import static java.lang.System.Logger.Level.*;
 import static scraper.utils.FileUtil.getFirstExistingPaths;
+
+import javax.tools.*;
 
 @ArgsCommand(
         value = "arg:key=value",
@@ -398,11 +403,53 @@ public class JobFactory {
             }
         }
 
+
         if(curr == null) {
-            String msg = "No plugin for "+type+" (v"+version+") found! " +
-                    "Provide an implementation with qualifying version number.";
-            throw new ValidationException(msg);
+            Node local;
+            try {
+                local = searchLocalClass();
+                return local;
+            } catch (Exception e) {
+                String msg = "No plugin for "+type+" (v"+version+") found! " +
+                        "Provide an implementation with qualifying version number.";
+                throw new ValidationException(msg);
+            }
         }
         return curr.getNode();
+    }
+
+    private Node searchLocalClass() throws Exception {
+
+        // Save source in .java file.
+        File root = new File("CustomNode.java"); // On Windows running on C:\, this is C:\java.
+
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
+
+        // This sets up the class path that the compiler will use.
+        // I've added the .jar file that contains the DoStuff interface within in it...
+        List<String> optionList = new ArrayList<String>();
+        optionList.add("-classpath");
+        optionList.add(System.getProperty("java.class.path") + File.pathSeparator + "api/build/libs/api-1.0.0.jar");
+
+        Iterable<? extends JavaFileObject> compilationUnit
+                = fileManager.getJavaFileObjectsFromFiles(Arrays.asList(root));
+        JavaCompiler.CompilationTask task = compiler.getTask(
+                null,
+                fileManager,
+                diagnostics,
+                optionList,
+                null,
+                compilationUnit);
+        /********************************************************************************************* Compilation Requirements **/
+
+        task.call();
+
+        // Load and instantiate compiled class.
+        URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { new File("./").toURI().toURL() });
+        Class<?> cls = Class.forName("CustomNode", true, classLoader); // Should print "hello".
+        Object instance = cls.newInstance(); // Should print "world".
+        return (Node) instance;
     }
 }

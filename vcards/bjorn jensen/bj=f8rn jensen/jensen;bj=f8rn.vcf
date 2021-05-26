@@ -1,9 +1,0 @@
-begin:vcard
-source:ldap://cn=bjorn%20jensen, o=university%20of%20michigan, c=us
-name:bjorn jensen
-fn:bj=f8rn jensen
-n:jensen;bj=f8rn
-email;type=internet:bjorn@umich.edu
-tel;type=work,voice,msg:+1 313 747-4454
-key;type=x509;encoding=b:dghpcybjb3vszcbizsakbxkgy2vydglmawnhdguk
-end:vcard

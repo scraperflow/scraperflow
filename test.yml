@@ -1,0 +1,14 @@
+start:
+  - f: periodic
+    period: 10000
+    onPeriod: echo
+
+echo:
+  - f: echo
+    put: world
+    value: "world"
+
+  - f: customnode
+    put: hello
+    value: "{world}"
+    log: hello"

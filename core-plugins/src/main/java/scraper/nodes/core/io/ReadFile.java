@@ -37,7 +37,7 @@ public final class ReadFile implements FunctionalNode {
     private final L<String> output = new L<>(){};
 
     /** Character encoding of the file */
-    @FlowKey(defaultValue = "\"ISO_8859_1\"")
+    @FlowKey(defaultValue = "\"UTF-8\"")
     private String charset;
 
     /** Join lines with this string. Can be empty. */

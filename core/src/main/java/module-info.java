@@ -23,5 +23,6 @@ open module scraper.core {
 
     requires transitive scraper.api;
     requires transitive scraper.utils;
+    requires java.compiler;
 
 }

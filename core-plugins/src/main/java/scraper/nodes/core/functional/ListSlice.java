@@ -51,6 +51,10 @@ public final class ListSlice <K> implements FunctionalNode {
         // negative wrap around, stop at zero
         if(to < 0) endIndex = min(0, list.size() - abs(endIndex));
 
+        // cut to list length
+        if(endIndex > list.size()) endIndex = list.size();
+        if(startIndex > list.size()) startIndex = list.size();
+
         // special case: end index 0
         if(endIndex == 0) endIndex = list.size();
 

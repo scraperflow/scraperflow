@@ -44,23 +44,27 @@ public final class Join implements Node {
     @NotNull
     @Override
     public void process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
-        Fork.JoinKey joinKey = o.eval(this.joinKey);
+        try{
+            Fork.JoinKey joinKey = o.eval(this.joinKey);
 
-        Collection<AbstractMap.SimpleEntry<Fork.JoinKey, FlowMap>> flows;
-        synchronized (waiting) {
-            waiting.computeIfAbsent(joinKey, k -> new HashSet<>());
-            flows = waiting.get(joinKey);
-        }
-
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (flows) {
-            if (flows.size() < joinKey.size) {
-                flows.add(new AbstractMap.SimpleEntry<>(joinKey, o.copy()));
+            Collection<AbstractMap.SimpleEntry<Fork.JoinKey, FlowMap>> flows;
+            synchronized (waiting) {
+                waiting.computeIfAbsent(joinKey, k -> new HashSet<>());
+                flows = waiting.get(joinKey);
             }
 
-            if (flows.size() == joinKey.size) {
-                emit(flows, o, n, o.evalIdentity(keys));
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
+            synchronized (flows) {
+                if (flows.size() < joinKey.size) {
+                    flows.add(new AbstractMap.SimpleEntry<>(joinKey, o.copy()));
+                }
+
+                if (flows.size() == joinKey.size) {
+                    emit(flows, o, n, o.evalIdentity(keys));
+                }
             }
+        } catch (Exception e) {
+            System.out.println("WHAT");
         }
     }
 

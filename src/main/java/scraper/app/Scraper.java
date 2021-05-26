@@ -19,6 +19,8 @@ import scraper.core.JobFactory;
 import scraper.utils.StringUtil;
 
 import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -28,6 +30,9 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static scraper.app.CommandPrinter.collectAndPrintCommandLineArguments;
 import static scraper.util.DependencyInjectionUtil.getDIContainer;
+
+
+import javax.tools.*;
 
 public class Scraper {
 
@@ -86,7 +91,7 @@ public class Scraper {
         }
 
         String versionArgs = StringUtil.getArgument(args, "version");
-        if(versionArgs != null) System.out.println("Scraper version 0.18-SNAPSHOT");
+        if(versionArgs != null) System.out.println("Scraper version 1.0.0-SNAPSHOT");
 
         // inject dependencies
         DIContainer pico = getDIContainer();

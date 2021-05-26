@@ -123,23 +123,8 @@ public class TypeChecker {
         env.ignore.clear();
 
         cfg.getOutgoingEdges(n.getAddress()).forEach(e -> {
-            if(e.isDispatched()) {
-                NodeContainer<?> nextNode = spec.getNode(e.getToAddress());
-                propagate(e, nextNode, env.copy(), spec, cfg, new LinkedList<>(visited));
-            } else {
-                if(
-                        e.getDisplayLabel().equalsIgnoreCase("forward") || e.isPropagate()
-                ) {
-                    NodeContainer<?> nextNode = spec.getNode(e.getToAddress());
-                    if (e.isPropagate()) {
-                        propagate(e, nextNode, env.copy(), spec, cfg, new LinkedList<>(visited));
-                    } else {
-                        propagate(e, nextNode, env, spec, cfg, new LinkedList<>(visited));
-                    }
-                } else {
-                    log.log(DEBUG, "Not propagating: " + e.getDisplayLabel());
-                }
-            }
+            NodeContainer<?> nextNode = spec.getNode(e.getToAddress());
+            propagate(e, nextNode, env.copy(), spec, cfg, new LinkedList<>(visited));
         });
     }
 
