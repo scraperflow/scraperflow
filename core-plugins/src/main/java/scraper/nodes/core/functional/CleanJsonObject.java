@@ -43,7 +43,7 @@ public final class CleanJsonObject <A> implements FunctionalNode {
     private final T<List<String>> clean = new T<>(){};
 
     /** Where the cleaned JSON object will be stored */
-    @FlowKey(defaultValue = "\"output\"")
+    @FlowKey(mandatory = true)
     private final L<Map<String, A>> cleanedObject = new L<>(){};
 
     @Override

@@ -23,11 +23,13 @@ public class Pad implements FunctionalNode {
     @FlowKey(mandatory = true)
     private final T<Integer> pad = new T<>(){};
 
+    /** Element to insert */
+    @FlowKey(defaultValue = "\"0\"")
+    private final T<String> element = new T<>(){};
+
     /** padded string */
     @FlowKey(mandatory = true)
     private final L<String> output = new L<>(){};
-
-
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
@@ -35,7 +37,7 @@ public class Pad implements FunctionalNode {
         Integer pad = o.eval(this.pad);
 
         for (int i = toPad.length(); i < pad; i++) {
-            toPad.insert(0, "0");
+            toPad.insert(0, o.eval(element));
         }
 
         o.output(this.output, toPad.toString());

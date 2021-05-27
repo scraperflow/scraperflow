@@ -7,6 +7,7 @@ import scraper.annotations.node.NodePlugin;
 import scraper.api.exceptions.NodeIOException;
 import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
+import scraper.api.node.container.NodeLogLevel;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.template.L;
 import scraper.api.template.T;
@@ -16,15 +17,15 @@ import java.io.IOException;
 /**
  * Converts a Json object to a String representation
  */
-@NodePlugin("0.3.0")
+@NodePlugin("0.4.0")
 public final class ObjectToJsonString implements FunctionalNode {
 
     /** Json object */
-    @FlowKey(defaultValue = "\"object\"")
+    @FlowKey(mandatory = true)
     private final T<Object> object = new T<>(){};
 
     /** Resulting string location */
-    @FlowKey(defaultValue = "\"result\"")
+    @FlowKey(mandatory = true)
     private final L<String> result = new L<>(){};
 
     // used to convert JSON
@@ -40,6 +41,7 @@ public final class ObjectToJsonString implements FunctionalNode {
             o.output(result, obj);
         }
         catch (IOException e) {
+            n.log(NodeLogLevel.ERROR, "Failed to convert JSON object: {0}", e.getMessage());
             throw new NodeIOException(e, e.getMessage()+"; Failed to convert JSON object");
         }
     }

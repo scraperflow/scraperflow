@@ -12,9 +12,6 @@ import scraper.api.template.T;
 import java.util.Collections;
 import java.util.List;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.min;
-
 /**
  * Reverses a list.
  */
@@ -22,7 +19,7 @@ import static java.lang.Math.min;
 public final class ListReverse<K> implements FunctionalNode {
 
     /** List to slice */
-    @FlowKey(defaultValue = "[]")
+    @FlowKey(mandatory = true)
     private final T<List<K>> list = new T<>(){};
 
     /** Reversed list */

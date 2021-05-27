@@ -1,4 +1,4 @@
-package scraper.nodes.core.functional;
+package scraper.nodes.core.complex;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.node.FlowKey;
@@ -18,7 +18,7 @@ import java.util.List;
  * Can scope the flow map.
  * Only keys that are defined in <var>keys</var> are kept, others are deleted.
  */
-@NodePlugin("0.0.1")
+@NodePlugin(value = "0.0.1", customFlowAfter = true)
 public class LetIn implements FunctionalNode {
 
     /** Keys to include in following scope */

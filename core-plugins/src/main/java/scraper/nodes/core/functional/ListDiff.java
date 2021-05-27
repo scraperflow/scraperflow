@@ -17,19 +17,19 @@ import java.util.Set;
 /**
  * Takes a universe and removes all elements in a given list from it.
  */
-@NodePlugin("0.2.0")
+@NodePlugin("0.3.0")
 public final class ListDiff <K> implements FunctionalNode {
 
     /** The universe from which to remove all elements of another list */
-    @FlowKey(defaultValue = "\"{universe}\"")
+    @FlowKey(mandatory = true)
     private final T<List<K>> universe = new T<>(){};
 
     /** Elements to remove */
-    @FlowKey(defaultValue = "[]")
+    @FlowKey(mandatory = true)
     private final T<List<K>> list = new T<>(){};
 
     /** Where the difference list is stored */
-    @FlowKey(defaultValue = "\"_\"")
+    @FlowKey(mandatory = true)
     private final L<List<K>> output = new L<>(){};
 
     @Override

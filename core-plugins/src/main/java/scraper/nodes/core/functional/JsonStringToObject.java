@@ -13,20 +13,20 @@ import scraper.api.template.T;
 
 import java.io.IOException;
 
-import static scraper.api.node.container.NodeLogLevel.WARN;
+import static scraper.api.node.container.NodeLogLevel.ERROR;
 
 /**
  * Converts and evaluates a json string to a json object
  */
-@NodePlugin(value = "0.2.1")
+@NodePlugin(value = "0.3.0")
 public final class JsonStringToObject implements FunctionalNode {
 
     /** JSON string */
-    @FlowKey(defaultValue = "\"json\"")
+    @FlowKey(mandatory = true)
     private final T<String> jsonString = new T<>(){};
 
     /** JSON object output */
-    @FlowKey(defaultValue = "\"result\"")
+    @FlowKey(mandatory = true)
     private final L<Object> jsonObject = new L<>(){};
 
     // used to convert JSON
@@ -42,8 +42,9 @@ public final class JsonStringToObject implements FunctionalNode {
             o.output(jsonObject, obj);
         }
         catch (IOException e) {
-            n.log(WARN,"Could not convert input to JSON object: {0}", json);
-            throw new NodeIOException(e, e.getMessage()+"; Failed to convert JSON object: "+ json);
+            String err = String.format("Could not convert input to JSON object: %s\n%s", json, e.getMessage());
+            n.log(ERROR,err);
+            throw new NodeIOException(e, err);
         }
     }
 }

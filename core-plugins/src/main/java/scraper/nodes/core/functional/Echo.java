@@ -12,15 +12,6 @@ import scraper.api.template.T;
 /**
  * Can modify the current flow map.
  * Can be used to construct a subset of user defined JSON objects.
- * <p>
- * Example
- * <pre>
- *type: Echo
- *put: user
- *value:
- *  name: "{username}"
- *  age: "{userage}"
- * </pre>
  */
 @NodePlugin("2.0.2")
 public class Echo <A> implements FunctionalNode {

@@ -20,20 +20,20 @@ import java.text.SimpleDateFormat;
 /**
  * Echoes date in given format.
  */
-@NodePlugin("0.2.0")
+@NodePlugin("0.3.0")
 public final class Date implements FunctionalNode {
 
     /** Format of the date */
     @FlowKey(defaultValue = "\"yyyy-MM-dd'T'HH:mm:ss\"") @Argument
     private String dateFormat;
 
-    /** Where to put the date */
-    @FlowKey(defaultValue = "\"date\"") @NotNull
-    private final L<String> put = new L<>(){};
-
     /** Which timestamp for parse in ms if needed */
     @FlowKey
     private final T<Integer> use = new T<>(){};
+
+    /** Where to put the date */
+    @FlowKey(mandatory = true)
+    private final L<String> put = new L<>(){};
 
     private DateFormat parsedDateFormat;
 

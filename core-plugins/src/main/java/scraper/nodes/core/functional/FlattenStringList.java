@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Flattens a list of strings into a flattened string.
  */
-@NodePlugin("0.0.1")
+@NodePlugin("0.1.0")
 public final class FlattenStringList implements FunctionalNode {
 
     /** The list of strings   */
@@ -23,15 +23,15 @@ public final class FlattenStringList implements FunctionalNode {
 
     /** Delimiter. Defaults to space. */
     @FlowKey(defaultValue = "\" \"")
-    private String delimiter;
+    private final T<String> delimiter = new T<>(){};
 
     /** Where the flattened string is stored */
-    @FlowKey(defaultValue = "\"_\"")
+    @FlowKey(mandatory = true)
     private final L<String> string = new L<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         List<String> flatten = o.eval(this.list);
-        o.output(string, String.join(delimiter, flatten));
+        o.output(string, String.join(o.eval(delimiter), flatten));
     }
 }

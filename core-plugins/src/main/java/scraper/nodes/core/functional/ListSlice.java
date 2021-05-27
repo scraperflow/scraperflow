@@ -20,20 +20,20 @@ import static java.lang.Math.min;
  * Negative wrap around is allowed, stops at zero.
  * If <var>to</var> is smaller than <var>from</var>, the original list is returned.
  */
-@NodePlugin("0.3.0")
+@NodePlugin("0.4.0")
 public final class ListSlice <K> implements FunctionalNode {
 
     /** List to slice */
-    @FlowKey(defaultValue = "[]")
+    @FlowKey(mandatory = true)
     private final T<List<K>> list = new T<>(){};
 
     /** Starting index */
     @FlowKey(defaultValue = "0")
-    private Integer from;
+    private final T<Integer> from = new T<>(){};
 
     /** End index */
     @FlowKey(defaultValue = "0")
-    private Integer to;
+    private final T<Integer> to = new T<>(){};
 
     /** Sliced list */
     @FlowKey(mandatory = true)
@@ -42,6 +42,8 @@ public final class ListSlice <K> implements FunctionalNode {
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         List<K> list = o.eval(this.list);
+        Integer from = o.eval(this.from);
+        Integer to = o.eval(this.to);
 
         int startIndex = from;
         // negative wrap around , stop at zero

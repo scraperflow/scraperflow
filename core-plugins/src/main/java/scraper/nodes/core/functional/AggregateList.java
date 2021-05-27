@@ -26,26 +26,23 @@ public final class AggregateList <K> implements FunctionalNode {
     @FlowKey(mandatory = true)
     private final T<List<K>> aggregateList = new T<>(){};
 
-    /** Expects a List object at the <var>put</var> key or generates a new empty list if there is no list present */
-    @FlowKey(mandatory = true)
-    private final L<List<K>> put = new L<>(){};
-
     /** Only put distinct elements into list if enabled */
     @FlowKey(defaultValue = "false")
-    private Boolean distinct;
+    private final T<Boolean> distinct = new T<>(){};
+
+    /** Expects a List object at the <var>put</var> key or generates a new empty list if there is no list present */
+    @FlowKey(mandatory = true)
+    private final L<List<K>> result = new L<>(){};
+
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        // fetch the list
         List<K> resultList = o.eval(aggregateList);
-
-        // evaluate T
         K eval = o.eval(aggregate);
 
-        // append
-        if(!distinct) resultList.add(eval);
+        if(!o.eval(distinct)) resultList.add(eval);
         else if (!resultList.contains(eval)) resultList.add(eval);
 
-        o.output(put, resultList);
+        o.output(result, resultList);
     }
 }

@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  *
  * Returns true or false depending on the regex matching the input or not.
  */
-@NodePlugin("0.2.0")
+@NodePlugin("0.3.0")
 public final class StringContains implements FunctionalNode {
 
     /** Regex as a (properly escaped) Java String */
@@ -26,11 +26,11 @@ public final class StringContains implements FunctionalNode {
     private final T<String> regex = new T<>(){};
 
     /** The content to apply the regex on */
-    @FlowKey(defaultValue = "\"{content}\"")
+    @FlowKey(mandatory = true)
     private final T<String> content = new T<>(){};
 
     /** Where the output will be */
-    @FlowKey(defaultValue = "\"output\"")
+    @FlowKey(mandatory = true)
     private final L<Boolean> output = new L<>(){};
 
     @Override

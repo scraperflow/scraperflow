@@ -18,11 +18,11 @@ import java.util.List;
 public final class ListEmpty <K> implements FunctionalNode {
 
     /** List to check the size */
-    @FlowKey(defaultValue = "[]")
+    @FlowKey(mandatory = true)
     private final T<List<K>> list = new T<>(){};
 
     /** Where the boolean result is stored */
-    @FlowKey(defaultValue = "\"_\"")
+    @FlowKey(mandatory = true)
     private final L<Boolean> put = new L<>(){};
 
     @Override

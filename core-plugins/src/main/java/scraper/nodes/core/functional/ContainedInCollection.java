@@ -15,24 +15,24 @@ import java.util.List;
 /**
  * Sets a flag depending if the object is contained in the list
  */
-@NodePlugin("0.3.1")
+@NodePlugin("0.4.0")
 public final class ContainedInCollection <A> implements FunctionalNode {
 
     /** Collection to be checked if the object is contained */
-    @FlowKey(defaultValue = "\"{collection}\"")
+    @FlowKey(mandatory = true)
     private final T<List<A>> collection = new T<>(){};
 
     /** This evaluated object is used for checking */
-    @FlowKey(defaultValue = "\"{object}\"")
+    @FlowKey(mandatory = true)
     private final T<A> object = new T<>(){};
-
-    /** Key where the result flag will be written to */
-    @FlowKey(defaultValue = "\"flag\"")
-    private final L<Boolean> flag = new L<>(){};
 
     /** Determines if the <code>contains</code> or <code>not contains</code> operation is used */
     @FlowKey(defaultValue = "false")
-    private Boolean negate;
+    private final T<Boolean> negate = new T<>(){};
+
+    /** Key where the result flag will be written to */
+    @FlowKey(mandatory = true)
+    private final L<Boolean> flag = new L<>(){};
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
@@ -44,7 +44,7 @@ public final class ContainedInCollection <A> implements FunctionalNode {
         // 0    1      1
         // 1    0      1
         // 1    1      0
-        Boolean result = collection.contains(object) ^ negate;
+        Boolean result = collection.contains(object) ^ o.eval(negate);
 
         o.output(flag, result);
     }

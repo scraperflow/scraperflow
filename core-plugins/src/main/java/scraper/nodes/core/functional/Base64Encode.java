@@ -14,7 +14,7 @@ import java.util.Base64;
 /**
  * Encode a string into Base64
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class Base64Encode implements FunctionalNode {
 
     /** String to encode */
@@ -22,7 +22,7 @@ public final class Base64Encode implements FunctionalNode {
     private final T<String> encode = new T<>(){};
 
     /** Encoded Base64 String */
-    @FlowKey(defaultValue = "\"_\"")
+    @FlowKey(mandatory = true)
     private final L<String> output = new L<>(){};
 
     @Override

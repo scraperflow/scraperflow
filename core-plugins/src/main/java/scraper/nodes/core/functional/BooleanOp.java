@@ -8,7 +8,6 @@ import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.type.FunctionalNode;
 import scraper.api.template.L;
 import scraper.api.template.T;
-import scraper.nodes.core.time.Timer;
 
 import java.util.List;
 
@@ -17,20 +16,21 @@ import static scraper.nodes.core.functional.BooleanOp.BooleanOperator.AND;
 /**
  * Boolean operation on lists.
  */
-@NodePlugin("0.0.1")
+@NodePlugin("0.0.2")
 public class BooleanOp implements FunctionalNode {
 
     /** List of boolean */
     @FlowKey(mandatory = true)
     private final T<List<Boolean>> list = new T<>(){};
 
+    /** Initial value */
+    @FlowKey(defaultValue = "true")
+    private final T<Boolean> defaultValue = new T<>(){};
+
     /** Conjunction result */
     @FlowKey(mandatory = true)
     private final L<Boolean> result = new L<>(){};
 
-    /** Initial value */
-    @FlowKey(defaultValue = "true")
-    private Boolean defaultValue;
 
     /** Operator for comparison
      * <ul>
@@ -46,7 +46,7 @@ public class BooleanOp implements FunctionalNode {
         var bools = o.eval(list);
         var op = o.eval(this.op);
 
-        boolean end = defaultValue;
+        boolean end = o.eval(defaultValue);
 
         for (Boolean bool : bools) {
             if (op == AND) end = end && bool;

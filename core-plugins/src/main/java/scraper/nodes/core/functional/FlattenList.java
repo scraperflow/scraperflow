@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
  *flatten: ["{list1}", "{list2}"]
  * </pre>
  */
-@NodePlugin("0.4.1")
+@NodePlugin("0.5.0")
 public final class FlattenList <A> implements FunctionalNode {
 
     /** The list with list elements to flatten */
-    @FlowKey(defaultValue = "\"{list}\"")
+    @FlowKey(mandatory = true)
     private final T<List<List<A>>> flatten = new T<>(){};
 
     /** Where the flattened list is stored */
@@ -36,7 +36,6 @@ public final class FlattenList <A> implements FunctionalNode {
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         List<List<A>> flatten = o.eval(this.flatten);
         List<A> flattened = flatten.stream().flatMap(List::stream).distinct().collect(Collectors.toList());
-
         o.output(output, flattened);
     }
 }

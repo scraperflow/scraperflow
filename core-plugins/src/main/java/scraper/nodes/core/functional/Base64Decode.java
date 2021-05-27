@@ -13,9 +13,9 @@ import java.util.Base64;
 
 /**
  * Decode a Base64 string into a String.
- * Will throw a runtime exception if the String is not a valid Base64 String
+ * Will crash the flow if the String is not a valid Base64 String
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class Base64Decode implements FunctionalNode {
 
     /** Decode string */
@@ -23,7 +23,7 @@ public final class Base64Decode implements FunctionalNode {
     private final T<String> decode = new T<>(){};
 
     /** Where the output will be */
-    @FlowKey(defaultValue = "\"_\"")
+    @FlowKey(mandatory = true)
     private final L<String> output = new L<>(){};
 
     @Override
