@@ -8,22 +8,20 @@ import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.template.T;
 
-import java.util.List;
-
 /**
- * Stops forwarding if a given list is empty.
+ * Stops forwarding if a given map is empty.
  */
 @NodePlugin("0.1.0")
-public final class FilterEmptyList<A> implements Node {
+public final class FilterEmptyMap<K, V> implements Node {
 
-    /** List to filter. */
+    /** Map to filter. */
     @FlowKey(mandatory = true)
-    private final T<List<A>> list = new T<>(){};
+    private final T<java.util.Map<K, V>> map = new T<>(){};
 
     @Override
     public void process(NodeContainer<? extends Node> n, FlowMap o) throws NodeException {
-        List<A> list = o.eval(this.list);
-        if(!list.isEmpty()) n.forward(o);
+        java.util.Map<K, V> map = o.eval(this.map);
+        if(!map.isEmpty()) n.forward(o);
     }
 
 }

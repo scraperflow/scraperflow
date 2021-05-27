@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
@@ -121,7 +122,6 @@ public class JobFactory {
                                                   Function<String, Map<String, Object>> nodeSupplier,
                                                   Collection<NodeHook> nodeHooks)
             throws IOException, ValidationException {
-
         // ===
         // Imports
         // ===
@@ -220,7 +220,7 @@ public class JobFactory {
                         .filter(p -> p.supports(nodeType, vers))
                         .collect(Collectors.toList());
 
-                Node n = getHighestMatchingPlugin(processPlugins, nodeType, vers);
+                Node n = getHighestMatchingPlugin(args, processPlugins, nodeType, vers);
 
                 NodeContainer<? extends Node> nn = getMatchingNodeContainer(
                         job.getName(), graphKey, nodeAddress, i, n
@@ -391,7 +391,7 @@ public class JobFactory {
     private static class FragmentDefinition extends LinkedHashMap<String, Object> {}
 
     @NotNull
-    private Node getHighestMatchingPlugin(@NotNull final List<? extends AbstractMetadata> processPlugins,
+    private Node getHighestMatchingPlugin(String[] args, @NotNull final List<? extends AbstractMetadata> processPlugins,
                                           @NotNull final String type, @NotNull final String version) throws ValidationException {
         AbstractMetadata curr = null;
 
@@ -407,49 +407,57 @@ public class JobFactory {
         if(curr == null) {
             Node local;
             try {
-                local = searchLocalClass();
+                local = searchLocalClass(args, type);
                 return local;
             } catch (Exception e) {
+                List<String> extraFolders = StringUtil.getAllArguments(args, "runtime-nodes");
                 String msg = "No plugin for "+type+" (v"+version+") found! " +
-                        "Provide an implementation with qualifying version number.";
+                        "Provide an implementation with qualifying version number. " +
+                        "Runtime paths searched: " + extraFolders;
                 throw new ValidationException(msg);
             }
         }
         return curr.getNode();
     }
 
-    private Node searchLocalClass() throws Exception {
+    private Node searchLocalClass(String[] args, String type) throws Exception {
+        List<String> extraFolders = StringUtil.getAllArguments(args, "runtime-nodes");
 
-        // Save source in .java file.
-        File root = new File("CustomNode.java"); // On Windows running on C:\, this is C:\java.
+        for (String folder : extraFolders) {
+            File f = Path.of(folder, type+".java").toFile();
+            if(f.exists()) {
+                DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+                JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+                StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
 
-        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
+                // This sets up the class path that the compiler will use.
+                // I've added the .jar file that contains the DoStuff interface within in it...
+                List<String> optionList = new ArrayList<String>();
+                optionList.add("-classpath");
+                String api = new File(Node.class.getProtectionDomain().getCodeSource().getLocation()
+                        .toURI()).getPath();
+                optionList.add(api);
 
-        // This sets up the class path that the compiler will use.
-        // I've added the .jar file that contains the DoStuff interface within in it...
-        List<String> optionList = new ArrayList<String>();
-        optionList.add("-classpath");
-        optionList.add(System.getProperty("java.class.path") + File.pathSeparator + "api/build/libs/api-1.0.0.jar");
+                Iterable<? extends JavaFileObject> compilationUnit
+                        = fileManager.getJavaFileObjectsFromFiles(List.of(f));
+                JavaCompiler.CompilationTask task = compiler.getTask(
+                        null,
+                        fileManager,
+                        diagnostics,
+                        optionList,
+                        null,
+                        compilationUnit);
 
-        Iterable<? extends JavaFileObject> compilationUnit
-                = fileManager.getJavaFileObjectsFromFiles(Arrays.asList(root));
-        JavaCompiler.CompilationTask task = compiler.getTask(
-                null,
-                fileManager,
-                diagnostics,
-                optionList,
-                null,
-                compilationUnit);
-        /********************************************************************************************* Compilation Requirements **/
+                task.call();
 
-        task.call();
+                // Load and instantiate compiled class.
+                URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { f.getParentFile().toURI().toURL() });
+                Class<?> cls = Class.forName(type, true, classLoader);
+                Object instance = cls.newInstance();
+                return (Node) instance;
+            }
+        }
 
-        // Load and instantiate compiled class.
-        URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { new File("./").toURI().toURL() });
-        Class<?> cls = Class.forName("CustomNode", true, classLoader); // Should print "hello".
-        Object instance = cls.newInstance(); // Should print "world".
-        return (Node) instance;
+        throw new IllegalStateException();
     }
 }

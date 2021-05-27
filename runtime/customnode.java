@@ -21,7 +21,7 @@ import scraper.api.template.T;
  * </pre>
  */
 @NodePlugin("1.0.2")
-public class CustomNode <A> implements FunctionalNode {
+public class customnode <A> implements FunctionalNode {
 
     /** Element to output */
     @FlowKey

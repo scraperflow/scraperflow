@@ -12,3 +12,6 @@ echo:
     put: hello
     value: "{world}"
     log: hello"
+
+  - f: f2
+    value: "{world}"

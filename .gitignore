@@ -2,6 +2,7 @@
 **/.gradle
 !gradle/wrapper/gradle-wrapper.jar
 
+/**/bin/
 /**/build/
 /**/builds/
 /**/classes/
@@ -35,3 +36,5 @@
 
 /**/scraper-nodes-dev
 **/.project
+**/.settings
+**/.classpath

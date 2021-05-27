@@ -92,3 +92,7 @@ will
 * package the project at `application/build/distributions`
 * generate code coverage report at `build/reports/jacoco/codeCoverageReport/html/index.html`
 
+Specification parsers are plugins and need to be provided on the module path.
+Executing scraper in a IDE requires the module path to be extended with the following JVM parameter:
+
+    --add-modules ALL-MODULE-PATH
