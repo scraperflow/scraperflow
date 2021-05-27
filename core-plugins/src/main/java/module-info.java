@@ -13,6 +13,7 @@ open module scraper.core.plugins {
     exports scraper.nodes.core.os;
     exports scraper.nodes.core.stream;
     exports scraper.nodes.core.time;
+    exports scraper.nodes.core.complex;
 
 
     requires transitive scraper.core;

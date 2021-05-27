@@ -12,9 +12,7 @@ import scraper.api.node.container.NodeContainer;
 import scraper.api.node.type.Node;
 import scraper.api.template.L;
 import scraper.api.template.T;
-import scraper.util.TemplateUtil;
 
-import java.util.Map;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -30,28 +28,23 @@ public final class JoinSingle<X> implements Node {
     @FlowKey(mandatory = true)
     private final T<X> key = new T<>(){};
 
+    /** Key which can be used to join flows. Needs to match the joinKey used by a previous node. */
+    @FlowKey(mandatory = true)
+    private final T<JoinKey> joinKey = new T<>(){};
+
     /** These keys are joined in a list and put into another key */
     @FlowKey(mandatory = true)
     private final L<List<X>> output = new L<>(){};
 
-    /** Key which can be used to join flows. Needs to match the joinKey used by a previous Fork node. */
-    @FlowKey
-    private final T<Fork.JoinKey> joinKey = new T<>(){};
-
-    /** Target address to fork to */
-    @FlowKey(mandatory = true)
-    @Flow(label = "join")
-    private Address joinTarget;
-
     // STATE
-    final Map<Fork.JoinKey, List<AbstractMap.SimpleEntry<Fork.JoinKey, X>>> waiting = new ConcurrentHashMap<>();
+    final java.util.Map<JoinKey, List<AbstractMap.SimpleEntry<JoinKey, X>>> waiting = new ConcurrentHashMap<>();
 
     @NotNull
     @Override
     public void process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
-        Fork.JoinKey joinKey = o.eval(this.joinKey);
+        JoinKey joinKey = o.eval(this.joinKey);
 
-        List<AbstractMap.SimpleEntry<Fork.JoinKey, X>> flows;
+        List<AbstractMap.SimpleEntry<JoinKey, X>> flows;
         synchronized (waiting) {
             waiting.computeIfAbsent(joinKey, k -> new LinkedList<>());
             flows = waiting.get(joinKey);
@@ -69,7 +62,7 @@ public final class JoinSingle<X> implements Node {
         }
     }
 
-    private void emit(Collection<AbstractMap.SimpleEntry<Fork.JoinKey, X>> flows, FlowMap evaluator, NodeContainer<? extends Node> n) {
+    private void emit(Collection<AbstractMap.SimpleEntry<JoinKey, X>> flows, FlowMap evaluator, NodeContainer<? extends Node> n) {
         FlowMap toEmit = evaluator.copy();
 
         List<X> sortedFlows = flows.stream()
@@ -79,6 +72,6 @@ public final class JoinSingle<X> implements Node {
 
 
         toEmit.output(output, sortedFlows);
-        n.forward(toEmit, joinTarget);
+        n.forward(toEmit);
     }
 }

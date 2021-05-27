@@ -11,12 +11,12 @@ import scraper.api.node.type.Node;
 import scraper.api.template.T;
 
 /**
- * Provides if-then-else routing
+ * Provides if-then-else routing.
  */
 @NodePlugin(value = "0.1.0")
 public final class IfThenElse implements Node {
 
-    /** Boolean condition*/
+    /** Boolean condition */
     @FlowKey(mandatory = true)
     private final T<Boolean> condition = new T<>(){};
 

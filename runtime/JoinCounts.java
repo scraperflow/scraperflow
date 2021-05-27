@@ -13,12 +13,10 @@ import scraper.api.node.type.Node;
 import scraper.api.template.L;
 import scraper.api.template.T;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
 
 /**
  * Joins on a join key.
@@ -33,7 +31,7 @@ public final class JoinCounts implements Node {
 
     /** Key which can be used to join flows. */
     @FlowKey
-    private final T<Fork.JoinKey> joinKey = new T<>(){};
+    private final T<JoinKey> joinKey = new T<>(){};
 
     /** Once all maps are joined the output count map is emitted */
     @FlowKey(mandatory = true)
@@ -52,7 +50,7 @@ public final class JoinCounts implements Node {
     @NotNull
     @Override
     public void process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
-        Fork.JoinKey joinKey = o.eval(this.joinKey);
+        JoinKey joinKey = o.eval(this.joinKey);
         Map<String, Integer> counts = o.eval(map);
 
         l.lock();
