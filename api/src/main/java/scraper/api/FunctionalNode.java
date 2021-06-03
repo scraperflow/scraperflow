@@ -1,7 +1,6 @@
-package scraper.api.node.type;
+package scraper.api;
 
 import scraper.annotations.NotNull;
-import scraper.api.flow.FlowMap;
 import scraper.api.node.container.FunctionalNodeContainer;
 import scraper.api.node.container.NodeContainer;
 

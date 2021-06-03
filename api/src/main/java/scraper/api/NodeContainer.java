@@ -1,13 +1,13 @@
 package scraper.api.node.container;
 
 import scraper.annotations.NotNull;
-import scraper.api.flow.FlowMap;
-import scraper.api.flow.IdentityTemplateEvaluator;
-import scraper.api.node.Address;
-import scraper.api.node.GraphAddress;
-import scraper.api.node.NodeAddress;
-import scraper.api.node.NodeInitializable;
-import scraper.api.node.type.Node;
+import scraper.api.FlowMap;
+import scraper.api.IdentityTemplateEvaluator;
+import scraper.api.Address;
+import scraper.api.GraphAddress;
+import scraper.api.NodeAddress;
+import scraper.api.NodeInitializable;
+import scraper.api.Node;
 import scraper.api.plugin.NodeHook;
 import scraper.api.specification.ScrapeInstance;
 

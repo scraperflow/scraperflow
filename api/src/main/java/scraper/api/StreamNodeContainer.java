@@ -1,8 +1,8 @@
 package scraper.api.node.container;
 
 import scraper.annotations.NotNull;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.type.StreamNode;
+import scraper.api.FlowMap;
+import scraper.api.StreamNode;
 import scraper.api.template.L;
 
 /**

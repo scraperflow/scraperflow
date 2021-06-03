@@ -1,8 +1,8 @@
 package scraper.api.plugin;
 
 import scraper.annotations.NotNull;
-import scraper.api.di.DIContainer;
-import scraper.api.exceptions.ValidationException;
+import scraper.api.DIContainer;
+import scraper.api.ValidationException;
 import scraper.api.specification.ScrapeImportSpecification;
 import scraper.api.specification.ScrapeSpecification;
 

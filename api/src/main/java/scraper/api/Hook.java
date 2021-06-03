@@ -1,7 +1,7 @@
 package scraper.api.plugin;
 
 import scraper.annotations.NotNull;
-import scraper.api.di.DIContainer;
+import scraper.api.DIContainer;
 import scraper.api.specification.ScrapeInstance;
 import scraper.api.specification.ScrapeSpecification;
 

@@ -1,10 +1,7 @@
-package scraper.api.node.type;
+package scraper.api;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.TemplateException;
-import scraper.api.exceptions.ValidationException;
-import scraper.api.flow.FlowMap;
+import scraper.annotations.NodePlugin;
 import scraper.api.node.container.NodeContainer;
 import scraper.api.node.container.NodeLogLevel;
 import scraper.api.plugin.NodeHook;

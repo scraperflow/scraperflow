@@ -1,6 +1,6 @@
 package scraper.api.node.container;
 
-import scraper.api.node.type.FunctionalNode;
+import scraper.api.FunctionalNode;
 
 /**
  * Container for functional nodes. Does nothing special.

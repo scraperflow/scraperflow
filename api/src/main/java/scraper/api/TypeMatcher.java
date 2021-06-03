@@ -1,7 +1,7 @@
 package scraper.api.template;
 
-import scraper.api.exceptions.TemplateException;
-import scraper.api.node.Address;
+import scraper.api.TemplateException;
+import scraper.api.Address;
 
 import java.lang.reflect.*;
 import java.util.HashMap;

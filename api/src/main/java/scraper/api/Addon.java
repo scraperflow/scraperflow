@@ -1,7 +1,7 @@
 package scraper.api.plugin;
 
 import scraper.annotations.NotNull;
-import scraper.api.di.DIContainer;
+import scraper.api.DIContainer;
 
 /**
  * An addon modifies and/or provides functionality to the Scraper framework.
