@@ -12,11 +12,11 @@ import java.util.Scanner;
 /**
  * Processes a string input line from the environment
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class SingleInput implements FunctionalNode {
 
     /** String output */
-    @FlowKey(defaultValue = "\"_\"")
+    @FlowKey(mandatory = true)
     private final L<String> put = new L<>(){};
 
     @Override

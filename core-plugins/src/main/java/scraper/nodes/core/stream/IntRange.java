@@ -25,7 +25,7 @@ import java.util.stream.IntStream;
  * output: page
  * </pre>
  */
-@NodePlugin("0.2.0")
+@NodePlugin("0.3.0")
 public final class IntRange implements StreamNode {
 
     /** Start index, inclusive */
@@ -37,7 +37,7 @@ public final class IntRange implements StreamNode {
     private Integer to;
 
     /** Where the output will be put */
-    @FlowKey(defaultValue = "\"i\"")
+    @FlowKey(mandatory = true)
     private final L<Integer> output = new L<>(){};
 
     /** Key which can be used to join flows */

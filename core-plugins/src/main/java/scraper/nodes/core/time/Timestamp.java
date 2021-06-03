@@ -12,11 +12,11 @@ import scraper.api.L;
 /**
  * Echoes current system timestamp in ms.
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class Timestamp implements FunctionalNode {
 
     /** Result location */
-    @FlowKey(defaultValue = "\"timestamp\"")
+    @FlowKey(mandatory = true)
     private final L<Long> put = new L<>(){};
 
     @Override

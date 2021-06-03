@@ -15,7 +15,7 @@ import scraper.api.T;
  * Evaluates a long timestamp in string format and checks if adding the <var>differenceMs</var>
  * is greater than the current system timestamp.
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class TimestampDifference implements FunctionalNode {
 
     /** Long timestamp in string format */

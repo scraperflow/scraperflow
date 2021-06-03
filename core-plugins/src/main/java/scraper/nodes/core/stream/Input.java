@@ -19,10 +19,6 @@ import java.util.Scanner;
 @Io
 public final class Input implements StreamNode {
 
-    /** String output */
-    @FlowKey(defaultValue = "\"_\"")
-    private final L<String> put = new L<>(){};
-
     /** Token delimiter (default: any line break) */
     @FlowKey(defaultValue = "\"\\\\R\"") @Argument
     private String delimiter;
@@ -30,6 +26,10 @@ public final class Input implements StreamNode {
     /** End of stream delimiter, if any */
     @FlowKey
     private String endOfStreamDelimiter;
+
+    /** String output */
+    @FlowKey(mandatory = true)
+    private final L<String> put = new L<>(){};
 
     @Override
     public void process(@NotNull final StreamNodeContainer n, @NotNull final FlowMap o) {

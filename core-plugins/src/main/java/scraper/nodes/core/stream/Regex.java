@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  * output: fileinfo
  * </pre>
  */
-@NodePlugin("0.15.0")
+@NodePlugin("0.16.0")
 public final class Regex implements StreamNode {
 
     /** Regex as a (properly escaped JSON) Java String */
@@ -50,7 +50,7 @@ public final class Regex implements StreamNode {
     private String regex;
 
     /** The content to apply the regex on */
-    @FlowKey(defaultValue = "\"{content}\"") @NotNull
+    @FlowKey(mandatory = true)
     private final T<String> content = new T<>(){};
 
     /** Key: location of where to put the group; Value: Group number of the regex. */
@@ -60,10 +60,6 @@ public final class Regex implements StreamNode {
     /** Default output if no matches are present */
     @FlowKey
     private final T<Map<String, String>> noMatchDefaultOutput = new T<>(){};
-
-    /** Where the output list will be put. If there's already a list at that key, it will be replaced. */
-    @FlowKey(defaultValue = "\"_\"")
-    private final L<Map<String, String>> output = new L<>(){};
 
     /** Non-empty match expected */
     @FlowKey(defaultValue = "false")
@@ -77,6 +73,10 @@ public final class Regex implements StreamNode {
      */
     @FlowKey(defaultValue = "\"true\"")
     private Boolean dotAll;
+
+    /** Where the output list will be put. If there's already a list at that key, it will be replaced. */
+    @FlowKey(mandatory = true)
+    private final L<Map<String, String>> output = new L<>(){};
 
     // compiles the regex pattern
     private Pattern p;

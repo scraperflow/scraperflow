@@ -25,11 +25,11 @@ import static scraper.api.NodeLogLevel.ERROR;
 public final class ExecStream implements StreamNode {
 
     /** Command to execute. Every element is handled as one argument. Argument strings are evaluated. */
-    @FlowKey
+    @FlowKey(mandatory = true)
     private final T<List<String>> exec = new T<>(){};
 
     /** Working directory. Defaults to the JVM working directory. */
-    @FlowKey
+    @FlowKey(mandatory = true)
     private final T<String> workingDirectory = new T<>(){};
 
     /** If the process fails, this node can throw an exception if this field is specified. */
