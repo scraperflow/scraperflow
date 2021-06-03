@@ -1,18 +1,12 @@
 package scraper.nodes.core.functional;
 
-import scraper.annotations.NotNull;
-import scraper.annotations.FlowKey;
-import scraper.annotations.NodePlugin;
-import scraper.api.FlowMap;
-import scraper.api.FunctionalNodeContainer;
-import scraper.api.FunctionalNode;
-import scraper.api.L;
-import scraper.api.T;
+import scraper.annotations.*;
+import scraper.api.*;
 
 /**
  * Checks string equality for two inputs.
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 public final class StringEqualityCheck implements FunctionalNode {
 
     /** String 1 */
@@ -24,7 +18,7 @@ public final class StringEqualityCheck implements FunctionalNode {
     private final T<String> check = new T<>(){};
 
     /** Result location */
-    @FlowKey(defaultValue = "\"output\"")
+    @FlowKey(mandatory = true)
     private final L<Boolean> output = new L<>(){};
 
     @Override

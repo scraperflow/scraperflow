@@ -1,25 +1,20 @@
 package scraper.nodes.core.functional;
 
-import scraper.annotations.NotNull;
-import scraper.annotations.FlowKey;
-import scraper.annotations.NodePlugin;
-import scraper.api.FlowMap;
-import scraper.api.FunctionalNodeContainer;
-import scraper.api.FunctionalNode;
-import scraper.api.L;
+import scraper.annotations.*;
+import scraper.api.*;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 
 /**
- * Echoes current timestamp
+ * Echoes current timestamp in milliseconds.
  */
 @NodePlugin("0.1.0")
 public final class Timestamp implements FunctionalNode {
 
     /** Where to put the timestamp */
-    @FlowKey(defaultValue = "\"date\"") @NotNull
+    @FlowKey(mandatory = true)
     private final L<String> put = new L<>(){};
 
     @Override

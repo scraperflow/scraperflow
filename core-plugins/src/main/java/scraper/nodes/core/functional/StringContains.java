@@ -1,14 +1,7 @@
 package scraper.nodes.core.functional;
 
-import scraper.annotations.NotNull;
-import scraper.annotations.FlowKey;
-import scraper.annotations.NodePlugin;
-import scraper.api.NodeIOException;
-import scraper.api.FlowMap;
-import scraper.api.FunctionalNodeContainer;
-import scraper.api.FunctionalNode;
-import scraper.api.L;
-import scraper.api.T;
+import scraper.annotations.*;
+import scraper.api.*;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

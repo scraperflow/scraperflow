@@ -1,13 +1,7 @@
 package scraper.nodes.core.functional;
 
-import scraper.annotations.NotNull;
-import scraper.annotations.FlowKey;
-import scraper.annotations.NodePlugin;
-import scraper.api.FlowMap;
-import scraper.api.FunctionalNodeContainer;
-import scraper.api.FunctionalNode;
-import scraper.api.L;
-import scraper.api.T;
+import scraper.annotations.*;
+import scraper.api.*;
 
 /**
  * Replaces occurrences in a string
@@ -28,7 +22,7 @@ public final class StringReplace implements FunctionalNode {
     private final T<String> content = new T<>(){};
 
     /** Replaced string output */
-    @FlowKey(defaultValue = "\"output\"")
+    @FlowKey(mandatory = true)
     private final L<String> output = new L<>(){};
 
     @Override

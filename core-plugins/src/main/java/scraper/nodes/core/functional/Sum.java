@@ -1,27 +1,19 @@
 package scraper.nodes.core.functional;
 
-import scraper.annotations.NotNull;
-import scraper.annotations.FlowKey;
-import scraper.annotations.NodePlugin;
-import scraper.api.FlowMap;
-import scraper.api.FunctionalNodeContainer;
-import scraper.api.FunctionalNode;
-import scraper.api.L;
-import scraper.api.T;
+import scraper.annotations.*;
+import scraper.api.*;
+
+import java.util.List;
 
 /**
- * Sum two integers
+ * Sum integer list.
  */
-@NodePlugin("0.0.1")
+@NodePlugin("0.1.0")
 public class Sum implements FunctionalNode {
 
-    /** Operand 1 */
+    /** Integers */
     @FlowKey(mandatory = true)
-    private final T<Integer> integer = new T<>(){};
-
-    /** Operand 2 */
-    @FlowKey(mandatory = true)
-    private final T<Integer> integer2 = new T<>(){};
+    private final T<List<Integer>> integers = new T<>(){};
 
     /** Integer Output */
     @FlowKey(mandatory = true)
@@ -29,6 +21,6 @@ public class Sum implements FunctionalNode {
 
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        o.output(result, o.eval(integer) + o.eval(integer2));
+        o.output(result, o.eval(integers).stream().reduce(0, Integer::sum));
     }
 }

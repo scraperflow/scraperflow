@@ -1,13 +1,7 @@
 package scraper.nodes.core.functional;
 
-import scraper.annotations.NotNull;
-import scraper.annotations.FlowKey;
-import scraper.annotations.NodePlugin;
-import scraper.api.FlowMap;
-import scraper.api.FunctionalNodeContainer;
-import scraper.api.FunctionalNode;
-import scraper.api.L;
-import scraper.api.T;
+import scraper.annotations.*;
+import scraper.api.*;
 
 import java.util.List;
 
@@ -17,6 +11,10 @@ import java.util.List;
 @NodePlugin("0.1.0")
 public final class StringSplit implements FunctionalNode {
 
+    /** The content to apply the regex on */
+    @FlowKey(mandatory = true)
+    private final T<String> content = new T<>(){};
+
     /** Split */
     @FlowKey(mandatory = true)
     private String regex;
@@ -25,12 +23,8 @@ public final class StringSplit implements FunctionalNode {
     @FlowKey(defaultValue = "0")
     private Integer limit;
 
-    /** The content to apply the regex on */
-    @FlowKey(defaultValue = "\"{content}\"")
-    private final T<String> content = new T<>(){};
-
     /** Split string output */
-    @FlowKey(defaultValue = "\"_\"")
+    @FlowKey(mandatory = true)
     private final L<List<String>> output = new L<>(){};
 
     @Override

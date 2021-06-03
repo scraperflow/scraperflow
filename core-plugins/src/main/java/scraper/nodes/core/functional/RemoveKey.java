@@ -1,12 +1,7 @@
 package scraper.nodes.core.functional;
 
-import scraper.annotations.NotNull;
-import scraper.annotations.FlowKey;
-import scraper.annotations.NodePlugin;
-import scraper.api.FlowMap;
-import scraper.api.FunctionalNodeContainer;
-import scraper.api.FunctionalNode;
-import scraper.api.L;
+import scraper.annotations.*;
+import scraper.api.*;
 
 /**
  * Can remove a key of the current flow map.
