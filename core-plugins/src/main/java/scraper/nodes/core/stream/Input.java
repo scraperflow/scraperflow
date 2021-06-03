@@ -1,14 +1,14 @@
 package scraper.nodes.core.stream;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.node.Argument;
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.Io;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.container.StreamNodeContainer;
-import scraper.api.node.type.StreamNode;
-import scraper.api.template.L;
+import scraper.annotations.Argument;
+import scraper.annotations.FlowKey;
+import scraper.annotations.Io;
+import scraper.annotations.NodePlugin;
+import scraper.api.FlowMap;
+import scraper.api.StreamNodeContainer;
+import scraper.api.StreamNode;
+import scraper.api.L;
 
 import java.util.Scanner;
 

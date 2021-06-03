@@ -1,9 +1,7 @@
 package scraper.plugins.core.typechecker;
 
-import scraper.api.exceptions.TemplateException;
+import scraper.api.*;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.node.Address;
-import scraper.api.template.*;
 import scraper.util.TemplateUtil;
 
 import java.lang.reflect.Type;
@@ -12,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static java.lang.System.Logger.Level.DEBUG;
 import static java.lang.System.Logger.Level.DEBUG;
 
 public class TypeRules extends DefaultVisitor<Object> {

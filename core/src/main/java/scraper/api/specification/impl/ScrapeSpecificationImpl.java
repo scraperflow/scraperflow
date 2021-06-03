@@ -2,8 +2,8 @@ package scraper.api.specification.impl;
 
 
 import scraper.annotations.NotNull;
-import scraper.api.specification.ScrapeImportSpecification;
-import scraper.api.specification.ScrapeSpecification;
+import scraper.api.ScrapeImportSpecification;
+import scraper.api.ScrapeSpecification;
 
 import java.nio.file.Path;
 import java.util.*;

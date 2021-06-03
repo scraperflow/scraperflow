@@ -1,7 +1,6 @@
-package scraper.api.service;
+package scraper.api;
 
 import scraper.annotations.NotNull;
-import scraper.api.service.proxy.ReservationToken;
 
 import java.io.IOException;
 import java.net.http.HttpRequest;

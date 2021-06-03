@@ -1,17 +1,17 @@
 package scraper.core.template;
 
 import scraper.annotations.NotNull;
-import scraper.api.exceptions.TemplateException;
-import scraper.api.flow.FlowMap;
-import scraper.api.template.MapLookup;
-import scraper.api.template.T;
-import scraper.api.template.TVisitor;
-import scraper.api.template.Term;
+import scraper.api.TemplateException;
+import scraper.api.FlowMap;
+import scraper.api.MapLookup;
+import scraper.api.T;
+import scraper.api.TVisitor;
+import scraper.api.Term;
 
 import java.util.Map;
 import java.util.Objects;
 
-import static scraper.api.template.T.rawType;
+import static scraper.api.T.rawType;
 import static scraper.core.converter.StringToClassConverter.convert;
 
 public class TemplateMapLookup<K> extends TemplateExpression<K> implements MapLookup<K> {

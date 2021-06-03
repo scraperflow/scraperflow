@@ -1,14 +1,14 @@
 package scraper.plugins.core.typechecker;
 
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.TemplateException;
-import scraper.api.exceptions.ValidationException;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.template.L;
-import scraper.api.template.T;
-import scraper.api.template.Term;
+import scraper.annotations.FlowKey;
+import scraper.annotations.NodePlugin;
+import scraper.api.TemplateException;
+import scraper.api.ValidationException;
+import scraper.api.NodeContainer;
+import scraper.api.ScrapeInstance;
+import scraper.api.L;
+import scraper.api.T;
+import scraper.api.Term;
 import scraper.core.template.TemplateConstant;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;

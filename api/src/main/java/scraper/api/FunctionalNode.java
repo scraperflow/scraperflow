@@ -1,8 +1,6 @@
 package scraper.api;
 
 import scraper.annotations.NotNull;
-import scraper.api.node.container.FunctionalNodeContainer;
-import scraper.api.node.container.NodeContainer;
 
 /**
  * Nodes which implement this interface only modify the FlowMap and can be tested functionally.

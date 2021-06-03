@@ -3,15 +3,14 @@ package scraper.plugins.core.typechecker;
 
 import scraper.annotations.ArgsCommand;
 import scraper.annotations.NotNull;
-import scraper.api.di.DIContainer;
-import scraper.api.plugin.Hook;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.specification.ScrapeSpecification;
+import scraper.api.DIContainer;
+import scraper.api.Hook;
+import scraper.api.ScrapeInstance;
+import scraper.api.ScrapeSpecification;
 import scraper.plugins.core.flowgraph.FlowUtil;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.utils.StringUtil;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @ArgsCommand(

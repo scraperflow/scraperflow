@@ -1,8 +1,8 @@
 package scraper.core.template;
 
 import org.junit.jupiter.api.Test;
-import scraper.api.exceptions.ValidationException;
-import scraper.api.template.T;
+import scraper.api.ValidationException;
+import scraper.api.T;
 
 import java.util.List;
 import java.util.Map;

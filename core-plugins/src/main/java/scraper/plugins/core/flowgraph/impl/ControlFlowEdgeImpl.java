@@ -2,7 +2,7 @@ package scraper.plugins.core.flowgraph.impl;
 
 
 import scraper.annotations.NotNull;
-import scraper.api.node.NodeAddress;
+import scraper.api.NodeAddress;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 
 /**

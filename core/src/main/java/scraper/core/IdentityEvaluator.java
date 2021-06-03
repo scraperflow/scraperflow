@@ -1,8 +1,8 @@
 package scraper.core;
 
 import scraper.annotations.NotNull;
-import scraper.api.flow.IdentityTemplateEvaluator;
-import scraper.api.template.T;
+import scraper.api.IdentityTemplateEvaluator;
+import scraper.api.T;
 import scraper.api.flow.impl.IdentityFlowMap;
 
 

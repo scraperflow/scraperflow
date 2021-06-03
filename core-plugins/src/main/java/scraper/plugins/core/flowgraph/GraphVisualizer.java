@@ -1,13 +1,12 @@
 package scraper.plugins.core.flowgraph;
 
-import scraper.api.node.Address;
-import scraper.api.node.NodeAddress;
-import scraper.api.specification.ScrapeInstance;
+import scraper.api.Address;
+import scraper.api.NodeAddress;
+import scraper.api.ScrapeInstance;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.plugins.core.flowgraph.api.ControlFlowNode;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;

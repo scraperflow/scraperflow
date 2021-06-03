@@ -1,19 +1,6 @@
-package scraper.api.specification;
+package scraper.api;
 
 import scraper.annotations.NotNull;
-import scraper.api.ValidationException;
-import scraper.api.IdentityTemplateEvaluator;
-import scraper.api.Address;
-import scraper.api.GraphAddress;
-import scraper.api.InstanceAddress;
-import scraper.api.NodeAddress;
-import scraper.api.NodeContainer;
-import scraper.api.Node;
-import scraper.api.plugin.NodeHook;
-import scraper.api.service.ExecutorsService;
-import scraper.api.service.FileService;
-import scraper.api.service.HttpService;
-import scraper.api.service.ProxyReservation;
 
 import java.util.Collection;
 import java.util.Map;

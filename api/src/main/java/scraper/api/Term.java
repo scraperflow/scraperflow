@@ -1,8 +1,7 @@
-package scraper.api.template;
+package scraper.api;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
-import scraper.api.FlowMap;
 
 public interface Term<Y> {
     <X> X accept(@NotNull TVisitor<X> visitor);

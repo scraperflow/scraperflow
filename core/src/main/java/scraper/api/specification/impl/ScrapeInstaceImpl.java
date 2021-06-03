@@ -1,22 +1,21 @@
 package scraper.api.specification.impl;
 
 import scraper.annotations.NotNull;
-import scraper.api.exceptions.ValidationException;
+import scraper.api.*;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.node.*;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.container.NodeLogLevel;
-import scraper.api.node.type.Node;
-import scraper.api.plugin.NodeHook;
-import scraper.api.template.DefaultVisitor;
-import scraper.api.template.Primitive;
-import scraper.api.template.T;
-import scraper.api.service.ExecutorsService;
-import scraper.api.service.FileService;
-import scraper.api.service.HttpService;
-import scraper.api.service.ProxyReservation;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.specification.ScrapeSpecification;
+import scraper.api.NodeContainer;
+import scraper.api.NodeLogLevel;
+import scraper.api.Node;
+import scraper.api.NodeHook;
+import scraper.api.DefaultVisitor;
+import scraper.api.Primitive;
+import scraper.api.T;
+import scraper.api.ExecutorsService;
+import scraper.api.FileService;
+import scraper.api.HttpService;
+import scraper.api.ProxyReservation;
+import scraper.api.ScrapeInstance;
+import scraper.api.ScrapeSpecification;
 import scraper.core.IdentityEvaluator;
 import scraper.util.NodeUtil;
 

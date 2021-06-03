@@ -1,11 +1,10 @@
 package scraper.plugins.core.typechecker;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.Nullable;
-import scraper.api.exceptions.TemplateException;
-import scraper.api.template.T;
-import scraper.api.template.Term;
-import scraper.api.template.TypeGeneralizer;
+import scraper.api.TemplateException;
+import scraper.api.T;
+import scraper.api.Term;
+import scraper.api.TypeGeneralizer;
 import scraper.plugins.core.typechecker.visitors.ReplaceCapturesOrCrashVisitor;
 
 import java.lang.reflect.Type;
@@ -14,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.System.Logger.Level.DEBUG;
 import static java.lang.System.Logger.Level.DEBUG;
 
 public class TypeEnvironment {

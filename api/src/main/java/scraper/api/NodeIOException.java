@@ -1,4 +1,4 @@
-package scraper.api.exceptions;
+package scraper.api;
 
 import scraper.annotations.NotNull;
 

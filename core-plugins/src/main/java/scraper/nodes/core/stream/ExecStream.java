@@ -1,20 +1,20 @@
 package scraper.nodes.core.stream;
 
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.Io;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeIOException;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.container.StreamNodeContainer;
-import scraper.api.node.type.StreamNode;
-import scraper.api.template.L;
-import scraper.api.template.T;
+import scraper.annotations.FlowKey;
+import scraper.annotations.Io;
+import scraper.annotations.NodePlugin;
+import scraper.api.NodeIOException;
+import scraper.api.FlowMap;
+import scraper.api.StreamNodeContainer;
+import scraper.api.StreamNode;
+import scraper.api.L;
+import scraper.api.T;
 
 import java.io.*;
 import java.util.List;
 
-import static scraper.api.node.container.NodeLogLevel.DEBUG;
-import static scraper.api.node.container.NodeLogLevel.ERROR;
+import static scraper.api.NodeLogLevel.DEBUG;
+import static scraper.api.NodeLogLevel.ERROR;
 
 /**
  * Executes a command defined in the workflow in the current system environment.

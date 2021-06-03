@@ -1,13 +1,13 @@
 package scraper.nodes.core.example;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.node.Argument;
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.type.Node;
-import scraper.api.template.T;
+import scraper.annotations.Argument;
+import scraper.annotations.FlowKey;
+import scraper.annotations.NodePlugin;
+import scraper.api.FlowMap;
+import scraper.api.NodeContainer;
+import scraper.api.Node;
+import scraper.api.T;
 
 import java.util.Map;
 

@@ -1,10 +1,6 @@
-package scraper.api.plugin;
+package scraper.api;
 
 import scraper.annotations.NotNull;
-import scraper.api.DIContainer;
-import scraper.api.ValidationException;
-import scraper.api.specification.ScrapeImportSpecification;
-import scraper.api.specification.ScrapeSpecification;
 
 import java.io.File;
 import java.nio.file.Path;

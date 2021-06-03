@@ -1,4 +1,4 @@
-package scraper.api.template;
+package scraper.api;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

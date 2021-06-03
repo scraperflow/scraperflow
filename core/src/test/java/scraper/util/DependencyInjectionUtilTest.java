@@ -2,8 +2,8 @@ package scraper.util;
 
 import org.junit.jupiter.api.Test;
 import scraper.addons.TestAddon;
-import scraper.annotations.di.DITarget;
-import scraper.api.di.DIContainer;
+import scraper.annotations.DITarget;
+import scraper.api.DIContainer;
 import scraper.hooks.PluginHook;
 import scraper.hooks.TestHook;
 

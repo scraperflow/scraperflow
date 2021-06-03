@@ -1,7 +1,6 @@
 package scraper.plugins.core.typechecker.visitors;
 
-import scraper.api.exceptions.TemplateException;
-import scraper.api.template.*;
+import scraper.api.*;
 
 public class EnsureConstant extends DefaultVisitor<Void> {
 

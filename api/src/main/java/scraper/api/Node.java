@@ -2,10 +2,6 @@ package scraper.api;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.NodePlugin;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.container.NodeLogLevel;
-import scraper.api.plugin.NodeHook;
-import scraper.api.specification.ScrapeInstance;
 
 /**
  * Objects which implement this interface can consume and modify {@link FlowMap}s.

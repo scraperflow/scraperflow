@@ -2,14 +2,13 @@ package scraper.plugins.core.typechecker.data;
 
 
 import scraper.annotations.NotNull;
-import scraper.api.exceptions.TemplateException;
+import scraper.api.TemplateException;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.node.Address;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.type.Node;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.template.T;
-import scraper.core.AbstractStreamNode;
+import scraper.api.Address;
+import scraper.api.NodeContainer;
+import scraper.api.Node;
+import scraper.api.ScrapeInstance;
+import scraper.api.T;
 import scraper.plugins.core.flowgraph.FlowUtil;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
@@ -19,13 +18,9 @@ import scraper.plugins.core.typechecker.TypeEnvironment;
 import scraper.util.NodeUtil;
 import scraper.util.TemplateUtil;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import static java.lang.System.Logger.Level.DEBUG;
-import static scraper.plugins.core.typechecker.TypeChecker.getDefaultDataFlowOutput;
 import static scraper.util.TemplateUtil.parseTemplate;
 
 @SuppressWarnings({"unused", "OptionalGetWithoutIsPresent"})

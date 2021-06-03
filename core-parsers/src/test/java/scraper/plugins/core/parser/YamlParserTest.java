@@ -1,10 +1,8 @@
 package scraper.plugins.core.parser;
 
 import org.junit.jupiter.api.Test;
-import scraper.api.exceptions.ValidationException;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.*;

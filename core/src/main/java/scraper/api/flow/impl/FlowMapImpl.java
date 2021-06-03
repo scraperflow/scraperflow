@@ -2,11 +2,11 @@ package scraper.api.flow.impl;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
-import scraper.api.exceptions.TemplateException;
-import scraper.api.flow.FlowMap;
-import scraper.api.template.L;
-import scraper.api.template.Primitive;
-import scraper.api.template.T;
+import scraper.api.TemplateException;
+import scraper.api.FlowMap;
+import scraper.api.L;
+import scraper.api.Primitive;
+import scraper.api.T;
 import scraper.core.IdentityEvaluator;
 import scraper.util.TemplateUtil;
 

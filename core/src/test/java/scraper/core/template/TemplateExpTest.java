@@ -2,12 +2,11 @@ package scraper.core.template;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import scraper.api.exceptions.TemplateException;
-import scraper.api.exceptions.ValidationException;
-import scraper.api.flow.FlowMap;
+import scraper.api.TemplateException;
+import scraper.api.ValidationException;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.template.T;
-import scraper.api.template.Term;
+import scraper.api.T;
+import scraper.api.Term;
 import scraper.util.TemplateUtil;
 
 import java.util.List;

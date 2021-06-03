@@ -1,27 +1,25 @@
 package scraper.nodes.core.io;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.node.EnsureFile;
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.Io;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeIOException;
-import scraper.api.exceptions.ValidationException;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.container.FunctionalNodeContainer;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.type.FunctionalNode;
-import scraper.api.node.type.Node;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.template.T;
+import scraper.annotations.EnsureFile;
+import scraper.annotations.FlowKey;
+import scraper.annotations.Io;
+import scraper.annotations.NodePlugin;
+import scraper.api.NodeIOException;
+import scraper.api.FlowMap;
+import scraper.api.FunctionalNodeContainer;
+import scraper.api.NodeContainer;
+import scraper.api.FunctionalNode;
+import scraper.api.Node;
+import scraper.api.ScrapeInstance;
+import scraper.api.T;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
-import static scraper.api.node.container.NodeLogLevel.ERROR;
+import static scraper.api.NodeLogLevel.ERROR;
 
 /**
  * Appends or writes a line to a file.

@@ -3,6 +3,8 @@ package scraper.api.exceptions;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import scraper.api.TemplateException;
+import scraper.api.ValidationException;
 
 import java.util.List;
 

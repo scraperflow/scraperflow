@@ -1,6 +1,7 @@
 package scraper.api.template;
 
 import org.junit.jupiter.api.Test;
+import scraper.api.T;
 
 import static org.junit.jupiter.api.Assertions.*;
 

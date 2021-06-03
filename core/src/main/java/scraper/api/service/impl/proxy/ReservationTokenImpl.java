@@ -2,7 +2,7 @@ package scraper.api.service.impl.proxy;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
-import scraper.api.service.proxy.ReservationToken;
+import scraper.api.ReservationToken;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;

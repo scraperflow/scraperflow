@@ -1,10 +1,10 @@
 package scraper.hooks;
 
 import scraper.annotations.NotNull;
-import scraper.api.di.DIContainer;
-import scraper.api.plugin.Hook;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.specification.ScrapeSpecification;
+import scraper.api.DIContainer;
+import scraper.api.Hook;
+import scraper.api.ScrapeInstance;
+import scraper.api.ScrapeSpecification;
 
 import java.util.Map;
 

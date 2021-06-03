@@ -3,8 +3,8 @@ package scraper.api.specification.simple;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import scraper.api.exceptions.ValidationException;
-import scraper.api.specification.ScrapeSpecification;
+import scraper.api.ValidationException;
+import scraper.api.ScrapeSpecification;
 import scraper.api.specification.impl.ScrapeSpecificationImpl;
 import scraper.plugins.core.parser.YamlParser;
 import scraper.utils.StringUtil;

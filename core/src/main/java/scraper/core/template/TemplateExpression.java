@@ -1,9 +1,9 @@
 package scraper.core.template;
 
 import scraper.annotations.NotNull;
-import scraper.api.flow.FlowMap;
-import scraper.api.template.T;
-import scraper.api.template.Term;
+import scraper.api.FlowMap;
+import scraper.api.T;
+import scraper.api.Term;
 
 public abstract class TemplateExpression<K> implements Term<K> {
 

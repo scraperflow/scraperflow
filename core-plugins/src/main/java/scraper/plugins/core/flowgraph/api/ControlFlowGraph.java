@@ -2,7 +2,7 @@ package scraper.plugins.core.flowgraph.api;
 
 
 import scraper.annotations.NotNull;
-import scraper.api.node.Address;
+import scraper.api.Address;
 
 import java.util.Collection;
 import java.util.List;

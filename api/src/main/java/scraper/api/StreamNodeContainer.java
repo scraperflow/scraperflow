@@ -1,9 +1,6 @@
-package scraper.api.node.container;
+package scraper.api;
 
 import scraper.annotations.NotNull;
-import scraper.api.FlowMap;
-import scraper.api.StreamNode;
-import scraper.api.template.L;
 
 /**
  * A container for stream nodes provides a node to collect and stream keys.

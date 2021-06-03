@@ -2,15 +2,15 @@ package scraper.nodes.core.functional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import scraper.annotations.NotNull;
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeIOException;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.container.FunctionalNodeContainer;
-import scraper.api.node.container.NodeLogLevel;
-import scraper.api.node.type.FunctionalNode;
-import scraper.api.template.L;
-import scraper.api.template.T;
+import scraper.annotations.FlowKey;
+import scraper.annotations.NodePlugin;
+import scraper.api.NodeIOException;
+import scraper.api.FlowMap;
+import scraper.api.FunctionalNodeContainer;
+import scraper.api.NodeLogLevel;
+import scraper.api.FunctionalNode;
+import scraper.api.L;
+import scraper.api.T;
 
 import java.io.IOException;
 

@@ -1,11 +1,11 @@
 package scraper.core.template;
 
 import scraper.annotations.NotNull;
-import scraper.api.flow.FlowMap;
-import scraper.api.template.ListTerm;
-import scraper.api.template.T;
-import scraper.api.template.TVisitor;
-import scraper.api.template.Term;
+import scraper.api.FlowMap;
+import scraper.api.ListTerm;
+import scraper.api.T;
+import scraper.api.TVisitor;
+import scraper.api.Term;
 
 import java.util.ArrayList;
 import java.util.List;

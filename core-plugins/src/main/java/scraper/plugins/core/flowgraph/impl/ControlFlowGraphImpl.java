@@ -1,8 +1,8 @@
 package scraper.plugins.core.flowgraph.impl;
 
 
-import scraper.api.node.Address;
-import scraper.api.node.NodeAddress;
+import scraper.api.Address;
+import scraper.api.NodeAddress;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.plugins.core.flowgraph.api.ControlFlowNode;

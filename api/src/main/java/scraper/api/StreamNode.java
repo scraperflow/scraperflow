@@ -1,8 +1,6 @@
 package scraper.api;
 
 import scraper.annotations.NotNull;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.container.StreamNodeContainer;
 
 /**
  * Nodes which implement this interface are able to stream (collect or emit) elements.

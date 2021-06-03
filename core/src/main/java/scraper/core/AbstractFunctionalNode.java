@@ -2,9 +2,9 @@ package scraper.core;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.node.container.FunctionalNodeContainer;
-import scraper.api.node.type.FunctionalNode;
+import scraper.annotations.NodePlugin;
+import scraper.api.FunctionalNodeContainer;
+import scraper.api.FunctionalNode;
 
 
 /**

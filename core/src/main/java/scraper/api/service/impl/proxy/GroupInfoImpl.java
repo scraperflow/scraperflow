@@ -1,8 +1,8 @@
 package scraper.api.service.impl.proxy;
 
 import scraper.annotations.NotNull;
-import scraper.api.service.proxy.GroupInfo;
-import scraper.api.service.proxy.ProxyInfo;
+import scraper.api.GroupInfo;
+import scraper.api.ProxyInfo;
 
 import java.util.*;
 import java.util.concurrent.PriorityBlockingQueue;

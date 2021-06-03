@@ -2,13 +2,11 @@ package scraper.api.flow.impl;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
-import scraper.api.flow.FlowMap;
-import scraper.api.template.L;
-import scraper.api.template.T;
+import scraper.api.FlowMap;
+import scraper.api.L;
+import scraper.api.T;
 
-import java.lang.reflect.Type;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiConsumer;

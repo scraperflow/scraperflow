@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import scraper.annotations.ArgsCommand;
-import scraper.api.di.DIContainer;
-import scraper.api.node.Address;
-import scraper.api.plugin.ScrapeSpecificationParser;
-import scraper.api.specification.ScrapeSpecification;
+import scraper.api.DIContainer;
+import scraper.api.Address;
+import scraper.api.ScrapeSpecificationParser;
+import scraper.api.ScrapeSpecification;
 import scraper.api.specification.deserial.AddressDeserializer;
 import scraper.api.specification.simple.SimpleScrapeSpecificationImpl;
 

@@ -1,17 +1,17 @@
 package scraper.nodes.core.functional;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.node.Argument;
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.container.FunctionalNodeContainer;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.type.FunctionalNode;
-import scraper.api.node.type.Node;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.template.L;
-import scraper.api.template.T;
+import scraper.annotations.Argument;
+import scraper.annotations.FlowKey;
+import scraper.annotations.NodePlugin;
+import scraper.api.FlowMap;
+import scraper.api.FunctionalNodeContainer;
+import scraper.api.NodeContainer;
+import scraper.api.FunctionalNode;
+import scraper.api.Node;
+import scraper.api.ScrapeInstance;
+import scraper.api.L;
+import scraper.api.T;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

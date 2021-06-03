@@ -1,4 +1,4 @@
-package scraper.api.plugin;
+package scraper.api;
 
 import scraper.annotations.NotNull;
 import scraper.api.FlowMap;

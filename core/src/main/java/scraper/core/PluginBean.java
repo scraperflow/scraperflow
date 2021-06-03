@@ -5,9 +5,9 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
 import scraper.annotations.NotNull;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.ValidationException;
-import scraper.api.node.type.Node;
+import scraper.annotations.NodePlugin;
+import scraper.api.ValidationException;
+import scraper.api.Node;
 import scraper.utils.ClassUtil;
 
 import java.util.LinkedList;

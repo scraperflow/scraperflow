@@ -1,4 +1,4 @@
-package scraper.api.di;
+package scraper.api;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;

@@ -1,4 +1,4 @@
-package scraper.api.service;
+package scraper.api;
 
 import scraper.annotations.NotNull;
 

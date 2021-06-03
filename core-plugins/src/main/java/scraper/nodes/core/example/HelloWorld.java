@@ -1,24 +1,24 @@
 package scraper.nodes.core.example;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.node.Argument;
-import scraper.annotations.node.EnsureFile;
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.ValidationException;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.Address;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.type.Node;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.template.T;
-import scraper.api.template.Term;
+import scraper.annotations.Argument;
+import scraper.annotations.EnsureFile;
+import scraper.annotations.FlowKey;
+import scraper.annotations.NodePlugin;
+import scraper.api.ValidationException;
+import scraper.api.FlowMap;
+import scraper.api.Address;
+import scraper.api.NodeContainer;
+import scraper.api.Node;
+import scraper.api.ScrapeInstance;
+import scraper.api.T;
+import scraper.api.Term;
 import scraper.util.TemplateUtil;
 
 import java.io.File;
 import java.util.Map;
 
-import static scraper.api.node.container.NodeLogLevel.INFO;
+import static scraper.api.NodeLogLevel.INFO;
 
 @SuppressWarnings({"DefaultAnnotationParam", "RedundantThrows"}) // tutorial
 @NodePlugin(deprecated = true)

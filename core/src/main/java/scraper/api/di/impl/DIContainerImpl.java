@@ -3,8 +3,8 @@ package scraper.api.di.impl;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
-import scraper.annotations.di.DITarget;
-import scraper.api.di.DIContainer;
+import scraper.annotations.DITarget;
+import scraper.api.DIContainer;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;

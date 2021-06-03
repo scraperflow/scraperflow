@@ -1,7 +1,7 @@
 package scraper.api.service.impl.proxy;
 
 import scraper.annotations.NotNull;
-import scraper.api.service.proxy.ProxyInfo;
+import scraper.api.ProxyInfo;
 
 import java.net.InetSocketAddress;
 import java.util.Date;

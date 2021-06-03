@@ -2,7 +2,7 @@ package scraper.core.template;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import scraper.api.template.T;
+import scraper.api.T;
 import scraper.core.exp.TemplateExpressionVisitor;
 import scraper.core.exp.TemplateParser;
 

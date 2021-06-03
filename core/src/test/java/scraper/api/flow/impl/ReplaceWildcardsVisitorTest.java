@@ -1,7 +1,7 @@
 package scraper.api.flow.impl;
 
 import org.junit.jupiter.api.Test;
-import scraper.api.template.T;
+import scraper.api.T;
 
 import java.lang.reflect.Type;
 import java.util.Map;

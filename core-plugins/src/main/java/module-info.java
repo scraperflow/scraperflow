@@ -1,5 +1,5 @@
-import scraper.api.node.type.Node;
-import scraper.api.plugin.Hook;
+import scraper.api.Node;
+import scraper.api.Hook;
 import scraper.hooks.ExitHook;
 import scraper.hooks.NodeDependencyGeneratorHook;
 import scraper.nodes.core.functional.Echo;

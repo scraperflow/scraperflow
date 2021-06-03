@@ -1,16 +1,16 @@
 package scraper.core.template;
 
 import scraper.annotations.NotNull;
-import scraper.api.exceptions.TemplateException;
-import scraper.api.exceptions.ValidationException;
-import scraper.api.flow.FlowMap;
-import scraper.api.template.Primitive;
-import scraper.api.template.T;
-import scraper.api.template.TVisitor;
+import scraper.api.TemplateException;
+import scraper.api.ValidationException;
+import scraper.api.FlowMap;
+import scraper.api.Primitive;
+import scraper.api.T;
+import scraper.api.TVisitor;
 
 import java.util.Objects;
 
-import static scraper.api.template.T.rawType;
+import static scraper.api.T.rawType;
 import static scraper.core.converter.StringToClassConverter.convert;
 
 public class TemplateConstant<K> extends TemplateExpression<K> implements Primitive<K> {

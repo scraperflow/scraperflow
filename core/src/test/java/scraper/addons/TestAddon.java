@@ -1,8 +1,8 @@
 package scraper.addons;
 
 import scraper.annotations.NotNull;
-import scraper.api.di.DIContainer;
-import scraper.api.plugin.Addon;
+import scraper.api.DIContainer;
+import scraper.api.Addon;
 
 public class TestAddon implements Addon {
     @Override

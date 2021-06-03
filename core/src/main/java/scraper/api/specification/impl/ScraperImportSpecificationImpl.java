@@ -1,8 +1,8 @@
 package scraper.api.specification.impl;
 
 import scraper.annotations.NotNull;
-import scraper.api.specification.ScrapeImportSpecification;
-import scraper.api.specification.ScrapeSpecification;
+import scraper.api.ScrapeImportSpecification;
+import scraper.api.ScrapeSpecification;
 
 
 public class ScraperImportSpecificationImpl implements ScrapeImportSpecification {

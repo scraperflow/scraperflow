@@ -1,8 +1,7 @@
-package scraper.api.flow;
+package scraper.api;
 
 
 import scraper.annotations.NotNull;
-import scraper.api.template.T;
 
 /**
  * Class able to evaluate template identities

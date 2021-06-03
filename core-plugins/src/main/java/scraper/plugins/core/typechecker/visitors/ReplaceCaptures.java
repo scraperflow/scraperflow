@@ -1,6 +1,6 @@
 package scraper.plugins.core.typechecker.visitors;
 
-import scraper.api.template.*;
+import scraper.api.*;
 
 import java.lang.reflect.Type;
 import java.util.Map;

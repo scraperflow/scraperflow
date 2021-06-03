@@ -1,17 +1,17 @@
 package scraper.nodes.core.os;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.Io;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeIOException;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.container.FunctionalNodeContainer;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.type.FunctionalNode;
-import scraper.api.node.type.Node;
-import scraper.api.template.L;
-import scraper.api.template.T;
+import scraper.annotations.FlowKey;
+import scraper.annotations.Io;
+import scraper.annotations.NodePlugin;
+import scraper.api.NodeIOException;
+import scraper.api.FlowMap;
+import scraper.api.FunctionalNodeContainer;
+import scraper.api.NodeContainer;
+import scraper.api.FunctionalNode;
+import scraper.api.Node;
+import scraper.api.L;
+import scraper.api.T;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static scraper.api.node.container.NodeLogLevel.*;
+import static scraper.api.NodeLogLevel.*;
 
 /**
  * Executes a command defined in the workflow in the current system environment.

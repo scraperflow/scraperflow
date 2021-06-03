@@ -4,10 +4,10 @@
 
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
-import scraper.api.exceptions.TemplateException;
-import scraper.api.template.T;
-import scraper.api.template.Term;
-import scraper.api.template.TypeReplacer;
+import scraper.api.TemplateException;
+import scraper.api.T;
+import scraper.api.Term;
+import scraper.api.TypeReplacer;
 import scraper.core.template.*;
 
 import java.lang.reflect.TypeVariable;

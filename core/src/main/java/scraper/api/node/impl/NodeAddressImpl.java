@@ -2,8 +2,8 @@ package scraper.api.node.impl;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
-import scraper.api.node.Address;
-import scraper.api.node.NodeAddress;
+import scraper.api.Address;
+import scraper.api.NodeAddress;
 import scraper.util.NodeUtil;
 
 import java.util.Optional;

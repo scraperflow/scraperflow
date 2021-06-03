@@ -6,11 +6,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
-import scraper.api.node.Address;
+import scraper.api.Address;
 import scraper.util.NodeUtil;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 
 public class AddressDeserializer extends StdDeserializer<Address> {
  

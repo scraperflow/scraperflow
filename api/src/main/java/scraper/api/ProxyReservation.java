@@ -1,11 +1,8 @@
-package scraper.api.service;
+package scraper.api;
 
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
-import scraper.api.service.proxy.GroupInfo;
-import scraper.api.service.proxy.ProxyMode;
-import scraper.api.service.proxy.ReservationToken;
 
 import java.io.IOException;
 import java.util.Map;

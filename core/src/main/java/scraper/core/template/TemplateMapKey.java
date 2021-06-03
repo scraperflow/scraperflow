@@ -1,13 +1,13 @@
 package scraper.core.template;
 
 import scraper.annotations.NotNull;
-import scraper.api.exceptions.TemplateException;
-import scraper.api.flow.FlowMap;
+import scraper.api.TemplateException;
+import scraper.api.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.template.FlowKeyLookup;
-import scraper.api.template.T;
-import scraper.api.template.TVisitor;
-import scraper.api.template.Term;
+import scraper.api.FlowKeyLookup;
+import scraper.api.T;
+import scraper.api.TVisitor;
+import scraper.api.Term;
 
 import java.util.*;
 

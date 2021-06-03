@@ -1,6 +1,4 @@
-package scraper.api.template;
-
-import scraper.api.TemplateException;
+package scraper.api;
 
 import java.lang.reflect.*;
 import java.util.Arrays;

@@ -1,12 +1,12 @@
 package scraper.nodes.core.io;
 
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.Io;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.container.FunctionalNodeContainer;
-import scraper.api.node.type.FunctionalNode;
-import scraper.api.template.T;
+import scraper.annotations.FlowKey;
+import scraper.annotations.Io;
+import scraper.annotations.NodePlugin;
+import scraper.api.FlowMap;
+import scraper.api.FunctionalNodeContainer;
+import scraper.api.FunctionalNode;
+import scraper.api.T;
 
 /**
  * Outputs a string line to the environment

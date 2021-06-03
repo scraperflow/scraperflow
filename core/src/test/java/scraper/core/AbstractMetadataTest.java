@@ -2,7 +2,7 @@ package scraper.core;
 
 import org.junit.jupiter.api.Test;
 import scraper.annotations.NotNull;
-import scraper.api.node.type.Node;
+import scraper.api.Node;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -2,16 +2,16 @@ package scraper.nodes.core.io;
 
 
 import scraper.annotations.NotNull;
-import scraper.annotations.node.Argument;
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.Io;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.container.FunctionalNodeContainer;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.type.FunctionalNode;
-import scraper.api.node.type.Node;
-import scraper.api.template.L;
+import scraper.annotations.Argument;
+import scraper.annotations.FlowKey;
+import scraper.annotations.Io;
+import scraper.annotations.NodePlugin;
+import scraper.api.FlowMap;
+import scraper.api.FunctionalNodeContainer;
+import scraper.api.NodeContainer;
+import scraper.api.FunctionalNode;
+import scraper.api.Node;
+import scraper.api.L;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

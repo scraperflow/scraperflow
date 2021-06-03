@@ -1,10 +1,10 @@
 package scraper.plugins.core.typechecker.data;
 
 
-import scraper.api.exceptions.TemplateException;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.template.T;
+import scraper.api.TemplateException;
+import scraper.api.NodeContainer;
+import scraper.api.ScrapeInstance;
+import scraper.api.T;
 import scraper.plugins.core.flowgraph.FlowUtil;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;

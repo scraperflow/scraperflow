@@ -1,15 +1,6 @@
-package scraper.api.node.container;
+package scraper.api;
 
 import scraper.annotations.NotNull;
-import scraper.api.FlowMap;
-import scraper.api.IdentityTemplateEvaluator;
-import scraper.api.Address;
-import scraper.api.GraphAddress;
-import scraper.api.NodeAddress;
-import scraper.api.NodeInitializable;
-import scraper.api.Node;
-import scraper.api.plugin.NodeHook;
-import scraper.api.specification.ScrapeInstance;
 
 import java.util.Collection;
 import java.util.Map;

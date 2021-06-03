@@ -1,4 +1,4 @@
-package scraper.api.node.container;
+package scraper.api;
 
 import scraper.annotations.NotNull;
 

@@ -1,11 +1,11 @@
 package scraper.nodes.core.stream;
 
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.container.FunctionalNodeContainer;
-import scraper.api.node.type.FunctionalNode;
-import scraper.api.template.L;
+import scraper.annotations.FlowKey;
+import scraper.annotations.NodePlugin;
+import scraper.api.FlowMap;
+import scraper.api.FunctionalNodeContainer;
+import scraper.api.FunctionalNode;
+import scraper.api.L;
 
 import java.util.Scanner;
 

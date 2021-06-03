@@ -1,26 +1,24 @@
 package scraper.app;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.di.DITarget;
-import scraper.api.di.DIContainer;
-import scraper.api.exceptions.ValidationException;
-import scraper.api.flow.FlowMap;
+import scraper.annotations.DITarget;
+import scraper.api.DIContainer;
+import scraper.api.ValidationException;
+import scraper.api.FlowMap;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.type.Node;
-import scraper.api.plugin.Addon;
-import scraper.api.plugin.Hook;
-import scraper.api.plugin.NodeHook;
-import scraper.api.plugin.ScrapeSpecificationParser;
-import scraper.api.service.ExecutorsService;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.specification.ScrapeSpecification;
+import scraper.api.NodeContainer;
+import scraper.api.Node;
+import scraper.api.Addon;
+import scraper.api.Hook;
+import scraper.api.NodeHook;
+import scraper.api.ScrapeSpecificationParser;
+import scraper.api.ExecutorsService;
+import scraper.api.ScrapeInstance;
+import scraper.api.ScrapeSpecification;
 import scraper.core.JobFactory;
 import scraper.utils.StringUtil;
 
 import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -30,9 +28,6 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static scraper.app.CommandPrinter.collectAndPrintCommandLineArguments;
 import static scraper.util.DependencyInjectionUtil.getDIContainer;
-
-
-import javax.tools.*;
 
 public class Scraper {
 

@@ -1,15 +1,15 @@
 package scraper.plugins.core.flowgraph;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.node.Flow;
+import scraper.annotations.Flow;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.node.Address;
-import scraper.api.node.NodeAddress;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.container.StreamNodeContainer;
-import scraper.api.node.type.Node;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.template.T;
+import scraper.api.Address;
+import scraper.api.NodeAddress;
+import scraper.api.NodeContainer;
+import scraper.api.StreamNodeContainer;
+import scraper.api.Node;
+import scraper.api.ScrapeInstance;
+import scraper.api.T;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.plugins.core.flowgraph.api.ControlFlowNode;

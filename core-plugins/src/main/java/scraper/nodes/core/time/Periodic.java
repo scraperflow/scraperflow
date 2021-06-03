@@ -1,24 +1,24 @@
 package scraper.nodes.core.time;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.NodePlugin;
-import scraper.annotations.node.Stateful;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.Address;
-import scraper.annotations.node.Flow;
-import scraper.api.node.container.FunctionalNodeContainer;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.type.FunctionalNode;
-import scraper.api.node.type.Node;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.template.T;
+import scraper.annotations.FlowKey;
+import scraper.annotations.NodePlugin;
+import scraper.annotations.Stateful;
+import scraper.api.FlowMap;
+import scraper.api.Address;
+import scraper.annotations.Flow;
+import scraper.api.FunctionalNodeContainer;
+import scraper.api.NodeContainer;
+import scraper.api.FunctionalNode;
+import scraper.api.Node;
+import scraper.api.ScrapeInstance;
+import scraper.api.T;
 
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static scraper.api.node.container.NodeLogLevel.DEBUG;
+import static scraper.api.NodeLogLevel.DEBUG;
 
 
 /**

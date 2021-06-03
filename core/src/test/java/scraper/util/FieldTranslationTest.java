@@ -2,21 +2,18 @@ package scraper.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import scraper.annotations.node.Argument;
-import scraper.annotations.node.FlowKey;
+import scraper.annotations.Argument;
+import scraper.annotations.FlowKey;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.node.Address;
-import scraper.api.template.T;
+import scraper.api.Address;
+import scraper.api.T;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 

@@ -1,7 +1,7 @@
 package scraper.core.converter;
 
 import org.junit.jupiter.api.Test;
-import scraper.api.exceptions.ValidationException;
+import scraper.api.ValidationException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

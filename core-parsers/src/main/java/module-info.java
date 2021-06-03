@@ -1,4 +1,4 @@
-import scraper.api.plugin.ScrapeSpecificationParser;
+import scraper.api.ScrapeSpecificationParser;
 import scraper.plugins.core.parser.JsonParser;
 import scraper.plugins.core.parser.YamlParser;
 

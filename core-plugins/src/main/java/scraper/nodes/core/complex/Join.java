@@ -2,13 +2,13 @@ package scraper.nodes.core.complex;
 
 
 import scraper.annotations.NotNull;
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.NodePlugin;
-import scraper.annotations.node.Stateful;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.type.Node;
-import scraper.api.template.T;
+import scraper.annotations.FlowKey;
+import scraper.annotations.NodePlugin;
+import scraper.annotations.Stateful;
+import scraper.api.FlowMap;
+import scraper.api.NodeContainer;
+import scraper.api.Node;
+import scraper.api.T;
 import scraper.nodes.core.flow.JoinKey;
 import scraper.util.TemplateUtil;
 

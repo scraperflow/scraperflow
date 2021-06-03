@@ -1,20 +1,19 @@
 package scraper.nodes.core.io;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import scraper.annotations.NotNull;
-import scraper.annotations.node.*;
-import scraper.api.exceptions.NodeIOException;
-import scraper.api.exceptions.ValidationException;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.type.Node;
-import scraper.api.service.HttpService;
-import scraper.api.service.HttpService.RequestType;
-import scraper.api.service.proxy.ProxyMode;
-import scraper.api.service.proxy.ReservationToken;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.template.L;
-import scraper.api.template.T;
+import scraper.annotations.*;
+import scraper.api.NodeIOException;
+import scraper.api.ValidationException;
+import scraper.api.FlowMap;
+import scraper.api.NodeContainer;
+import scraper.api.Node;
+import scraper.api.HttpService;
+import scraper.api.HttpService.RequestType;
+import scraper.api.ProxyMode;
+import scraper.api.ReservationToken;
+import scraper.api.ScrapeInstance;
+import scraper.api.L;
+import scraper.api.T;
 import scraper.utils.StringUtil;
 
 import java.io.File;
@@ -32,7 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import static java.time.temporal.ChronoUnit.MILLIS;
-import static scraper.api.node.container.NodeLogLevel.*;
+import static scraper.api.NodeLogLevel.*;
 
 /**
  * Provides html functions (see RequestType):

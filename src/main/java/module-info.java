@@ -1,6 +1,6 @@
-import scraper.api.plugin.Addon;
-import scraper.api.plugin.Hook;
-import scraper.api.plugin.NodeHook;
+import scraper.api.Addon;
+import scraper.api.Hook;
+import scraper.api.NodeHook;
 
 module scraper.app {
     uses Addon;

@@ -1,14 +1,12 @@
 package scraper.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import scraper.api.exceptions.TemplateException;
-import scraper.api.exceptions.ValidationException;
-import scraper.api.flow.FlowMap;
+import scraper.api.TemplateException;
+import scraper.api.ValidationException;
 import scraper.api.flow.impl.FlowMapImpl;
-import scraper.api.template.T;
+import scraper.api.T;
 
 import java.io.Serializable;
 import java.util.List;

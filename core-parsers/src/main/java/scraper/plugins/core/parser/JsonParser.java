@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import scraper.annotations.ArgsCommand;
-import scraper.api.di.DIContainer;
-import scraper.api.exceptions.ValidationException;
-import scraper.api.node.Address;
-import scraper.api.plugin.ScrapeSpecificationParser;
-import scraper.api.specification.ScrapeImportSpecification;
-import scraper.api.specification.ScrapeSpecification;
+import scraper.api.DIContainer;
+import scraper.api.ValidationException;
+import scraper.api.Address;
+import scraper.api.ScrapeSpecificationParser;
+import scraper.api.ScrapeImportSpecification;
+import scraper.api.ScrapeSpecification;
 import scraper.api.specification.deserial.AddressDeserializer;
 import scraper.api.specification.impl.ScrapeSpecificationImpl;
 import scraper.api.specification.impl.ScraperImportSpecificationImpl;
@@ -21,7 +21,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.System.Logger.Level.DEBUG;
-import static java.lang.System.Logger.Level.ERROR;
 
 
 @ArgsCommand(

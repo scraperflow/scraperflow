@@ -1,8 +1,8 @@
 package scraper.api.node.impl;
 
 import scraper.annotations.NotNull;
-import scraper.api.node.Address;
-import scraper.api.node.GraphAddress;
+import scraper.api.Address;
+import scraper.api.GraphAddress;
 import scraper.util.NodeUtil;
 
 public class GraphAddressImpl implements GraphAddress {

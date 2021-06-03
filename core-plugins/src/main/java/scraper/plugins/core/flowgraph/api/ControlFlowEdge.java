@@ -2,7 +2,7 @@ package scraper.plugins.core.flowgraph.api;
 
 
 import scraper.annotations.NotNull;
-import scraper.api.node.NodeAddress;
+import scraper.api.NodeAddress;
 
 /**
  * Describes a single edge form one node to another

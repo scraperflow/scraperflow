@@ -1,7 +1,7 @@
 package scraper.plugins.core.parser;
 
 import org.junit.jupiter.api.Test;
-import scraper.api.plugin.ScrapeSpecificationParser;
+import scraper.api.ScrapeSpecificationParser;
 
 import java.io.File;
 import java.net.URL;

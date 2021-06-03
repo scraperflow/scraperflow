@@ -2,11 +2,11 @@ package scraper.hooks;
 
 import scraper.annotations.ArgsCommand;
 import scraper.annotations.NotNull;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.di.DIContainer;
-import scraper.api.plugin.Hook;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.specification.ScrapeSpecification;
+import scraper.annotations.NodePlugin;
+import scraper.api.DIContainer;
+import scraper.api.Hook;
+import scraper.api.ScrapeInstance;
+import scraper.api.ScrapeSpecification;
 import scraper.utils.StringUtil;
 
 import java.io.File;
@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.lang.System.Logger.Level.DEBUG;
-import static java.lang.System.Logger.Level.INFO;
 
 /**
  * Hook to generate a node dependency file for the currently parsed workflow specifications

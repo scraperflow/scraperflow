@@ -1,8 +1,8 @@
 package scraper.api.node.impl;
 
 import scraper.annotations.NotNull;
-import scraper.api.node.Address;
-import scraper.api.node.InstanceAddress;
+import scraper.api.Address;
+import scraper.api.InstanceAddress;
 import scraper.util.NodeUtil;
 
 public class InstanceAddressImpl extends AddressImpl implements InstanceAddress {

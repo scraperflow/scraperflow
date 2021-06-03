@@ -2,7 +2,7 @@ package scraper.api.specification.deserial;
 
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.KeyDeserializer;
-import scraper.api.node.Address;
+import scraper.api.Address;
 import scraper.util.NodeUtil;
 
 public class AddressKeyDeserializer extends KeyDeserializer {

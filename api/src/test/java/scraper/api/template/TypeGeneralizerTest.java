@@ -1,6 +1,8 @@
 package scraper.api.template;
 
 import org.junit.jupiter.api.Test;
+import scraper.api.T;
+import scraper.api.TypeGeneralizer;
 
 import java.util.List;
 import java.util.Map;

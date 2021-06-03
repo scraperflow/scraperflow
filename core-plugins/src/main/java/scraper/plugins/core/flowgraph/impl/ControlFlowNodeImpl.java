@@ -2,8 +2,8 @@ package scraper.plugins.core.flowgraph.impl;
 
 
 import scraper.annotations.NotNull;
-import scraper.api.node.Address;
-import scraper.api.node.container.NodeContainer;
+import scraper.api.Address;
+import scraper.api.NodeContainer;
 import scraper.plugins.core.flowgraph.api.ControlFlowNode;
 
 /**

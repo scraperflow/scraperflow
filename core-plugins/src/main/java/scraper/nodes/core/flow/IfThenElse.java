@@ -1,14 +1,14 @@
 package scraper.nodes.core.flow;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.Address;
-import scraper.annotations.node.Flow;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.type.Node;
-import scraper.api.template.T;
+import scraper.annotations.FlowKey;
+import scraper.annotations.NodePlugin;
+import scraper.api.FlowMap;
+import scraper.api.Address;
+import scraper.annotations.Flow;
+import scraper.api.NodeContainer;
+import scraper.api.Node;
+import scraper.api.T;
 
 /**
  * Provides if-then-else routing.

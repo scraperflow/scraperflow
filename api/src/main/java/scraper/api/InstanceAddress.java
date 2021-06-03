@@ -1,3 +1,3 @@
-package scraper.api.node;
+package scraper.api;
 
 public interface InstanceAddress extends Address {}

@@ -1,9 +1,6 @@
-package scraper.api.plugin;
+package scraper.api;
 
 import scraper.annotations.NotNull;
-import scraper.api.DIContainer;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.specification.ScrapeSpecification;
 
 import java.util.Map;
 

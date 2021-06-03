@@ -1,4 +1,4 @@
-package scraper.annotations.di;
+package scraper.annotations;
 
 import scraper.annotations.NotNull;
 

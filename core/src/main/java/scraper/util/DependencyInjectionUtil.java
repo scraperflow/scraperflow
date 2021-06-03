@@ -2,12 +2,12 @@ package scraper.util;
 
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
-import scraper.api.di.DIContainer;
+import scraper.api.DIContainer;
 import scraper.api.di.impl.DIContainerImpl;
-import scraper.api.plugin.Addon;
-import scraper.api.plugin.Hook;
-import scraper.api.plugin.NodeHook;
-import scraper.api.plugin.ScrapeSpecificationParser;
+import scraper.api.Addon;
+import scraper.api.Hook;
+import scraper.api.NodeHook;
+import scraper.api.ScrapeSpecificationParser;
 import scraper.api.service.impl.ExecutorsServiceImpl;
 import scraper.api.service.impl.FileServiceImpl;
 import scraper.api.service.impl.HttpServiceImpl;

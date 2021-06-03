@@ -2,10 +2,10 @@ package scraper.plugins.core.typechecker.data;
 
 
 import scraper.annotations.NotNull;
-import scraper.api.node.Address;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.type.Node;
-import scraper.api.specification.ScrapeInstance;
+import scraper.api.Address;
+import scraper.api.NodeContainer;
+import scraper.api.Node;
+import scraper.api.ScrapeInstance;
 import scraper.core.AbstractStreamNode;
 import scraper.plugins.core.flowgraph.FlowUtil;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
@@ -17,7 +17,6 @@ import scraper.util.TemplateUtil;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static java.lang.System.Logger.Level.DEBUG;
 import static scraper.plugins.core.typechecker.TypeChecker.getDefaultDataFlowOutput;

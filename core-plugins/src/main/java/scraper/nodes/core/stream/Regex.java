@@ -1,19 +1,19 @@
 package scraper.nodes.core.stream;
 
 import scraper.annotations.NotNull;
-import scraper.annotations.node.Argument;
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeIOException;
-import scraper.api.exceptions.ValidationException;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.container.StreamNodeContainer;
-import scraper.api.node.type.Node;
-import scraper.api.node.type.StreamNode;
-import scraper.api.specification.ScrapeInstance;
-import scraper.api.template.L;
-import scraper.api.template.T;
+import scraper.annotations.Argument;
+import scraper.annotations.FlowKey;
+import scraper.annotations.NodePlugin;
+import scraper.api.NodeIOException;
+import scraper.api.ValidationException;
+import scraper.api.FlowMap;
+import scraper.api.NodeContainer;
+import scraper.api.StreamNodeContainer;
+import scraper.api.Node;
+import scraper.api.StreamNode;
+import scraper.api.ScrapeInstance;
+import scraper.api.L;
+import scraper.api.T;
 
 import java.util.HashMap;
 import java.util.Map;

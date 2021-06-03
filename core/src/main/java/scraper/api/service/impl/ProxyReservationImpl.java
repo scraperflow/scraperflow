@@ -2,13 +2,13 @@ package scraper.api.service.impl;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
-import scraper.api.service.ProxyReservation;
+import scraper.api.ProxyReservation;
 import scraper.api.service.impl.proxy.GroupInfoImpl;
 import scraper.api.service.impl.proxy.ProxyInfoImpl;
 import scraper.api.service.impl.proxy.ReservationTokenImpl;
-import scraper.api.service.proxy.GroupInfo;
-import scraper.api.service.proxy.ProxyMode;
-import scraper.api.service.proxy.ReservationToken;
+import scraper.api.GroupInfo;
+import scraper.api.ProxyMode;
+import scraper.api.ReservationToken;
 import scraper.utils.StringUtil;
 
 import java.io.File;

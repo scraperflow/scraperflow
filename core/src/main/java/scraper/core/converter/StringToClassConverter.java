@@ -2,8 +2,8 @@ package scraper.core.converter;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
-import scraper.api.exceptions.ValidationException;
-import scraper.api.node.Address;
+import scraper.api.ValidationException;
+import scraper.api.Address;
 import scraper.api.node.impl.AddressImpl;
 
 /**

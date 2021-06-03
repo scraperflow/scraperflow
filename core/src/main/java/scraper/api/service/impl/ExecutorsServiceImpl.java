@@ -1,7 +1,7 @@
 package scraper.api.service.impl;
 
 import scraper.annotations.NotNull;
-import scraper.api.service.ExecutorsService;
+import scraper.api.ExecutorsService;
 
 import java.util.Map;
 import java.util.concurrent.*;

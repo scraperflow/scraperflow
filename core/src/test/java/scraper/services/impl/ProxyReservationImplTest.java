@@ -1,11 +1,11 @@
 package scraper.services.impl;
 
 import org.junit.jupiter.api.Test;
-import scraper.api.service.ProxyReservation;
+import scraper.api.ProxyReservation;
 import scraper.api.service.impl.ProxyReservationImpl;
-import scraper.api.service.proxy.GroupInfo;
-import scraper.api.service.proxy.ProxyMode;
-import scraper.api.service.proxy.ReservationToken;
+import scraper.api.GroupInfo;
+import scraper.api.ProxyMode;
+import scraper.api.ReservationToken;
 
 import java.io.File;
 import java.io.FileOutputStream;

@@ -1,8 +1,8 @@
 package scraper.core;
 
 import scraper.annotations.NotNull;
-import scraper.api.exceptions.ValidationException;
-import scraper.api.node.type.Node;
+import scraper.api.ValidationException;
+import scraper.api.Node;
 
 /**
  * This class holds the metadata needed for node instantiation and node versioning.

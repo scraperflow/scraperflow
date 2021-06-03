@@ -1,12 +1,12 @@
 package scraper.nodes.core.flow;
 
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.NodePlugin;
-import scraper.api.exceptions.NodeException;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.type.Node;
-import scraper.api.template.T;
+import scraper.annotations.FlowKey;
+import scraper.annotations.NodePlugin;
+import scraper.api.NodeException;
+import scraper.api.FlowMap;
+import scraper.api.NodeContainer;
+import scraper.api.Node;
+import scraper.api.T;
 
 /**
  * Stops forwarding if condition is true

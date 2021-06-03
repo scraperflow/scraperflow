@@ -1,8 +1,8 @@
 package scraper.api.service.impl;
 
 import scraper.annotations.NotNull;
-import scraper.api.service.HttpService;
-import scraper.api.service.proxy.ReservationToken;
+import scraper.api.HttpService;
+import scraper.api.ReservationToken;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

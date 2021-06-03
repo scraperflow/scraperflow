@@ -1,8 +1,7 @@
 package scraper.api.flow.impl;
 
 import org.junit.jupiter.api.Test;
-import scraper.api.flow.FlowMap;
-import scraper.api.template.L;
+import scraper.api.FlowMap;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

@@ -2,7 +2,7 @@ package scraper.api.service.impl;
 
 import scraper.annotations.NotNull;
 import scraper.annotations.Nullable;
-import scraper.api.service.FileService;
+import scraper.api.FileService;
 
 import java.io.*;
 import java.util.concurrent.ConcurrentHashMap;
