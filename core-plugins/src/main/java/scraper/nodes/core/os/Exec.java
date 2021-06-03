@@ -1,25 +1,13 @@
 package scraper.nodes.core.os;
 
-import scraper.annotations.NotNull;
-import scraper.annotations.FlowKey;
-import scraper.annotations.Io;
-import scraper.annotations.NodePlugin;
-import scraper.api.NodeIOException;
-import scraper.api.FlowMap;
-import scraper.api.FunctionalNodeContainer;
-import scraper.api.NodeContainer;
-import scraper.api.FunctionalNode;
-import scraper.api.Node;
-import scraper.api.L;
-import scraper.api.T;
+import scraper.annotations.*;
+import scraper.api.*;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static scraper.api.NodeLogLevel.*;
 
@@ -35,21 +23,17 @@ import static scraper.api.NodeLogLevel.*;
  * <p>Example definition:
  *
  * <pre>
- *   type: ExecNode
+ *   type: Exec
  *   exec: ["ls", "-la", "{path}"]
  * </pre>
  */
 @NodePlugin("0.5.0")
 @Io
-public final class Exec implements FunctionalNode {
+public class Exec implements FunctionalNode {
 
     /** Command to execute. Every element is handled as one argument. Argument strings are evaluated. */
-    @FlowKey
+    @FlowKey(mandatory = true)
     private final T<List<String>> exec = new T<>(){};
-
-    /** Single String alternative to <var>exec</var>, will get executed if <var>exec</var> is not specified */
-    @FlowKey
-    private final T<String> execStr = new T<>(){};
 
     /** Working directory. Defaults to the JVM working directory. */
     @FlowKey
@@ -59,6 +43,10 @@ public final class Exec implements FunctionalNode {
     @FlowKey(defaultValue = "false")
     private Boolean failOnException;
 
+    /** Byte buffer size */
+    @FlowKey(defaultValue = "1000")
+    private Integer ByteBuffer;
+
     /** Redirects process output to this string */
     @FlowKey(defaultValue = "\"_\"")
     private final L<String> put = new L<>(){};
@@ -67,23 +55,14 @@ public final class Exec implements FunctionalNode {
     @FlowKey(defaultValue = "\"_\"")
     private final L<String> putErr = new L<>(){};
 
-    /** Byte buffer size */
-    @FlowKey(defaultValue = "1000")
-    private Integer ByteBuffer;
-
-
     @Override
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
-        Optional<List<String>> exec = o.evalMaybe(this.exec);
-        Optional<String> execStr = o.evalMaybe(this.execStr);
-
-        if(exec.isPresent()) exec(n, exec.get(), o);
-        else execStr.ifPresent(s -> exec(n, Arrays.asList(s.split("\\s")), o));
+        List<String> exec = o.eval(this.exec);
+        exec(n, exec, o);
     }
 
-    private void exec(NodeContainer<? extends Node> n, List<String> exec, FlowMap o) {
+    void exec(NodeContainer<? extends Node> n, List<String> exec, FlowMap o) {
         try {
-
             ProcessBuilder pb = new ProcessBuilder(exec);
             o.evalMaybe(workingDirectory).ifPresent(dir -> pb.directory(new File(dir)));
             Process b = pb.start();

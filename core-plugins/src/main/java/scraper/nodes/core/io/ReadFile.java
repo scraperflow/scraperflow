@@ -1,15 +1,7 @@
 package scraper.nodes.core.io;
 
-import scraper.annotations.NotNull;
-import scraper.annotations.FlowKey;
-import scraper.annotations.Io;
-import scraper.annotations.NodePlugin;
-import scraper.api.NodeIOException;
-import scraper.api.FlowMap;
-import scraper.api.FunctionalNodeContainer;
-import scraper.api.FunctionalNode;
-import scraper.api.L;
-import scraper.api.T;
+import scraper.annotations.*;
+import scraper.api.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,17 +16,13 @@ import java.util.stream.Stream;
  * Outputs a String.
  * Throws an exception if the file does not exist.
  */
-@NodePlugin("0.4.0")
+@NodePlugin("0.5.0")
 @Io
 public final class ReadFile implements FunctionalNode {
 
     /** Input file path */
     @FlowKey(mandatory = true)
     private final T<String> inputFile = new T<>(){};
-
-    /** Where the output line will be put */
-    @FlowKey(defaultValue = "\"output\"")
-    private final L<String> output = new L<>(){};
 
     /** Character encoding of the file */
     @FlowKey(defaultValue = "\"UTF-8\"")
@@ -43,6 +31,10 @@ public final class ReadFile implements FunctionalNode {
     /** Join lines with this string. Can be empty. */
     @FlowKey(defaultValue = "\"\\n\"")
     private String join;
+
+    /** Where the output line will be put */
+    @FlowKey(mandatory = true)
+    private final L<String> output = new L<>(){};
 
     public void modify(@NotNull final FunctionalNodeContainer n, @NotNull final FlowMap o) {
         String file = o.eval(inputFile);

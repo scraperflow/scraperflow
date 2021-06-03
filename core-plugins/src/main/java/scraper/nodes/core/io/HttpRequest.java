@@ -1,20 +1,12 @@
 package scraper.nodes.core.io;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import scraper.annotations.*;
-import scraper.api.NodeIOException;
-import scraper.api.ValidationException;
-import scraper.api.FlowMap;
-import scraper.api.NodeContainer;
-import scraper.api.Node;
-import scraper.api.HttpService;
-import scraper.api.HttpService.RequestType;
-import scraper.api.ProxyMode;
-import scraper.api.ReservationToken;
-import scraper.api.ScrapeInstance;
-import scraper.api.L;
-import scraper.api.T;
+import scraper.api.*;
 import scraper.utils.StringUtil;
+import scraper.api.HttpService.RequestType;
+import static scraper.api.NodeLogLevel.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +23,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import static java.time.temporal.ChronoUnit.MILLIS;
-import static scraper.api.NodeLogLevel.*;
 
 /**
  * Provides html functions (see RequestType):
@@ -73,29 +64,33 @@ public final class HttpRequest implements Node {
     /** Target URL. If URL starts with // without a schema, <var>defaultSchema</var> will be used as the schema */
     @FlowKey(defaultValue = "\"{url}\"")
     private final T<String> url = new T<>(){};
+
     /** Default schema if url starts with // */
     @FlowKey(defaultValue = "\"https:\"")
     private String defaultSchema;
-    /** Response location if successful */
-    @FlowKey(defaultValue = "\"_\"")
-    private final L<String> put = new L<>(){};
+
     /** Type of request: GET, POST, DELETE, PUT */
     @FlowKey(defaultValue = "\"GET\"")
     private RequestType requestType;
+
     /** Inserts name value pair request headers */
     @FlowKey(defaultValue = "{}")
     private final T<Map<String, String>> requestHeaders = new T<>(){};
+
     /** User agent of the request */
     @FlowKey(defaultValue = "\"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0\"")
     @Argument
     private String userAgent;
+
     /** Timeout for every HTTP request */
     @FlowKey(defaultValue = "5000") @Argument
     private Integer timeout;
+
     /** Use proxy or not. Possible values:
      * <code> LOCAL, PROXY, BOTH_PREFER_PROXY, BOTH_PREFER_LOCAL</code> */
     @FlowKey(defaultValue = "\"LOCAL\"")
     private ProxyMode proxyMode;
+
     /** Shared proxy group */
     @FlowKey(defaultValue = "\"local\"")
     private String proxyGroup;
@@ -106,12 +101,15 @@ public final class HttpRequest implements Node {
     /** Expected response type, STRING_BODY, or FILE */
     @FlowKey(defaultValue = "\"STRING_BODY\"")
     private ResponseType expectedResponse;
+
     /** How long the used proxy or local connection is made unusable by other nodes. This can used to reduce the requests for a single IP. */
     @FlowKey(defaultValue = "1000") @Argument
     private Integer holdOnReservation;
+
     /** How long to wait after a request has completed but after the token has been freed. This can be used to not overload the target server. */
     @FlowKey(defaultValue = "1000") @Argument
     private Integer holdOnForward;
+
     /** Checks the response body of a string response for bad phrases, throwing an exception if one is found */
     @FlowKey(defaultValue = "[]")
     private final T<List<String>> exceptionContaining = new T<>(){};
@@ -157,6 +155,14 @@ public final class HttpRequest implements Node {
     /** Payload of a POST request */
     @FlowKey
     private final T<Object> payload = new T<>(){};
+
+    // --------------
+    // OUTPUT
+    // --------------
+
+    /** Response location if successful */
+    @FlowKey(defaultValue = "\"_\"")
+    private final L<String> put = new L<>(){};
 
     @Override
     public void init(@NotNull NodeContainer<? extends Node> n, @NotNull final ScrapeInstance job) throws ValidationException {
@@ -205,14 +211,11 @@ public final class HttpRequest implements Node {
             HttpResponse.BodyHandler handler = null;
 
             switch (expectedResponse) {
-                case STRING_BODY:
-                    handler = HttpResponse.BodyHandlers.ofString();
-                    break;
-
-                case FILE:
+                case STRING_BODY -> handler = HttpResponse.BodyHandlers.ofString();
+                case FILE -> {
                     Path download = Paths.get(o.eval(path));
                     handler = HttpResponse.BodyHandlers.ofFile(download);
-                    break;
+                }
             }
 
             HttpService service = n.getJobInstance().getHttpService();
@@ -284,33 +287,30 @@ public final class HttpRequest implements Node {
             // set type and payload
             String payload;
             switch (requestType) {
-                case GET:
-                    request.GET();
-                    break;
-                case POST:
+                case GET -> request.GET();
+                case POST -> {
                     Optional<Object> maybe = o.evalMaybe(this.payload);
-                    if(maybe.isPresent()) {
+                    if (maybe.isPresent()) {
                         payload = mapper.writeValueAsString(o.eval(this.payload));
                         request.POST(java.net.http.HttpRequest.BodyPublishers.ofString(payload));
                     } else {
                         request.POST(java.net.http.HttpRequest.BodyPublishers.noBody());
                     }
-                    break;
-                case DELETE:
-                    request.DELETE();
-                    break;
-                case PUT:
+                }
+                case DELETE -> request.DELETE();
+                case PUT -> {
                     Optional<Object> maybe2 = o.evalMaybe(this.payload);
-                    if(maybe2.isPresent()) {
+                    if (maybe2.isPresent()) {
                         payload = mapper.writeValueAsString(o.eval(this.payload));
                         request.PUT(java.net.http.HttpRequest.BodyPublishers.ofString(payload));
                     } else {
                         request.PUT(java.net.http.HttpRequest.BodyPublishers.noBody());
                     }
-                    break;
-                default:
+                }
+                default -> {
                     n.log(ERROR, "Using legacy request type for new HTTP node: {0}", requestType);
                     throw new RuntimeException();
+                }
             }
 
             // set headers

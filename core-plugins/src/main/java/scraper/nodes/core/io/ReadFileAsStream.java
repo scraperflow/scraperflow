@@ -1,16 +1,7 @@
 package scraper.nodes.core.io;
 
-import scraper.annotations.NotNull;
-import scraper.annotations.EnsureFile;
-import scraper.annotations.FlowKey;
-import scraper.annotations.Io;
-import scraper.annotations.NodePlugin;
-import scraper.api.NodeException;
-import scraper.api.FlowMap;
-import scraper.api.StreamNodeContainer;
-import scraper.api.StreamNode;
-import scraper.api.L;
-import scraper.api.T;
+import scraper.annotations.*;
+import scraper.api.*;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -21,7 +12,7 @@ import java.util.stream.Stream;
 /**
  * Reads a file and streams each line.
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 @Io
 public final class ReadFileAsStream implements StreamNode {
 
@@ -29,13 +20,13 @@ public final class ReadFileAsStream implements StreamNode {
     @FlowKey(mandatory = true) @EnsureFile
     private final T<String> inputFile = new T<>(){};
 
-    /** Where the output line will be put */
-    @FlowKey(defaultValue = "\"output\"")
-    private final L<String> output = new L<>(){};
-
     /** Charset of the file */
-    @FlowKey(defaultValue = "\"ISO_8859_1\"")
+    @FlowKey(defaultValue = "\"UTF-8\"")
     private String charset;
+
+    /** Where the output line will be put */
+    @FlowKey(mandatory = true)
+    private final L<String> output = new L<>(){};
 
     @Override
     public void process(@NotNull StreamNodeContainer n, @NotNull FlowMap o) throws NodeException {

@@ -1,17 +1,7 @@
 package scraper.nodes.core.io;
 
-
-import scraper.annotations.NotNull;
-import scraper.annotations.Argument;
-import scraper.annotations.FlowKey;
-import scraper.annotations.Io;
-import scraper.annotations.NodePlugin;
-import scraper.api.FlowMap;
-import scraper.api.FunctionalNodeContainer;
-import scraper.api.NodeContainer;
-import scraper.api.FunctionalNode;
-import scraper.api.Node;
-import scraper.api.L;
+import scraper.annotations.*;
+import scraper.api.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -24,7 +14,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Pings a given hostname on the given port by trying to open a socket connection.
  */
-@NodePlugin("0.2.0")
+@NodePlugin("0.3.0")
 @Io
 public final class Ping implements FunctionalNode {
 
@@ -36,13 +26,13 @@ public final class Ping implements FunctionalNode {
     @FlowKey(mandatory = true) @Argument
     private Integer port;
 
-    /** List of targets with additional parameters */
-    @FlowKey
-    private final L<Boolean> result = new L<>(){};
-
     /** Enforced ping timeout time in ms. Default: 500 */
     @FlowKey(defaultValue = "500") @Argument
     private Integer timeout;
+
+    /** Result of the ping */
+    @FlowKey(mandatory = true)
+    private final L<Boolean> result = new L<>(){};
 
 
     @Override

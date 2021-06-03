@@ -1,15 +1,7 @@
 package scraper.nodes.core.io;
 
-import scraper.annotations.NotNull;
-import scraper.annotations.EnsureFile;
-import scraper.annotations.FlowKey;
-import scraper.annotations.Io;
-import scraper.annotations.NodePlugin;
-import scraper.api.FlowMap;
-import scraper.api.StreamNodeContainer;
-import scraper.api.StreamNode;
-import scraper.api.L;
-import scraper.api.T;
+import scraper.annotations.*;
+import scraper.api.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

@@ -3,15 +3,20 @@ package scraper.utils;
 import scraper.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class ClassUtil {
     private ClassUtil(){}
 
     /** Returns all fields of a given class, including the fields of all super classes */
     public static @NotNull List<Field> getAllFields(@NotNull final List<Field> fields, @NotNull final Class<?> type) {
-        fields.addAll(Arrays.asList(type.getDeclaredFields()));
+        Field[] toAdd = type.getDeclaredFields();
+        for (Field field : toAdd) {
+            if (!fields.stream().map(Field::getName).collect(Collectors.toList()).contains(field.getName())) {
+                fields.add(field);
+            }
+        }
         if (type.getSuperclass() != null) getAllFields(fields, type.getSuperclass());
         return fields;
     }

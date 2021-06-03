@@ -1,17 +1,8 @@
 start:
-  - f: periodic
-    period: 10000
-    onPeriod: echo
-
-echo:
-  - f: echo
-    put: world
-    value: "world"
-
-  - f: customnode
-    put: hello
-    value: "{world}"
-    log: hello"
-
-  - f: f2
-    value: "{world}"
+  - f: log
+    log: "OK"
+  - f: execstr
+    exec: "ls"
+    put: log
+  - f: log
+    log: "OK {log}"

@@ -1,15 +1,7 @@
 package scraper.nodes.core.io;
 
-import scraper.annotations.NotNull;
-import scraper.annotations.FlowKey;
-import scraper.annotations.Io;
-import scraper.annotations.NodePlugin;
-import scraper.api.NodeException;
-import scraper.api.FlowMap;
-import scraper.api.StreamNodeContainer;
-import scraper.api.StreamNode;
-import scraper.api.L;
-import scraper.api.T;
+import scraper.annotations.*;
+import scraper.api.*;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -29,14 +21,6 @@ import java.util.function.BiConsumer;
 @Io
 public final class PathGlobFile implements StreamNode {
 
-    /** Where the output file path will be put. */
-    @FlowKey(defaultValue = "\"_\"")
-    private final L<String> output = new L<>(){};
-
-    /** Where the output filename will be put. */
-    @FlowKey(defaultValue = "\"_\"")
-    private final L<String> filename = new L<>(){};
-
     /** Syntax and pattern, see Javas PathMatcher.getPathMatcher documentation. */
     @FlowKey(mandatory = true)
     private final T<String> glob = new T<>(){};
@@ -48,6 +32,15 @@ public final class PathGlobFile implements StreamNode {
     /** Includes the root as a match or not */
     @FlowKey(defaultValue = "false")
     private Boolean includeRoot;
+
+    /** Where the output file path will be put. */
+    @FlowKey(defaultValue = "\"_\"")
+    private final L<String> output = new L<>(){};
+
+    /** Where the output filename will be put. */
+    @FlowKey(defaultValue = "\"_\"")
+    private final L<String> filename = new L<>(){};
+
 
     @Override
     public void process(@NotNull StreamNodeContainer n, @NotNull FlowMap o) throws NodeException {

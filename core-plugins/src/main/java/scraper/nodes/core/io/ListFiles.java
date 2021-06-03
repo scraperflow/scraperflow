@@ -1,15 +1,7 @@
 package scraper.nodes.core.io;
 
-import scraper.annotations.NotNull;
-import scraper.annotations.FlowKey;
-import scraper.annotations.Io;
-import scraper.annotations.NodePlugin;
-import scraper.api.NodeException;
-import scraper.api.FlowMap;
-import scraper.api.StreamNodeContainer;
-import scraper.api.StreamNode;
-import scraper.api.L;
-import scraper.api.T;
+import scraper.annotations.*;
+import scraper.api.*;
 
 import java.io.File;
 
@@ -17,20 +9,20 @@ import java.io.File;
  * List files in a given directory.
  * Can filter for directories only
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 @Io
 public final class ListFiles implements StreamNode {
 
     /** List files of this directory */
-    @FlowKey(defaultValue = "\"{file}\"")
+    @FlowKey(mandatory = true)
     private final T<String> file = new T<>(){};
-
-    /** Where the output filename will be put. */
-    @FlowKey(defaultValue = "\"filename\"")
-    private final L<String> filename = new L<>(){};
 
     @FlowKey(defaultValue = "false")
     private Boolean onlyDirectories;
+
+    /** Where the output filename will be put. */
+    @FlowKey(mandatory = true)
+    private final L<String> filename = new L<>(){};
 
     @Override
     public void process(@NotNull StreamNodeContainer n, @NotNull FlowMap o) throws NodeException {
