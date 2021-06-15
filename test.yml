@@ -1,8 +1,0 @@
-start:
-  - f: log
-    log: "OK"
-  - f: execstr
-    exec: "ls"
-    put: log
-  - f: log
-    log: "OK {log}"

@@ -12,6 +12,9 @@ import scraper.api.Term;
 import java.util.*;
 
 public class TemplateMapKey<K> extends TemplateExpression<K> implements FlowKeyLookup<K> {
+
+    private final boolean consume;
+
     @Override public <X> X accept(@NotNull TVisitor<X> visitor) { return visitor.visitFlowKeyLookup(this); }
 
     @NotNull
@@ -25,6 +28,11 @@ public class TemplateMapKey<K> extends TemplateExpression<K> implements FlowKeyL
         return fromTypeVariable;
     }
 
+    @Override
+    public boolean isConsume() {
+        return consume;
+    }
+
     private final Term<String> keyLookup;
 
     @Override
@@ -32,10 +40,15 @@ public class TemplateMapKey<K> extends TemplateExpression<K> implements FlowKeyL
         return this;
     }
 
-    public TemplateMapKey(@NotNull final TemplateExpression<String> keyLookup, @NotNull final T<K> targetType, boolean fromTypeVariable) {
+    public TemplateMapKey(TemplateExpression<String> keyLookup, T<K> targetType, boolean fromTypeVariable, boolean b) {
         super(targetType);
         this.keyLookup = keyLookup;
         this.fromTypeVariable = fromTypeVariable;
+        this.consume = b;
+    }
+    
+    public TemplateMapKey(@NotNull final TemplateExpression<String> keyLookup, @NotNull final T<K> targetType, boolean fromTypeVariable) {
+        this(keyLookup, targetType, fromTypeVariable, false);
     }
 
     @Override

@@ -44,7 +44,7 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
     public TemplateExpression<Y> visitTemplate(TemplateParser.TemplateContext ctx) {
         log.log(TRACE,    "Visiting template {0}", ctx.getText());
 
-        // string content or fmlookup
+        // string content or fmlookup or fmlookupconsume
         if(ctx.children.size() == 1) {
             return visit(ctx.getChild(0));
         }
@@ -120,6 +120,17 @@ public class TemplateExpressionVisitor<Y> extends AbstractParseTreeVisitor<Templ
 
 
         throw new AssertionError("Template has wrong amount of children: " + ctx.getText());
+    }
+
+    @Override
+    public TemplateExpression<Y> visitFmlookupconsume(TemplateParser.FmlookupconsumeContext ctx) {
+        log.log(TRACE,    "Visiting fm lookup ocsume {0}", ctx.getText());
+        if(ctx.children.size() != 5) throw new AssertionError("Bad Consume FmlLookup");
+
+        TemplateExpressionVisitor<String> stringTargetVisitor = new TemplateExpressionVisitor<>(new T<>(){});
+        TemplateExpression<String> visited = stringTargetVisitor.visit(ctx.children.get(2));
+
+        return new TemplateMapKey<>(visited, target, (target.get() instanceof TypeVariable), true);
     }
 
     @Override

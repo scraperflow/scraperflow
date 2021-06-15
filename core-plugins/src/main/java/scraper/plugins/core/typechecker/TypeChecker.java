@@ -2,16 +2,11 @@ package scraper.plugins.core.typechecker;
 
 import scraper.annotations.FlowKey;
 import scraper.annotations.NodePlugin;
-import scraper.api.TemplateException;
-import scraper.api.ValidationException;
-import scraper.api.NodeContainer;
-import scraper.api.ScrapeInstance;
-import scraper.api.L;
-import scraper.api.T;
-import scraper.api.Term;
+import scraper.api.*;
 import scraper.core.template.TemplateConstant;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
+import scraper.plugins.core.typechecker.visitors.GatherConsumes;
 import scraper.plugins.core.typechecker.visitors.ReplaceCapturesOrCrashVisitor;
 import scraper.util.NodeUtil;
 import scraper.util.TemplateUtil;
@@ -156,6 +151,19 @@ public class TypeChecker {
                         log.log(ERROR,"{0} type error for field {1}: {2}", n, fieldName, e.getMessage());
                         throw e;
                     }
+                        }
+                );
+
+
+        // consume
+        getDefaultDataFlowInputTemplates(n)
+                .forEach((fieldName, template) -> {
+                            GatherConsumes consumes = new GatherConsumes();
+                            if(template.getTerm() != null) {
+                                template.getTerm().accept(consumes);
+                            }
+
+                            consumes.consumes.forEach(t -> env.remove(((FlowKeyLookup<?>) t).getKeyLookup()));
                         }
                 );
     }

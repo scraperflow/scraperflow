@@ -15,7 +15,6 @@ public class ReplaceCaptures extends DefaultVisitor<Term<?>> {
 
     @Override
     public Term<?> visitFlowKeyLookup(FlowKeyLookup<?> mapKey) {
-        System.out.println(mapKey.getToken());
         return super.visitFlowKeyLookup(mapKey);
     }
 

@@ -1,4 +1,4 @@
-// Generated from Template.g4 by ANTLR 4.8
+// Generated from Template.g4 by ANTLR 4.9.2
 
     package scraper.core.exp;
 
@@ -24,6 +24,12 @@ public interface TemplateVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitTemplate(TemplateParser.TemplateContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TemplateParser#fmlookupconsume}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFmlookupconsume(TemplateParser.FmlookupconsumeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link TemplateParser#fmlookup}.
 	 * @param ctx the parse tree

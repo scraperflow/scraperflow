@@ -20,10 +20,14 @@ root :
 template :
     stringcontent               // string content
     | fmlookup                  // single object fm lookup
+    | fmlookupconsume           // single object fm lookup
     | LEFTP template RIGHTP arraylookup   // array lookup
     | LEFTP template maplookup RIGHTP // map lookup
     | template template         // mixed template
     ;
+
+fmlookupconsume:
+    LEFTP LOOKUP template LOOKUP RIGHTP;
 
 fmlookup:
     LEFTP template RIGHTP;

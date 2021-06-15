@@ -1,4 +1,4 @@
-// Generated from Template.g4 by ANTLR 4.8
+// Generated from Template.g4 by ANTLR 4.9.2
 
     package scraper.core.exp;
 
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class TemplateParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.9.2", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -21,11 +21,12 @@ public class TemplateParser extends Parser {
 	public static final int
 		LEFTP=1, RIGHTP=2, LEFTA=3, LEFTB=4, LOOKUP=5, ANYCHAR=6, ESCAPECHAR=7;
 	public static final int
-		RULE_root = 0, RULE_template = 1, RULE_fmlookup = 2, RULE_arraylookup = 3, 
-		RULE_maplookup = 4, RULE_stringcontent = 5;
+		RULE_root = 0, RULE_template = 1, RULE_fmlookupconsume = 2, RULE_fmlookup = 3, 
+		RULE_arraylookup = 4, RULE_maplookup = 5, RULE_stringcontent = 6;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"root", "template", "fmlookup", "arraylookup", "maplookup", "stringcontent"
+			"root", "template", "fmlookupconsume", "fmlookup", "arraylookup", "maplookup", 
+			"stringcontent"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
@@ -112,7 +113,7 @@ public class TemplateParser extends Parser {
 		RootContext _localctx = new RootContext(_ctx, getState());
 		enterRule(_localctx, 0, RULE_root);
 		try {
-			setState(16);
+			setState(18);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case EOF:
@@ -125,9 +126,9 @@ public class TemplateParser extends Parser {
 			case ESCAPECHAR:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(13);
+				setState(15);
 				template(0);
-				setState(14);
+				setState(16);
 				match(EOF);
 				}
 				break;
@@ -152,6 +153,9 @@ public class TemplateParser extends Parser {
 		}
 		public FmlookupContext fmlookup() {
 			return getRuleContext(FmlookupContext.class,0);
+		}
+		public FmlookupconsumeContext fmlookupconsume() {
+			return getRuleContext(FmlookupconsumeContext.class,0);
 		}
 		public TerminalNode LEFTP() { return getToken(TemplateParser.LEFTP, 0); }
 		public List<TemplateContext> template() {
@@ -193,48 +197,54 @@ public class TemplateParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(31);
+			setState(34);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
 			case 1:
 				{
-				setState(19);
+				setState(21);
 				stringcontent();
 				}
 				break;
 			case 2:
 				{
-				setState(20);
+				setState(22);
 				fmlookup();
 				}
 				break;
 			case 3:
 				{
-				setState(21);
-				match(LEFTP);
-				setState(22);
-				template(0);
 				setState(23);
-				match(RIGHTP);
-				setState(24);
-				arraylookup();
+				fmlookupconsume();
 				}
 				break;
 			case 4:
 				{
-				setState(26);
+				setState(24);
 				match(LEFTP);
-				setState(27);
+				setState(25);
 				template(0);
-				setState(28);
-				maplookup();
+				setState(26);
+				match(RIGHTP);
+				setState(27);
+				arraylookup();
+				}
+				break;
+			case 5:
+				{
 				setState(29);
+				match(LEFTP);
+				setState(30);
+				template(0);
+				setState(31);
+				maplookup();
+				setState(32);
 				match(RIGHTP);
 				}
 				break;
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(37);
+			setState(40);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
@@ -245,14 +255,14 @@ public class TemplateParser extends Parser {
 					{
 					_localctx = new TemplateContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_template);
-					setState(33);
+					setState(36);
 					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
-					setState(34);
+					setState(37);
 					template(2);
 					}
 					} 
 				}
-				setState(39);
+				setState(42);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			}
@@ -265,6 +275,56 @@ public class TemplateParser extends Parser {
 		}
 		finally {
 			unrollRecursionContexts(_parentctx);
+		}
+		return _localctx;
+	}
+
+	public static class FmlookupconsumeContext extends ParserRuleContext {
+		public TerminalNode LEFTP() { return getToken(TemplateParser.LEFTP, 0); }
+		public List<TerminalNode> LOOKUP() { return getTokens(TemplateParser.LOOKUP); }
+		public TerminalNode LOOKUP(int i) {
+			return getToken(TemplateParser.LOOKUP, i);
+		}
+		public TemplateContext template() {
+			return getRuleContext(TemplateContext.class,0);
+		}
+		public TerminalNode RIGHTP() { return getToken(TemplateParser.RIGHTP, 0); }
+		public FmlookupconsumeContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_fmlookupconsume; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TemplateVisitor ) return ((TemplateVisitor<? extends T>)visitor).visitFmlookupconsume(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final FmlookupconsumeContext fmlookupconsume() throws RecognitionException {
+		FmlookupconsumeContext _localctx = new FmlookupconsumeContext(_ctx, getState());
+		enterRule(_localctx, 4, RULE_fmlookupconsume);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(43);
+			match(LEFTP);
+			setState(44);
+			match(LOOKUP);
+			setState(45);
+			template(0);
+			setState(46);
+			match(LOOKUP);
+			setState(47);
+			match(RIGHTP);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
 		}
 		return _localctx;
 	}
@@ -288,15 +348,15 @@ public class TemplateParser extends Parser {
 
 	public final FmlookupContext fmlookup() throws RecognitionException {
 		FmlookupContext _localctx = new FmlookupContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_fmlookup);
+		enterRule(_localctx, 6, RULE_fmlookup);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(40);
+			setState(49);
 			match(LEFTP);
-			setState(41);
+			setState(50);
 			template(0);
-			setState(42);
+			setState(51);
 			match(RIGHTP);
 			}
 		}
@@ -330,15 +390,15 @@ public class TemplateParser extends Parser {
 
 	public final ArraylookupContext arraylookup() throws RecognitionException {
 		ArraylookupContext _localctx = new ArraylookupContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_arraylookup);
+		enterRule(_localctx, 8, RULE_arraylookup);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(44);
+			setState(53);
 			match(LEFTA);
-			setState(45);
+			setState(54);
 			template(0);
-			setState(46);
+			setState(55);
 			match(LEFTB);
 			}
 		}
@@ -371,13 +431,13 @@ public class TemplateParser extends Parser {
 
 	public final MaplookupContext maplookup() throws RecognitionException {
 		MaplookupContext _localctx = new MaplookupContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_maplookup);
+		enterRule(_localctx, 10, RULE_maplookup);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(48);
+			setState(57);
 			match(LOOKUP);
-			setState(49);
+			setState(58);
 			template(0);
 			}
 		}
@@ -414,13 +474,13 @@ public class TemplateParser extends Parser {
 
 	public final StringcontentContext stringcontent() throws RecognitionException {
 		StringcontentContext _localctx = new StringcontentContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_stringcontent);
+		enterRule(_localctx, 12, RULE_stringcontent);
 		int _la;
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(52); 
+			setState(61); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -428,7 +488,7 @@ public class TemplateParser extends Parser {
 				case 1:
 					{
 					{
-					setState(51);
+					setState(60);
 					_la = _input.LA(1);
 					if ( !(_la==ANYCHAR || _la==ESCAPECHAR) ) {
 					_errHandler.recoverInline(this);
@@ -444,7 +504,7 @@ public class TemplateParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(54); 
+				setState(63); 
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,3,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -477,21 +537,23 @@ public class TemplateParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\t;\4\2\t\2\4\3\t"+
-		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\3\2\3\2\3\2\3\2\5\2\23\n\2\3\3\3\3"+
-		"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3\"\n\3\3\3\3\3\7\3&\n"+
-		"\3\f\3\16\3)\13\3\3\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\7\6\7"+
-		"\67\n\7\r\7\16\78\3\7\2\3\4\b\2\4\6\b\n\f\2\3\3\2\b\t\2:\2\22\3\2\2\2"+
-		"\4!\3\2\2\2\6*\3\2\2\2\b.\3\2\2\2\n\62\3\2\2\2\f\66\3\2\2\2\16\23\3\2"+
-		"\2\2\17\20\5\4\3\2\20\21\7\2\2\3\21\23\3\2\2\2\22\16\3\2\2\2\22\17\3\2"+
-		"\2\2\23\3\3\2\2\2\24\25\b\3\1\2\25\"\5\f\7\2\26\"\5\6\4\2\27\30\7\3\2"+
-		"\2\30\31\5\4\3\2\31\32\7\4\2\2\32\33\5\b\5\2\33\"\3\2\2\2\34\35\7\3\2"+
-		"\2\35\36\5\4\3\2\36\37\5\n\6\2\37 \7\4\2\2 \"\3\2\2\2!\24\3\2\2\2!\26"+
-		"\3\2\2\2!\27\3\2\2\2!\34\3\2\2\2\"\'\3\2\2\2#$\f\3\2\2$&\5\4\3\4%#\3\2"+
-		"\2\2&)\3\2\2\2\'%\3\2\2\2\'(\3\2\2\2(\5\3\2\2\2)\'\3\2\2\2*+\7\3\2\2+"+
-		",\5\4\3\2,-\7\4\2\2-\7\3\2\2\2./\7\5\2\2/\60\5\4\3\2\60\61\7\6\2\2\61"+
-		"\t\3\2\2\2\62\63\7\7\2\2\63\64\5\4\3\2\64\13\3\2\2\2\65\67\t\2\2\2\66"+
-		"\65\3\2\2\2\678\3\2\2\28\66\3\2\2\289\3\2\2\29\r\3\2\2\2\6\22!\'8";
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\tD\4\2\t\2\4\3\t"+
+		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\3\2\3\2\3\2\5\2\25\n\2"+
+		"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3%\n\3\3\3"+
+		"\3\3\7\3)\n\3\f\3\16\3,\13\3\3\4\3\4\3\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3"+
+		"\6\3\6\3\6\3\6\3\7\3\7\3\7\3\b\6\b@\n\b\r\b\16\bA\3\b\2\3\4\t\2\4\6\b"+
+		"\n\f\16\2\3\3\2\b\t\2C\2\24\3\2\2\2\4$\3\2\2\2\6-\3\2\2\2\b\63\3\2\2\2"+
+		"\n\67\3\2\2\2\f;\3\2\2\2\16?\3\2\2\2\20\25\3\2\2\2\21\22\5\4\3\2\22\23"+
+		"\7\2\2\3\23\25\3\2\2\2\24\20\3\2\2\2\24\21\3\2\2\2\25\3\3\2\2\2\26\27"+
+		"\b\3\1\2\27%\5\16\b\2\30%\5\b\5\2\31%\5\6\4\2\32\33\7\3\2\2\33\34\5\4"+
+		"\3\2\34\35\7\4\2\2\35\36\5\n\6\2\36%\3\2\2\2\37 \7\3\2\2 !\5\4\3\2!\""+
+		"\5\f\7\2\"#\7\4\2\2#%\3\2\2\2$\26\3\2\2\2$\30\3\2\2\2$\31\3\2\2\2$\32"+
+		"\3\2\2\2$\37\3\2\2\2%*\3\2\2\2&\'\f\3\2\2\')\5\4\3\4(&\3\2\2\2),\3\2\2"+
+		"\2*(\3\2\2\2*+\3\2\2\2+\5\3\2\2\2,*\3\2\2\2-.\7\3\2\2./\7\7\2\2/\60\5"+
+		"\4\3\2\60\61\7\7\2\2\61\62\7\4\2\2\62\7\3\2\2\2\63\64\7\3\2\2\64\65\5"+
+		"\4\3\2\65\66\7\4\2\2\66\t\3\2\2\2\678\7\5\2\289\5\4\3\29:\7\6\2\2:\13"+
+		"\3\2\2\2;<\7\7\2\2<=\5\4\3\2=\r\3\2\2\2>@\t\2\2\2?>\3\2\2\2@A\3\2\2\2"+
+		"A?\3\2\2\2AB\3\2\2\2B\17\3\2\2\2\6\24$*A";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
