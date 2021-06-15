@@ -447,7 +447,9 @@ public class JobFactory {
                         null,
                         compilationUnit);
 
-                task.call();
+                if(!task.call()) {
+                    System.out.println(diagnostics.getDiagnostics());
+                }
 
                 // Load and instantiate compiled class.
                 URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { f.getParentFile().toURI().toURL() });
