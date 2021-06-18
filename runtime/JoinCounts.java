@@ -1,17 +1,6 @@
-package scraper.nodes.core.flow;
-
-
-import scraper.annotations.NotNull;
-import scraper.annotations.node.Flow;
-import scraper.annotations.node.FlowKey;
-import scraper.annotations.node.NodePlugin;
-import scraper.annotations.node.Stateful;
-import scraper.api.flow.FlowMap;
-import scraper.api.node.Address;
-import scraper.api.node.container.NodeContainer;
-import scraper.api.node.type.Node;
-import scraper.api.template.L;
-import scraper.api.template.T;
+import scraper.annotations.*;
+import scraper.api.*;
+import scraper.nodes.core.flow.JoinKey;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,31 +16,26 @@ public final class JoinCounts implements Node {
 
     /** Word count map to join */
     @FlowKey(mandatory = true)
-    private final T<Map<String, Integer>> map = new T<>(){};
+    T<Map<String, Integer>> map = new T<>(){};
 
     /** Key which can be used to join flows. */
     @FlowKey
-    private final T<JoinKey> joinKey = new T<>(){};
+     T<JoinKey> joinKey = new T<>(){};
 
     /** Once all maps are joined the output count map is emitted */
     @FlowKey(mandatory = true)
-    private final L<Map<String, Integer>> output = new L<>(){};
-
-    /** Target address to fork to */
-    @FlowKey(mandatory = true)
-    @Flow(label = "join")
-    private Address joinTarget;
+    L<Map<String, Integer>> output = new L<>(){};
 
     // STATE
     final Lock l = new ReentrantLock();
     final Map<String, Integer> allcounts = new HashMap<>();
-    Integer joins = 0;
+    final Map<JoinKey, Integer> joins = new HashMap<>();
 
-    @NotNull
     @Override
-    public void process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
+    public void process(NodeContainer<? extends Node> n, FlowMap o) {
         JoinKey joinKey = o.eval(this.joinKey);
         Map<String, Integer> counts = o.eval(map);
+        Integer joins = this.joins.getOrDefault(joinKey, 0);
 
         l.lock();
         try {
@@ -63,6 +47,7 @@ public final class JoinCounts implements Node {
             if(joins == joinKey.size) {
                 emit(o, n);
             }
+            this.joins.put(joinKey, joins);
         } finally {
             l.unlock();
         }
@@ -71,6 +56,6 @@ public final class JoinCounts implements Node {
     private void emit(FlowMap evaluator, NodeContainer<? extends Node> n) {
         FlowMap toEmit = evaluator.copy();
         toEmit.output(output, allcounts);
-        n.forward(toEmit, joinTarget);
+        n.fork(toEmit);
     }
 }

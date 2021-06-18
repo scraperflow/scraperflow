@@ -1,18 +1,10 @@
 package scraper.nodes.core.flow;
 
-
-import scraper.annotations.NotNull;
-import scraper.annotations.FlowKey;
-import scraper.annotations.NodePlugin;
-import scraper.api.FlowMap;
-import scraper.api.NodeContainer;
-import scraper.api.Node;
-import scraper.api.L;
-import scraper.api.T;
+import scraper.annotations.*;
+import scraper.api.*;
 
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -39,15 +31,16 @@ public final class Map <K> implements Node {
     @Override
     public void process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
         List<K> targetList = o.eval(list);
-        int uid = new Random().nextInt();
-        AtomicInteger current = new AtomicInteger();
-        targetList.forEach(t -> {
-            FlowMap finalCopy = o.copy();
-            finalCopy.output(putElement, t);
 
-            JoinKey key = new JoinKey(targetList.size(), uid, current.getAndIncrement());
+        int uid = new Random().nextInt();
+        int current = 0;
+        for (K e : targetList) {
+            FlowMap finalCopy = o.copy();
+            finalCopy.output(putElement, e);
+
+            JoinKey key = new JoinKey(targetList.size(), uid, current++);
             finalCopy.output(joinKey, key);
             n.forward(finalCopy);
-        });
+        }
     }
 }

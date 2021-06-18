@@ -52,6 +52,10 @@ public interface NodeContainer<NODE> extends NodeInitializable, IdentityTemplate
     @NotNull
     ExecutorService getService();
 
+    /** Service group. Nodes in same group execute in same thread, no new thread created */
+    @NotNull
+    String getServiceGroup();
+
     // ============
     // Control Flow
     // ============
@@ -78,9 +82,16 @@ public interface NodeContainer<NODE> extends NodeInitializable, IdentityTemplate
     /**
      * Forwards the flow map to another node.
      * Either next node, or the node specified by a target address given
-     * Can be controlled with the forward flag
+     * Can be controlled with the forward flag.
+     * Can be executed in the same group.
      */
     void forward(@NotNull FlowMap o);
+
+    /**
+     * Forwards the flow map to another node.
+     * Forces different grouping.
+     */
+    void fork(@NotNull FlowMap o);
 
     /**
      * Forwards the flow map to another node with specified target address.

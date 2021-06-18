@@ -430,12 +430,15 @@ public class JobFactory {
                 StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
 
                 // This sets up the class path that the compiler will use.
-                // I've added the .jar file that contains the DoStuff interface within in it...
                 List<String> optionList = new ArrayList<String>();
                 optionList.add("-classpath");
                 String api = new File(Node.class.getProtectionDomain().getCodeSource().getLocation()
                         .toURI()).getPath();
-                optionList.add(api);
+                // TODO make all nodes accessible, not only core
+                String corenodes = new File(Class.forName("scraper.nodes.core.flow.JoinKey").getProtectionDomain().getCodeSource().getLocation()
+                        .toURI()).getPath();
+                optionList.add(api+":"+corenodes);
+
 
                 Iterable<? extends JavaFileObject> compilationUnit
                         = fileManager.getJavaFileObjectsFromFiles(List.of(f));

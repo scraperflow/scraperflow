@@ -187,34 +187,16 @@ public class Scraper {
         log.log(TRACE, "--------------------------------------------------------");
         log.log(TRACE, "--- Starting Main Threads");
         log.log(TRACE, "--------------------------------------------------------");
-        List<CompletableFuture<FlowMap>>  futures = new ArrayList<>();
         jobs.forEach((definition, job) -> {
-            CompletableFuture<FlowMap> future = CompletableFuture.supplyAsync(() -> {
-                try {
-                    FlowMap initial = FlowMapImpl.origin(job.getEntryArguments());
-                    Optional<NodeContainer<? extends Node>> entry = job.getEntry();
-                    if(entry.isEmpty()) {
-                        log.log(WARNING, "Job has no entry node: {0}", job.getName());
-                    } else {
-                        NodeContainer<? extends Node> initialNode = entry.get();
-                        initialNode.getC().accept(initialNode, initial);
-                    }
-
-                    return initial;
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }, executorsService.getService(definition.getName(), "main", 1));
-
-            future.exceptionally(e -> {
-                log.log(ERROR, "{0} failed: {1}", job.getName(), e.getMessage());
-                return null;
-            });
-
-            futures.add(future);
+            FlowMap initial = FlowMapImpl.origin(job.getEntryArguments());
+            Optional<NodeContainer<? extends Node>> entry = job.getEntry();
+            if(entry.isEmpty()) {
+                log.log(WARNING, "Job has no entry node: {0}", job.getName());
+            } else {
+                NodeContainer<? extends Node> initialNode = entry.get();
+                initialNode.forward(initial, initialNode.getAddress());
+            }
         });
-
-        futures.forEach(CompletableFuture::join);
     }
 
 }

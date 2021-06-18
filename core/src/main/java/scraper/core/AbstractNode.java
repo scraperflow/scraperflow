@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static scraper.api.NodeLogLevel.*;
+import static scraper.util.NodeUtil.getTarget;
 import static scraper.util.NodeUtil.initFields;
 import static scraper.utils.ClassUtil.getAllFields;
 
@@ -217,13 +218,13 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
 
     /** Dispatches an action in an own thread, ignoring the result and possible exceptions. */
     @NotNull
-    protected void dispatch(@NotNull Supplier<Void> o) {
-        // supply in scheduler thread group
-        CompletableFuture
-                .supplyAsync(() -> {
-                    CompletableFuture.supplyAsync(o, getService());
-                    return null; // TODO how to solve this waiting problem
-                }, getJobPojo().getExecutors().getService("disp", "scheduler", 9999));
+    protected void dispatch(@NotNull FlowMap o, Address target) {
+        NodeContainer<? extends Node> targetNode = getTarget(this.getAddress(), target, getJobInstance());
+        // supply in target nodes thread pool
+        CompletableFuture.supplyAsync(() -> {
+            targetNode.getC().accept(targetNode, o.newFlow());
+            return null;
+        }, targetNode.getService());
     }
 
 
@@ -274,8 +275,18 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
         if (getGoTo().isPresent()) {
             NodeContainer<? extends Node> targetNode = getGoTo().get();
             o.nextSequence();
-//            targetNode.getC().accept(targetNode, o);
-            forkDispatch(o, targetNode.getAddress());
+            if ((this.getServiceGroup() != null && targetNode.getServiceGroup() != null) && this.getServiceGroup().equalsIgnoreCase(targetNode.getServiceGroup())) {
+                targetNode.getC().accept(targetNode, o);
+            } else {
+                forkDispatch(o, targetNode.getAddress());
+            }
+        }
+    }
+
+    @NotNull @Override
+    public void fork(@NotNull final FlowMap o) {
+        if(getGoTo().isPresent()) {
+            forkDispatch(o, getGoTo().get().getAddress());
         }
     }
 
@@ -283,17 +294,22 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
     public void forward(@NotNull final FlowMap o, @NotNull final Address target) {
         NodeContainer<? extends Node> opt = NodeUtil.getTarget(getAddress(), target, getJobInstance());
         o.nextSequence();
-        forkDispatch(o, opt.getAddress());
-//        opt.getC().accept(opt, o);
+        if ((this.getServiceGroup() != null && opt.getServiceGroup() != null) && this.getServiceGroup().equalsIgnoreCase(opt.getServiceGroup())) {
+            opt.getC().accept(opt, o);
+        } else {
+            forkDispatch(o, opt.getAddress());
+        }
     }
 
     public void forkDispatch(@NotNull final FlowMap o, @NotNull final Address target) {
-        dispatch(() -> {
-            NodeContainer<? extends Node> opt = NodeUtil.getTarget(getAddress(), target, getJobInstance());
-            opt.getC().accept(opt, o.newFlow());
-            return null;
-        });
+        NodeContainer<? extends Node> opt = NodeUtil.getTarget(getAddress(), target, getJobInstance());
+        dispatch(o, opt.getAddress());
     }
+
+    @Override
+    public String getServiceGroup() {
+        return service;
+    };
 
     @Override @NotNull
     public Optional<NodeContainer<? extends Node>> getGoTo() {
@@ -318,7 +334,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
     @NotNull @Override
     public ExecutorService getService() {
         if(service != null) {
-            return getJobPojo().getExecutors().getService(getJobPojo().getName(), service, threads);
+            return getJobPojo().getExecutors().getService(getJobPojo().getName(), service+getAddress().toString(), threads);
         } else {
             return getJobPojo().getExecutors().getService(getJobPojo().getName(), getAddress().toString(), threads);
         }
