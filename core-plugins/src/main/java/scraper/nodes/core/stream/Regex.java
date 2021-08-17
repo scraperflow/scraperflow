@@ -65,6 +65,10 @@ public final class Regex implements StreamNode {
     @FlowKey(defaultValue = "false")
     private Boolean nonempty;
 
+    /** Timeout for execution in ms */
+    @FlowKey(defaultValue = "2000")
+    private Integer timeout;
+
     /**
      * Pattern dotall option.
      * <p>In this mode the expression <code>.</code> matches any character,
@@ -95,7 +99,7 @@ public final class Regex implements StreamNode {
         String content = o.eval(this.content);
         Map<String, Integer> groups = o.evalIdentity(this.groups);
 
-        Matcher m = p.matcher(content);
+        Matcher m = createMatcherWithTimeout(content, p, timeout);
 
         boolean atLeastOne = false;
 
@@ -124,6 +128,63 @@ public final class Regex implements StreamNode {
             FlowMap copy = o.copy();
             copy.output(output, evalDefault.get());
             n.streamFlowMap(o, copy);
+        }
+    }
+
+
+
+
+    private static Matcher createMatcherWithTimeout(String stringToMatch, String regularExpression, int timeoutMillis) {
+        Pattern pattern = Pattern.compile(regularExpression);
+        return createMatcherWithTimeout(stringToMatch, pattern, timeoutMillis);
+    }
+
+    private static Matcher createMatcherWithTimeout(String stringToMatch, Pattern regularExpressionPattern, int timeoutMillis) {
+        CharSequence charSequence = new TimeoutRegexCharSequence(stringToMatch, timeoutMillis, stringToMatch,
+                regularExpressionPattern.pattern());
+        return regularExpressionPattern.matcher(charSequence);
+    }
+
+    private static class TimeoutRegexCharSequence implements CharSequence {
+
+        private final CharSequence inner;
+
+        private final int timeoutMillis;
+
+        private final long timeoutTime;
+
+        private final String stringToMatch;
+
+        private final String regularExpression;
+
+        public TimeoutRegexCharSequence(CharSequence inner, int timeoutMillis, String stringToMatch, String regularExpression) {
+            super();
+            this.inner = inner;
+            this.timeoutMillis = timeoutMillis;
+            this.stringToMatch = stringToMatch;
+            this.regularExpression = regularExpression;
+            timeoutTime = System.currentTimeMillis() + timeoutMillis;
+        }
+
+        public char charAt(int index) {
+            if (System.currentTimeMillis() > timeoutTime) {
+                throw new RuntimeException("Timeout occurred after " + timeoutMillis + "ms while processing regular expression '"
+                        + regularExpression + "' on input '" + stringToMatch + "'!");
+            }
+            return inner.charAt(index);
+        }
+
+        public int length() {
+            return inner.length();
+        }
+
+        public CharSequence subSequence(int start, int end) {
+            return new TimeoutRegexCharSequence(inner.subSequence(start, end), timeoutMillis, stringToMatch, regularExpression);
+        }
+
+        @Override
+        public String toString() {
+            return inner.toString();
         }
     }
 }
