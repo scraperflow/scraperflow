@@ -30,8 +30,8 @@ public final class ListSort<K> implements FunctionalNode {
     public void modify(@NotNull FunctionalNodeContainer n, @NotNull final FlowMap o) {
         List<K> l = o.eval(this.list);
         switch (sortType) {
-            case DEFAULT -> o.output(output, l.stream().sorted().collect(Collectors.toList()));
-            case NUMERIC -> o.output(output, l.stream()
+            case DEFAULT: o.output(output, l.stream().sorted().collect(Collectors.toList())); break;
+            case NUMERIC: o.output(output, l.stream()
                     .sorted((o1, o2) -> {
                         StringBuilder sb1 = new StringBuilder();
                         String.valueOf(o1).codePoints().filter(Character::isDigit).forEachOrdered(sb1::append);
@@ -42,8 +42,8 @@ public final class ListSort<K> implements FunctionalNode {
                         return Integer.valueOf(sb1.toString()).compareTo(Integer.valueOf(sb2.toString()));
                     })
                     .collect(Collectors.toList()));
+                    break;
         }
-        System.out.println();
     }
 
     public enum SortType {

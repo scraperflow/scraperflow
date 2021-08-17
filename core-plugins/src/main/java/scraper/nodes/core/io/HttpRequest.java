@@ -211,11 +211,11 @@ public final class HttpRequest implements Node {
             HttpResponse.BodyHandler handler = null;
 
             switch (expectedResponse) {
-                case STRING_BODY -> handler = HttpResponse.BodyHandlers.ofString();
-                case FILE -> {
+                case STRING_BODY: handler = HttpResponse.BodyHandlers.ofString(); break;
+                case FILE:
                     Path download = Paths.get(o.eval(path));
                     handler = HttpResponse.BodyHandlers.ofFile(download);
-                }
+                    break;
             }
 
             HttpService service = n.getJobInstance().getHttpService();
@@ -287,8 +287,8 @@ public final class HttpRequest implements Node {
             // set type and payload
             String payload;
             switch (requestType) {
-                case GET -> request.GET();
-                case POST -> {
+                case GET: request.GET(); break;
+                case POST:
                     Optional<Object> maybe = o.evalMaybe(this.payload);
                     if (maybe.isPresent()) {
                         payload = mapper.writeValueAsString(o.eval(this.payload));
@@ -296,9 +296,9 @@ public final class HttpRequest implements Node {
                     } else {
                         request.POST(java.net.http.HttpRequest.BodyPublishers.noBody());
                     }
-                }
-                case DELETE -> request.DELETE();
-                case PUT -> {
+                    break;
+                case DELETE: request.DELETE(); break;
+                case PUT:
                     Optional<Object> maybe2 = o.evalMaybe(this.payload);
                     if (maybe2.isPresent()) {
                         payload = mapper.writeValueAsString(o.eval(this.payload));
@@ -306,8 +306,8 @@ public final class HttpRequest implements Node {
                     } else {
                         request.PUT(java.net.http.HttpRequest.BodyPublishers.noBody());
                     }
-                }
-                default -> {
+                    break;
+                default: {
                     n.log(ERROR, "Using legacy request type for new HTTP node: {0}", requestType);
                     throw new RuntimeException();
                 }
