@@ -131,15 +131,15 @@ public class TemplateExpTest {
 
     @Test
     public void multipleEscapes() {
-        String source = "\\[he\\{\\}ll\\}o\\{\\}";
+        String source = "\\[he\\{\\}ll\\}o\\{\\}\\";
         Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
         String target = test.eval(o);
-        assertEquals("[he{}ll}o{}", target);
+        assertEquals("[he{}ll}o{}\\", target);
     }
 
     @Test
     public void simpleIndex() {
-        String source = "{{L}}[0]";
+        String source = "[L^0]";
         Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
         o.output("L", List.of("1","2","3"));
         String target = test.eval(o);
@@ -148,7 +148,7 @@ public class TemplateExpTest {
 
     @Test
     public void indexAsTemplate() {
-        String source = "{{L}}[{index}]";
+        String source = "[L^{index}]";
         Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
         o.output("L", List.of("1","2","3"));
         o.output("index", 0);
@@ -159,7 +159,7 @@ public class TemplateExpTest {
     @Test
     public void indexAsTemplateOOB() {
         assertThrows(TemplateException.class, () -> {
-            String source = "{L}[{index}]";
+            String source = "[L^{index}]";
             Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
             o.output("L", List.of("1","2","3"));
             o.output("index", 3);
@@ -169,7 +169,7 @@ public class TemplateExpTest {
 
     @Test
     public void simpleMapLookup() {
-        String source = "{{M}@ok}";
+        String source = "{M@ok}";
         Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
         o.output("M", Map.of("1", "hello world", "ok", "hello ok"));
         String target = test.eval(o);
@@ -181,7 +181,7 @@ public class TemplateExpTest {
     @Test
     public void simpleMapLookupFail() {
         assertThrows(TemplateException.class, () -> {
-            String source = "{{M}@ok}";
+            String source = "{M@ok}";
             Term<String> test = TemplateUtil.parseTemplate(source, new T<>() {
             });
             o.output("M", Map.of("1", "hello world", "nk", "hello ok"));
@@ -220,7 +220,7 @@ public class TemplateExpTest {
 
     @Test
     public void arrayLookupInString() {
-        String source = "Mixed {{array}}[0]";
+        String source = "Mixed [array^0]";
         Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
         o.output("array", List.of("2","3"));
         String target = test.eval(o);
@@ -229,7 +229,7 @@ public class TemplateExpTest {
 
     @Test
     public void nestedMapAndArrayLookup() {
-        String source = "{{{array}}[0]@module}";
+        String source = "{[array^0]@module}";
         Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
         o.output("array", List.of(Map.of("module", "test-module")));
         String target = test.eval(o);
@@ -238,13 +238,13 @@ public class TemplateExpTest {
 
     @Test
     public void nestedMapLookup() {
-        String source = "{{map}@first}";
+        String source = "{map@first}";
         Term<Map<String, String>> test = TemplateUtil.parseTemplate(source, new T<>(){});
         o.output("map", Map.of("first", Map.of("module", "test-module")));
         Map<String, String> target = test.eval(o);
         assertFalse(target.isEmpty());
 
-        String source2 = "{{{map}@first}@module}";
+        String source2 = "{{map@first}@module}";
         Term<String> test2 = TemplateUtil.parseTemplate(source2, new T<>(){});
         String target2 = test2.eval(o);
         assertEquals("test-module", target2);
@@ -252,27 +252,27 @@ public class TemplateExpTest {
 
     @Test
     public void concatMapLookup() {
-        String source = "{{map}@first}{{map}@second}";
+        String source = "{map@first}{map@second}";
         Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
         o.output("map", Map.of("first", "hello", "second", "world"));
         String target = test.eval(o);
         assertEquals("helloworld", target);
     }
 
-//    @Test(timeout = 500)
-//    public void aVeryLongString() {
-//        String source = "hello world 123123123123 LONG                          string okhello world 123123123123 LO" +
-//                "NG                          string okhello world 123123123123 LONG                          string " +
-//                "okhello world 123123123123 LONG                          string okhello world 123123123123 LONG    " +
-//                "                      string okhello world 123123123123 LONG                          string ok";
-//        Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
-//        String goTo = test.eval(o);
-//        assertEquals(source, goTo);
-//    }
+    @Test
+    public void aVeryLongString() {
+        String source = "hello world 123123123123 LONG                          string okhello world 123123123123 LO" +
+                "NG                          string okhello world 123123123123 LONG                          string " +
+                "okhello world 123123123123 LONG                          string okhello world 123123123123 LONG    " +
+                "                      string okhello world 123123123123 LONG                          string ok";
+        Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
+        String goTo = test.eval(o);
+        assertEquals(source, goTo);
+    }
 
     @Test
     public void precedenceOfMixedTemplates() {
-        String source = "{not-bound}{{bound}}[0]";
+        String source = "{not-bound}[bound^0]";
         Term<String> test = TemplateUtil.parseTemplate(source, new T<>(){});
         o.output("bound", List.of("world"));
         o.output("not-bound", "hello ");
@@ -282,7 +282,7 @@ public class TemplateExpTest {
 
     @Test // this should evaluate but is prohibited by static type checking
     public void complexGenericTemplateFail() {
-        String source = "{{L}}[{index}]";
+        String source = "[L^{index}]";
         Term<List<Integer>> test = TemplateUtil.parseTemplate(source, new T<>(){});
         o.output("L", List.of(List.of("1"), List.of("2"), List.of("3")));
         o.output("index", 2);
@@ -291,7 +291,7 @@ public class TemplateExpTest {
 
     @Test
     public void complexGenericTemplate() {
-        String source = "{{L}}[{index}]";
+        String source = "[L^{index}]";
         Term<List<String>> test = TemplateUtil.parseTemplate(source, new T<>(){});
         o.output("L", List.of(List.of("1"), List.of("2"), List.of("3")));
         o.output("index", 2);
@@ -301,7 +301,7 @@ public class TemplateExpTest {
 
     @Test
     public void complexGenericTemplateOnlySubtype() {
-        String source = "{{L}}[{index}]";
+        String source = "[L^{index}]";
         Term<List<?>> test = TemplateUtil.parseTemplate(source, new T<>(){});
         o.output("L", List.of(List.of("1"), List.of("2"), List.of("3")));
         o.output("index", 2);
@@ -319,7 +319,7 @@ public class TemplateExpTest {
 
     @Test
     public void wildcardTest3() {
-        Term<List<?>> expectedTemplate = TemplateUtil.parseTemplate( "{{L}}[2]", new T<>(){});
+        Term<List<?>> expectedTemplate = TemplateUtil.parseTemplate( "[L^2]", new T<>(){});
         o.output("L", List.of(List.of("1"), List.of("2"), List.of("3")));
         expectedTemplate.eval(o);
     }
@@ -342,17 +342,17 @@ public class TemplateExpTest {
 
     @Test
     public void outputGenericInputSpecificTest() {
-        Term<List<?>> expectedTemplate = TemplateUtil.parseTemplate( "{{L}}[2]", new T<>(){});
+        Term<List<?>> expectedTemplate = TemplateUtil.parseTemplate( "[L^2]", new T<>(){});
         o.output("L", List.of(List.of("1"), List.of("2"), List.of("3")));
         List<?> l = expectedTemplate.eval(o);
         assertEquals("3", l.get(0));
-        assertEquals("{{L}}[2]", expectedTemplate.getRaw());
+        assertEquals("[{L}^2]", expectedTemplate.getRaw());
         assertEquals("java.util.List<?>",expectedTemplate.getToken().get().getTypeName());
     }
 
     @Test // this should evaluate but is prohibited by static type checking
     public void outputGenericInputSpecificBadTest() {
-        Term<List<Map<String, Integer>>> expectedTemplate = TemplateUtil.parseTemplate( "{{L}}[2]", new T<>(){});
+        Term<List<Map<String, Integer>>> expectedTemplate = TemplateUtil.parseTemplate( "[L^2]", new T<>(){});
         o.output("L", List.of(List.of("1"), List.of("2"), List.of("3")));
         List<Map<String, Integer>> tt = expectedTemplate.eval(o);
         System.out.println(tt);

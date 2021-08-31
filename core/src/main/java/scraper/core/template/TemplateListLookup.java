@@ -76,7 +76,7 @@ public class TemplateListLookup<K> extends TemplateExpression<K> implements List
 
     @Override
     public String toString() {
-        return "{" + list.toString() + "}[" + index.toString() + "]";
+        return "[" + list.toString() + "^" + index.toString() + "]";
     }
 
     @NotNull

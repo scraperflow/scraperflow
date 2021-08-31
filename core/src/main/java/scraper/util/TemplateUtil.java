@@ -1,11 +1,9 @@
 package scraper.util;
 
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import scraper.annotations.NotNull;
 import scraper.api.*;
+import scraper.core.exp.Ast;
 import scraper.core.exp.TemplateExpressionVisitor;
-import scraper.core.exp.TemplateLexer;
 import scraper.core.exp.TemplateParser;
 import scraper.core.template.TemplateConstant;
 import scraper.core.template.TemplateExpression;
@@ -145,17 +143,14 @@ public final class TemplateUtil {
         log.log(TRACE,"Converting term to template expression: {0}", term);
 
         try {
-            TemplateLexer lexer = new TemplateLexer(CharStreams.fromString(term));
-            lexer.removeErrorListeners();
-            lexer.addErrorListener(ThrowingErrorListener.INSTANCE);
-
-            TemplateParser parser = new TemplateParser(new CommonTokenStream(lexer));
-            parser.removeErrorListeners();
-            parser.addErrorListener(ThrowingErrorListener.INSTANCE);
-
             TemplateExpressionVisitor<C> visitor = new TemplateExpressionVisitor<>(targetType);
-            TemplateParser.RootContext topExpression = parser.root();
-            TemplateExpression<C> convertedTerm = visitor.visitRoot(topExpression);
+            Ast.TemplateNode topExpression = TemplateParser.parse(term);
+
+            if(topExpression instanceof Ast.MixedNode
+                    && (targetType.getRawType() == Map.class || targetType.getRawType() == List.class))
+                throw new TemplateException("Mixed template can never evaluate to a list or map: " + term);
+
+            TemplateExpression<C> convertedTerm = visitor.visitTemplate(topExpression);
 
             log.log(TRACE, "Converted term: '{}'", convertedTerm);
             return convertedTerm;
@@ -253,16 +248,5 @@ public final class TemplateUtil {
         t.setLocation(new TemplateConstant<>(loc, new T<>(){}));
         return t;
 
-    }
-}
-
-class ThrowingErrorListener extends BaseErrorListener {
-
-    static final ThrowingErrorListener INSTANCE = new ThrowingErrorListener();
-
-    @Override
-    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e)
-            throws ParseCancellationException {
-        throw new ParseCancellationException("line " + line + ":" + charPositionInLine + " " + msg);
     }
 }

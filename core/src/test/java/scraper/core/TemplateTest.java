@@ -164,7 +164,7 @@ public class TemplateTest {
     @Test
     public void nestedArrayLookup() throws Exception {
         T<String> str = new T<>(){};
-        str.setTerm(parseTemplate(mapper.readValue("\"{{{list}}[0]}\"}", String.class), str));
+        str.setTerm(parseTemplate(mapper.readValue("\"{[list^0]}\"}", String.class), str));
         o.output("list", List.of("hello"));
         o.output("hello", "1");
         String eval = o.eval(str);
@@ -184,7 +184,7 @@ public class TemplateTest {
     @Test
     public void arrayNegativeLookup() throws Exception {
         T<String> str = new T<>(){};
-        str.setTerm(parseTemplate(mapper.readValue("\"{{list}}[-1]\"}", String.class), str));
+        str.setTerm(parseTemplate(mapper.readValue("\"[list^-1]\"}", String.class), str));
         o.output("list", List.of("hello", "world"));
         String eval = o.eval(str);
         assertEquals("world", eval);
