@@ -47,6 +47,10 @@ public class Exec implements FunctionalNode {
     @FlowKey(defaultValue = "1000")
     private Integer ByteBuffer;
 
+    /** Remove trailing newline */
+    @FlowKey(defaultValue = "false")
+    private Boolean removeTrailingNewline;
+
     /** Redirects process output to this string */
     @FlowKey(defaultValue = "\"_\"")
     private final L<String> put = new L<>(){};
@@ -69,6 +73,8 @@ public class Exec implements FunctionalNode {
 
             String stdOut = readStream(b.getInputStream());
             String stdErr = readStream(b.getErrorStream());
+
+            if(removeTrailingNewline && stdOut.endsWith("\n")) stdOut = stdOut.substring(0, stdOut.length()-1);
 
             b.waitFor();
             if(b.exitValue() != 0) n.log(ERROR,"{0} finished with non-zero exit code: {1}", exec, b.exitValue());
