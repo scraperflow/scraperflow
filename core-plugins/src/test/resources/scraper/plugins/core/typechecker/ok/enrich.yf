@@ -1,0 +1,14 @@
+---
+name: echo
+graphs:
+  start:
+    - type: Echo
+      put: actdetail
+      value: {"hello": "world"}
+
+    - type: Echo
+      put: enriched
+      value:
+        id: "{actdetail@hello}"
+
+

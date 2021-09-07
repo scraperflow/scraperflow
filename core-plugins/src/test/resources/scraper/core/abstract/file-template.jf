@@ -1,0 +1,9 @@
+{
+  "name"       : "job",
+  "graphs"    : {
+    "start":
+    [
+      { "type":"File", "filet":  "{path-template}" }
+    ]
+  }
+}

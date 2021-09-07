@@ -1,0 +1,25 @@
+name: debug # <debug>
+entry: start
+graphs:
+  start: # <debug.start>
+    - type: SimpleFunctional # <debug.start.startingnode:0> =(rt)= <debug.start> =(rt)= <debug>
+      label: startingnode
+
+    - type: SimpleFunctional # <debug.start.1>
+      label: null
+      goTo: debug.testing.0
+          # testing.0
+          # testing
+
+
+  testing: # <debug.testing>
+    - type: SimpleFunctional # <debug.testing.0> == <debug.testing>
+      label: null
+
+    - type: SimpleFunctional # <debug.testing.hellonode:1>
+      label: hellonode
+
+    - type: SimpleFunctional # <debug.testing.2>
+      label: null
+
+

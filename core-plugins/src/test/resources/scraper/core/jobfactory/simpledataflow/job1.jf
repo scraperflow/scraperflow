@@ -1,0 +1,10 @@
+{
+  "name"       : "job1",
+  "entry": "start",
+  "graphs"    :
+  {"start":
+  [
+    { "type":"SimpleIO", "input": "what", "output": "output-key" }
+  ]
+  }
+}

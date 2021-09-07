@@ -1,0 +1,17 @@
+---
+name: assumeuserknowswhathesdoing
+graphs:
+  start:
+    - {type: Echo, put: movie, value: {"my": "map"}}
+    - {type: Echo, put: details, value: "justastring" }
+    - {type: Echo, put: matches, value: [{"one": "str"}, {"second": "match"}] }
+    - type: JsonObject
+      value:
+        img: "{movie@img}"
+        url: "www.url.com?movie={movie@url}"
+        title: "{movie@title}"
+        siteName: "{movie@sitename}"
+        date: "{movie@date}"
+        cars: "{details}"
+        id: "{[matches^0]@carID}_{[matches^0]@movieID}"
+      put: bigjsonobject # bigjsonobject :: Object better not reference it later

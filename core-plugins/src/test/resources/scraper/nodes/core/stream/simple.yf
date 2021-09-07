@@ -1,0 +1,21 @@
+name: "regex"
+graphs:
+  start:
+    - type: Echo
+      put: content
+      value: "https://www.domain.org/ok-2/"
+
+    - type: Regex
+      content: "{content}"
+      regex: "^.*\\/(.*?)\\/$"
+      output: output
+      groups:
+        output: 1
+
+    - type: Echo
+      put: "ok"
+      value: "{[output^0]@output}"
+    - type: Echo
+      log: "{ok}"
+
+

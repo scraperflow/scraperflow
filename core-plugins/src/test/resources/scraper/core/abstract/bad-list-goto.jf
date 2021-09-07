@@ -1,0 +1,9 @@
+{
+  "name"       : "job",
+  "graphs"    : {
+    "start":
+    [
+      { "type":"SimpleListGoto", "goToList": ["ok"] }
+    ]
+  }
+}

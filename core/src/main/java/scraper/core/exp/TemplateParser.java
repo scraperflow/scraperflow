@@ -45,6 +45,7 @@ public class TemplateParser {
         System.out.println(TemplateParser.parse("{map@hello}"));
         System.out.println(TemplateParser.parse("[arr^2]"));
         System.out.println(TemplateParser.parse("[arr^2] more"));
+        System.out.println(TemplateParser.parse("[arr^2] more"));
         System.out.println(TemplateParser.parse("[arr^{hello}] more"));
     }
 
@@ -182,7 +183,10 @@ public class TemplateParser {
             return new TemplateEndNode();
         }
 
-        throw new IllegalStateException("Unexpected token"); // TODO better error
+        throw new IllegalStateException(
+                "Unexpected next token for map key suffix. Expected either @ or }, got " +
+                        (tokens.hasNext() ? tokens.next() : " end of input")
+        );
     }
 
     private static StringNode string(Scanner string) {

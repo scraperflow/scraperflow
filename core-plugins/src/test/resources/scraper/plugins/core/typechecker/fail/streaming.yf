@@ -1,0 +1,27 @@
+---
+name: streaming
+graphs:
+  start:
+    - type: Regex
+      collect: false
+      streamTarget: A
+      content: "x"
+      regex: "x"
+      output: output
+      groups:
+
+  A:
+    - type: Map
+      list: "{output}"  # fails here
+      putElement: element
+      goTo: D
+
+  D:
+    - type: Echo
+      put: "gid"
+      value: "{element@gid}"
+
+    - type: StringContains
+      regex: "notimportant"
+      content: "{gid}"
+      output: output

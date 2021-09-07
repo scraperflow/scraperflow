@@ -1,0 +1,17 @@
+---
+name: echo-composition
+graphs:
+  start:
+    - type: Echo
+      put: A
+      value: {ok: "1"}
+
+    - type: Echo
+      put: B
+      value: ["{A}"]
+
+    - type: StringContains
+      regex: "notimportant"
+      content: "{B@ok}" # content :: String
+      output: flag
+

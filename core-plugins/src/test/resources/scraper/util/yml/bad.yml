@@ -1,0 +1,4 @@
+jobs:
+  somejob1:
+    arguments:
+      - job1.args

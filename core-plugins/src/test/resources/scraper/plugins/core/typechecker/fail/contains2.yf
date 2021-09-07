@@ -1,0 +1,10 @@
+---
+name: contains
+graphs:
+  start:
+    - {type: Echo, put: list, value: ["1","2"]}
+    - type: ContainedInCollection
+      collection: "{list}"
+      object: 1
+      flag: flag
+

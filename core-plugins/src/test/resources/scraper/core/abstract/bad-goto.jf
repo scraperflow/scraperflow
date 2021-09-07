@@ -1,0 +1,10 @@
+{
+  "name"       : "job",
+  "graphs"    : {
+    "start":
+    [
+      { "type":"SimpleFunctional", "goTo": "ok" },
+      { "type":"SimpleFunctional", "label": "ok", "goTo": "no" }
+    ]
+  }
+}

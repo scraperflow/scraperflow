@@ -1,0 +1,8 @@
+{
+  "name"       : "job",
+  "graphs"    : {
+    "start": [
+      { "type":"BadJsonDefaults" }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+---
+name: aggregate-self
+graphs:
+  start:
+    - {type: Echo, put: listi, value: []}
+    - type: AggregateList
+      aggregate: "firstelement"
+      aggregateList: "{listi}"
+      result: "list"
+
+    - type: AggregateList
+      aggregate: "[list^0]"
+      aggregateList: "{list}"
+      result: "list2"
+

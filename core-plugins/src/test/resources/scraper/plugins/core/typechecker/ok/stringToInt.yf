@@ -1,0 +1,10 @@
+---
+name: full
+graphs:
+  start:
+     - type: Echo
+       put: i
+       value: 10
+
+     - type: IntConsumer
+       input: "{i}"

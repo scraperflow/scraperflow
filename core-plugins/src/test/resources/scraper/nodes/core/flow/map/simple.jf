@@ -1,0 +1,16 @@
+{
+    "name" : "map-simple",
+    "graphs" : {
+        "start":
+        [
+          { "type": "Echo", "put": "fork", "value":  ["a","b"] },
+          { "type" : "Map", "list": "{fork}", "putElement": "element" },
+          {
+            "type": "Assert",
+            "containedInMap": {
+              "element": ["a","b"]
+            }
+          }
+        ]
+    }
+}
