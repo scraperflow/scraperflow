@@ -1,4 +1,4 @@
-package scraper.nodes.core.functional;
+package scraper.nodes.test;
 
 import scraper.annotations.*;
 import scraper.api.*;
@@ -6,9 +6,8 @@ import scraper.api.*;
 /**
  * Can modify the current flow map.
  * Can be used to construct a subset of user defined JSON objects.
- * @deprecated use Let instead
  */
-@NodePlugin(value = "2.0.2", deprecated = true)
+@NodePlugin(value = "2.0.2")
 public class Echo <A> implements FunctionalNode {
 
     /** Element to output */

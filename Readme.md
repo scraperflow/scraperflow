@@ -1,14 +1,13 @@
-Scraper - A Composable Workflow Framework
+ScraperFlow - A Composable Workflow Framework
 =========================================
 
-[![](https://jitpack.io/v/scraperflow/scraper.svg)](https://jitpack.io/#scraperflow/scraper)
+[![](https://jitpack.io/v/scraperflow/scraperflow.svg)](https://jitpack.io/#scraperflow/scraperflow)
 ![language](https://img.shields.io/badge/language-java11+(JPMS)-blue.svg)
 ![build](https://img.shields.io/badge/build-gradle-yellowgreen.svg)
 
-![Java CI with Gradle](https://github.com/scraperflow/scraper/workflows/Java%20CI%20with%20Gradle/badge.svg)
-[![coverage report](https://git.server1.link/scraper/scraper/badges/master/coverage.svg)](https://git.server1.link/scraper/scraper/commits/master)
+![Java CI with Gradle](https://github.com/scraperflow/scraperflow/workflows/Java%20CI%20with%20Gradle/badge.svg)
 
-Scraper is a framework which enables flow-based programming in a declarative way. 
+ScraperFlow is a framework which enables flow-based programming in a declarative way. 
 It is based on two main components: 
 the core which translates the declarative description (JSON or YAML) into a format that is understood by
 the framework, and the actual nodes which can be used to construct a workflow.
@@ -23,15 +22,15 @@ against the composition of nodes.
 
 # Links
 
-* [Scraper Node Documentation](https://docs.scraper.server1.link)
-  * The documentation contains **all** nodes, including [extra nodes](https://github.com/scraperflow/scraper-nodes), not only the nodes in the core framework
-* [Scraper Wiki](https://wiki.scraper.server1.link)
-* [Scraper Binaries](https://binaries.scraper.server1.link)
-* [Scraper Editor (prototype, deprecated)](https://editor.scraper.server1.link)
+* [ScraperFlow Node Documentation](https://docs.scraperflow.server1.link)
+  * The documentation contains **all** nodes, including [extra nodes](https://github.com/scraperflow/scraperflow-nodes), not only the nodes in the core framework
+* [ScraperFlow Wiki](https://wiki.scraperflow.server1.link)
+* [ScraperFlow Binaries](https://binaries.scraperflow.server1.link)
+* [ScraperFlow Editor (prototype, deprecated)](https://editor.scraperflow.server1.link)
 
 # Documentation
 
-The documentation can be found at the [Scraper Wiki](https://wiki.scraper.server1.link).
+The documentation can be found at the [ScraperFlow Wiki](https://wiki.scraperflow.server1.link).
 
 # Quickstart - Specification
 
@@ -44,39 +43,40 @@ start:
 
 # Quickstart - Docker
 
-Scraper is deployed to [Dockerhub](https://hub.docker.com/repository/docker/albsch/scraper).
+ScraperFlow is deployed to [Dockerhub](https://hub.docker.com/repository/docker/albsch/scraperflow).
 
-To use a Scraper container once, use
+To use a ScraperFlow container once, use
 
-    docker run -v "$PWD":/rt/ -v "$PWD":/nodes -v "$PWD":/plugins --rm albsch/scraper:latest help
+    docker run -v "$PWD":/rt/ -v "$PWD":/nodes -v "$PWD":/plugins --rm albsch/scraperflow:latest help
 
 and place your workflow in the current workflow directory. 
 '$PWD' can be changed to another working directory if needed.
-If custom nodes or plugins are to be supplied (like [dev-nodes](https://github.com/scraperflow/scraper-nodes/releases)),
+If custom nodes or plugins are to be supplied (like [dev-nodes](https://github.com/scraperflow/scraperflow-nodes/releases)),
 place the jar(s) in the current working directory (or change '$PWD'), too.
 
 
 # Quickstart - Java
 
-Scraper is fully modularized.
+ScraperFlow is fully modularized.
 
-Get the latest [modular jar bundle](https://github.com/scraperflow/scraper/releases) 
-and any [plugin jar](https://github.com/scraperflow/scraper-plugins) 
-or [additional node jars](https://github.com/scraperflow/scraper-nodes) you like.
+Get the latest [modular jar bundle](https://github.com/scraperflow/scraperflow/releases) 
+and any [plugin jar](https://github.com/scraperflow/scraperflow-plugins) 
+or [additional node jars](https://github.com/scraperflow/scraperflow-nodes) you like.
 
 Place the additional plugins and nodes in a `var` folder where the run script
 resides.
-Use the provided run script to run Scraper.
+Use the provided run script to run ScraperFlow.
        
-Scraper will look for workflows relative to the working directory.
+ScraperFlow will look for workflows relative to the working directory.
 
 
 # Quickstart - Java Native
 
 Execute `./gradlew installDist`. This will install scraper in your home
-directory at `~/opt/scraper`. 
-A scraper start script can then be executed via `~/opt/scraper/scraper`.
-Additional plugin jars can be put into `~/opt/scraper/var`.
+directory at `~/opt/scraperflow`. 
+A scraperflow start script can then be executed via
+`~/opt/scraperflow/scraperflow`.
+Additional plugin jars can be put into `~/opt/scraperflow/var`.
 
 
 # Quickstart - Development

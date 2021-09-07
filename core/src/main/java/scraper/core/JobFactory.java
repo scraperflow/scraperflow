@@ -472,7 +472,7 @@ public class JobFactory {
                 // Load and instantiate compiled class.
                 URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { f.getParentFile().toURI().toURL() });
                 Class<?> cls = Class.forName(type, true, classLoader);
-                Object instance = cls.newInstance();
+                Object instance = cls.getDeclaredConstructor().newInstance();
                 return (Node) instance;
             }
         }

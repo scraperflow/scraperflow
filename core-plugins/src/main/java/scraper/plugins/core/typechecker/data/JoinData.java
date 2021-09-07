@@ -27,6 +27,7 @@ import static scraper.util.TemplateUtil.parseTemplate;
 public final class JoinData {
     private static final System.Logger log = System.getLogger("TypeChecker");
 
+    @SuppressWarnings("unchecked")
     @Version("0.1.0") @NotNull
     public static void infoAfter(TypeChecker checker, TypeEnvironment env, ControlFlowEdge incoming, NodeContainer<? extends Node> node, ControlFlowGraph cfg,
                                  ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {

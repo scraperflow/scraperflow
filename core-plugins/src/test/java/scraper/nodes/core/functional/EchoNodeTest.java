@@ -1,6 +1,7 @@
 package scraper.nodes.core.functional;
 
 import org.junit.jupiter.api.Test;
+import scraper.nodes.test.Echo;
 
 import java.util.List;
 import java.util.Map;

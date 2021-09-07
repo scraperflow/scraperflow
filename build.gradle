@@ -39,7 +39,7 @@ dependencies{
     runtimeOnly project(':core-plugins')
 }
 
-distributions.main.distributionBaseName = "scraper"
+distributions.main.distributionBaseName = "scraperflow"
 
 startScripts.onlyIf {false}
 distributions.main {
@@ -50,7 +50,7 @@ distributions.main {
 }
 
 def homePath = System.properties['user.home']
-installDist.destinationDir = new File(homePath, "opt/lib/scraper")
+installDist.destinationDir = new File(homePath, "opt/lib/scraperflow")
 
 
 application {
