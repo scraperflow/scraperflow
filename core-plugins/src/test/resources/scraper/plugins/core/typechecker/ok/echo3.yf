@@ -1,0 +1,14 @@
+---
+name: echo
+graphs:
+  start:
+    - type: Echo
+      put: "map"
+      value: {"a": "b"}
+
+    - type: Echo
+      put: enriched
+      value:
+        url: "mypage.com{map@url}"
+        name: "{map@name}"
+        id: "{map@id}"

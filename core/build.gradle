@@ -7,9 +7,6 @@ dependencies {
 }
 
 dependencies {
-    // template grammar parser generator
-    implementation 'org.antlr:antlr4-runtime:4.9'
-
     // reflection framework
     api 'io.github.classgraph:classgraph:4.8.104'
 

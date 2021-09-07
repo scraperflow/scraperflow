@@ -1,0 +1,13 @@
+{
+  "name": "twographs",
+  "entry": "start",
+  "graphs": {
+    "start": [
+      { "type":"SimpleFlowTest" },
+      { "type":"SimpleFlowTest" }
+    ],
+    "other": [
+      { "type":"SimpleFlowTest", "goTo": "start" }
+    ]
+  }
+}

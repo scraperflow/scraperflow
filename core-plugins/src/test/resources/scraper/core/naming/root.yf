@@ -1,0 +1,18 @@
+name: root
+entry: start
+imports:
+  import.yf:
+graphs:
+  start:
+    - type: SimpleFunctional
+      label: first
+      goTo: start
+
+    - type: SimpleFunctional
+      label: start
+      goTo: end
+
+
+  end:
+    - type: SimpleFunctional
+      goTo: import

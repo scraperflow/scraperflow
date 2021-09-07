@@ -1,0 +1,19 @@
+---
+name: complex
+graphs:
+  start:
+    # jsonobj :: Object
+    - type: JsonStringToObject
+      jsonString: "someobjectstring"
+      jsonObject: "jsonobj"
+
+    # specialize Object -> List<Object>
+    - type: Echo
+      put: item
+      value: "[jsonobj^0]"
+
+    # jsonobj cant be Map after being specialized to List
+    - type: Echo
+      put: item
+      value: "{jsonobj@key}"
+

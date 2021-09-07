@@ -1,0 +1,17 @@
+---
+name: echo
+graphs:
+  start:
+    - type: Echo
+      put: actdetail
+      value: [3]
+
+    - type: Echo
+      put: enriched
+      value:
+        id: "[actdetail^0]"
+
+    - type: IntConsumer
+      input: "{enriched@id}"
+
+

@@ -1,7 +1,0 @@
-{
-  "name"       : "job1",
-  "description": "minimal",
-  "process"    : [
-    { "type":"BadNode", "log":"Scrape job is running!" }
-  ]
-}

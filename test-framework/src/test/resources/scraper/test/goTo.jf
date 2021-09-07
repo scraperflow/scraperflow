@@ -1,0 +1,13 @@
+{
+    "name" : "map",
+    "graphs" : {
+      "start":
+      [
+        { "type": "Simplest", "goTo": "other", "log": "goto other" },
+        { "type": "Exception", "exception": "NODE" }
+      ],
+      "other": [
+        { "type": "Simplest", "log": "went to other"}
+      ]
+    }
+}

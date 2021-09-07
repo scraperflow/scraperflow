@@ -1,0 +1,11 @@
+name: import
+entry: start
+graphs:
+  start:
+    - type: SimpleFunctional
+      label: first
+      goTo: import
+
+  import:
+    - type: SimpleFunctional
+      label: import

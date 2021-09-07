@@ -1,0 +1,21 @@
+---
+name: echo-composition
+graphs:
+  start:
+    - type: Echo
+      put: A
+      value: 1
+
+    - type: IntToString
+      integer: "{A}"
+      string: A-str
+
+    - type: Echo
+      put: B
+      value: ["{A-str}"]
+
+    - type: StringContains
+      regex: "notimportant"
+      content: "[B^0]" # content :: String
+      output: output
+

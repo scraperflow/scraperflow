@@ -1,0 +1,14 @@
+---
+name: complex
+graphs:
+  start:
+    # jsonobj :: Object
+    - type: JsonStringToObject
+      jsonString: "someobjectstring"
+      jsonObject: "jsonobj"
+
+    # specialize Object -> List<Object>
+    - type: Echo
+      put: item
+      value: "[jsonobj^0]"
+

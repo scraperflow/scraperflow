@@ -1,0 +1,9 @@
+{
+  "name": "test",
+  "entry": "start",
+  "graphs": {
+    "start": [
+      { "type":"Echo" }
+    ]
+  }
+}

@@ -1,6 +1,8 @@
 package scraper.core;
 
+import com.fasterxml.jackson.annotation.JacksonAnnotation;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.Versioned;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import scraper.annotations.ArgsCommand;
 import scraper.annotations.NotNull;
@@ -432,12 +434,25 @@ public class JobFactory {
                 // This sets up the class path that the compiler will use.
                 List<String> optionList = new ArrayList<String>();
                 optionList.add("-classpath");
+
+                // TODO create extended Java File Manager to not fiddle with manual dependencies so much
+                String jackson = new File(ObjectMapper.class.getProtectionDomain().getCodeSource().getLocation()
+                        .toURI()).getPath();
+                String jackson2 = new File(Versioned.class.getProtectionDomain().getCodeSource().getLocation()
+                        .toURI()).getPath();
+                String jackson3 = new File(JacksonAnnotation.class.getProtectionDomain().getCodeSource().getLocation()
+                        .toURI()).getPath();
+
                 String api = new File(Node.class.getProtectionDomain().getCodeSource().getLocation()
                         .toURI()).getPath();
+
                 // TODO make all nodes accessible, not only core
                 String corenodes = new File(Class.forName("scraper.nodes.core.flow.JoinKey").getProtectionDomain().getCodeSource().getLocation()
                         .toURI()).getPath();
-                optionList.add(api+":"+corenodes);
+
+                optionList.add(List.of(jackson, jackson2, jackson3, api, corenodes)
+                                        .stream()
+                                        .reduce("", (l, r) -> l + ":" + r));
 
 
                 Iterable<? extends JavaFileObject> compilationUnit

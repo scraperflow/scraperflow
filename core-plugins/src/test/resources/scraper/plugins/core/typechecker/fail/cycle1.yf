@@ -1,0 +1,7 @@
+---
+name: cycle
+graphs:
+  start:
+    - {type: Echo, put: list, value: ["1","2"], goTo: cycle}
+  cycle:
+    - {type: Echo, put: olist, value: "{lit}", goTo: cycle}

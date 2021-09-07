@@ -1,0 +1,24 @@
+---
+name: streaming
+graphs:
+  start:
+    - type: Regex
+      content: "x"
+      regex: "x"
+      output: output
+      groups:
+
+    - type: Map
+      list: "{output}"
+      putElement: element
+      goTo: D
+
+  D:
+    - type: Echo
+      put: "gid"
+      value: "{element@gid}"
+
+    - type: StringContains
+      regex: "notimportant"
+      content: "{gid}" # content :: String
+      output: result

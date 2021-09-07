@@ -1,0 +1,11 @@
+{
+  "name"       : "job1",
+  "entry": "start",
+  "graphs"    :
+  {"start":
+  [
+    { "type":"Simple", "label": "hello", "log":"Scrape job is running!" },
+    { "type":"Fragment", "required":"other.fragment" }
+  ]
+  }
+}

@@ -1,0 +1,65 @@
+---
+name: linear
+
+graphs:
+  start:
+    - { type: Io, input: "T_STRING", output: "generated", goTo: page-extract }           # G1 = { generated : String }
+
+  page-extract:
+    - type: Pipe
+      pipeTargets:
+        - fetch-dashboard       # with G1
+        - dashboard-to-gids     # with G2
+
+  fetch-dashboard:
+    - type: Retry
+      retry: 50
+      retryTarget: get-main-http
+
+  get-main-http:
+    - {type: Io, input: "{generated}", output: "response" }      # G2 = G1 U { response : String }
+
+  dashboard-to-gids:
+    - {type: Io, input: "{response}"}                            #
+    - type: Map
+      list: "{output}"
+      mapTarget: gallery-extract
+
+  gallery-extract:
+    - type: Echo
+    - type: Fork
+      forkTargets:
+        - download-thumbs
+        - download-metadata
+
+
+  download-thumbs:
+    - type: IfThenElse
+      condition: "{exists}"
+      falseTarget: download-thumbs-new
+
+  download-thumbs-new:
+    - {type: Retry, retryTarget: download-thumb-http}
+
+  download-thumb-http:
+    - type: Io
+
+  download-metadata:
+    - type: Io
+    - {type: IfThenElse, condition: "{exists}", falseTarget: download-metadata-new }
+
+  download-metadata-new:
+    - type: Retry
+      retryTarget: download-metadata-http
+
+  download-metadata-http:
+    - type: Io
+    - type: Map
+      list: "{output}"
+      mapTarget: clean-metadata
+
+  clean-metadata:
+    - type: Io
+    - type: Io
+    - type: Io
+    - type: Io

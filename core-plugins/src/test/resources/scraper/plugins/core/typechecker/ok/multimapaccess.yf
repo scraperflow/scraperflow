@@ -1,0 +1,20 @@
+---
+name: complex
+graphs:
+  start:
+    # jsonobj :: Object
+    - type: JsonStringToObject
+      jsonString: "somejsonstringobject"
+      jsonObject: "jsonobj"
+
+    # jsonobj :: List<A>
+    # item :: A
+    - type: Echo
+      put: item
+      value: "[jsonobj^0]"
+
+    # item :: Map<String, A>
+    - type: TwoInputs
+      input1: "{item@ok}"
+      input2: "{item@id}.png"
+
