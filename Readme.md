@@ -23,7 +23,7 @@ against the composition of nodes.
 # Links
 
 * [ScraperFlow Node Documentation](https://docs.scraperflow.server1.link)
-  * The documentation contains **all** nodes, including [extra nodes](https://github.com/scraperflow/scraperflow-extra/nodes), not only the nodes in the core framework
+  * The documentation contains **all** nodes, including [extra nodes](https://github.com/scraperflow/scraperflow-extra/scraperflow-nodes), not only the nodes in the core framework
 * [ScraperFlow Wiki](https://wiki.scraperflow.server1.link)
 * [ScraperFlow Binaries](https://binaries.scraperflow.server1.link)
 * [ScraperFlow Editor (prototype, deprecated)](https://editor.scraperflow.server1.link)
@@ -51,7 +51,7 @@ To use a ScraperFlow container once, use
 
 and place your workflow in the current workflow directory. 
 '$PWD' can be changed to another working directory if needed.
-If custom nodes or plugins are to be supplied (like [dev-nodes](https://github.com/scraperflow/scraperflow-extra/nodes)),
+If custom nodes or plugins are to be supplied (like [dev-nodes](https://github.com/scraperflow/scraperflow-extra/scraperflow-nodes)),
 place the jar(s) in the current working directory (or change '$PWD'), too.
 
 
