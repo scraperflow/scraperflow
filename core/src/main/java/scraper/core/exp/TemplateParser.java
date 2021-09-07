@@ -34,6 +34,8 @@ public class TemplateParser {
     public static void main(String[] args) {
         System.out.println(TemplateParser.parse(""));
         System.out.println(TemplateParser.parse("hello world"));
+        System.out.println(TemplateParser.parse("\\hello\\\\world"));
+        System.out.println(TemplateParser.parse("\\@\\^\\{\\}\\[\\]"));
         System.out.println(TemplateParser.parse("{template}"));
         System.out.println(TemplateParser.parse("{template} more"));
         System.out.println(TemplateParser.parse("{{template}}"));
