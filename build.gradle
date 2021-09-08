@@ -49,6 +49,9 @@ distributions.main {
     }
 }
 
+
+
+
 def homePath = System.properties['user.home']
 installDist.destinationDir = new File(homePath, "opt/lib/scraperflow")
 
@@ -56,6 +59,9 @@ installDist.destinationDir = new File(homePath, "opt/lib/scraperflow")
 application {
     mainClass = 'scraper.app.Scraper'
 }
+
+// maven publish for jitpack.io
+apply from: 'gradle/maven.gradle'
 
 // merge coverage
 apply from: 'gradle/jacoco-merge.gradle'
