@@ -1,10 +1,12 @@
-apply plugin: 'maven-publish'
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.java
-            }
-        }
-    }
+allprojects {
+  apply plugin: 'maven-publish'
+  afterEvaluate {
+      publishing {
+          publications {
+              release(MavenPublication) {
+                  from components.java
+              }
+          }
+      }
+  }
 }

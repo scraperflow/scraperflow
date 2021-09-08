@@ -2,13 +2,13 @@ apply plugin: 'application'
 
 group 'org.scraper'
 
-version '1.0.0-SNAPSHOT'
-project('api').version = '1.0.0'
-project('utilities').version = '1.0.0'
-project('core').version = '0.16.1'
-project('core-parsers').version = '0.14.0'
-project('core-plugins').version = '0.17.1'
-project('test-framework').version = '0.14.0'
+version '1.0.0-rc1'
+project('api').version = '1.0.0-rc1'
+project('utilities').version = '1.0.0-rc1'
+project('core').version = '1.0.0-rc1'
+project('core-parsers').version = '1.0.0-rc1'
+project('core-plugins').version = '1.0.0-rc1'
+project('test-framework').version = '1.0.0-rc1'
 
 allprojects {
     apply plugin: 'jacoco'
