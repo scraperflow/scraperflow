@@ -1,1 +1,4 @@
 jdk: openjdk12
+install:
+  - ./gradlew build
+  - find . -name "*.jar"
