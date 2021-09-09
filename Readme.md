@@ -47,7 +47,7 @@ ScraperFlow is deployed to [Dockerhub](https://hub.docker.com/repository/docker/
 
 To use a ScraperFlow container once, use
 
-    docker run -v "$PWD":/rt/ -v "$PWD":/nodes -v "$PWD":/plugins --rm albsch/scraperflow:latest help
+    docker run -v "$PWD":/rt -v "$PWD":/nodes -v "$PWD":/plugins "$PWD":/runtime-nodes --rm albsch/scraperflow:latest help
 
 and place your workflow in the current workflow directory. 
 '$PWD' can be changed to another working directory if needed.
