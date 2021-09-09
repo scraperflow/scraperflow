@@ -18,7 +18,7 @@ public final class LetData {
 
     @Version("0.0.1")
     public static void infoBefore(TypeChecker t, TypeEnvironment env, ControlFlowEdge inc, NodeContainer<?> node, ControlFlowGraph cfg, ScrapeInstance spec, List<NodeContainer<?>> visited) throws Exception {
-        L<?> shadow = (L<?>) FlowUtil.getField("key", node.getC()).get();
+        L<?> shadow = (L<?>) FlowUtil.getField("put", node.getC()).get();
         env.remove(shadow.getLocation());
     }
 

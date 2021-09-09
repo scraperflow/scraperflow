@@ -20,7 +20,6 @@ import scraper.utils.StringUtil;
 
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static java.lang.System.Logger.Level.*;
@@ -103,7 +102,7 @@ public class Scraper {
         }
         catch (ExitException ignored) {}
         catch (Throwable e) {
-            log.log(ERROR, "Could not run scrape job: {0}", e.getMessage());
+            log.log(DEBUG, "Could not run scrape job: {0}", e.getMessage());
             if(StringUtil.getArgument(args, "debug-info") == null) surpress(e);
             throw e;
         }

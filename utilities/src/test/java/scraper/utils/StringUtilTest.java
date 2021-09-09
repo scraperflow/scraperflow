@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class StringUtilTest {
     @Test
@@ -36,6 +37,12 @@ public class StringUtilTest {
     public void getArgumentNoParamTest() {
         String t = StringUtil.getArgument(new String[]{"help"}, "help");
         assertEquals("", t);
+    }
+
+    @Test
+    public void getOverlapArg() {
+        String t = StringUtil.getArgument(new String[]{"runtime-nodes:/runtime-nodes"}, "nodes");
+        assertNull(t);
     }
 
 }

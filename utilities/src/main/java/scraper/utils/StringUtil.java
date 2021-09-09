@@ -88,7 +88,7 @@ public final class StringUtil {
             else if(argument.equalsIgnoreCase(param)) {
                 arg.add("");
             }
-            else if(argument.endsWith(param)) {
+            else if(argument.endsWith(param) && !argument.contains(":")) {
                 arg.add(argument);
             }
         }
