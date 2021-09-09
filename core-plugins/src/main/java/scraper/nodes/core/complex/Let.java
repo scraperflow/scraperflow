@@ -1,4 +1,4 @@
-package scraper.nodes.core.functional;
+package scraper.nodes.core.complex;
 
 import scraper.annotations.*;
 import scraper.api.*;
@@ -6,6 +6,7 @@ import scraper.api.*;
 /**
  * Can modify the current flow map.
  * Can be used to construct a subset of user defined JSON objects.
+ * Allows overwriting the key at location `put`.
  */
 @NodePlugin("1.0.0")
 public class Let<A> implements FunctionalNode {

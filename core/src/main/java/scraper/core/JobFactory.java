@@ -415,6 +415,7 @@ public class JobFactory {
                 String msg = "No plugin for "+type+" (v"+version+") found! " +
                         "Provide an implementation with qualifying version number. " +
                         "Runtime paths searched: " + extraFolders;
+                e.printStackTrace();
                 throw new ValidationException(msg);
             }
         }
@@ -426,6 +427,7 @@ public class JobFactory {
 
         for (String folder : extraFolders) {
             File f = Path.of(folder, type+".java").toFile();
+            log.log(DEBUG, "Trying: " + f.getAbsolutePath() + "  : " +f.exists());
             if(f.exists()) {
                 DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
                 JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();

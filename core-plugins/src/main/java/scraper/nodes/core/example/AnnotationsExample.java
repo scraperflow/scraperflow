@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * Showcase of all possible annotation combinations on configuration fields
  */
-@NodePlugin(value = "0.17.0") // only used for tests and showcasing
+@NodePlugin(value = "1.0.0") // only used for tests and showcasing
 public class AnnotationsExample implements Node {
 
     /**
@@ -43,12 +43,12 @@ public class AnnotationsExample implements Node {
 
     /**
      * Templates are runtime constructs.
-     * As of 0.17.0, the following template grammar is supported:
+     * The following template grammar is supported:
      * <ul>
-     *     <li><code>{T}</code>: Flow Map Key lookup</li>
-     *     <li><code>{M@T}</code>: Map lookup, where <code>M</code> evaluates to a Map and <code>T</code> to a String</li>
-     *     <li><code>{L}[T]</code>: List lookup, where <code>L</code> evaluates to a List and <code>T</code> to an Integer</li>
-     *     <li><code>{T1}...{Tn}</code>: Mixed String template concatenation, every T must evaluate to a String</li>
+     *     <li><code>{T}</code>: Flow Map Key lookup, can evaluate to any class</li>
+     *     <li><code>{M@T}</code>: Map lookup, where <code>M</code> evaluates to a Map at key M and <code>T</code> to a String</li>
+     *     <li><code>[L^T]</code>: List lookup, where <code>L</code> evaluates to a List at Key L and <code>T</code> to an Integer</li>
+     *     <li><code>T1...Tn</code>: Mixed String template concatenation, every T must evaluate to a String</li>
      *     <li>Otherwise: Primitive type</li>
      * </ul>
      * The result of the evaluation needs to conform to the type given by <code>T&lt;&gt;</code>.
@@ -64,14 +64,14 @@ public class AnnotationsExample implements Node {
      * <pre>
      *  simpleTemplate: "justastring"
      *  simpleTemplate: "{my-string}"
-     *  simpleTemplate: "{{my-map}@key}"
+     *  simpleTemplate: "{my-map@key}"
      * </pre>
      * Invalid definitions for this key:
      * <pre>
      *  simpleTemplate: 42      # not a string!
      *  simpleTemplate: "{x}"   # x does not exist in the current flow map
-     *  simpleTemplate: "{{my-map}@my-mp}"   # my-map does not contain 'my-mp'
-     *  simpleTemplate: "{{my-map}}[0]"      # my-map is not a list
+     *  simpleTemplate: "{my-map@my-mp}"   # my-map does not contain 'my-mp'
+     *  simpleTemplate: "[my-map^0]"      # my-map is not a list
      * </pre>
      */
     @FlowKey(mandatory = true)

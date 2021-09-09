@@ -1,3 +1,13 @@
+plugins {
+    id("de.jjohannes.extra-java-module-info") version "0.1"
+}
+
+extraJavaModuleInfo {
+    module("snakeyaml-1.27.jar", "org.yaml.snakeyaml", "1.27") {
+        exports "org.yaml.snakeyaml"
+    }
+}
+
 apply plugin: 'application'
 
 group 'org.scraper'

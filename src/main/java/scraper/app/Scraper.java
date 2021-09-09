@@ -85,7 +85,7 @@ public class Scraper {
         }
 
         String versionArgs = StringUtil.getArgument(args, "version");
-        if(versionArgs != null) System.out.println("Scraper version 1.0.0-SNAPSHOT");
+        if(versionArgs != null) System.out.println("ScraperFlow version 1.0.0-rc1");
 
         // inject dependencies
         DIContainer pico = getDIContainer();
