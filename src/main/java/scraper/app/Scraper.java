@@ -55,7 +55,7 @@ public class Scraper {
     public static void main(final String[] args) throws Exception {
         System.setProperty("java.util.logging.SimpleFormatter.format", "%4$-1.1s %1$tF %1$tT | %3$s | %5$s %n");
         List<ScrapeSpecificationParser> parsers = load(ScrapeSpecificationParser.class).stream().map(Provider::get).collect(Collectors.toList());
-        log.log(INFO, "Loading {0} parsers: {1}", parsers.size(), parsers);
+        log.log(DEBUG, "Loading {0} parsers: {1}", parsers.size(), parsers);
 
         String helpArgs = StringUtil.getArgument(args, "help");
         if(helpArgs == null) {
@@ -96,18 +96,18 @@ public class Scraper {
 
     private void run(@NotNull final String... args) throws Exception, ExitException {
         List<Hook> hooks = load(Hook.class).stream().map(Provider::get).collect(Collectors.toList());
-        log.log(INFO, "Loading {0} hooks: {1}", hooks.size(), hooks);
+        log.log(DEBUG, "Loading {0} hooks: {1}", hooks.size(), hooks);
 
         List<NodeHook> nodeHooks = load(NodeHook.class).stream().map(Provider::get).collect(Collectors.toList());
-        log.log(INFO, "Loading {0} node Hooks: {1}", nodeHooks.size(), nodeHooks);
+        log.log(DEBUG, "Loading {0} node Hooks: {1}", nodeHooks.size(), nodeHooks);
 
         List<Addon> addons = load(Addon.class).stream().map(Provider::get).collect(Collectors.toList());
-        log.log(INFO, "Loading {0} addons: {1}", addons.size(), addons);
+        log.log(DEBUG, "Loading {0} addons: {1}", addons.size(), addons);
         for (Addon addon : addons) addon.load(pico, args);
 
         String userDir = System.getProperty("user.dir");
         List<ScrapeSpecificationParser> parsers = load(ScrapeSpecificationParser.class).stream().map(Provider::get).collect(Collectors.toList());
-        log.log(INFO, "Loading {0} parsers: {1}", parsers.size(), parsers);
+        log.log(DEBUG, "Loading {0} parsers: {1}", parsers.size(), parsers);
         log.log(DEBUG, "Parsing scrape jobs in {0}", userDir);
 
         if(parsers.isEmpty()) throw new ValidationException("No Scraper parsers loaded");

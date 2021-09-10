@@ -19,7 +19,6 @@ import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 
 import static java.lang.System.Logger.Level.*;
-import static java.lang.System.Logger.Level.INFO;
 import static java.util.ServiceLoader.load;
 
 
@@ -38,15 +37,15 @@ public class DependencyInjectionUtil {
         diContainer.addComponent(JobFactory.class);
 
         List<Hook> hooks = load(Hook.class).stream().map(ServiceLoader.Provider::get).collect(Collectors.toList());
-        log.log(INFO, "Loading {0} hooks: {1}", hooks.size(), hooks);
+        log.log(DEBUG, "Loading {0} hooks: {1}", hooks.size(), hooks);
         List<NodeHook> nodeHooks = load(NodeHook.class).stream().map(ServiceLoader.Provider::get).collect(Collectors.toList());
-        log.log(INFO, "Loading {0} node Hooks: {1}", nodeHooks.size(), nodeHooks);
+        log.log(DEBUG, "Loading {0} node Hooks: {1}", nodeHooks.size(), nodeHooks);
         List<Addon> addons = load(Addon.class).stream().map(ServiceLoader.Provider::get).collect(Collectors.toList());
-        log.log(INFO, "Loading {0} addons: {1}", addons.size(), addons);
+        log.log(DEBUG, "Loading {0} addons: {1}", addons.size(), addons);
 
         // TODO why are parsers not found here but in scraper.app module?
         List<ScrapeSpecificationParser> parsers = load(ScrapeSpecificationParser.class).stream().map(ServiceLoader.Provider::get).collect(Collectors.toList());
-        log.log(INFO, "Loading {0} parsers: {1}", addons.size(), addons);
+        log.log(DEBUG, "Loading {0} parsers: {1}", addons.size(), addons);
 
         List.of(hooks, nodeHooks, addons, parsers)
                 .stream()

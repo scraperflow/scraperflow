@@ -2,5 +2,6 @@ apply plugin: 'java-library'
 
 dependencies {
     api project(':core')
-    api project(':test-framework')
+    testCompileOnly project(':test-framework')
+    testRuntimeOnly project(':test-framework')
 }
