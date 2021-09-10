@@ -1,6 +1,6 @@
+import scraper.api.Command;
 import scraper.api.ScrapeSpecificationParser;
-import scraper.plugins.core.parser.JsonParser;
-import scraper.plugins.core.parser.YamlParser;
+import scraper.plugins.core.parser.*;
 
 open module scraper.core.parsers {
     exports scraper.plugins.core.parser;
@@ -12,5 +12,6 @@ open module scraper.core.parsers {
     requires transitive scraper.api;
     requires transitive scraper.core;
 
-    provides ScrapeSpecificationParser with JsonParser, YamlParser;
+    provides ScrapeSpecificationParser with JsonParser, YamlParser, SimpleYamlParser;
+    provides Command with JsonParser, YamlParser, SimpleYamlParser;
 }

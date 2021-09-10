@@ -6,21 +6,9 @@ import com.fasterxml.jackson.core.Versioned;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import scraper.annotations.ArgsCommand;
 import scraper.annotations.NotNull;
-import scraper.api.ValidationException;
-import scraper.api.InstanceAddress;
-import scraper.api.NodeContainer;
+import scraper.api.*;
 import scraper.api.node.impl.GraphAddressImpl;
 import scraper.api.node.impl.InstanceAddressImpl;
-import scraper.api.FunctionalNode;
-import scraper.api.Node;
-import scraper.api.StreamNode;
-import scraper.api.NodeHook;
-import scraper.api.ExecutorsService;
-import scraper.api.FileService;
-import scraper.api.HttpService;
-import scraper.api.ProxyReservation;
-import scraper.api.ScrapeInstance;
-import scraper.api.ScrapeSpecification;
 import scraper.api.specification.impl.ScrapeInstaceImpl;
 import scraper.utils.FileUtil;
 import scraper.utils.StringUtil;
@@ -41,13 +29,15 @@ import static scraper.utils.FileUtil.getFirstExistingPaths;
 
 import javax.tools.*;
 
-@ArgsCommand(
-        value = "arg:key=value",
-        doc = "Key value mapping by command-line argument",
-        example = "scraper arg:mykey=\"mystring\""
-)
 public class JobFactory {
     private static final System.Logger log = System.getLogger("JobFactory");
+
+    @ArgsCommand(
+            value = "arg:key=value",
+            doc = "Key value mapping by command-line argument",
+            example = "scraper arg:mykey=\"mystring\""
+    )
+    public static class JobFactoryCommand implements Command {}
 
     public JobFactory(@NotNull ProxyReservation proxyReservation, @NotNull HttpService httpService,
                       @NotNull ExecutorsService executorsService, @NotNull FileService fileService,

@@ -27,6 +27,7 @@ public final class JoinFlow implements Node {
     // STATE
     final java.util.Map<JoinKey, Integer> waiting = new ConcurrentHashMap<>();
 
+    @SuppressWarnings({"synchronization", "SynchronizationOnLocalVariableOrMethodParameter"})
     @NotNull
     @Override
     public void process(@NotNull NodeContainer<? extends Node> n, @NotNull FlowMap o) {
@@ -38,7 +39,6 @@ public final class JoinFlow implements Node {
             flows = waiting.get(joinKey);
         }
 
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (flows) {
             if (flows < joinKey.size) {
                 flows += 1;

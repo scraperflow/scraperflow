@@ -7,9 +7,6 @@ dependencies {
 }
 
 dependencies {
-    // reflection framework
-    api 'io.github.classgraph:classgraph:4.8.104'
-
     // json library
     api group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.12.5'
     api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.5'

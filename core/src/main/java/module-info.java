@@ -1,13 +1,15 @@
-import scraper.api.Addon;
-import scraper.api.Node;
+import scraper.api.*;
 import scraper.core.AbstractMetadata;
-import scraper.api.NodeContainer;
+import scraper.core.JobFactory;
 
 open module scraper.core {
     uses AbstractMetadata;
     uses Addon;
     uses NodeContainer;
     uses Node;
+    uses ScrapeSpecificationParser;
+    uses NodeHook;
+    uses Hook;
 
     exports scraper.core;
     exports scraper.core.template;
@@ -15,7 +17,6 @@ open module scraper.core {
     exports scraper.api.flow.impl;
     exports scraper.api.specification.impl;
 
-    requires transitive io.github.classgraph;
     requires java.net.http;
 
     requires transitive com.fasterxml.jackson.databind;
@@ -24,4 +25,5 @@ open module scraper.core {
     requires transitive scraper.utils;
     requires java.compiler;
 
+    provides Command with JobFactory.JobFactoryCommand;
 }

@@ -10,7 +10,7 @@ import java.util.Map;
  * <p>
  * Additionally, dependencies can be used.
  */
-public interface Hook {
+public interface Hook extends Command {
     /** Executes the hook and provides arguments, dependencies, and a ScrapeSpecification to ScrapeInstance map */
     void execute(@NotNull DIContainer dependencies, @NotNull String[] args,
                  @NotNull Map<ScrapeSpecification, ScrapeInstance> scraper) throws Exception;

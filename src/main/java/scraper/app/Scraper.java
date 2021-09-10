@@ -20,11 +20,13 @@ import scraper.utils.StringUtil;
 
 import java.io.File;
 import java.util.*;
+import java.util.ServiceLoader.Provider;
 import java.util.stream.Collectors;
 
 import static java.lang.System.Logger.Level.*;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
+import static java.util.ServiceLoader.load;
 import static scraper.app.CommandPrinter.collectAndPrintCommandLineArguments;
 import static scraper.util.DependencyInjectionUtil.getDIContainer;
 
@@ -36,21 +38,6 @@ public class Scraper {
     // dependencies
     private @NotNull
     final JobFactory jobFactory;
-    private @NotNull
-    final ExecutorsService executorsService;
-
-    // addons
-    private @NotNull
-    final Collection<Addon> addons;
-    // hooks
-    private @NotNull
-    final Collection<Hook> hooks;
-    // node hooks
-    private @NotNull
-    final Collection<NodeHook> nodeHooks;
-    // spec parsers
-    private @NotNull
-    final Collection<ScrapeSpecificationParser> parsers;
 
     // DI container
     private DIContainer pico;
@@ -59,22 +46,16 @@ public class Scraper {
     private @NotNull
     final Map<ScrapeSpecification, ScrapeInstance> jobs = new LinkedHashMap<>();
 
-    public Scraper(@NotNull JobFactory jobFactory, @NotNull ExecutorsService executorsService,
-                   @NotNull @DITarget(Hook.class) Collection<Hook> hooks,
-                   @NotNull @DITarget(Addon.class) Collection<Addon> addons,
-                   @NotNull @DITarget(NodeHook.class) Collection<NodeHook> nodeHooks,
-                   @NotNull @DITarget(ScrapeSpecificationParser.class) Collection<ScrapeSpecificationParser> parsers
+    public Scraper(@NotNull JobFactory jobFactory
     ) {
         this.jobFactory = jobFactory;
-        this.executorsService = executorsService;
-        this.hooks = hooks;
-        this.addons = addons;
-        this.nodeHooks = nodeHooks;
-        this.parsers = parsers;
     }
+
 
     public static void main(final String[] args) throws Exception {
         System.setProperty("java.util.logging.SimpleFormatter.format", "%4$-1.1s %1$tF %1$tT | %3$s | %5$s %n");
+        List<ScrapeSpecificationParser> parsers = load(ScrapeSpecificationParser.class).stream().map(Provider::get).collect(Collectors.toList());
+        log.log(INFO, "Loading {0} parsers: {1}", parsers.size(), parsers);
 
         String helpArgs = StringUtil.getArgument(args, "help");
         if(helpArgs == null) {
@@ -114,11 +95,19 @@ public class Scraper {
     }
 
     private void run(@NotNull final String... args) throws Exception, ExitException {
-        log.log(DEBUG, "Loading {0} addons: {1}", addons.size(), addons);
+        List<Hook> hooks = load(Hook.class).stream().map(Provider::get).collect(Collectors.toList());
+        log.log(INFO, "Loading {0} hooks: {1}", hooks.size(), hooks);
+
+        List<NodeHook> nodeHooks = load(NodeHook.class).stream().map(Provider::get).collect(Collectors.toList());
+        log.log(INFO, "Loading {0} node Hooks: {1}", nodeHooks.size(), nodeHooks);
+
+        List<Addon> addons = load(Addon.class).stream().map(Provider::get).collect(Collectors.toList());
+        log.log(INFO, "Loading {0} addons: {1}", addons.size(), addons);
         for (Addon addon : addons) addon.load(pico, args);
 
         String userDir = System.getProperty("user.dir");
-        log.log(DEBUG, "Loading {0} parsers: {1}", parsers.size(), parsers);
+        List<ScrapeSpecificationParser> parsers = load(ScrapeSpecificationParser.class).stream().map(Provider::get).collect(Collectors.toList());
+        log.log(INFO, "Loading {0} parsers: {1}", parsers.size(), parsers);
         log.log(DEBUG, "Parsing scrape jobs in {0}", userDir);
 
         if(parsers.isEmpty()) throw new ValidationException("No Scraper parsers loaded");

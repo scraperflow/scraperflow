@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public interface ScrapeSpecificationParser {
+public interface ScrapeSpecificationParser extends Command {
     /** What file endings this parsers accepts */
     @NotNull
     List<String> acceptedFileEndings();

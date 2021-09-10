@@ -1,7 +1,5 @@
 package scraper.util;
 
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ScanResult;
 import scraper.api.DIContainer;
 import scraper.api.di.impl.DIContainerImpl;
 import scraper.api.Addon;
@@ -17,9 +15,12 @@ import scraper.core.PluginBean;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.ServiceLoader;
+import java.util.stream.Collectors;
 
-import static java.lang.System.Logger.Level.DEBUG;
-import static java.lang.System.Logger.Level.ERROR;
+import static java.lang.System.Logger.Level.*;
+import static java.lang.System.Logger.Level.INFO;
+import static java.util.ServiceLoader.load;
 
 
 public class DependencyInjectionUtil {
@@ -36,28 +37,26 @@ public class DependencyInjectionUtil {
 
         diContainer.addComponent(JobFactory.class);
 
-        try (ScanResult scanResult = new ClassGraph().enableClassInfo()
-                             .acceptPackages("scraper.plugins","scraper.addons", "scraper.hooks")
-                             .scan()) {
-            List.of(
-                    scanResult.getClassesImplementing(Addon.class.getName()),
-                    scanResult.getClassesImplementing(Hook.class.getName()),
-                    scanResult.getClassesImplementing(ScrapeSpecificationParser.class.getName()),
-                    scanResult.getClassesImplementing(NodeHook.class.getName())
-            ).stream()
-                    .filter(o -> !o.isEmpty())
-                    .flatMap(Collection::stream)
-                    .distinct()
-                    .forEach(plugin -> {
-                        try {
-                            Class<?> addon = Class.forName(plugin.getName());
-                            diContainer.addComponent(addon, true);
-                            log.log(DEBUG, "Found plugin {0}", addon.getSimpleName());
-                        } catch (ClassNotFoundException e) {
-                            log.log(ERROR,   "Scan found plugin, but class not found", e);
-                        }
-                    });
-        }
+        List<Hook> hooks = load(Hook.class).stream().map(ServiceLoader.Provider::get).collect(Collectors.toList());
+        log.log(INFO, "Loading {0} hooks: {1}", hooks.size(), hooks);
+        List<NodeHook> nodeHooks = load(NodeHook.class).stream().map(ServiceLoader.Provider::get).collect(Collectors.toList());
+        log.log(INFO, "Loading {0} node Hooks: {1}", nodeHooks.size(), nodeHooks);
+        List<Addon> addons = load(Addon.class).stream().map(ServiceLoader.Provider::get).collect(Collectors.toList());
+        log.log(INFO, "Loading {0} addons: {1}", addons.size(), addons);
+
+        // TODO why are parsers not found here but in scraper.app module?
+        List<ScrapeSpecificationParser> parsers = load(ScrapeSpecificationParser.class).stream().map(ServiceLoader.Provider::get).collect(Collectors.toList());
+        log.log(INFO, "Loading {0} parsers: {1}", addons.size(), addons);
+
+        List.of(hooks, nodeHooks, addons, parsers)
+                .stream()
+                .flatMap(Collection::stream)
+                .distinct()
+                .forEach(plugin -> {
+                    Class<?> addon = plugin.getClass();
+                    diContainer.addComponent(addon, true);
+                    log.log(DEBUG, "Found plugin {0}", addon.getSimpleName());
+                });
 
         return diContainer;
     }

@@ -25,7 +25,6 @@ against the composition of nodes.
 * [ScraperFlow Node Documentation](https://docs.scraperflow.server1.link)
   * The documentation contains **all** nodes, including [extra nodes](https://github.com/scraperflow/scraperflow-extra/tree/master/scraperflow-nodes), not only the nodes in the core framework
 * [ScraperFlow Wiki](https://wiki.scraperflow.server1.link)
-* [ScraperFlow Binaries](https://binaries.scraperflow.server1.link)
 * [ScraperFlow Editor (prototype, deprecated)](https://editor.scraperflow.server1.link)
 
 # Documentation
@@ -63,7 +62,7 @@ Get the latest [modular jar bundle](https://github.com/scraperflow/scraperflow/r
 and any [plugin jar](https://github.com/scraperflow/scraperflow-extra) 
 or [additional node jars](https://github.com/scraperflow/scraperflow-extra) you like.
 
-Place the additional plugins and nodes in a `var` folder where the run script
+Place the additional plugin and node java modules in a `var` folder where the run script
 resides.
 Use the provided run script to run ScraperFlow.
        

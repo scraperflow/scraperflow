@@ -1,19 +1,17 @@
 package scraper.core;
 
-import io.github.classgraph.AnnotationInfo;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ClassInfo;
-import io.github.classgraph.ScanResult;
-import scraper.annotations.NotNull;
 import scraper.annotations.NodePlugin;
-import scraper.api.ValidationException;
+import scraper.annotations.NotNull;
 import scraper.api.Node;
+import scraper.api.ValidationException;
 import scraper.utils.ClassUtil;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ServiceLoader.Provider;
 
 import static java.lang.System.Logger.Level.DEBUG;
+import static java.util.ServiceLoader.load;
 
 public class PluginBean {
     private @NotNull static final System.Logger log = System.getLogger("NodeDiscovery");
@@ -21,37 +19,33 @@ public class PluginBean {
 
     public PluginBean() {
         String pkg = "scraper";
-        String routeAnnotation = NodePlugin.class.getName();
-        try (ScanResult scanResult =
-                     new ClassGraph()
-                             .enableAllInfo()
-                             .acceptPackages(pkg)
-                             .scan()) {
-            for (ClassInfo routeClassInfo : scanResult.getClassesWithAnnotation(routeAnnotation)) {
-                if (routeClassInfo.isAbstract()) continue;
 
-                AnnotationInfo routeAnnotationInfo = routeClassInfo.getAnnotationInfo(routeAnnotation);
+        load(Node.class).stream()
+                .map(Provider::get)
+                .filter(n -> n.getClass().getName().startsWith(pkg))
+                .forEach(node -> {
 
-                String metadataName = routeClassInfo.getSimpleName();
-                String metadataVersion = (String) routeAnnotationInfo.getParameterValues().getValue("value");
-                Boolean metadataDeprecated = (Boolean) routeAnnotationInfo.getParameterValues().getValue("deprecated");
-                String metadataCategory = ClassUtil.extractCategoryOfNode(routeClassInfo.getName());
-                String className = routeClassInfo.getName();
+                    NodePlugin nodeInfo = node.getClass().getAnnotation(NodePlugin.class);
 
-                AbstractMetadata metadata = new AbstractMetadata(metadataName, metadataVersion, metadataCategory, metadataDeprecated) {
-                    @NotNull @Override
-                    public Node getNode() throws ValidationException {
-                        try {
-                            return (Node) Class.forName(className).getDeclaredConstructor().newInstance();
-                        } catch (Exception e) {
-                            throw new ValidationException(e, "Could not instantiate node");
+                    String metadataName = node.getClass().getSimpleName();
+                    String metadataVersion = nodeInfo.value();
+                    Boolean metadataDeprecated = nodeInfo.deprecated();
+                    String metadataCategory = ClassUtil.extractCategoryOfNode(node.getClass().getName());
+                    String className = node.getClass().getName();
+
+                    AbstractMetadata metadata = new AbstractMetadata(metadataName, metadataVersion, metadataCategory, metadataDeprecated) {
+                        @NotNull @Override
+                        public Node getNode() throws ValidationException {
+                            try {
+                                return (Node) Class.forName(className).getDeclaredConstructor().newInstance();
+                            } catch (Exception e) {
+                                throw new ValidationException(e, "Could not instantiate node: " + e.getMessage());
+                            }
                         }
-                    }
-                };
+                    };
 
-                plugins.add(metadata);
-            }
-        }
+                    plugins.add(metadata);
+                });
 
         String nodes = nodeDiscovery();
         log.log(DEBUG, "Discovered {0} nodes, {1}", plugins.size(), nodes);

@@ -9,7 +9,7 @@ import scraper.api.DIContainer;
  *     When it is loaded at startup, it can use other dependencies via the dependency injection framework.
  * </p>
  */
-public interface Addon {
+public interface Addon extends Command {
     /** Loads and initializes the addon with already loaded dependencies */
     void load(@NotNull DIContainer loadedDependencies, @NotNull String[] args);
 }
