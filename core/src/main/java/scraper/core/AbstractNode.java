@@ -161,7 +161,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
      * @param map The current forwarded map
      */
     @SuppressWarnings("unused")
-    protected void start(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap map) {
+    public void start(@NotNull NodeContainer<? extends Node> n, @NotNull final FlowMap map) {
         // evaluate and write log message if any
         try {
             if(log.getTerm() != null) {

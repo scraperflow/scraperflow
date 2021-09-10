@@ -23,6 +23,9 @@ open module scraper.core.plugins {
     exports scraper.nodes.core.stream;
     exports scraper.nodes.core.time;
     exports scraper.nodes.core.complex;
+    exports scraper.plugins.core.flowgraph.api;
+    exports scraper.plugins.core.flowgraph;
+    exports scraper.plugins.core.typechecker;
 
 
     requires transitive scraper.core;

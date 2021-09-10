@@ -3,6 +3,7 @@ package scraper.utils;
 import scraper.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,5 +49,10 @@ public final class ClassUtil {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static URL getResourceUrl(Class<?> baseClass, String ok) {
+        String base = baseClass.getPackageName().replace(".","/" ) + "/";
+        return ClassLoader.getSystemResource(base + ok);
     }
 }

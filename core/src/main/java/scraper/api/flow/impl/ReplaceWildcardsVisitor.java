@@ -10,7 +10,7 @@ import java.util.Set;
  * Visitor class for a Java Type to descend into and visit generic types.
  * Replaces type variables with wildcards.
  */
-abstract class ReplaceWildcardsVisitor {
+public abstract class ReplaceWildcardsVisitor {
     private final Set<Type> visited = new HashSet<>();
 
     public final Type visit(Type knownType) {

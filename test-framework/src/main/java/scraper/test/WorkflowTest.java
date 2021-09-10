@@ -109,7 +109,4 @@ public abstract class WorkflowTest {
 //        return foundTestCases.toArray(new Object[0]);
 //    }
 
-    public static URL resource(Class<?> clazz, String s) {
-        return clazz.getResource(s);
-    }
 }

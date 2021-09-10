@@ -14,8 +14,14 @@ open module scraper.core {
     exports scraper.core;
     exports scraper.core.template;
     exports scraper.util;
+    exports scraper.core.converter;
+
+    // TODO export only for tests
     exports scraper.api.flow.impl;
+    exports scraper.api.node.impl;
     exports scraper.api.specification.impl;
+    exports scraper.api.service.impl.proxy;
+    exports scraper.api.service.impl;
 
     requires java.net.http;
 
