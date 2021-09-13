@@ -64,7 +64,6 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
         Set<NodeContainer<?>> refs = new HashSet<>();
         for (Map.Entry<Address, NodeContainer<? extends Node>> e : routes.entrySet()) {
             if(!refs.contains(e.getValue())) {
-                log.log(INFO, "Init : {0}", e.getKey());
                 refs.add(e.getValue());
                 e.getValue().init(this);
             }
