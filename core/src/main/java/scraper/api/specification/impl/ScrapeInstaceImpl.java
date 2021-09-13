@@ -1,5 +1,6 @@
 package scraper.api.specification.impl;
 
+import scraper.annotations.EnsureFile;
 import scraper.annotations.NotNull;
 import scraper.api.*;
 import scraper.api.flow.impl.FlowMapImpl;
@@ -26,6 +27,7 @@ import java.util.stream.Stream;
 
 import static java.lang.System.Logger.*;
 import static java.lang.System.Logger.Level.DEBUG;
+import static java.lang.System.Logger.Level.INFO;
 import static scraper.utils.ClassUtil.getAllFields;
 
 public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstance {
@@ -51,7 +53,7 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
 
     private GraphAddress entry;
 
-    private Collection<NodeHook> hooks = new HashSet<>();
+    private final Collection<NodeHook> hooks = new HashSet<>();
 
     public ScrapeInstaceImpl(ScrapeSpecification spec) {
         this.spec = spec;
@@ -59,8 +61,13 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
 
     public void init() throws ValidationException {
         log.log(DEBUG,"Initializing graphs {0}", getName());
+        Set<NodeContainer<?>> refs = new HashSet<>();
         for (Map.Entry<Address, NodeContainer<? extends Node>> e : routes.entrySet()) {
-            e.getValue().init(this);
+            if(!refs.contains(e.getValue())) {
+                log.log(INFO, "Init : {0}", e.getKey());
+                refs.add(e.getValue());
+                e.getValue().init(this);
+            }
         }
     }
 

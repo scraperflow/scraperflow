@@ -14,6 +14,7 @@ import scraper.api.GraphAddress;
 import scraper.api.NodeAddress;
 import scraper.api.NodeContainer;
 import scraper.api.NodeLogLevel;
+import scraper.api.flow.impl.FlowMapImpl;
 import scraper.api.node.impl.GraphAddressImpl;
 import scraper.api.node.impl.NodeAddressImpl;
 import scraper.api.Node;
@@ -130,6 +131,8 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
                 if(ensureFile != null) ensureFileFields.put(f, ensureFile);
             });
 
+            ensureFiles(FlowMapImpl.origin(job.getEntryArguments()));
+
             log(TRACE,"Finished init {0}", this);
 
             // init node
@@ -174,6 +177,10 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
 
 
         // ensure files exist
+        ensureFiles(map);
+    }
+
+    private void ensureFiles(FlowMap map) {
         try {
             for (Field ensureFileField : ensureFileFields.keySet()) {
                 ensureFileField.setAccessible(true);
