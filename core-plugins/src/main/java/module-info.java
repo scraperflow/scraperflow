@@ -42,7 +42,7 @@ open module scraper.core.plugins {
             , FilterEmptyMap, FilterEmptyList, Fork, IfThenElse, JoinFlow, JoinSingle, Map, MapMap, Redirect, Stop
             , UnzipSingle ,Timestamp ,LongToString ,Hash ,Pad ,Date ,AggregateList ,StringContains ,StringToInt ,Sum
                 ,Unzip ,JsonObject ,StringJoin ,Base64Encode ,CleanJsonObject ,StringReplace ,ObjectToJsonString
-                ,ListDiff ,ListSort ,IntToString ,ListReverse ,Zip ,MergeMap ,ListSlice ,ListEmpty ,BooleanOp
+                ,ListDiff ,ListSort ,IntToString ,ListDistinct, ListReverse ,Zip ,MergeMap ,ListSlice ,ListEmpty ,BooleanOp
                 ,ToLowerCase ,FlattenStringList ,FlattenList ,Log ,StringSplit ,ContainedInCollection ,Base64Decode
                 ,RemoveKey ,StringEqualityCheck ,JsonStringToObject
             ,WriteLineToFile ,Ping ,FileExists ,HttpRequest ,ReadFileAsStream ,ListFiles ,PathGlobFile
