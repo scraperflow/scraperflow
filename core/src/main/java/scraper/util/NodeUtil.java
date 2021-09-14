@@ -127,8 +127,31 @@ public final class NodeUtil {
                     throw new ValidationException(e, "Could not initialize field " + field.getName()+": "+ e.getMessage() );
                 }
             }
-
         }
+    }
+
+    public static List<ValidationException> initFieldsWithErrors(Object instance, Map<String, ?> spec, Map<String,Object> initialArguments, Map<String, Map<String, Object>> globalConfigurations) {
+        List<Field> allFields = ClassUtil.getAllFields(new LinkedList<>(), instance.getClass());
+        List<ValidationException> errors = new LinkedList<>();
+
+        for (Field field : allFields) {
+            FlowKey flowKey = field.getAnnotation(FlowKey.class);
+            Argument ann = field.getAnnotation(Argument.class);
+
+            if (flowKey != null) {
+                // initialize field
+                try { // ensure templated arguments
+                    initField(instance, field, flowKey, ann, spec, initialArguments, globalConfigurations);
+                }
+                catch (ValidationException e) {
+                    errors.add(e);
+                } catch (IllegalAccessException e) {
+                    throw new IllegalStateException("Could not initialize field " + field.getName()+": "+ e.getMessage(), e);
+                }
+            }
+        }
+
+        return errors;
     }
     /**
      * Initializes a field with its actual value. If it is a template, its value is evaluated with the given map.
@@ -449,4 +472,5 @@ public final class NodeUtil {
             throw new IllegalStateException("Address "+goTo+" not found");
         }
     }
+
 }

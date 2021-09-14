@@ -35,9 +35,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Stream.*;
 import static scraper.api.NodeLogLevel.*;
-import static scraper.util.NodeUtil.getTarget;
-import static scraper.util.NodeUtil.initFields;
+import static scraper.util.NodeUtil.*;
 import static scraper.utils.ClassUtil.getAllFields;
 
 
@@ -141,6 +141,36 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
             log(ERROR, "Could not initialize field: {0}", e.getMessage());
             throw new ValidationException(e, "Could not initialize fields for " + getAddress() +": " + e.getMessage());
         }
+    }
+
+    @Override
+    public List<ValidationException> initWithErrors(@NotNull final ScrapeInstance job) {
+//        Runtime.getRuntime().addShutdownHook(new Thread(this::nodeShutdown));
+        this.jobPojo = job;
+
+        initLogger();
+        log(TRACE,"Start init {0}", this);
+
+        // initialize fields with arguments
+        var errors1 = initFieldsWithErrors(this, getNodeConfiguration(),
+                job.getEntryArguments(), job.getSpecification().getGlobalNodeConfigurations()
+        );
+        var errors2 = initFieldsWithErrors(getC(), getNodeConfiguration(),
+                    job.getEntryArguments(), job.getSpecification().getGlobalNodeConfigurations()
+            );
+
+        // get ensure fields
+        List<Field> test = getAllFields(new LinkedList<>(), getC().getClass());
+        test.forEach(f -> {
+            EnsureFile ensureFile = f.getAnnotation(EnsureFile.class);
+            if(ensureFile != null) ensureFileFields.put(f, ensureFile);
+        });
+
+        ensureFiles(FlowMapImpl.origin(job.getEntryArguments()));
+
+        log(TRACE,"Finished init {0}", this);
+
+        return concat(of(errors1), of(errors2)).flatMap(Collection::stream).collect(Collectors.toList());
     }
 
 
@@ -366,8 +396,8 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
 
     @Override @NotNull
     public Collection<NodeHook> hooks() {
-        return Stream.concat(
-                Stream.of(basicHook),
+        return concat(
+                of(basicHook),
                 getJobInstance().getHooks().stream()
         ).collect(Collectors.toList());
     }

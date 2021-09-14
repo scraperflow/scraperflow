@@ -102,16 +102,20 @@ public class JobFactory {
     }
 
     public @NotNull ScrapeInstaceImpl convertScrapeJob(@NotNull final ScrapeSpecification jobDefinition) throws IOException, ValidationException {
-        return convertJob(new String[]{}, jobDefinition, null, Set.of());
+        return convertJob(new String[]{}, jobDefinition, null, Set.of(), true);
     }
 
     public @NotNull ScrapeInstaceImpl convertScrapeJob(String[] args, @NotNull final ScrapeSpecification jobDefinition, Collection<NodeHook> nodeHooks) throws IOException, ValidationException {
-        return convertJob(args, jobDefinition, null, nodeHooks);
+        return convertJob(args, jobDefinition, null, nodeHooks, true);
+    }
+
+    public @NotNull ScrapeInstaceImpl convertScrapeJob(String[] args, @NotNull final ScrapeSpecification jobDefinition, Collection<NodeHook> nodeHooks, boolean init) throws IOException, ValidationException {
+        return convertJob(args, jobDefinition, null, nodeHooks, init);
     }
 
     private @NotNull ScrapeInstaceImpl convertJob(String[] args, @NotNull final ScrapeSpecification jobDefinition,
                                                   Function<String, Map<String, Object>> nodeSupplier,
-                                                  Collection<NodeHook> nodeHooks)
+                                                  Collection<NodeHook> nodeHooks, boolean initJob)
             throws IOException, ValidationException {
         // ===
         // Imports
@@ -246,12 +250,13 @@ public class JobFactory {
                 .collect(Collectors.toList());
 
         nested.forEach(e -> job.importedInstances.put(e.getKey(), e.getValue()));
-
-        job.init();
-
         job.importedInstances.forEach((a,i)-> i.getRoutes().forEach(job::addRoute));
 
-        job.validate();
+        if(initJob) {
+            job.init();
+            job.validate();
+        }
+
         return job;
     }
 

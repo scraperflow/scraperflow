@@ -111,4 +111,6 @@ public abstract class T<TYPE> implements Supplier<Type> {
 	public Class<?> getRawType() {
     	return rawType(this.get());
 	}
+
+    public boolean isAssigned() { return term != null; }
 }

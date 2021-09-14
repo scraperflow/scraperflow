@@ -42,4 +42,6 @@ public abstract class L<TYPE> implements Supplier<Type> {
 	public T<?> getTarget() {
 		return new T<>(type){};
 	}
+
+    public boolean isAssigned() { return termLocation != null; }
 }

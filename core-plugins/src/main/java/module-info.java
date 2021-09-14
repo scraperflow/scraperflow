@@ -11,6 +11,7 @@ import scraper.nodes.core.os.*;
 import scraper.nodes.core.stream.*;
 import scraper.nodes.core.time.*;
 import scraper.plugins.core.flowgraph.ControlFlowGraphGeneratorHook;
+import scraper.plugins.core.pointerfree.PointerFreeHook;
 import scraper.plugins.core.typechecker.TypeHook;
 
 open module scraper.core.plugins {
@@ -33,7 +34,7 @@ open module scraper.core.plugins {
     provides Command with ExitHook, NodeDependencyGeneratorHook, ControlFlowGraphGeneratorHook, TypeHook;
 
     provides Hook with
-            ExitHook, NodeDependencyGeneratorHook, ControlFlowGraphGeneratorHook, TypeHook;
+            ExitHook, NodeDependencyGeneratorHook, ControlFlowGraphGeneratorHook, TypeHook, PointerFreeHook;
 
 
     provides Node with

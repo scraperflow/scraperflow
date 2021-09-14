@@ -10,8 +10,19 @@ import java.util.Map;
  * <p>
  * Additionally, dependencies can be used.
  */
-public interface Hook extends Command {
+public interface Hook extends Command, Comparable<Hook> {
     /** Executes the hook and provides arguments, dependencies, and a ScrapeSpecification to ScrapeInstance map */
     void execute(@NotNull DIContainer dependencies, @NotNull String[] args,
                  @NotNull Map<ScrapeSpecification, ScrapeInstance> scraper) throws Exception;
+
+    /** Execution order */
+    default int order() { return 100; }
+
+    /** Execution order */
+    default boolean preValidation() { return false; }
+
+    @Override
+    default int compareTo(Hook other) {
+        return Integer.compare(order(), other.order());
+    }
 }

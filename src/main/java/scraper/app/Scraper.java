@@ -15,6 +15,7 @@ import scraper.api.ScrapeSpecificationParser;
 import scraper.api.ExecutorsService;
 import scraper.api.ScrapeInstance;
 import scraper.api.ScrapeSpecification;
+import scraper.api.specification.impl.ScrapeInstaceImpl;
 import scraper.core.JobFactory;
 import scraper.utils.StringUtil;
 
@@ -146,7 +147,14 @@ public class Scraper {
 
         log.log(DEBUG, "Converting scrape jobs");
         for (ScrapeSpecification jobDefinition : jobDefinitions)
-            jobs.put(jobDefinition, jobFactory.convertScrapeJob(args, jobDefinition, nodeHooks));
+            jobs.put(jobDefinition, jobFactory.convertScrapeJob(args, jobDefinition, nodeHooks, false));
+
+        log.log(DEBUG, "Init fields");
+        for (var jobEntry : jobs.entrySet()) {
+            jobEntry.getValue().initWithErrors();
+//            // init node
+//            getC().init(this, job);
+        }
 
         StringUtil.getAllArguments(args, "arg")
                 .stream()
@@ -157,7 +165,28 @@ public class Scraper {
 
 
         log.log(DEBUG, "Executing {0} hooks: {1}", hooks.size(), hooks);
-        for (Hook hook : hooks) hook.execute(pico, args, jobs);
+        hooks.sort(Hook::compareTo);
+        for (Hook hook : hooks) if(hook.preValidation()) hook.execute(pico, args, jobs);
+
+
+        // init again?
+        log.log(DEBUG, "Init everything with validation");
+        boolean allValid = true;
+        for (var jobEntry : jobs.entrySet()) {
+            List<ValidationException> errors = jobEntry.getValue().initWithErrors();
+            if(!errors.isEmpty()) {
+                errors.forEach(System.err::println);
+                allValid = false;
+            } else {
+                // TODO get rid of cast
+                ((ScrapeInstaceImpl) jobEntry.getValue()).validate();
+                jobEntry.getValue().initC();
+            }
+        }
+
+        if(!allValid) throw new ValidationException("Not all task flows valid");
+
+        for (Hook hook : hooks) if(!hook.preValidation()) hook.execute(pico, args, jobs);
 
         if(System.getProperty("scraper.exit", "false").equalsIgnoreCase("true")) {
             log.log(DEBUG, "Exiting Scraper because system property 'scraper.exit' is true");

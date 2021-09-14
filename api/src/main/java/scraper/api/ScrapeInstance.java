@@ -2,9 +2,7 @@ package scraper.api;
 
 import scraper.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Provides scrape specification functions needed during runtime.
@@ -23,6 +21,8 @@ public interface ScrapeInstance extends IdentityTemplateEvaluator {
 
     /** Initializes the workflow after every route was added */
     void init() throws ValidationException;
+    void initC() throws ValidationException;
+    List<ValidationException> initWithErrors();
 
     // ===========
     // Getter
@@ -81,4 +81,5 @@ public interface ScrapeInstance extends IdentityTemplateEvaluator {
     ProxyReservation getProxyReservation();
     @NotNull
     FileService getFileService();
+
 }

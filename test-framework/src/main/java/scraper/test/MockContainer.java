@@ -17,6 +17,7 @@ import scraper.api.ScrapeInstance;
 import scraper.api.T;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -123,6 +124,11 @@ public class MockContainer implements FunctionalNodeContainer {
     @Override
     public void init(@NotNull ScrapeInstance parent) throws ValidationException {
 
+    }
+
+    @Override
+    public List<ValidationException> initWithErrors(ScrapeInstance parent) {
+        return null;
     }
 
     @NotNull

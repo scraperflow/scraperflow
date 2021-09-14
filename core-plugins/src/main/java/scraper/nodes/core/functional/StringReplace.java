@@ -6,8 +6,12 @@ import scraper.api.*;
 /**
  * Replaces occurrences in a string
  */
-@NodePlugin("0.2.0")
+@NodePlugin("0.3.0")
 public final class StringReplace implements FunctionalNode {
+
+    /** The content to apply the regex on */
+    @FlowKey(mandatory = true)
+    private final T<String> content = new T<>(){};
 
     /** All occurrences of this regex will be replaced */
     @FlowKey(mandatory = true)
@@ -16,10 +20,6 @@ public final class StringReplace implements FunctionalNode {
     /** This is the replacement for each occurrence */
     @FlowKey(mandatory = true)
     private final T<String> with = new T<>(){};
-
-    /** The content to apply the regex on */
-    @FlowKey(defaultValue = "\"{content}\"")
-    private final T<String> content = new T<>(){};
 
     /** Replaced string output */
     @FlowKey(mandatory = true)

@@ -70,6 +70,33 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
         }
     }
 
+    @Override
+    public void initC() throws ValidationException {
+        Set<NodeContainer<?>> refs = new HashSet<>();
+        for (Map.Entry<Address, NodeContainer<? extends Node>> e : routes.entrySet()) {
+            if(!refs.contains(e.getValue())) {
+                refs.add(e.getValue());
+                e.getValue().getC().init(e.getValue(), this);
+            }
+        }
+    }
+
+    @Override
+    public List<ValidationException> initWithErrors() {
+        log.log(DEBUG,"Initializing graphs {0}", getName());
+        Set<NodeContainer<?>> refs = new HashSet<>();
+        List<ValidationException> errors = new LinkedList<>();
+
+        for (Map.Entry<Address, NodeContainer<? extends Node>> e : routes.entrySet()) {
+            if(!refs.contains(e.getValue())) {
+                refs.add(e.getValue());
+                errors.addAll(e.getValue().initWithErrors(this));
+            }
+        }
+
+        return errors;
+    }
+
     private final ScrapeSpecification spec;
 
     @NotNull
