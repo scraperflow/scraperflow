@@ -37,7 +37,7 @@ A minimal specification that can be used for any of the quickstart sections:
 
 ```yml
 start:
- - {f: echo, log: hello world}
+ - {f: log, log: hello world}
 ```
 
 # Quickstart - Docker
