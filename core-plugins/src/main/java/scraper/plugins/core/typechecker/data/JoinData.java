@@ -34,18 +34,6 @@ public final class JoinData {
         T<Map<String, String>> mergeKeysT = (T<Map<String, String>>) FlowUtil.getField("keys", node.getC()).get();
         Map<String, String> targetToKeys = new FlowMapImpl().evalIdentity(mergeKeysT);
 
-        Address target = (Address) FlowUtil.getField("joinTarget", node.getC()).get();
-
-        NodeContainer<? extends Node> nodeTarget = NodeUtil.getTarget(node.getAddress(), target, spec);
-
-        TypeEnvironment newEnvironment = env.copy();
-
-        // propagate
-        List<ControlFlowEdge> out = cfg.getOutgoingEdges(node.getAddress());
-        ControlFlowEdge outEdge = out.stream()
-                .filter(edge -> edge.getToAddress().equals(nodeTarget.getAddress()))
-                .findFirst().get();
-
         // add list info
         targetToKeys.forEach((key, value) -> {
             T<String> fromFork = new T<>(){};
