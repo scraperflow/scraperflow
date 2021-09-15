@@ -26,6 +26,7 @@ against the composition of nodes.
   * The documentation contains **all** nodes, including [extra nodes](https://github.com/scraperflow/scraperflow-extra/tree/master/scraperflow-nodes), not only the nodes in the core framework
 * [ScraperFlow Wiki](https://wiki.scraperflow.server1.link)
 * [ScraperFlow Editor (prototype, deprecated)](https://editor.scraperflow.server1.link)
+* [Example Workflows](https://github.com/scraperflow/scraperflow-extra/tree/master/scraperflow-jobs)
 
 # Documentation
 
