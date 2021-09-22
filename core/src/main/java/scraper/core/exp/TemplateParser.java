@@ -66,7 +66,7 @@ public class TemplateParser {
     // { | [
     // else NULL
     static TemplateNode s(Scanner tokens) {
-        if (nonescape(tokens) || escape(tokens)) {
+        if (stringContentCondition(tokens)) {
             TemplateNode string = string(tokens);
             TemplateNode continuation = s(tokens);
 
@@ -95,15 +95,6 @@ public class TemplateParser {
     private static boolean templateStart(Scanner tokens) {
         return tokens.hasNext("\\{");
     }
-
-    private static boolean escape(Scanner tokens) {
-        return false; // TODO implement
-    }
-
-    private static boolean nonescape(Scanner tokens) {
-        return tokens.hasNext("[^{}\\[\\]@^]");
-    }
-
 
     private static TemplateNode template(Scanner tokens) {
         if(templateStart(tokens)) {
@@ -216,13 +207,5 @@ public class TemplateParser {
         }
 
         return string.hasNext("[^{}\\[\\]@^]");
-    }
-
-    private static boolean consumeEscapeChar(Scanner string) {
-        if(string.hasNext("[^{}\\]\\]@^]"))
-            throw new IllegalStateException("Expected escaped char, got " + string.next());
-
-        string.next();
-        return true;
     }
 }

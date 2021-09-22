@@ -85,8 +85,6 @@ public class PointerFreeMutator {
 
             Map<String, Object> changeInputNode = def.getGraphs().get(e.getToAddress().getGraph()).get(e.getToAddress().getIndex());
             changeInputNode.put(input.getName(), "{var$"+count+"}");
-
-            System.out.println("Mutating " + e);
         } catch (IllegalAccessException ex) {
             throw new IllegalStateException(ex);
         }

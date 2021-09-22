@@ -40,6 +40,7 @@ public class TypeEnvironment {
     }
 
     public void add(@NotNull Term<?> term, @NotNull T<?> token) {
+        if(term == null) return;
         if(term.getRaw().equals("_")) return; // special _ void case
         if(templateToKnownTargets.containsKey(term))
             throw new TemplateException("Immutability violated: " + term + " already set");

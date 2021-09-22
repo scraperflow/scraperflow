@@ -1,4 +1,4 @@
-rootProject.name = 'Scraper'
+rootProject.name = 'ScraperFlow'
 
 include 'api'
 include 'utilities'
