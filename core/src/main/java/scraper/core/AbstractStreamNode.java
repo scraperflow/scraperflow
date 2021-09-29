@@ -76,8 +76,8 @@ public abstract class AbstractStreamNode extends AbstractNode<StreamNode> implem
                 // collect to list
                 Optional<?> element = newMap.evalMaybe(templateOf(key));
                 if(element.isEmpty()) {
-                    log(NodeLogLevel.ERROR, "Missing expected element at key {0}, fix node implementation. Skipping", key);
-                    throw new TemplateException("Missing expected element at key " + key);
+                    log(NodeLogLevel.ERROR, "Missing expected element at key {0}, fix node implementation. Skipping", key.getLocation());
+                    throw new TemplateException("Missing expected element at key " + key.getLocation());
                 } else {
                     collectorForId.get(key).add(element.get());
                 }

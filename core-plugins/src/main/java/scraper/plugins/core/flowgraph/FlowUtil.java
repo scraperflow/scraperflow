@@ -10,6 +10,8 @@ import scraper.api.StreamNodeContainer;
 import scraper.api.Node;
 import scraper.api.ScrapeInstance;
 import scraper.api.T;
+import scraper.core.AbstractStreamNode;
+import scraper.core.IdentityEvaluator;
 import scraper.plugins.core.flowgraph.api.ControlFlowEdge;
 import scraper.plugins.core.flowgraph.api.ControlFlowGraph;
 import scraper.plugins.core.flowgraph.api.ControlFlowNode;
@@ -22,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -191,6 +194,68 @@ public class FlowUtil {
         Field f = clazz.getDeclaredField(field);
         f.setAccessible(true);
         return Optional.ofNullable((T) f.get(instance));
+    }
+
+    public static List<Address> getFieldsForClassAnnotated(Class<Flow> flowClass, Object instance, Class<?> nodeClass) throws IllegalAccessException {
+        List<Field> flowFields = Arrays.stream(nodeClass.getDeclaredFields())
+                .filter(f -> {
+                    f.setAccessible(true);
+                    Flow an = f.getAnnotation(flowClass);
+                    return an != null;
+                }).collect(Collectors.toList());
+
+        List<Address> objs = new ArrayList<>();
+
+        for (Field flow : flowFields) {
+            Object inst = flow.get(instance);
+            if(inst instanceof Address) {
+                objs.add((Address) inst);
+            }
+
+            // TODO eval identity
+            if(inst instanceof T) {
+                T<?> casted = ((T<?>) inst);
+                Object evaled = new IdentityEvaluator().evalIdentity(casted);
+
+                List<Address> flist = filt(evaled);
+
+                objs.addAll(flist);
+            }
+        }
+
+        return objs;
+    }
+
+    public static List<Address> filt(Object object) {
+        List<Address> filt = new LinkedList<>();
+
+        if(object instanceof Address){
+            filt.add(((Address) object));
+        }
+        if(object instanceof List){
+            filt.addAll(filtList((List<?>) object));
+        }
+        if(object instanceof Map){
+            filt.addAll(filtMap((Map<String, ?>) object));
+        }
+
+        return filt;
+    }
+
+    public static List<Address> filtList(List<?> objects) {
+        List<Address> filt = new LinkedList<>();
+        for (Object object : objects) {
+            filt.addAll(filt(object));
+        }
+        return filt;
+    }
+
+    private static List<Address> filtMap(Map<String, ?> objects) {
+        List<Address> filt = new LinkedList<>();
+        for (Object object : objects.values()) {
+            filt.addAll(filt(object));
+        }
+        return filt;
     }
 }
 

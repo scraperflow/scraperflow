@@ -12,6 +12,7 @@ import scraper.api.T;
 
 import java.io.*;
 import java.util.List;
+import java.util.Random;
 
 import static scraper.api.NodeLogLevel.DEBUG;
 import static scraper.api.NodeLogLevel.ERROR;
@@ -20,7 +21,7 @@ import static scraper.api.NodeLogLevel.ERROR;
  * Executes a command defined in the workflow in the current system environment.
  * In contrast to 'Exec', the output of the command is treated as a stream (per line).
  */
-@NodePlugin("0.0.1")
+@NodePlugin("0.0.2")
 @Io
 public final class ExecStream implements StreamNode {
 
@@ -40,8 +41,14 @@ public final class ExecStream implements StreamNode {
     @FlowKey(defaultValue = "\"_\"")
     private final L<String> put = new L<>(){};
 
+    /** Redirects process error output to this string */
+    @FlowKey(defaultValue = "\"_\"")
+    private final L<String> putErr = new L<>(){};
+
     @Override
     public void process(StreamNodeContainer n, FlowMap o) {
+        String intstr = String.valueOf(new Random().nextInt(560000000));
+
         List<String> exec = o.eval(this.exec);
 
         try {
@@ -52,8 +59,8 @@ public final class ExecStream implements StreamNode {
             Process b = pb.start();
 
 
-            StreamGobbler stdIn = new StreamGobbler(b.getInputStream(), o, n, put);
-            StreamGobbler stdOut = new StreamGobbler(b.getErrorStream(), o, n, put);
+            StreamGobbler stdIn = new StreamGobbler(b.getInputStream(), o, n, put, putErr);
+            StreamGobbler stdOut = new StreamGobbler(b.getErrorStream(), o, n, putErr, put);
 
             stdIn.start();
             stdOut.start();
@@ -74,16 +81,18 @@ public final class ExecStream implements StreamNode {
 
 
     private static class StreamGobbler extends Thread {
+        L<String> empty;
         InputStream is;
         FlowMap o;
         StreamNodeContainer c;
         L<String> loc;
 
-        private StreamGobbler(InputStream is, FlowMap o, StreamNodeContainer c, L<String> loc) {
+        private StreamGobbler(InputStream is, FlowMap o, StreamNodeContainer c, L<String> loc, L<String> empty) {
             this.is = is;
             this.o = o;
             this.c = c;
             this.loc = loc;
+            this.empty = empty;
         }
 
         @Override
@@ -91,7 +100,10 @@ public final class ExecStream implements StreamNode {
             try ( InputStreamReader isr = new InputStreamReader(is); BufferedReader br = new BufferedReader(isr) ) {
                 String line;
                 while ((line = br.readLine()) != null) {
-                    c.streamElement(o, this.loc, line);
+                    FlowMap copy = o.copy();
+                    copy.output(this.loc, line);
+                    copy.output(this.empty, "");
+                    c.streamFlowMap(o, copy);
                 }
             }
             catch (IOException ioe) {

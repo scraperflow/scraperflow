@@ -38,7 +38,7 @@ open module scraper.core.plugins {
 
 
     provides Node with
-            Let, Join, LetIn
+            Sleep, Let, Join, LetIn
             , AnnotationsExample
             , FilterEmptyMap, FilterEmptyList, Fork, IfThenElse, JoinFlow, JoinSingle, Map, MapMap, Redirect, Stop
             , UnzipSingle ,Timestamp ,LongToString ,Hash ,Pad ,Date ,AggregateList ,StringContains ,StringToInt ,Sum

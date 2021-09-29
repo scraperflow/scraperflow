@@ -25,13 +25,8 @@ import java.util.concurrent.TimeoutException;
 import static java.time.temporal.ChronoUnit.MILLIS;
 
 /**
- * Provides html functions (see RequestType):
- * <ul>
- *     <li>GET</li>
- *     <li>Image to Base64 GET</li>
- *     <li>POST (json body)</li>
- *     <li>POST (form)</li>
- * </ul>
+ * Provides html functions (see RequestType).
+ *
  * Example:
  * <pre>
  * type: HttpRequest
@@ -52,7 +47,7 @@ import static java.time.temporal.ChronoUnit.MILLIS;
  *
  * If multiple HttpRequestNodes are used with a similar configuration, globalNodeConfigurations can be used.
  */
-@NodePlugin("2.0.3")
+@NodePlugin("2.1.0")
 @Io
 public final class HttpRequest implements Node {
 
@@ -98,7 +93,7 @@ public final class HttpRequest implements Node {
     // --------------
     // RESPONSE HANDLING
     // --------------
-    /** Expected response type, STRING_BODY, or FILE */
+    /** Expected response type, STRING_BODY, BASE_IMG, or FILE */
     @FlowKey(defaultValue = "\"STRING_BODY\"")
     private ResponseType expectedResponse;
 
@@ -210,8 +205,10 @@ public final class HttpRequest implements Node {
             @SuppressWarnings({"rawtypes"}) // choose bodyhandler by config
             HttpResponse.BodyHandler handler = null;
 
+
             switch (expectedResponse) {
                 case STRING_BODY: handler = HttpResponse.BodyHandlers.ofString(); break;
+                case BASE_IMG: handler = HttpResponse.BodyHandlers.ofByteArray(); break;
                 case FILE:
                     Path download = Paths.get(o.eval(path));
                     handler = HttpResponse.BodyHandlers.ofFile(download);
@@ -233,6 +230,10 @@ public final class HttpRequest implements Node {
                 cacheResponse(n, cache, url, (String) body);
 
             if(expectedResponse.equals(ResponseType.STRING_BODY)) o.output(put, (String) body);
+            if(expectedResponse.equals(ResponseType.BASE_IMG)) {
+                String encodedResponse = Base64.getEncoder().encodeToString((byte[]) body);
+                o.output(put, encodedResponse);
+            }
 
         } catch (InterruptedException e) {
             n.log(WARN, "Interrupted while waiting for token: {0}", url);
@@ -361,7 +362,7 @@ public final class HttpRequest implements Node {
     // ==================
 
     enum ResponseType {
-        STRING_BODY, FILE
+        STRING_BODY, BASE_IMG, FILE
     }
 
     /** Checks if file is already downloaded at expected location (for RequestType.FILE) */
