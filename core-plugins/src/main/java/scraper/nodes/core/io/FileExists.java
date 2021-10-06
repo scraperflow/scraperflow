@@ -8,7 +8,7 @@ import java.io.File;
 /**
  * Checks if a file exists.
  */
-@NodePlugin("0.1.0")
+@NodePlugin("0.2.0")
 @Io
 public final class FileExists implements FunctionalNode {
 
@@ -17,7 +17,7 @@ public final class FileExists implements FunctionalNode {
     private final T<String> path = new T<>(){};
 
     /** Where the result of the check */
-    @FlowKey(defaultValue = "\"exists\"")
+    @FlowKey(mandatory = true)
     private final L<Boolean> result = new L<>(){};
 
     /** Treat empty files as not existing flag */
