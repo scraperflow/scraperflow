@@ -7,6 +7,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 import java.util.List;
 
 import static scraper.api.NodeLogLevel.*;
@@ -27,7 +29,7 @@ import static scraper.api.NodeLogLevel.*;
  *   exec: ["ls", "-la", "{path}"]
  * </pre>
  */
-@NodePlugin("0.5.0")
+@NodePlugin("0.6.0")
 @Io
 public class Exec implements FunctionalNode {
 
@@ -94,13 +96,13 @@ public class Exec implements FunctionalNode {
         final InputStream in = new BufferedInputStream(inputStream);
         final byte[] buf = new byte[ByteBuffer];
 
-        StringBuilder builder = new StringBuilder();
+        List<Byte> bytes = new LinkedList<>();
 
         int bytesRead = in.read(buf);
         while(bytesRead != -1) {
 
             for (int i = 0; i < bytesRead; i++) {
-                builder.append((char) buf[i]);
+                bytes.add(buf[i]);
             }
 
             bytesRead = in.read(buf);
@@ -108,6 +110,8 @@ public class Exec implements FunctionalNode {
 
         in.close();
 
-        return builder.toString();
+        byte[] bar = new byte[bytes.size()];
+        for (int i = 0; i < bytes.size(); i++) { bar[i] = bytes.get(i); }
+        return new String(bar, StandardCharsets.UTF_8);
     }
 }
