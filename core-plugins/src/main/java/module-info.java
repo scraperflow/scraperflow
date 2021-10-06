@@ -4,6 +4,7 @@ import scraper.api.Hook;
 import scraper.hooks.*;
 import scraper.nodes.core.complex.*;
 import scraper.nodes.core.example.AnnotationsExample;
+import scraper.nodes.core.example.WordCount;
 import scraper.nodes.core.flow.*;
 import scraper.nodes.core.functional.*;
 import scraper.nodes.core.io.*;
@@ -38,7 +39,7 @@ open module scraper.core.plugins {
 
 
     provides Node with
-            Sleep, Let, Join, LetIn
+            WordCount, Sleep, Let, Join, LetIn
             , AnnotationsExample
             , FilterEmptyMap, FilterEmptyList, Fork, IfThenElse, JoinFlow, JoinSingle, Map, MapMap, Redirect, Stop
             , UnzipSingle ,Timestamp ,LongToString ,Hash ,Pad ,Date ,AggregateList ,StringContains ,StringToInt ,Sum
