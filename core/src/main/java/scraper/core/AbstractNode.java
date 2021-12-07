@@ -399,7 +399,7 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
         return concat(
                 of(basicHook),
                 getJobInstance().getHooks().stream()
-        ).collect(Collectors.toList());
+        ).sorted().collect(Collectors.toList());
     }
 
     @Override
