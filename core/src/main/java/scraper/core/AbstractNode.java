@@ -259,8 +259,13 @@ public abstract class AbstractNode<NODE extends Node> extends IdentityEvaluator 
         NodeContainer<? extends Node> targetNode = getTarget(this.getAddress(), target, getJobInstance());
         // supply in target nodes thread pool
         CompletableFuture.supplyAsync(() -> {
-            targetNode.getC().accept(targetNode, o.newFlow());
-            return null;
+            try {
+                targetNode.getC().accept(targetNode, o.newFlow());
+                return null;
+            } catch (Exception e) {
+                log(ERROR, "Node error occurred at {0}", e.getMessage());
+                return null;
+            }
         }, targetNode.getService());
     }
 
