@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  * Outputs a String.
  * Throws an exception if the file does not exist.
  */
-@NodePlugin("0.5.0")
+@NodePlugin("0.6.0")
 @Io
 public final class ReadFile implements FunctionalNode {
 
@@ -32,6 +32,10 @@ public final class ReadFile implements FunctionalNode {
     @FlowKey(defaultValue = "\"\\n\"")
     private String join;
 
+    /** If set, default value if file does not exist. */
+    @FlowKey
+    private String defaultValue;
+
     /** Where the output line will be put */
     @FlowKey(mandatory = true)
     private final L<String> output = new L<>(){};
@@ -39,13 +43,15 @@ public final class ReadFile implements FunctionalNode {
     public void modify(@NotNull final FunctionalNodeContainer n, @NotNull final FlowMap o) {
         String file = o.eval(inputFile);
 
-        if(!new File(file).exists()) throw new NodeIOException(n.getAddress() + ": File does not exist: " + file);
-
-        try (Stream<String> stream = Files.lines(Paths.get(file), Charset.forName(charset))) {
-
-            o.output(output,stream.collect(Collectors.joining(join)));
-        } catch (IOException e) {
-            throw new NodeIOException(e, "File IO error");
+        if(!new File(file).exists()) {
+            if(defaultValue != null) o.output(output, defaultValue);
+            else throw new NodeIOException(n.getAddress() + ": File does not exist: " + file);
+        } else {
+            try (Stream<String> stream = Files.lines(Paths.get(file), Charset.forName(charset))) {
+                o.output(output,stream.collect(Collectors.joining(join)));
+            } catch (IOException e) {
+                throw new NodeIOException(e, "File IO error");
+            }
         }
     }
 }
