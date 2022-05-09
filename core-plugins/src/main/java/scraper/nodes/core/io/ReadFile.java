@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  * Outputs a String.
  * Throws an exception if the file does not exist.
  */
-@NodePlugin("0.6.0")
+@NodePlugin("0.7.0")
 @Io
 public final class ReadFile implements FunctionalNode {
 
@@ -34,7 +34,7 @@ public final class ReadFile implements FunctionalNode {
 
     /** If set, default value if file does not exist. */
     @FlowKey
-    private String defaultValue;
+    private final T<String> defaultValue = new T<>(){};
 
     /** Where the output line will be put */
     @FlowKey(mandatory = true)
@@ -44,7 +44,7 @@ public final class ReadFile implements FunctionalNode {
         String file = o.eval(inputFile);
 
         if(!new File(file).exists()) {
-            if(defaultValue != null) o.output(output, defaultValue);
+            if(o.evalMaybe(defaultValue).isPresent()) o.output(output, o.eval(defaultValue));
             else throw new NodeIOException(n.getAddress() + ": File does not exist: " + file);
         } else {
             try (Stream<String> stream = Files.lines(Paths.get(file), Charset.forName(charset))) {
