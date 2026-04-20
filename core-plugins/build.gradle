@@ -1,7 +1,0 @@
-apply plugin: 'java-library'
-
-dependencies {
-    api project(':core')
-    testCompileOnly project(':test-framework')
-    testRuntimeOnly project(':test-framework')
-}
