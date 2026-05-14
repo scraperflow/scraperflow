@@ -55,6 +55,12 @@ public class Scraper {
 
     public static void main(final String[] args) throws Exception {
         System.setProperty("java.util.logging.SimpleFormatter.format", "%4$-1.1s %1$tF %1$tT | %3$s | %5$s %n");
+
+        if (args.length > 0 && "build-node".equals(args[0])) {
+            System.exit(BuildNodeCommand.run(args));
+            return;
+        }
+
         List<ScrapeSpecificationParser> parsers = load(ScrapeSpecificationParser.class).stream().map(Provider::get).collect(Collectors.toList());
         log.log(DEBUG, "Loading {0} parsers: {1}", parsers.size(), parsers);
 

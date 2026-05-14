@@ -199,6 +199,10 @@ public class ScrapeInstaceImpl extends IdentityEvaluator implements ScrapeInstan
     public void validate() throws ValidationException {
         try {
             for (NodeContainer<? extends Node> node : getAllNodes()) {
+                // Schemaless nodes (e.g. subprocess bridges) have no @FlowKey fields
+                // on the host side; the YAML config is forwarded verbatim.
+                if (node.getC() instanceof scraper.core.SubprocessNode) continue;
+
                 List<Field> test = getAllFields(new LinkedList<>(), node.getC().getClass());
                 List<Field> test2 = getAllFields(new LinkedList<>(), node.getClass());
 

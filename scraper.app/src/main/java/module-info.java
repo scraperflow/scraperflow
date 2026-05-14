@@ -14,6 +14,8 @@ module scraper.app {
     exports scraper.app;
 
     requires scraper.core;
+    requires scraper.core.parsers;
+    requires scraper.core.plugins;
     requires java.compiler;
 }
 

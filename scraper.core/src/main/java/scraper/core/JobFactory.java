@@ -417,44 +417,72 @@ public class JobFactory {
 
     private Node searchLocalClass(String[] args, String type) throws Exception {
         List<String> extraFolders = StringUtil.getAllArguments(args, "runtime-nodes");
+        boolean nativeImage = isNativeImage();
 
         for (String folder : extraFolders) {
-            File f = Path.of(folder, type+".java").toFile();
-            log.log(DEBUG, "Trying: " + f.getAbsolutePath() + "  : " +f.exists());
-            if(f.exists()) {
-                DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+            // 1. Executable subprocess node (preferred; only path available in native-image).
+            File exe = Path.of(folder, type).toFile();
+            if (exe.exists() && exe.canExecute()) {
+                log.log(DEBUG, "Loading runtime node as subprocess: {0}", exe.getAbsolutePath());
+                return new SubprocessNode(exe.toPath().toAbsolutePath(), type);
+            }
+
+            if (nativeImage) continue; // .class and .java paths require URLClassLoader / javac
+
+            // 2. Pre-compiled bytecode.
+            File cls = Path.of(folder, type + ".class").toFile();
+            if (cls.exists()) {
+                log.log(DEBUG, "Loading runtime node from bytecode: {0}", cls.getAbsolutePath());
+                URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{cls.getParentFile().toURI().toURL()});
+                Class<?> klass = Class.forName(type, true, classLoader);
+                return (Node) klass.getDeclaredConstructor().newInstance();
+            }
+
+            // 3. Source, compiled via javac if available.
+            File java = Path.of(folder, type + ".java").toFile();
+            log.log(DEBUG, "Trying: " + java.getAbsolutePath() + "  : " + java.exists());
+            if (java.exists()) {
                 JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+                if (compiler == null) {
+                    warnNoJavacOnce();
+                    continue;
+                }
+                DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
                 StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
 
                 // Set up the classpath for the compiler using the JVM's module path,
                 // which already contains all needed JARs (jackson, api, core-plugins, etc.)
-                List<String> optionList = new ArrayList<String>();
+                List<String> optionList = new ArrayList<>();
                 optionList.add("-classpath");
                 optionList.add(System.getProperty("jdk.module.path", ""));
 
-
                 Iterable<? extends JavaFileObject> compilationUnit
-                        = fileManager.getJavaFileObjectsFromFiles(List.of(f));
+                        = fileManager.getJavaFileObjectsFromFiles(List.of(java));
                 JavaCompiler.CompilationTask task = compiler.getTask(
-                        null,
-                        fileManager,
-                        diagnostics,
-                        optionList,
-                        null,
-                        compilationUnit);
+                        null, fileManager, diagnostics, optionList, null, compilationUnit);
 
-                if(!task.call()) {
+                if (!task.call()) {
                     System.out.println(diagnostics.getDiagnostics());
                 }
 
-                // Load and instantiate compiled class.
-                URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { f.getParentFile().toURI().toURL() });
-                Class<?> cls = Class.forName(type, true, classLoader);
-                Object instance = cls.getDeclaredConstructor().newInstance();
-                return (Node) instance;
+                URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{java.getParentFile().toURI().toURL()});
+                Class<?> klass = Class.forName(type, true, classLoader);
+                return (Node) klass.getDeclaredConstructor().newInstance();
             }
         }
 
         throw new IllegalStateException();
+    }
+
+    private static boolean isNativeImage() {
+        return System.getProperty("org.graalvm.nativeimage.imagecode") != null;
+    }
+
+    private static boolean javacWarned = false;
+    private static void warnNoJavacOnce() {
+        if (javacWarned) return;
+        javacWarned = true;
+        log.log(WARNING, "javac is not available in this runtime; .java runtime-nodes will be skipped. "
+                + "Pre-compile them to .class (e.g. with scraperflow-compile).");
     }
 }
